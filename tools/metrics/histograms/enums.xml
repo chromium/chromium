@@ -60241,6 +60241,7 @@ from previous Chrome versions.
   <int value="-262368430" label="PersistShareHubOnAppSwitch:enabled"/>
   <int value="-262122630" label="ArcEnableDocumentsProviderInFilesApp:enabled"/>
   <int value="-261398170" label="ChromeLabs:enabled"/>
+  <int value="-258744541" label="ArcInputOverlayAlphaTwo:enabled"/>
   <int value="-258081634" label="AutofillAssistantDirectActions:disabled"/>
   <int value="-257600773" label="MessagesPreinstall:disabled"/>
   <int value="-257478609" label="TextfieldFocusOnTapUp:enabled"/>
@@ -62269,6 +62270,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:disabled"/>
   <int value="956716414" label="GlobalMediaControlsPictureInPicture:disabled"/>
   <int value="957191538" label="EcheSWADebugMode:enabled"/>
+  <int value="961696262" label="ArcInputOverlayAlphaTwo:disabled"/>
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
   <int value="963671232" label="DrawOcclusion:disabled"/>
   <int value="964613807" label="ContextualSearchTranslationModel:disabled"/>

@@ -5837,8 +5837,14 @@ const char kArcWindowPredictorDescription[] =
 
 const char kArcInputOverlayNameBeta[] = "Enable ARC Input Overlay Beta";
 const char kArcInputOverlayDescriptionBeta[] =
-    "Enable more features based on ARC Input Overlay Alpha, "
-    "so it can change the touch point position.";
+    "Enable full editor feature for Gaming Input Overlay based on Alpha two, "
+    "so users can add and remove actions.";
+
+const char kArcInputOverlayNameAlphaTwo[] =
+    "Enable ARC Input Overlay Alpha Two";
+const char kArcInputOverlayDescriptionAlphaTwo[] =
+    "Enable menu and action reposition feature for Gaming Input Overlay based "
+    "on Alpha.";
 
 const char kShelfAutoHideSeparationName[] =
     "Enable separate shelf auto-hide preferences.";

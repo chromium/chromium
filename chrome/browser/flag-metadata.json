@@ -219,6 +219,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "arc-input-overlay-alpha-two",
+    "owners": [ "cuicuiruan@google.com", "pjlee@google.com", "arc-gaming@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "arc-input-overlay-beta",
     "owners": [ "cuicuiruan@google.com", "arc-gaming@google.com" ],
     "expiry_milestone": 120

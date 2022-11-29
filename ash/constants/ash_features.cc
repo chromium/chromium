@@ -157,6 +157,11 @@ BASE_FEATURE(kArcInputOverlayBeta,
              "ArcInputOverlayBeta",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to enable support for ARC Input Overlay Alpha Two.
+BASE_FEATURE(kArcInputOverlayAlphaTwo,
+             "ArcInputOverlayAlphaTwo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable support for ARC ADB sideloading for managed
 // accounts and/or devices.
 BASE_FEATURE(kArcManagedAdbSideloadingSupport,
@@ -2266,6 +2271,10 @@ bool IsArcFuseBoxFileSharingEnabled() {
 
 bool IsArcInputOverlayBetaEnabled() {
   return base::FeatureList::IsEnabled(kArcInputOverlayBeta);
+}
+
+bool IsArcInputOverlayAlphaTwoEnabled() {
+  return base::FeatureList::IsEnabled(kArcInputOverlayAlphaTwo);
 }
 
 bool IsArcNetworkDiagnosticsButtonEnabled() {

@@ -6615,6 +6615,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"arc-input-overlay-beta", flag_descriptions::kArcInputOverlayNameBeta,
      flag_descriptions::kArcInputOverlayDescriptionBeta, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kArcInputOverlayBeta)},
+
+    {"arc-input-overlay-alpha-two",
+     flag_descriptions::kArcInputOverlayNameAlphaTwo,
+     flag_descriptions::kArcInputOverlayDescriptionAlphaTwo, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kArcInputOverlayAlphaTwo)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
