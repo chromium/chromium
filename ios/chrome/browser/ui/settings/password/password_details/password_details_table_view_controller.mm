@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/add_password_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
@@ -25,7 +24,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -58,9 +56,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPassword = kSectionIdentifierEnumZero,
   SectionIdentifierSite,
   SectionIdentifierCompromisedInfo,
-  SectionIdentifierDuplicate,
-  SectionIdentifierFooter,
-  SectionIdentifierTLDFooter
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -70,9 +65,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFederation,
   ItemTypeChangePasswordButton,
   ItemTypeChangePasswordRecommendation,
-  ItemTypeFooter,
-  ItemTypeDuplicateCredentialButton,
-  ItemTypeDuplicateCredentialMessage
 };
 
 typedef NS_ENUM(NSInteger, ReauthenticationReason) {
@@ -114,17 +106,10 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 // image icon in the `usernameTextItem` cell.
 @property(nonatomic, weak) UIView* usernameErrorAnchorView;
 
-// If YES, denotes that the credential with the same website/username
-// combination already exists. Used when creating a new credential.
-@property(nonatomic, assign) BOOL isDuplicatedCredential;
-
-// Denotes that the save button in the add credential view can be enabled after
+// Denotes that the Done button in editing mode can be enabled after
 // basic validation of data on all the fields. Does not account for whether the
 // duplicate credential exists or not.
-@property(nonatomic, assign) BOOL shouldEnableSave;
-
-// Yes, when the message for top-level domain missing is shown.
-@property(nonatomic, assign) BOOL isTLDMissingMessageShown;
+@property(nonatomic, assign) BOOL shouldEnableEditDoneButton;
 
 // If YES, the password details are shown without requiring any authentication.
 @property(nonatomic, assign) BOOL showPasswordWithoutAuth;
@@ -141,10 +126,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 - (instancetype)initWithSyncingUserEmail:(NSString*)syncingUserEmail {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _isDuplicatedCredential = NO;
-    _shouldEnableSave = NO;
+    _shouldEnableEditDoneButton = NO;
     _showPasswordWithoutAuth = NO;
-    _isTLDMissingMessageShown = NO;
     _syncingUserEmail = syncingUserEmail;
   }
   return self;
@@ -223,8 +206,6 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
   [model addItem:self.websiteTextItem
       toSectionWithIdentifier:SectionIdentifierSite];
-
-  [model addSectionWithIdentifier:SectionIdentifierTLDFooter];
 
   [model addSectionWithIdentifier:SectionIdentifierPassword];
 
@@ -407,85 +388,6 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   return item;
 }
 
-- (TableViewTextItem*)duplicatePasswordViewButtonItem {
-  TableViewTextItem* item = [[TableViewTextItem alloc]
-      initWithType:ItemTypeDuplicateCredentialButton];
-  item.text =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_VIEW_PASSWORD_BUTTON);
-  item.textColor = [UIColor colorNamed:kBlueColor];
-  item.accessibilityTraits = UIAccessibilityTraitButton;
-  return item;
-}
-
-- (SettingsImageDetailTextItem*)duplicatePasswordMessageItem {
-  SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
-      initWithType:ItemTypeDuplicateCredentialMessage];
-  if (self.usernameTextItem &&
-      [self.usernameTextItem.textFieldValue length] > 0) {
-    item.detailText = l10n_util::GetNSStringF(
-        IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION,
-        base::SysNSStringToUTF16(self.usernameTextItem.textFieldValue),
-        base::SysNSStringToUTF16(self.websiteTextItem.textFieldValue));
-  } else {
-    item.detailText = l10n_util::GetNSStringF(
-        IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION_WITHOUT_USERNAME,
-        base::SysNSStringToUTF16(self.websiteTextItem.textFieldValue));
-  }
-  if (UseSymbols()) {
-    item.image =
-        DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
-  } else {
-    item.image = [[UIImage imageNamed:@"table_view_cell_error_icon"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
-  item.imageViewTintColor = [UIColor colorNamed:kRedColor];
-  return item;
-}
-
-- (TableViewLinkHeaderFooterItem*)footerItem {
-  TableViewLinkHeaderFooterItem* item =
-      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
-  item.text =
-      [NSString stringWithFormat:@"%@\n\n%@",
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
-                                 [self footerText]];
-  return item;
-}
-
-- (TableViewLinkHeaderFooterItem*)TLDMessageFooterItem {
-  TableViewLinkHeaderFooterItem* item =
-      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
-  item.text = l10n_util::GetNSStringF(
-      IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION,
-      base::SysNSStringToUTF16([self.websiteTextItem.textFieldValue
-          stringByAppendingString:@".com"]));
-  return item;
-}
-
-- (NSString*)footerText {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    if (self.syncingUserEmail) {
-      return l10n_util::GetNSStringF(
-          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
-          base::SysNSStringToUTF16(self.syncingUserEmail));
-    }
-
-    return l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING);
-  } else {
-    if (self.syncingUserEmail) {
-      return l10n_util::GetNSStringF(
-          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER,
-          base::SysNSStringToUTF16(self.syncingUserEmail));
-    }
-
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING);
-  }
-}
-
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -500,8 +402,6 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
                                   atIndexPath:indexPath];
       break;
     case ItemTypeChangePasswordRecommendation:
-    case ItemTypeFooter:
-    case ItemTypeDuplicateCredentialMessage:
       break;
     case ItemTypeUsername: {
       if (self.tableView.editing) {
@@ -542,14 +442,6 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
         [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
       }
       break;
-    case ItemTypeDuplicateCredentialButton:
-      password_manager::metrics_util::
-          LogUserInteractionsWhenAddingCredentialFromSettings(
-              password_manager::metrics_util::
-                  AddCredentialFromSettingsUserInteractions::
-                      kDuplicateCredentialViewed);
-      [self reauthAndShowExistingCredential];
-      break;
   }
 }
 
@@ -580,37 +472,19 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  BOOL isNewCredentialDuplicateButton =
-      (self.isDuplicatedCredential &&
-       itemType == ItemTypeDuplicateCredentialButton);
-  return !self.editing || isNewCredentialDuplicateButton;
-}
-
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForHeaderInSection:(NSInteger)section {
-  NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSectionIndex:section];
-
-  if (sectionIdentifier == SectionIdentifierFooter ||
-      sectionIdentifier == SectionIdentifierTLDFooter) {
-    return 0;
-  }
-  return [super tableView:tableView heightForHeaderInSection:section];
+  return !self.editing;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSectionIndex:section];
-  if (sectionIdentifier == SectionIdentifierSite) {
+
+  if (sectionIdentifier == SectionIdentifierSite ||
+      sectionIdentifier == SectionIdentifierPassword) {
     return 0;
   }
-  if ((sectionIdentifier == SectionIdentifierPassword &&
-       !self.isDuplicatedCredential) ||
-      sectionIdentifier == SectionIdentifierDuplicate) {
-    return 0;
-  }
+
   return [super tableView:tableView heightForFooterInSection:section];
 }
 
@@ -650,10 +524,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     case ItemTypeWebsite:
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
-    case ItemTypeDuplicateCredentialMessage:
-    case ItemTypeFooter:
       break;
-    case ItemTypeDuplicateCredentialButton:
+
     case ItemTypeChangePasswordRecommendation:
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
@@ -667,10 +539,6 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   switch (itemType) {
     case ItemTypeWebsite:
     case ItemTypeFederation:
-    case ItemTypeFooter:
-    case ItemTypeDuplicateCredentialMessage:
-    case ItemTypeDuplicateCredentialButton:
-      return NO;
     case ItemTypeUsername:
     case ItemTypePassword:
       return YES;
@@ -693,115 +561,29 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   [self reloadData];
 }
 
-#pragma mark - AddPasswordDetailsConsumer
-
-- (void)onDuplicateCheckCompletion:(BOOL)duplicateFound {
-  if (duplicateFound == self.isDuplicatedCredential) {
-    return;
-  }
-
-  self.isDuplicatedCredential = duplicateFound;
-  [self toggleNavigationBarRightButtonItem];
-  TableViewModel* model = self.tableViewModel;
-  if (duplicateFound) {
-    password_manager::metrics_util::
-        LogUserInteractionsWhenAddingCredentialFromSettings(
-            password_manager::metrics_util::
-                AddCredentialFromSettingsUserInteractions::
-                    kDuplicatedCredentialEntered);
-    [self
-        performBatchTableViewUpdates:^{
-          NSUInteger passwordSectionIndex = [self.tableViewModel
-              sectionForSectionIdentifier:SectionIdentifierPassword];
-          [model insertSectionWithIdentifier:SectionIdentifierDuplicate
-                                     atIndex:passwordSectionIndex + 1];
-          [self.tableView
-                insertSections:[NSIndexSet
-                                   indexSetWithIndex:passwordSectionIndex + 1]
-              withRowAnimation:UITableViewRowAnimationTop];
-          [model addItem:[self duplicatePasswordMessageItem]
-              toSectionWithIdentifier:SectionIdentifierDuplicate];
-          [model addItem:[self duplicatePasswordViewButtonItem]
-              toSectionWithIdentifier:SectionIdentifierDuplicate];
-          if (self.usernameTextItem &&
-              [self.usernameTextItem.textFieldValue length] > 0) {
-            self.usernameTextItem.hasValidText = NO;
-            [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
-          } else {
-            self.websiteTextItem.hasValidText = NO;
-            [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
-          }
-        }
-                          completion:nil];
-  } else {
-    [self
-        performBatchTableViewUpdates:^{
-          [self removeSectionWithIdentifier:SectionIdentifierDuplicate
-                           withRowAnimation:UITableViewRowAnimationTop];
-          self.usernameTextItem.hasValidText = YES;
-          self.websiteTextItem.hasValidText = YES;
-          [self reconfigureCellsForItems:@[
-            self.websiteTextItem, self.usernameTextItem
-          ]];
-        }
-                          completion:nil];
-  }
-}
-
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
   [self reconfigureCellsForItems:@[
-    self.websiteTextItem, self.usernameTextItem, self.passwordTextItem
+    self.usernameTextItem, self.passwordTextItem
   ]];
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  BOOL siteValid = [self checkIfValidSite];
   BOOL usernameValid = [self checkIfValidUsername];
   BOOL passwordValid = [self checkIfValidPassword];
 
-  self.shouldEnableSave = (siteValid && usernameValid && passwordValid);
+  self.shouldEnableEditDoneButton = usernameValid && passwordValid;
   [self toggleNavigationBarRightButtonItem];
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
-  if (tableViewItem == self.websiteTextItem) {
-    if (!self.isDuplicatedCredential) {
-      self.websiteTextItem.hasValidText = [self checkIfValidSite];
-    }
-    if ([self.websiteTextItem.textFieldValue length] > 0 &&
-        [self.delegate isTLDMissing]) {
-      [self showTLDMissingSection];
-      self.websiteTextItem.hasValidText = NO;
-    }
-    [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
-  } else if (tableViewItem == self.usernameTextItem) {
+  if (tableViewItem == self.usernameTextItem) {
     [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
   } else if (tableViewItem == self.passwordTextItem) {
     self.passwordTextItem.hasValidText = [self checkIfValidPassword];
     [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
   }
-}
-
-#pragma mark - Actions
-
-// Dimisses this view controller when Cancel button is tapped.
-- (void)didTapCancelButton:(id)sender {
-  [self.delegate didCancelAddPasswordDetails];
-}
-
-// Handles Save button tap on adding new credentials.
-- (void)didTapSaveButton:(id)sender {
-  if ([self.websiteTextItem.textFieldValue length] > 0 &&
-      [self.delegate isTLDMissing]) {
-    [self showTLDMissingSection];
-    return;
-  }
-  [self.delegate
-      passwordDetailsViewController:self
-              didAddPasswordDetails:self.usernameTextItem.textFieldValue
-                           password:self.passwordTextItem.textFieldValue];
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -978,18 +760,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
     case ItemTypeChangePasswordRecommendation:
-    case ItemTypeDuplicateCredentialMessage:
-    case ItemTypeDuplicateCredentialButton:
-    case ItemTypeFooter:
       return NO;
   }
-}
-
-- (BOOL)checkIfValidSite {
-  BOOL siteEmpty = [self.websiteTextItem.textFieldValue length] == 0;
-  self.websiteTextItem.hasValidText = !siteEmpty;
-  [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
-  return !siteEmpty;
 }
 
 // Checks if the username is valid and updates item accordingly.
@@ -1030,61 +802,10 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   }
 }
 
-- (void)reauthAndShowExistingCredential {
-  if ([self.reauthModule canAttemptReauth]) {
-    __weak __typeof(self) weakSelf = self;
-    void (^viewExistingPasswordHandler)(ReauthenticationResult) =
-        ^(ReauthenticationResult result) {
-          PasswordDetailsTableViewController* strongSelf = weakSelf;
-          if (!strongSelf)
-            return;
-          [strongSelf logPasswordSettingsReauthResult:result];
-
-          if (result == ReauthenticationResult::kFailure) {
-            return;
-          }
-
-          [strongSelf.delegate
-              showExistingCredential:strongSelf.usernameTextItem
-                                         .textFieldValue];
-        };
-
-    [self.reauthModule
-        attemptReauthWithLocalizedReason:
-            [self localizedStringForReason:ReauthenticationReasonShow]
-                    canReusePreviousAuth:YES
-                                 handler:viewExistingPasswordHandler];
-  } else {
-    DCHECK(self.addPasswordHandler);
-    [self.addPasswordHandler showPasscodeDialog];
-  }
-}
-
 // Enables/Disables the right bar button item in the navigation bar.
 - (void)toggleNavigationBarRightButtonItem {
   self.navigationItem.rightBarButtonItem.enabled =
-      !self.isDuplicatedCredential && self.shouldEnableSave &&
-      [self.delegate isURLValid] && !self.isTLDMissingMessageShown;
-}
-
-// Shows the section with the error message for top-level domain missing.
-- (void)showTLDMissingSection {
-  if (self.isTLDMissingMessageShown) {
-    return;
-  }
-
-  self.navigationItem.rightBarButtonItem.enabled = NO;
-  self.isTLDMissingMessageShown = YES;
-  [self
-      performBatchTableViewUpdates:^{
-        [self.tableViewModel setFooter:[self TLDMessageFooterItem]
-              forSectionWithIdentifier:SectionIdentifierTLDFooter];
-        NSUInteger index = [self.tableViewModel
-            sectionForSectionIdentifier:SectionIdentifierTLDFooter];
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
-                      withRowAnimation:UITableViewRowAnimationNone];
-      }
-                        completion:nil];
+      self.shouldEnableEditDoneButton;
 }
 
 #pragma mark - Actions
@@ -1179,11 +900,6 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     case ItemTypePassword:
       [self attemptToShowPasswordFor:ReauthenticationReasonCopy];
       [self logCopyPasswordDetailsFailure:NO];
-      return;
-    case ItemTypeDuplicateCredentialMessage:
-    case ItemTypeDuplicateCredentialButton:
-    case ItemTypeFooter:
-      NOTREACHED();
       return;
   }
 
