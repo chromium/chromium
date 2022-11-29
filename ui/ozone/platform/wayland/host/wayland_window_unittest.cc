@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 
 #include <cstddef>
 #include <memory>
@@ -3173,7 +3174,12 @@ TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
   });
 }
 
-TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ReattachesBackgroundOnShow DISABLED_ReattachesBackgroundOnShow
+#else
+#define MAYBE_ReattachesBackgroundOnShow ReattachesBackgroundOnShow
+#endif
+TEST_P(WaylandWindowTest, MAYBE_ReattachesBackgroundOnShow) {
   EXPECT_TRUE(connection_->buffer_manager_host());
 
   auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
