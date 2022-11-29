@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -21,6 +22,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
+#import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -173,6 +175,69 @@ id<GREYMatcher> CarouselMatcher() {
   [ChromeEarlGrey waitForWebStateContainingText:PageContent(lastTilePage)];
 }
 
+#pragma mark - Context Menu
+
+// Tests deleting most visited tiles from context menu.
+- (void)testDeleteMostVisitedTiles {
+  // Visit page 1 and 2 multiple times.
+  [self addNumberOfMostVisitedTiles:2];
+  id<GREYMatcher> tile1 = TileWithTitle(PageTitle(Page(1)));
+  id<GREYMatcher> tile2 = TileWithTitle(PageTitle(Page(2)));
+
+  [self focusOmniboxFromWebPageZero];
+  // Delete tiles 1 and 2.
+  [self deleteMostVisitedTile:tile1];
+  [self deleteMostVisitedTile:tile2];
+
+  [ChromeEarlGrey openNewTab];
+
+  // Visit page 1, 2 and 3 multiple times.
+  [self addNumberOfMostVisitedTiles:3];
+  id<GREYMatcher> tile3 = TileWithTitle(PageTitle(Page(3)));
+
+  [self focusOmniboxFromWebPageZero];
+  // `tile1` should not be there since it was removed earlier.
+  [[EarlGrey selectElementWithMatcher:tile1] assertWithMatcher:grey_nil()];
+  // `tile2` should not be there since it was removed earlier.
+  [[EarlGrey selectElementWithMatcher:tile2] assertWithMatcher:grey_nil()];
+  // `tile3` should be the only tile visible.
+  [[EarlGrey selectElementWithMatcher:tile3]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the carousel is not shown when there are no tiles.
+- (void)testEmptyMostVisitedTiles {
+  [self focusOmniboxFromWebPageZero];
+  // There should be no carousel when no tiles have been added.
+  [[EarlGrey selectElementWithMatcher:CarouselMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that deleting all tiles hides the carousel.
+- (void)testDeletingAllTilesHidesCarousel {
+  // Add page 1 and 2 to most visited sites.
+  [self addNumberOfMostVisitedTiles:2];
+  id<GREYMatcher> tile1 = TileWithTitle(PageTitle(Page(1)));
+  id<GREYMatcher> tile2 = TileWithTitle(PageTitle(Page(2)));
+
+  [self focusOmniboxFromWebPageZero];
+  // Long press and delete `tile1`.
+  [self deleteMostVisitedTile:tile1];
+  // Delete the second tile.
+  [self deleteMostVisitedTile:tile2];
+
+  // Check that the carousel is removed when there are no tiles.
+  [[EarlGrey selectElementWithMatcher:CarouselMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  [ChromeEarlGrey openNewTab];
+  [self focusOmniboxFromWebPageZero];
+
+  // Check that the carousel is still not visible when refocusing the omnibox.
+  [[EarlGrey selectElementWithMatcher:CarouselMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
 #pragma mark - Helpers
 
 /// Loads the page number `pageNumber` from `testServer`.
@@ -184,7 +249,7 @@ id<GREYMatcher> CarouselMatcher() {
   [ChromeEarlGrey waitForWebStateContainingText:PageContent(pageNumber)];
 }
 
-/// Add `numberOfTiles` of most visited tiles. Load each page
+/// Add pages [1, `numberOfTiles`] to most visited tiles. Load each page
 /// `kMostVisitedLoadCount` time.
 - (void)addNumberOfMostVisitedTiles:(NSUInteger)numberOfTiles {
   DCHECK(numberOfTiles <= kCarouselCapacity);
@@ -204,6 +269,25 @@ id<GREYMatcher> CarouselMatcher() {
   [self loadPageNumber:0];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_tap()];
+}
+
+/// Long press on `tile` to show the context menu.
+- (void)longPressMostVisitedTile:(id<GREYMatcher>)tile {
+  [[[EarlGrey selectElementWithMatcher:tile]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionLeft)
+      onElementWithMatcher:CarouselMatcher()] performAction:grey_longPress()];
+}
+
+/// Long press on `tile` and select delete in the context menu.
+- (void)deleteMostVisitedTile:(id<GREYMatcher>)tile {
+  [self longPressMostVisitedTile:tile];
+  // Tap on remove.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)]
+      performAction:grey_tap()];
+  // Check tile is removed.
+  [[EarlGrey selectElementWithMatcher:tile] assertWithMatcher:grey_nil()];
 }
 
 @end

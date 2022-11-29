@@ -292,6 +292,7 @@ source_set("eg2_tests") {
     "//base",
     "//components/omnibox/common",
     "//components/strings",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/history:constants",
@@ -305,6 +306,7 @@ source_set("eg2_tests") {
     "//ios/third_party/earl_grey2:test_lib",
     "//net:test_support",
     "//ui/base",
+    "//ui/strings",
   ]
   frameworks = [ "UIKit.framework" ]
 }
