@@ -4,6 +4,8 @@
 
 #include "components/sessions/core/session_id_generator.h"
 
+#include <ostream>
+
 #include "base/bind.h"
 #include "base/rand_util.h"
 #include "components/prefs/pref_registry_simple.h"
