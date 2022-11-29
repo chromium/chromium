@@ -42,7 +42,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
     kNone = 0,
 
     // The remote endpoint is queried for zero-prefix suggestions. The endpoint
-    // is sent the user's authentication state, but not the current papge URL.
+    // is sent the user's authentication state, but not the current page URL.
     kRemoteNoURL = 1,
 
     // The emote endpoint is queried for zero-prefix suggestions. The endpoint
