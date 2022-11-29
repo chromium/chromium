@@ -54,8 +54,7 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
-  InstrumentTab(browser(), kPrimaryTabPageElementId);
-  RunTestSequence(WaitForWebContentsReady(kPrimaryTabPageElementId),
+  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
                   PressButton(kAppMenuButtonElementId),
                   SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
                   SelectMenuItem(ToolsMenuModel::kPerformanceMenuItem),

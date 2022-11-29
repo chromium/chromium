@@ -5,9 +5,9 @@
 #ifndef CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_INTERNAL_H_
 #define CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_INTERNAL_H_
 
-#include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/strings/string_piece_forward.h"
 #include "base/template_util.h"
@@ -35,12 +35,15 @@ class InteractiveBrowserTestPrivate
   // views::test::internal::InteractiveViewsTestPrivate:
   void DoTestTearDown() override;
 
+  void AddInstrumentedWebContents(
+      std::unique_ptr<WebContentsInteractionTestUtil>
+          instrumented_web_contents);
+
  private:
   friend InteractiveBrowserTestApi;
 
-  // Stores instrumented WebContents and WebUI for lookup.
-  std::map<ui::ElementIdentifier,
-           std::unique_ptr<WebContentsInteractionTestUtil>>
+  // Stores instrumented WebContents and WebUI.
+  std::vector<std::unique_ptr<WebContentsInteractionTestUtil>>
       instrumented_web_contents_;
 };
 

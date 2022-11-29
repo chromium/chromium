@@ -2011,20 +2011,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
                        TrackWebContentsAcrossReplace) {
   const GURL url1 = embedded_test_server()->GetURL(kDocumentWithLinksURL);
   const GURL url2 = embedded_test_server()->GetURL(kEmptyDocumentURL);
-  InstrumentTab(browser(), kWebContentsElementId);
-  InstrumentNextTab(browser(), kWebContentsElementId2);
-  ASSERT_TRUE(
-      AddTabAtIndex(-1, url2, ui::PageTransition::PAGE_TRANSITION_LINK));
-  RunTestSequence(WaitForWebContentsReady(kWebContentsElementId),
-                  WaitForWebContentsReady(kWebContentsElementId2),
+  RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, url1),
+                  AddInstrumentedTab(kWebContentsElementId2, url2),
                   SelectTab(kTabStripElementId, 1), FlushEvents(),
                   // This has to be done on a fresh message loop.
                   Do(base::BindLambdaForTesting([&]() {
-                    // Discard the first tab. This triggers a replacement.
-                    // Note that because the active tab cannot be discarded,
-                    // this line is guaranteed to discard the tab we want. (But
-                    // if it did not, the following steps would fail.)
+                    // Discard the first tab. This triggers a replacement. Note
+                    // that because the active tab cannot be discarded, this
+                    // line is guaranteed to discard the tab we want. (But if it
+                    // did not, the following steps would fail.)
                     g_browser_process->GetTabManager()->DiscardTab(
                         mojom::LifecycleUnitDiscardReason::EXTERNAL);
                   })),

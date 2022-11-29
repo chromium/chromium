@@ -3,8 +3,9 @@
 **Kombucha** is a group of powerful test mix-ins that let you easily and
 concisely write interactive tests.
 
-The current API version is 1.51. All future 1.x versions are guaranteed to be
-backwards-compatible with existing tests.
+The current API version is 1.55. All future 1.x versions are guaranteed to
+either be backwards-compatible with existing tests, or the authors will update
+the API calls for you.
 
 [TOC]
 
@@ -87,9 +88,6 @@ Verbs fall into a number of different categories:
     - `WaitForHide()`
     - `WaitForActivated()`
     - `WaitForEvent()`
-    - `WaitForWebContentsReady()` [Browser]
-    - `WaitForWebContentsNavigation()` [Browser]
-    - `WaitForStateChange()` [Browser]
 - **After** verbs allow you to take some action (specified as a callback) when a
   given event takes place or condition becomes true. The callback can be a full
   `InteractionSequence::StepStartCallback` or it can omit any number of leading
@@ -117,7 +115,6 @@ Verbs fall into a number of different categories:
     - `SendAccelerator()`
     - `Confirm()`
     - `DoDefaultAction()`
-    - `NavigateWebContents()` [Browser]
 - **Mouse** verbs simulate mouse input to the entire application, and are
   therefore only reliable in test fixtures that run as exclusive processes (e.g.
   interactive_browser_tests). Examples include:
@@ -132,6 +129,17 @@ Verbs fall into a number of different categories:
     - `NameChildView()` [Views]
     - `NameDescendantView()` [Views]
     - `NameViewRelative()` [Views]
+- **WebContents** verbs either dynamically
+  [instrument WebContents](#webcontents-instrumentation), navigate them, or wait
+  for them to navigate or change state.
+    - `InstrumentTab()` [Browser]
+    - `InstrumentNextTab()` [Browser]
+    - `AddInstrumentedTab()` [Browser]
+    - `InstrumentNonTabWebView()` [Browser]
+    - `NavigateWebContents()` [Browser]
+    - `WaitForWebContentsReady()` [Browser]
+    - `WaitForWebContentsNavigation()` [Browser]
+    - `WaitForStateChange()` [Browser]
 - **Javascript** verbs execute javascript in an
   [instrumented WebContents](#webcontents-instrumentation), or verify a result
   from calling a javascript function. The `*At()` methods take a
@@ -221,17 +229,18 @@ RunTestSequence(
 A feature of `InteractiveBrowserTestApi` that it borrows from
 [WebContentsInteractoinTestUtil](/chrome/test/interaction/webcontents_interaction_test_util.h)
 is the ability to *instrument* a `WebContents`. This does the following:
-- Assigns the entire `WebContents` an `ElementIdentifier`.
+- Assigns the entire `WebContents` a unique `ElementIdentifier`.
 - Enables a number of page navigation verbs, such as `NavigateWebContents()`
   and `WaitForWebContentsReady()`.
 - Allows the execution of arbitrary JS in the WebContents.
 - Allows waiting for a specific condition in the DOM of the `WebContents` via
   `WaitForStateChange()`.
 
-You may call **Instrument** methods before or during a test sequence.
+You may call **Instrument** verbs during a test sequence.
 - `InstrumentTab()` instruments an existing tab.
 - `InstrumentNextTab()` instruments the next tab to be added to or opened in the
   specified browser.
+- `AddInstrumentedTab()` adds a new tab to a browser and instruments it.
 - `InstrumentNonTabWebContents()` instruments a piece of primary or secondary UI
   that uses a `WebView` and is not a tab (e.g. the tablet tabstrip or Tab Search
   dialog).

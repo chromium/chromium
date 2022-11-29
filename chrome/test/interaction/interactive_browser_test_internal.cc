@@ -23,4 +23,14 @@ void InteractiveBrowserTestPrivate::DoTestTearDown() {
   InteractiveViewsTestPrivate::DoTestTearDown();
 }
 
+void InteractiveBrowserTestPrivate::AddInstrumentedWebContents(
+    std::unique_ptr<WebContentsInteractionTestUtil> instrumented_web_contents) {
+  for (const auto& existing : instrumented_web_contents_) {
+    CHECK_NE(instrumented_web_contents->page_identifier(),
+             existing->page_identifier());
+  }
+  instrumented_web_contents_.emplace_back(std::move(instrumented_web_contents))
+      .get();
+}
+
 }  // namespace internal

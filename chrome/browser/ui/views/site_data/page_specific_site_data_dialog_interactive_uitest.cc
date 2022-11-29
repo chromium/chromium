@@ -83,7 +83,6 @@ class PageSpecificSiteDataDialogInteractiveUiTest
     histograms_ = std::make_unique<base::HistogramTester>();
     histograms_->ExpectTotalCount(kCookiesDialogHistogramName, 0);
     incognito_browser_ = CreateIncognitoBrowser();
-    InstrumentTab(incognito_browser_, kWebContentsElementId);
   }
 
   void TearDownOnMainThread() override {
@@ -108,6 +107,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
     const GURL third_party_cookie_page_url = https_server()->GetURL(
         "a.test", "/third_party_partitioned_cookies.html");
     return Steps(
+        InstrumentTab(kWebContentsElementId),
         NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
         PressButton(kLocationIconElementId),
         PressButton(PageInfoMainView::kCookieButtonElementId),

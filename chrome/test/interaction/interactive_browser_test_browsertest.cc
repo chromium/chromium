@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 
 #include "base/bind.h"
@@ -15,6 +16,7 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 constexpr char kDocumentWithNamedElement[] = "/select.html";
+constexpr char kDocumentWithLinks[] = "/links.html";
 }  // namespace
 
 class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
@@ -40,10 +42,9 @@ class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, EnsureNotPresent) {
-  InstrumentTab(browser(), kWebContentsId);
-
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  RunTestSequence(NavigateWebContents(kWebContentsId, url),
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, url),
                   EnsureNotPresent(kWebContentsId, DeepQuery{"#doesNotExist"}));
 }
 
@@ -52,20 +53,18 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   private_test_impl().set_aborted_callback_for_testing(aborted.Get());
 
-  InstrumentTab(browser(), kWebContentsId);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   EXPECT_CALL_IN_SCOPE(
       aborted, Run,
-      RunTestSequence(NavigateWebContents(kWebContentsId, url),
+      RunTestSequence(InstrumentTab(kWebContentsId),
+                      NavigateWebContents(kWebContentsId, url),
                       EnsureNotPresent(kWebContentsId, DeepQuery{"#select"})));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, ExecuteJs) {
-  InstrumentTab(browser(), kWebContentsId);
-
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   RunTestSequence(
-      NavigateWebContents(kWebContentsId, url),
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
       ExecuteJs(kWebContentsId, "() => { window.value = 1; }"),
       WithElement(kWebContentsId, base::BindOnce([](ui::TrackedElement* el) {
                     const auto result = AsInstrumentedWebContents(el)->Evaluate(
@@ -75,12 +74,10 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, ExecuteJs) {
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, CheckJsResult) {
-  InstrumentTab(browser(), kWebContentsId);
-
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   const std::string str("a string");
   RunTestSequence(
-      NavigateWebContents(kWebContentsId, url),
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
       ExecuteJs(kWebContentsId,
                 R"(() => {
             window.intValue = 1;
@@ -112,21 +109,20 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, CheckJsResult_Fails) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   private_test_impl().set_aborted_callback_for_testing(aborted.Get());
 
-  InstrumentTab(browser(), kWebContentsId);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   EXPECT_CALL_IN_SCOPE(
       aborted, Run,
-      RunTestSequence(NavigateWebContents(kWebContentsId, url),
+      RunTestSequence(InstrumentTab(kWebContentsId),
+                      NavigateWebContents(kWebContentsId, url),
                       ExecuteJs(kWebContentsId, "() => { window.value = 1; }"),
                       CheckJsResult(kWebContentsId, "() => window.value", 2)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, ExecuteJsAt) {
-  InstrumentTab(browser(), kWebContentsId);
   const DeepQuery kWhere{"#select"};
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   RunTestSequence(
-      NavigateWebContents(kWebContentsId, url),
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
       ExecuteJsAt(kWebContentsId, kWhere, "(el) => { el.intValue = 1; }"),
       WithElement(kWebContentsId,
                   base::BindLambdaForTesting([&kWhere](ui::TrackedElement* el) {
@@ -138,12 +134,11 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, ExecuteJsAt) {
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, CheckJsResultAt) {
-  InstrumentTab(browser(), kWebContentsId);
   const DeepQuery kWhere{"#select"};
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   const std::string str("a string");
   RunTestSequence(
-      NavigateWebContents(kWebContentsId, url),
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
       ExecuteJsAt(kWebContentsId, kWhere,
                   R"((el) => {
             el.intValue = 1;
@@ -178,13 +173,73 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   private_test_impl().set_aborted_callback_for_testing(aborted.Get());
 
-  InstrumentTab(browser(), kWebContentsId);
   const DeepQuery kWhere{"#select"};
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   EXPECT_CALL_IN_SCOPE(
       aborted, Run,
       RunTestSequence(
+          InstrumentTab(kWebContentsId),
           NavigateWebContents(kWebContentsId, url),
           ExecuteJsAt(kWebContentsId, kWhere, "(el) => { el.intValue = 1; }"),
           CheckJsResultAt(kWebContentsId, kWhere, "(el) => el.intValue", 2)));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       InstrumentTabsAsTestSteps) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab1Id);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab2Id);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab3Id);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kIncognito1Id);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kIncognito2Id);
+  const char kIncognitoNtbName[] = "Incognito NTB";
+
+  auto verify_is_at_tab_index = [](Browser* where, ui::ElementIdentifier id,
+                                   int expected_index) {
+    return CheckElement(
+        id, base::BindLambdaForTesting([where](ui::TrackedElement* el) {
+          return where->tab_strip_model()->GetIndexOfWebContents(
+              AsInstrumentedWebContents(el)->web_contents());
+        }),
+        expected_index);
+  };
+
+  const GURL url1 = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+
+  RunTestSequence(
+      // Instrument an existing tab.
+      InstrumentTab(kTab1Id), verify_is_at_tab_index(browser(), kTab1Id, 0),
+
+      // Instrument the next tab, then insert a tab and verify it's there.
+      InstrumentNextTab(kTab2Id), PressButton(kNewTabButtonElementId),
+      NavigateWebContents(kTab2Id, url1),
+      verify_is_at_tab_index(browser(), kTab2Id, 1),
+
+      // Add and instrument tab all in one fell swoop.
+      AddInstrumentedTab(kTab3Id, url2),
+      verify_is_at_tab_index(browser(), kTab3Id, 2),
+
+      // Instrument the next tab in any browser, then insert the tab and verify
+      // it's there.
+      InstrumentNextTab(kIncognito1Id, AnyBrowser()),
+      NameView(kIncognitoNtbName,
+               base::BindLambdaForTesting([incognito_browser]() {
+                 return AsView(
+                     ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kNewTabButtonElementId,
+                         incognito_browser->window()->GetElementContext()));
+               })),
+      PressButton(kIncognitoNtbName),
+      InAnyContext(verify_is_at_tab_index(incognito_browser, kIncognito1Id, 1)),
+
+      Do(base::BindOnce([]() { LOG(WARNING) << 1; })),
+
+      // Instrument a final tab by inserting it. Specify an index so the other
+      // tabs are re-ordered.
+      AddInstrumentedTab(kIncognito2Id, url2, 1, incognito_browser),
+      InAnyContext(verify_is_at_tab_index(incognito_browser, kIncognito2Id, 1)),
+      InAnyContext(
+          verify_is_at_tab_index(incognito_browser, kIncognito1Id, 2)));
 }

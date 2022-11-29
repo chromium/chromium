@@ -32,10 +32,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
                        MAYBE_CompareScreenshot_TabWebUI) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDownloadsPageElementId);
 
-  InstrumentTab(browser(), kDownloadsPageElementId);
-
   RunTestSequence(
-      WaitForWebContentsReady(kDownloadsPageElementId),
+      InstrumentTab(kDownloadsPageElementId),
       PressButton(kAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
       WaitForWebContentsNavigation(kDownloadsPageElementId,

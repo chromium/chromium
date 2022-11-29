@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 
 #include <memory>
@@ -229,7 +230,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebPageId);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementReadyEvent);
-  InstrumentTab(browser(), kWebPageId);
 
   const DeepQuery kDeepQuery{"#select"};
   StateChange state_change;
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
   state_change.where = kDeepQuery;
 
   RunTestSequence(
-      WaitForWebContentsReady(kWebPageId),
+      InstrumentTab(kWebPageId),
 
       // Load a different page. We could use NavigateWebContents() but that's
       // tested elsewhere and this test will test WaitForWebContentsNavigation()
@@ -281,20 +281,43 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserPageId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kIncognitoPageId);
 
-  Browser* const other_browser = this->CreateIncognitoBrowser();
-
-  InstrumentTab(browser(), kBrowserPageId);
-  InstrumentTab(other_browser, kIncognitoPageId);
+  Browser* const incognito_browser = this->CreateIncognitoBrowser();
 
   // Run the test in the context of the incognito browser.
   RunTestSequenceInContext(
-      other_browser->window()->GetElementContext(),
-      WaitForWebContentsReady(kIncognitoPageId),
-      InAnyContext(WaitForWebContentsReady(kBrowserPageId)),
+      incognito_browser->window()->GetElementContext(),
+      // Instrument the tabs but do not force them to load.
+      InstrumentTab(kIncognitoPageId, absl::nullopt, CurrentBrowser(),
+                    /* wait_for_ready =*/false),
+      InstrumentTab(kBrowserPageId, absl::nullopt, browser(),
+                    /* wait_for_ready =*/false),
+      // Wait for the pages to load. Manually specify that the incognito page
+      // must be in the default context (otherwise, this verb defaults to being
+      // context-agnostic).
+      WaitForWebContentsReady(kIncognitoPageId)
+          .SetContext(ui::InteractionSequence::ContextMode::kInitial),
+      WaitForWebContentsReady(kBrowserPageId),
       // The regular browser page is not present if we do not specify
       // InAnyContext().
       EnsureNotPresent(kBrowserPageId),
       // But we can find a page in the correct context even if we specify
       // InAnyContext().
       InAnyContext(WithElement(kIncognitoPageId, base::DoNothing())));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       InstrumentNonTabAsTestStep) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+  const char kTabSearchWebViewName[] = "Tab Search WebView";
+
+  RunTestSequence(
+      PressButton(kTabSearchButtonElementId),
+      WaitForShow(kTabSearchBubbleElementId),
+      NameViewRelative(
+          kTabSearchBubbleElementId, kTabSearchWebViewName,
+          base::BindOnce([](WebUIBubbleDialogView* view) -> views::View* {
+            return view->web_view();
+          })),
+      InstrumentNonTabWebView(kWebContentsId, kTabSearchWebViewName),
+      WithElement(kTabSearchWebViewName, base::DoNothing()));
 }

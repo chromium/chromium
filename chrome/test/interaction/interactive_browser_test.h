@@ -14,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "base/test/rectify_callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -74,36 +73,85 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   static WebContentsInteractionTestUtil* AsInstrumentedWebContents(
       ui::TrackedElement* el);
 
-  // Retrieves an instrumented WebContents with identifier `id`, or null if the
-  // contents has not been instrumented.
-  WebContentsInteractionTestUtil* GetInstrumentedWebContents(
-      ui::ElementIdentifier id);
-
-  // Instruments an existing tab in `browser`. If `tab_index` is not specified,
-  // the active tab is instrumented.
-  WebContentsInteractionTestUtil* InstrumentTab(
-      Browser* browser,
-      ui::ElementIdentifier id,
-      absl::optional<int> tab_index = absl::nullopt);
-
-  // Instruments the next tab to open in `browser`, or if not specified, in any
-  // browser.
-  WebContentsInteractionTestUtil* InstrumentNextTab(
-      absl::optional<Browser*> browser,
-      ui::ElementIdentifier id);
-
-  // Instruments a non-tab `web_view`.
-  WebContentsInteractionTestUtil* InstrumentNonTabWebView(
-      views::WebView* web_view,
-      ui::ElementIdentifier id);
-
+  // Takes a screenshot of the specified element, with name `screenshot_name`
+  // (may be empty for tests that take only one screenshot) and `baseline`,
+  // which should be set to match the CL number when a screenshot should change.
+  //
+  // Currently, is somewhat unreliable for WebUI embedded in bubbles or dialogs
+  // (e.g. Tab Search dropdown) but should work fairly well in most other cases.
   [[nodiscard]] StepBuilder Screenshot(ElementSpecifier element,
                                        const std::string& screenshot_name,
                                        const std::string& baseline);
 
+  struct CurrentBrowser {};
+  struct AnyBrowser {};
+
+  // Specifies which browser to use when instrumenting a tab.
+  using BrowserSpecifier = absl::variant<
+      // Use the browser associated with the context of the current test step;
+      // if unspecified use the default context for the sequence.
+      CurrentBrowser,
+      // Find a tab in any browser.
+      AnyBrowser,
+      // Specify a browser that is known at the time the sequence is created.
+      // The browser must persist until the step executes.
+      Browser*,
+      // Specify a browser that will be valid by the time the step executes
+      // (i.e is set in a previous step callback) but not at the time the test
+      // sequence is built. The browser will be read from the target variable,
+      // which must point to a valid browser.
+      Browser**>;
+
+  // Instruments tab `tab_index` in `in_browser` as `id`. If `tab_index` is
+  // unspecified, the active tab is used.
+  //
+  // Does not support AnyBrowser; you must specify a browser.
+  //
+  // If `wait_for_ready` is true (default), the step will not complete until the
+  // current page in the WebContents is fully loaded.
+  [[nodiscard]] MultiStep InstrumentTab(
+      ui::ElementIdentifier id,
+      absl::optional<int> tab_index = absl::nullopt,
+      BrowserSpecifier in_browser = CurrentBrowser(),
+      bool wait_for_ready = true);
+
+  // Instruments the next tab in `in_browser` as `id`.
+  [[nodiscard]] StepBuilder InstrumentNextTab(
+      ui::ElementIdentifier id,
+      BrowserSpecifier in_browser = CurrentBrowser());
+
+  // Opens a new tab for `url` and instruments it as `id`. The tab is inserted
+  // at `at_index` if specified, otherwise the browser decides.
+  //
+  // Does not support AnyBrowser; you must specify a browser.
+  [[nodiscard]] MultiStep AddInstrumentedTab(
+      ui::ElementIdentifier id,
+      GURL url,
+      absl::optional<int> tab_index = absl::nullopt,
+      BrowserSpecifier in_browser = CurrentBrowser());
+
+  // Instruments the WebContents held by `web_view` as `id`. Will wait for the
+  // WebView to become visible if it is not.
+  //
+  // If `wait_for_ready` is true (default), the step will not complete until the
+  // current page in the WebContents is fully loaded. (Note that this may not
+  // cover dynamic loading of data; you may need to do a WaitForStateChange() to
+  // be sure dynamic content is loaded).
+  [[nodiscard]] MultiStep InstrumentNonTabWebView(ui::ElementIdentifier id,
+                                                  ElementSpecifier web_view,
+                                                  bool wait_for_ready = true);
+  [[nodiscard]] MultiStep InstrumentNonTabWebView(
+      ui::ElementIdentifier id,
+      AbsoluteViewSpecifier web_view,
+      bool wait_for_ready = true);
+
   // These convenience methods wait for page navigation/ready. If you specify
   // `expected_url`, the test will fail if that is not the loaded page. If you
   // do not, there is no step start callback and you can add your own logic.
+  //
+  // Note that because `webcontents_id` is expected to be globally unique, these
+  // actions have SetFindElementInAnyContext(true) by default (otherwise it's
+  // really easy to forget to add InAnyContext() and have your test not work.
   [[nodiscard]] static StepBuilder WaitForWebContentsReady(
       ui::ElementIdentifier webcontents_id,
       absl::optional<GURL> expected_url = absl::nullopt);
@@ -225,6 +273,9 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
 
  private:
   static RelativePositionCallback DeepQueryToRelativePosition(DeepQuery query);
+
+  Browser* GetBrowserFor(ui::ElementContext current_context,
+                         BrowserSpecifier spec);
 
   internal::InteractiveBrowserTestPrivate& test_impl() {
     return static_cast<internal::InteractiveBrowserTestPrivate&>(

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/test/interaction/interactive_browser_test.h"
+
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -12,6 +13,7 @@
 #include "base/test/rectify_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -25,10 +27,20 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/views_delegate.h"
+
+namespace {
+// Since we enforce a 1:1 correspondence between ElementIdentifiers and
+// WebContents defaulting to ContextMode::kAny prevents accidentally missing the
+// correct context, which is a common mistake that causes tests to mysteriously
+// time out looking in the wrong place.
+constexpr ui::InteractionSequence::ContextMode kDefaultWebContentsContextMode =
+    ui::InteractionSequence::ContextMode::kAny;
+}  // namespace
 
 InteractiveBrowserTestApi::InteractiveBrowserTestApi()
     : InteractiveBrowserTestApi(
@@ -47,51 +59,6 @@ InteractiveBrowserTestApi::AsInstrumentedWebContents(ui::TrackedElement* el) {
   auto* const web_el = el->AsA<TrackedElementWebContents>();
   CHECK(web_el);
   return web_el->owner();
-}
-
-WebContentsInteractionTestUtil*
-InteractiveBrowserTestApi::GetInstrumentedWebContents(
-    ui::ElementIdentifier id) {
-  const auto it = test_impl().instrumented_web_contents_.find(id);
-  return it == test_impl().instrumented_web_contents_.end() ? nullptr
-                                                            : it->second.get();
-}
-
-WebContentsInteractionTestUtil* InteractiveBrowserTestApi::InstrumentTab(
-    Browser* browser,
-    ui::ElementIdentifier id,
-    absl::optional<int> tab_index) {
-  auto instrument = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
-      browser, id, tab_index);
-  const auto result =
-      test_impl().instrumented_web_contents_.emplace(id, std::move(instrument));
-  CHECK(result.second);
-  return result.first->second.get();
-}
-
-WebContentsInteractionTestUtil* InteractiveBrowserTestApi::InstrumentNextTab(
-    absl::optional<Browser*> browser,
-    ui::ElementIdentifier id) {
-  auto instrument =
-      browser.has_value()
-          ? WebContentsInteractionTestUtil::ForNextTabInBrowser(browser.value(),
-                                                                id)
-          : WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(id);
-  const auto result =
-      test_impl().instrumented_web_contents_.emplace(id, std::move(instrument));
-  CHECK(result.second);
-  return result.first->second.get();
-}
-
-WebContentsInteractionTestUtil*
-InteractiveBrowserTestApi::InstrumentNonTabWebView(views::WebView* web_view,
-                                                   ui::ElementIdentifier id) {
-  auto instrument =
-      WebContentsInteractionTestUtil::ForNonTabWebView(web_view, id);
-  const auto result =
-      test_impl().instrumented_web_contents_.emplace(id, std::move(instrument));
-  CHECK(result.second);
-  return result.first->second.get();
 }
 
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::Screenshot(
@@ -113,6 +80,93 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::Screenshot(
   return builder;
 }
 
+InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::InstrumentTab(
+    ui::ElementIdentifier id,
+    absl::optional<int> tab_index,
+    BrowserSpecifier in_browser,
+    bool wait_for_ready) {
+  auto steps = Steps(WithElement(
+      ui::test::internal::kInteractiveTestPivotElementId,
+      base::BindLambdaForTesting([this, id, tab_index,
+                                  in_browser](ui::TrackedElement* el) {
+        Browser* const browser = GetBrowserFor(el->context(), in_browser);
+        CHECK(browser) << "InstrumentTab(): a specific browser is required.";
+        test_impl().AddInstrumentedWebContents(
+            WebContentsInteractionTestUtil::ForExistingTabInBrowser(browser, id,
+                                                                    tab_index));
+      })));
+  if (wait_for_ready) {
+    steps.emplace_back(WaitForWebContentsReady(id));
+  }
+  return steps;
+}
+
+ui::InteractionSequence::StepBuilder
+InteractiveBrowserTestApi::InstrumentNextTab(ui::ElementIdentifier id,
+                                             BrowserSpecifier in_browser) {
+  return WithElement(
+      ui::test::internal::kInteractiveTestPivotElementId,
+      base::BindLambdaForTesting([this, id,
+                                  in_browser](ui::TrackedElement* el) {
+        Browser* const browser = GetBrowserFor(el->context(), in_browser);
+        test_impl().AddInstrumentedWebContents(
+            browser
+                ? WebContentsInteractionTestUtil::ForNextTabInBrowser(browser,
+                                                                      id)
+                : WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(id));
+      }));
+}
+
+InteractiveBrowserTestApi::MultiStep
+InteractiveBrowserTestApi::AddInstrumentedTab(ui::ElementIdentifier id,
+                                              GURL url,
+                                              absl::optional<int> at_index,
+                                              BrowserSpecifier in_browser) {
+  return Steps(
+      InstrumentNextTab(id, in_browser),
+      WithElement(
+          ui::test::internal::kInteractiveTestPivotElementId,
+          base::BindLambdaForTesting([this, url, at_index,
+                                      in_browser](ui::TrackedElement* el) {
+            Browser* const browser = GetBrowserFor(el->context(), in_browser);
+            CHECK(browser) << "AddInstrumentedTab(): a browser is required.";
+            NavigateParams navigate_params(
+                browser, url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+            navigate_params.tabstrip_index = at_index.value_or(-1);
+            navigate_params.disposition =
+                WindowOpenDisposition::NEW_FOREGROUND_TAB;
+            CHECK(Navigate(&navigate_params));
+          })),
+      WaitForWebContentsReady(id));
+}
+
+InteractiveBrowserTestApi::MultiStep
+InteractiveBrowserTestApi::InstrumentNonTabWebView(ui::ElementIdentifier id,
+                                                   ElementSpecifier web_view,
+                                                   bool wait_for_ready) {
+  auto steps = Steps(AfterShow(
+      web_view, base::BindLambdaForTesting([this, id](ui::TrackedElement* el) {
+        test_impl().AddInstrumentedWebContents(
+            WebContentsInteractionTestUtil::ForNonTabWebView(
+                AsView<views::WebView>(el), id));
+      })));
+  if (wait_for_ready)
+    steps.emplace_back(WaitForWebContentsReady(id));
+  return steps;
+}
+
+InteractiveBrowserTestApi::MultiStep
+InteractiveBrowserTestApi::InstrumentNonTabWebView(
+    ui::ElementIdentifier id,
+    AbsoluteViewSpecifier web_view,
+    bool wait_for_ready) {
+  constexpr char kTemporaryElementName[] =
+      "__InstrumentNonTabWebViewTemporaryElementName__";
+  return Steps(
+      NameView(kTemporaryElementName, std::move(web_view)),
+      InstrumentNonTabWebView(id, kTemporaryElementName, wait_for_ready));
+}
+
 // static
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTestApi::WaitForWebContentsReady(
@@ -120,6 +174,7 @@ InteractiveBrowserTestApi::WaitForWebContentsReady(
     absl::optional<GURL> expected_url) {
   StepBuilder builder;
   builder.SetElementID(webcontents_id);
+  builder.SetContext(kDefaultWebContentsContextMode);
   if (expected_url.has_value()) {
     builder.SetStartCallback(base::BindOnce(
         [](GURL expected_url, ui::InteractionSequence* seq,
@@ -144,6 +199,7 @@ InteractiveBrowserTestApi::WaitForWebContentsNavigation(
     absl::optional<GURL> expected_url) {
   StepBuilder builder;
   builder.SetElementID(webcontents_id);
+  builder.SetContext(kDefaultWebContentsContextMode);
   builder.SetTransitionOnlyOnEvent(true);
   if (expected_url.has_value()) {
     builder.SetStartCallback(base::BindOnce(
@@ -167,26 +223,26 @@ InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::NavigateWebContents(
     ui::ElementIdentifier webcontents_id,
     GURL target_url) {
-  MultiStep steps;
-  steps.emplace_back(std::move(
-      StepBuilder()
-          .SetElementID(webcontents_id)
-          .SetStartCallback(base::BindOnce(
-              [](GURL url, ui::InteractionSequence* seq,
-                 ui::TrackedElement* el) {
-                auto* const owner =
-                    el->AsA<TrackedElementWebContents>()->owner();
-                if (url.EqualsIgnoringRef(owner->web_contents()->GetURL())) {
-                  LOG(ERROR) << "Trying to load URL " << url
-                             << " but WebContents URL is already "
-                             << owner->web_contents()->GetURL();
-                  seq->FailForTesting();
-                }
-                owner->LoadPage(url);
-              },
-              target_url))));
-  steps.emplace_back(WaitForWebContentsNavigation(webcontents_id, target_url));
-  return steps;
+  return Steps(
+      std::move(StepBuilder()
+                    .SetElementID(webcontents_id)
+                    .SetContext(kDefaultWebContentsContextMode)
+                    .SetStartCallback(base::BindOnce(
+                        [](GURL url, ui::InteractionSequence* seq,
+                           ui::TrackedElement* el) {
+                          auto* const owner =
+                              el->AsA<TrackedElementWebContents>()->owner();
+                          if (url.EqualsIgnoringRef(
+                                  owner->web_contents()->GetURL())) {
+                            LOG(ERROR) << "Trying to load URL " << url
+                                       << " but WebContents URL is already "
+                                       << owner->web_contents()->GetURL();
+                            seq->FailForTesting();
+                          }
+                          owner->LoadPage(url);
+                        },
+                        target_url))),
+      WaitForWebContentsNavigation(webcontents_id, target_url));
 }
 
 // static
@@ -195,26 +251,26 @@ InteractiveBrowserTestApi::WaitForStateChange(
     ui::ElementIdentifier webcontents_id,
     StateChange state_change,
     bool expect_timeout) {
-  MultiStep steps;
   ui::CustomElementEventType event_type =
       expect_timeout ? state_change.timeout_event : state_change.event;
   CHECK(event_type);
-  steps.emplace_back(
+  return Steps(
       std::move(StepBuilder()
                     .SetElementID(webcontents_id)
+                    .SetContext(kDefaultWebContentsContextMode)
                     .SetStartCallback(base::BindOnce(
                         [](StateChange state_change, ui::TrackedElement* el) {
                           el->AsA<TrackedElementWebContents>()
                               ->owner()
                               ->SendEventOnStateChange(state_change);
                         },
-                        std::move(state_change)))));
-  steps.emplace_back(
+                        std::move(state_change)))),
       std::move(StepBuilder()
                     .SetElementID(webcontents_id)
+                    .SetContext(
+                        ui::InteractionSequence::ContextMode::kFromPreviousStep)
                     .SetType(ui::InteractionSequence::StepType::kCustomEvent,
                              event_type)));
-  return steps;
 }
 
 // static
@@ -224,6 +280,7 @@ InteractiveBrowserTestApi::EnsureNotPresent(
     DeepQuery where) {
   StepBuilder builder;
   builder.SetElementID(webcontents_id);
+  builder.SetContext(kDefaultWebContentsContextMode);
   builder.SetStartCallback(base::BindOnce(
       [](DeepQuery where, ui::InteractionSequence* seq,
          ui::TrackedElement* el) {
@@ -243,6 +300,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJs(
     const std::string& function) {
   StepBuilder builder;
   builder.SetElementID(webcontents_id);
+  builder.SetContext(kDefaultWebContentsContextMode);
   builder.SetStartCallback(base::BindOnce(
       [](std::string function, ui::TrackedElement* el) {
         AsInstrumentedWebContents(el)->Execute(function);
@@ -258,6 +316,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJsAt(
     const std::string& function) {
   StepBuilder builder;
   builder.SetElementID(webcontents_id);
+  builder.SetContext(kDefaultWebContentsContextMode);
   builder.SetStartCallback(base::BindOnce(
       [](DeepQuery where, std::string function, ui::TrackedElement* el) {
         AsInstrumentedWebContents(el)->ExecuteAt(where, function);
@@ -272,6 +331,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
     const std::string& function) {
   StepBuilder builder;
   builder.SetElementID(webcontents_id);
+  builder.SetContext(kDefaultWebContentsContextMode);
   builder.SetStartCallback(base::BindOnce(
       [](std::string function, ui::InteractionSequence* seq,
          ui::TrackedElement* el) {
@@ -293,6 +353,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
     const std::string& function) {
   StepBuilder builder;
   builder.SetElementID(webcontents_id);
+  builder.SetContext(kDefaultWebContentsContextMode);
   builder.SetStartCallback(base::BindOnce(
       [](DeepQuery where, std::string function, ui::InteractionSequence* seq,
          ui::TrackedElement* el) {
@@ -334,6 +395,27 @@ InteractiveBrowserTestApi::DeepQueryToRelativePosition(DeepQuery query) {
             .CenterPoint();
       },
       std::move(query));
+}
+
+Browser* InteractiveBrowserTestApi::GetBrowserFor(
+    ui::ElementContext current_context,
+    BrowserSpecifier spec) {
+  if (absl::holds_alternative<AnyBrowser>(spec))
+    return nullptr;
+  if (absl::holds_alternative<CurrentBrowser>(spec)) {
+    Browser* const browser =
+        InteractionTestUtilBrowser::GetBrowserFromContext(current_context);
+    CHECK(browser) << "Current context is not a browser.";
+    return browser;
+  }
+  if (Browser** const browser = absl::get_if<Browser*>(&spec)) {
+    CHECK(*browser) << "BrowserSpecifier: Browser* is null.";
+    return *browser;
+  }
+  Browser** const browser_ptr = absl::get<Browser**>(spec);
+  CHECK(browser_ptr) << "BrowserSpecifier: Browser** is null.";
+  CHECK(*browser_ptr) << "BrowserSpecifier: Browser** points to null browser.";
+  return *browser_ptr;
 }
 
 InteractiveBrowserTest::InteractiveBrowserTest() = default;

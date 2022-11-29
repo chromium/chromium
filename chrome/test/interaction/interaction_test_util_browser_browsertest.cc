@@ -66,20 +66,20 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
       BrowserView::GetBrowserViewForBrowser(browser());
   browser_view->GetWidget()->SetSize({400, 300});
 
-  InstrumentTab(browser(), kWebContentsElementId);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithTitle1URL);
 
-  RunTestSequence(NavigateWebContents(kWebContentsElementId, url),
+  RunTestSequence(InstrumentTab(kWebContentsElementId),
+                  NavigateWebContents(kWebContentsElementId, url),
                   // This adds a callback that calls
                   // InteractionTestUtilBrowser::CompareScreenshot().
                   Screenshot(kWebContentsElementId, std::string(), "3924454"));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, ConfirmOmnibox) {
-  InstrumentTab(browser(), kWebContentsElementId);
   constexpr char16_t kNewUrl[] = u"chrome://version";
 
   RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       EnterText(kOmniboxElementId, kNewUrl), Confirm(kOmniboxElementId),
       WaitForWebContentsNavigation(kWebContentsElementId, GURL(kNewUrl)));
 }

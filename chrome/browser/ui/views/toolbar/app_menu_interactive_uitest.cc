@@ -75,9 +75,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {
   ASSERT_TRUE(user_education::test::WaitForFeatureEngagementReady(
       GetFeaturePromoController()));
 
-  InstrumentTab(browser(), kPrimaryTabPageElementId);
   RunTestSequence(
-      WaitForWebContentsReady(kPrimaryTabPageElementId),
+      InstrumentTab(kPrimaryTabPageElementId),
       PressButton(kAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
       AfterShow(ToolsMenuModel::kPerformanceMenuItem,

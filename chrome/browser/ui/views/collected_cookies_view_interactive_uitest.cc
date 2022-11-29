@@ -59,10 +59,9 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewInteractiveUiTest,
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebPageElementId);
 
-  InstrumentTab(incognito_browser, kWebPageElementId);
-
   RunTestSequenceInContext(
       incognito_browser->window()->GetElementContext(),
+      InstrumentTab(kWebPageElementId),
       NavigateWebContents(kWebPageElementId, third_party_cookie_page_url),
       PressButton(kLocationIconElementId),
       PressButton(PageInfoMainView::kCookieButtonElementId),
