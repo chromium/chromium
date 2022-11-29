@@ -44,6 +44,9 @@ suite('inputListTestSuite', function() {
 
   setup(() => {
     document.body.innerHTML = '';
+
+    provider.setStartTesterWithClamshellMode();
+    provider.setStartWithLidOpen();
   });
 
   teardown(() => {
@@ -181,6 +184,51 @@ suite('inputListTestSuite', function() {
     assertTrue(keyboardTester.isOpen());
   });
 
+  test('KeyboardTesterCloseOnLidClosed', async () => {
+    await initializeInputList([fakeKeyboards[0]], []);
+    const testButton =
+        getCardByDeviceType('keyboard').shadowRoot.querySelector('cr-button');
+    assertTrue(!!testButton);
+    testButton.click();
+    await flushTasks();
+
+    const keyboardTester =
+        inputListElement.shadowRoot.querySelector('keyboard-tester');
+    assertTrue(keyboardTester.isOpen());
+
+    const showToastEvent = eventToPromise('show-toast', inputListElement);
+    provider.setLidStateClosed();
+    await flushTasks();
+    assertFalse(keyboardTester.isOpen());
+
+    const e = await showToastEvent;
+    assertEquals(
+        e.detail.message,
+        loadTimeData.getString('inputKeyboardTesterClosedToastLidClosed'));
+  });
+
+  test('KeyboardTesterCloseOnTabletMode', async () => {
+    await initializeInputList([fakeKeyboards[0]], []);
+    const testButton =
+        getCardByDeviceType('keyboard').shadowRoot.querySelector('cr-button');
+    assertTrue(!!testButton);
+    testButton.click();
+    await flushTasks();
+
+    const keyboardTester =
+        inputListElement.shadowRoot.querySelector('keyboard-tester');
+    assertTrue(keyboardTester.isOpen());
+
+    const showToastEvent = eventToPromise('show-toast', inputListElement);
+    provider.startTabletMode();
+    await flushTasks();
+    assertFalse(keyboardTester.isOpen());
+
+    const e = await showToastEvent;
+    assertEquals(
+        e.detail.message,
+        loadTimeData.getString('inputKeyboardTesterClosedToastTabletMode'));
+  });
 
   test('ShowToastIfKeyboardDisconnectedDuringTest', async () => {
     await initializeInputList([fakeKeyboards[0]], []);

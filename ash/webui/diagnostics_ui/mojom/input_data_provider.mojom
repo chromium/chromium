@@ -178,6 +178,13 @@ interface TabletModeObserver {
   OnTabletModeChanged(bool is_tablet_mode);
 };
 
+// Implemented by clients that wish to be notified when the lid state changes.
+interface LidStateObserver {
+  // OnLidStateChanged calls are triggered when the lid of the device opens or
+  // closes.
+  OnLidStateChanged(bool is_lid_open);
+};
+
 // Implemented by clients that wish to be updated when input devices are
 // connected or disconnected.
 interface ConnectedDevicesObserver {
@@ -217,6 +224,10 @@ interface InputDataProvider {
   // initial state.
   ObserveTabletMode(pending_remote<TabletModeObserver> observer) =>
     (bool is_tablet_mode);
+
+  // Registers an observer for lid state changes and returns lid initial state.
+  ObserveLidState(pending_remote<LidStateObserver> observer) =>
+    (bool is_lid_open);
 
   // Registers an observer for changes to the internal display power state.
   ObserveInternalDisplayPowerState(

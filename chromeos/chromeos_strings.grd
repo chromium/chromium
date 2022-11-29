@@ -1199,6 +1199,22 @@ Try tapping the mic to ask me anything.
       <message name="IDS_INPUT_DIAGNOSTICS_UNTESTABLE_NOTE" translateable="false" desc="Text explaining why the input device is untestable and the test button is grey out.">
         Can't access this routine. Check that it's properly connected and try again.
       </message>
+      <!-- TODO(dpad): Finalize string and localization -->
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_UNTESTABLE_LID_CLOSED_NOTE" translateable="false" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the lid of the device being closed.">
+        Can't access this routine as the built-in keyboard is inaccessible as the lid is closed.
+      </message>
+      <!-- TODO(dpad): Finalize string and localization -->
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_UNTESTABLE_TABLET_MODE_NOTE" translateable="false" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the lid of the device being closed.">
+        Can't access this routine as the built-in keyboard is inaccessible due to being in tablet mode.
+      </message>
+      <!-- TODO(dpad): Finalize string and localization -->
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_CLOSED_LID_CLOSED_NOTE" translateable="false" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the lid of the device being closed.">
+        Device is no longer accessible as the lid is closed. Try opening the lid to test
+      </message>
+      <!-- TODO(dpad): Finalize string and localization -->
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_CLOSED_TABLET_MODE_NOTE" translateable="false" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the lid of the device being closed.">
+        Device is no longer accessible as it is in tablet mode. Try disabling tablet mode to test
+      </message>
 
       <!-- Input diagnostics: keyboard tester -->
       <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_FOCUS_LOSS_MESSAGE" desc="A message displayed in a keyboard testing UI when its window loses focus, explaining that the tester won't respond to key presses again until its window is refocused.">

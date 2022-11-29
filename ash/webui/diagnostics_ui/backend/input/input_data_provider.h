@@ -21,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,7 +49,8 @@ class InputDataProvider : public mojom::InputDataProvider,
                           public KeyboardInputDataEventWatcher::Dispatcher,
                           public views::WidgetObserver,
                           public TabletModeObserver,
-                          public display::DisplayConfigurator::Observer {
+                          public display::DisplayConfigurator::Observer,
+                          public chromeos::PowerManagerClient::Observer {
  public:
   explicit InputDataProvider(aura::Window* window,
                              KeyboardInputLog* keyboard_input_log_ptr);
@@ -93,6 +95,9 @@ class InputDataProvider : public mojom::InputDataProvider,
       mojo::PendingRemote<mojom::TabletModeObserver> observer,
       ObserveTabletModeCallback callback) override;
 
+  void ObserveLidState(mojo::PendingRemote<mojom::LidStateObserver> observer,
+                       ObserveLidStateCallback callback) override;
+
   void ObserveInternalDisplayPowerState(
       mojo::PendingRemote<mojom::InternalDisplayPowerStateObserver> observer)
       override;
@@ -111,8 +116,13 @@ class InputDataProvider : public mojom::InputDataProvider,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  void OnTabletModeEventsBlockingChanged() override;
+
+  // chromeos::PowerManagerClient::Observer
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks time) override;
+  void OnReceiveSwitchStates(
+      absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   // display::DisplayConfigurator::Observer
   void OnPowerStateChanged(chromeos::DisplayPowerState power_state) override;
@@ -177,6 +187,10 @@ class InputDataProvider : public mojom::InputDataProvider,
   // display is testable or not.
   bool is_internal_display_on_ = true;
 
+  // Whether the laptop lid is closed or open. On chromeboxes, this will always
+  // be false.
+  bool is_lid_open_ = false;
+
   // Id of the previous display the Diagnostics app was in, used to move the app
   // back to previous display when the touchscreen tester is closed.
   int64_t previous_display_id_ = display::kInvalidDisplayId;
@@ -202,7 +216,9 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   mojo::RemoteSet<mojom::ConnectedDevicesObserver> connected_devices_observers_;
 
-  mojo::Remote<mojom::TabletModeObserver> tablet_mode_observer_;
+  mojo::RemoteSet<mojom::TabletModeObserver> tablet_mode_observers_;
+
+  mojo::RemoteSet<mojom::LidStateObserver> lid_state_observers_;
 
   mojo::Remote<mojom::InternalDisplayPowerStateObserver>
       internal_display_power_state_observer_;

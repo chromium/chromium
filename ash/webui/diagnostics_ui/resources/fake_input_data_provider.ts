@@ -5,7 +5,7 @@
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
 import {GetConnectedDevicesResponse} from './diagnostics_types.js';
-import {ConnectedDevicesObserverRemote, InputDataProviderInterface, InternalDisplayPowerStateObserverRemote, KeyboardInfo, KeyboardObserverRemote, TabletModeObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {ConnectedDevicesObserverRemote, InputDataProviderInterface, InternalDisplayPowerStateObserverRemote, KeyboardInfo, KeyboardObserverRemote, LidStateObserverRemote, TabletModeObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -18,6 +18,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
   private keyboards_: KeyboardInfo[] = [];
   private keyboardObservers_: KeyboardObserverRemote[][] = [];
   private tabletModeObserver_: TabletModeObserverRemote;
+  private lidStateObserver_: LidStateObserverRemote;
   private internalDisplayPowerStateObserver_:
       InternalDisplayPowerStateObserverRemote;
   private touchDevices_: TouchDeviceInfo[] = [];
@@ -46,6 +47,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
     this.methods_.register('getConnectedDevices');
     this.methods_.register('observeKeyEvents');
     this.methods_.register('observeTabletMode');
+    this.methods_.register('observeLidState');
   }
 
   getConnectedDevices(): Promise<GetConnectedDevicesResponse> {
@@ -82,6 +84,38 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
   setInternalDisplayPowerOff(): void {
     this.internalDisplayPowerStateObserver_.onInternalDisplayPowerStateChanged(
         false);
+  }
+
+  /**
+   * Mock registering observer returning isTabletMode as false.
+   */
+  setStartWithLidClosed(): void {
+    this.methods_.setResult('observeLidState', {isLidOpen: false});
+  }
+
+  /**
+   * Mock registering observer returning isTabletMode as true.
+   */
+  setStartWithLidOpen(): void {
+    this.methods_.setResult('observeLidState', {isLidOpen: true});
+  }
+
+  /**
+   * Registers an observer for tablet mode changes and returns current tablet
+   * mode.
+   */
+  observeLidState(remote: LidStateObserverRemote):
+      Promise<{isLidOpen: boolean}> {
+    this.lidStateObserver_ = remote;
+    return this.methods_.resolveMethod('observeLidState');
+  }
+
+  setLidStateOpen(): void {
+    this.lidStateObserver_.onLidStateChanged(true);
+  }
+
+  setLidStateClosed(): void {
+    this.lidStateObserver_.onLidStateChanged(false);
   }
 
   /**

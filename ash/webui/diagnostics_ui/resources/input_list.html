@@ -5,13 +5,15 @@
     display: flex;
     flex-direction: column;
   }
+
 </style>
 <div id="inputListContainer" tabindex="0">
   <div class="diagnostics-cards-container-nav">
     <div class="card-width">
       <template is="dom-if" if="[[keyboards_.length]]">
         <input-card device-type="keyboard" devices="[[keyboards_]]" id="keyboardInputCard"
-            on-test-button-click="handleKeyboardTestButtonClick_">
+          on-test-button-click="handleKeyboardTestButtonClick_"
+          host-device-status="[[hostDeviceStatus]]">
           <div slot="title" id="keyboardTitle" tabindex="0" role="heading">
             [[i18n('inputCategoryKeyboard')]]
           </div>
@@ -19,13 +21,15 @@
       </template>
       <template is="dom-if" if="[[showTouchpads_]]">
         <input-card device-type="touchpad" devices="[[touchpads_]]"
-            on-test-button-click="handleTouchpadTestButtonClick_">
+          on-test-button-click="handleTouchpadTestButtonClick_"
+          host-device-status="[[hostDeviceStatus]]">
           <div slot="title" role="heading">[[i18n('inputCategoryTouchpad')]]</div>
         </input-card>
       </template>
       <template is="dom-if" if="[[showTouchscreens_]]">
         <input-card device-type="touchscreen" devices="[[touchscreens_]]"
-            on-test-button-click="handleTouchscreenTestButtonClick_">
+          on-test-button-click="handleTouchscreenTestButtonClick_"
+          host-device-status="[[hostDeviceStatus]]">
           <div slot="title" role="heading">[[i18n('inputCategoryTouchscreen')]]</div>
         </input-card>
       </template>
@@ -33,7 +37,6 @@
   </div>
 </div>
 <keyboard-tester></keyboard-tester>
-<touchscreen-tester
-    touchscreen-id-under-testing="{{touchscreenIdUnderTesting}}">
+<touchscreen-tester touchscreen-id-under-testing="{{touchscreenIdUnderTesting}}">
 </touchscreen-tester>
 <touchpad-tester></touchpad-tester>

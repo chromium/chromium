@@ -6,11 +6,12 @@ import 'chrome://diagnostics/strings.m.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
+import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
 import {InputCardElement, InputCardType} from 'chrome://diagnostics/input_card.js';
 import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
+import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 /** @type {!Array<!KeyboardInfo>} */
 const keyboards = [
@@ -53,13 +54,23 @@ suite('inputCardTestSuite', function() {
   /** @type {?InputCardElement} */
   let inputCardElement = null;
 
+  /** @type {?FakeInputDataProvider} */
+  let provider = null;
+
   setup(() => {
     document.body.innerHTML = '';
+
+    provider = new FakeInputDataProvider();
+    setInputDataProviderForTesting(provider);
+
+    provider.setStartWithLidOpen();
+    provider.setStartTesterWithClamshellMode();
   });
 
   teardown(() => {
     inputCardElement.remove();
     inputCardElement = null;
+    provider.reset();
   });
 
   /**
@@ -73,6 +84,10 @@ suite('inputCardTestSuite', function() {
     assertTrue(!!inputCardElement);
     inputCardElement.deviceType = deviceType;
     inputCardElement.devices = devices;
+    inputCardElement.hostDeviceStatus = {
+      isLidOpen: true,
+      isTabletMode: false,
+    };
     document.body.appendChild(inputCardElement);
 
     return flushTasks();
@@ -130,5 +145,140 @@ suite('inputCardTestSuite', function() {
         elements[2].querySelector('.device-name').innerText);
     assertTrue(elements[2].querySelector('cr-button').disabled);
     assertFalse(elements[2].querySelector('#infoIcon').hidden);
+  });
+
+  test('KeyboardTestabilityLidState', async () => {
+    await initializeInputCard(InputCardType.KEYBOARD, keyboards);
+    assertEquals(
+        2,
+        inputCardElement.shadowRoot.querySelector('dom-repeat').items.length);
+    const elements = inputCardElement.root.querySelectorAll('.device');
+
+    inputCardElement.hostDeviceStatus = {
+      ...inputCardElement.hostDeviceStatus,
+      isLidOpen: true,
+    };
+    await flushTasks();
+
+    // Check that all keyboards start testable.
+    assertEquals(
+        keyboards[0].name, elements[0].querySelector('.device-name').innerText);
+    assertEquals(
+        'Built-in keyboard',
+        elements[0].querySelector('.device-description').innerText);
+    assertFalse(elements[0].querySelector('cr-button').disabled);
+    assertTrue(elements[0].querySelector('#infoIcon').hidden);
+
+    assertEquals(
+        keyboards[1].name, elements[1].querySelector('.device-name').innerText);
+    assertEquals(
+        'Bluetooth keyboard',
+        elements[1].querySelector('.device-description').innerText);
+    assertFalse(elements[1].querySelector('cr-button').disabled);
+    assertTrue(elements[1].querySelector('#infoIcon').hidden);
+
+    // Check that internal keyboard is no longer testable after lid closing.
+    inputCardElement.hostDeviceStatus = {
+      ...inputCardElement.hostDeviceStatus,
+      isLidOpen: false,
+    };
+    await flushTasks();
+
+    assertEquals(
+        keyboards[0].name, elements[0].querySelector('.device-name').innerText);
+    assertEquals(
+        'Built-in keyboard',
+        elements[0].querySelector('.device-description').innerText);
+    assertTrue(elements[0].querySelector('cr-button').disabled);
+    assertFalse(elements[0].querySelector('#infoIcon').hidden);
+    assertEquals(
+        loadTimeData.getString('inputKeyboardUntestableLidClosedNote'),
+        elements[0].querySelector('#tooltipText').innerText);
+
+    assertEquals(
+        keyboards[1].name, elements[1].querySelector('.device-name').innerText);
+    assertEquals(
+        'Bluetooth keyboard',
+        elements[1].querySelector('.device-description').innerText);
+    assertFalse(elements[1].querySelector('cr-button').disabled);
+    assertTrue(elements[1].querySelector('#infoIcon').hidden);
+
+    // Check internal keyboard tester is re-enabled after lid opening.
+    inputCardElement.hostDeviceStatus = {
+      ...inputCardElement.hostDeviceStatus,
+      isLidOpen: true,
+    };
+    await flushTasks();
+
+    assertFalse(elements[1].querySelector('cr-button').disabled);
+    assertTrue(elements[1].querySelector('#infoIcon').hidden);
+  });
+
+  test('KeyboardTestabilityTabletMode', async () => {
+    await initializeInputCard(InputCardType.KEYBOARD, keyboards);
+    assertEquals(
+        2,
+        inputCardElement.shadowRoot.querySelector('dom-repeat').items.length);
+    const elements = inputCardElement.root.querySelectorAll('.device');
+
+    inputCardElement.hostDeviceStatus = {
+      ...inputCardElement.hostDeviceStatus,
+      isTabletMode: false,
+    };
+    await flushTasks();
+
+    // Check that all keyboards start testable.
+    assertEquals(
+        keyboards[0].name, elements[0].querySelector('.device-name').innerText);
+    assertEquals(
+        'Built-in keyboard',
+        elements[0].querySelector('.device-description').innerText);
+    assertFalse(elements[0].querySelector('cr-button').disabled);
+    assertTrue(elements[0].querySelector('#infoIcon').hidden);
+
+    assertEquals(
+        keyboards[1].name, elements[1].querySelector('.device-name').innerText);
+    assertEquals(
+        'Bluetooth keyboard',
+        elements[1].querySelector('.device-description').innerText);
+    assertFalse(elements[1].querySelector('cr-button').disabled);
+    assertTrue(elements[1].querySelector('#infoIcon').hidden);
+
+    inputCardElement.hostDeviceStatus = {
+      ...inputCardElement.hostDeviceStatus,
+      isTabletMode: true,
+    };
+    await flushTasks();
+
+    // Check that internal keyboard is no longer testable after switching to
+    // tablet mode.
+    assertEquals(
+        keyboards[0].name, elements[0].querySelector('.device-name').innerText);
+    assertEquals(
+        'Built-in keyboard',
+        elements[0].querySelector('.device-description').innerText);
+    assertTrue(elements[0].querySelector('cr-button').disabled);
+    assertFalse(elements[0].querySelector('#infoIcon').hidden);
+    assertEquals(
+        loadTimeData.getString('inputKeyboardUntestableTabletModeNote'),
+        elements[0].querySelector('#tooltipText').innerText);
+
+    assertEquals(
+        keyboards[1].name, elements[1].querySelector('.device-name').innerText);
+    assertEquals(
+        'Bluetooth keyboard',
+        elements[1].querySelector('.device-description').innerText);
+    assertFalse(elements[1].querySelector('cr-button').disabled);
+    assertTrue(elements[1].querySelector('#infoIcon').hidden);
+
+    // Check internal keyboard tester is re-enabled after ending tablet mode.
+    inputCardElement.hostDeviceStatus = {
+      ...inputCardElement.hostDeviceStatus,
+      isTabletMode: false,
+    };
+    await flushTasks();
+
+    assertFalse(elements[1].querySelector('cr-button').disabled);
+    assertTrue(elements[1].querySelector('#infoIcon').hidden);
   });
 });

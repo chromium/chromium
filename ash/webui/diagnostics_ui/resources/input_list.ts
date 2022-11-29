@@ -14,7 +14,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {InputCardElement} from './input_card.js';
-import {ConnectedDevicesObserverReceiver, ConnectionType, InputDataProviderInterface, InternalDisplayPowerStateObserverReceiver, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
+import {ConnectedDevicesObserverReceiver, ConnectionType, InputDataProviderInterface, InternalDisplayPowerStateObserverReceiver, KeyboardInfo, LidStateObserverReceiver, TabletModeObserverReceiver, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
 import {getTemplate} from './input_list.html.js';
 import {KeyboardTesterElement} from './keyboard_tester.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
@@ -28,6 +28,11 @@ import {TouchscreenTesterElement} from './touchscreen_tester.js';
  */
 
 const InputListElementBase = I18nMixin(PolymerElement);
+
+export interface HostDeviceStatus {
+  isLidOpen: boolean;
+  isTabletMode: boolean;
+}
 
 export class InputListElement extends InputListElementBase {
   static get is() {
@@ -70,6 +75,10 @@ export class InputListElement extends InputListElementBase {
         value: -1,
         notify: true,
       },
+
+      hostDeviceStatus: {
+        type: Object,
+      },
     };
   }
 
@@ -77,6 +86,8 @@ export class InputListElement extends InputListElementBase {
   protected showTouchscreens_: boolean;
   // The evdev id of touchscreen under testing.
   protected touchscreenIdUnderTesting: number = -1;
+  protected hostDeviceStatus:
+      HostDeviceStatus = {isLidOpen: false, isTabletMode: false};
   private keyboards_: KeyboardInfo[];
   private touchpads_: TouchDeviceInfo[];
   private touchscreens_: TouchDeviceInfo[];
@@ -84,7 +95,9 @@ export class InputListElement extends InputListElementBase {
       null = null;
   private internalDisplayPowerStateObserverReceiver_:
       InternalDisplayPowerStateObserverReceiver|null = null;
-  private keyboardTester: KeyboardTesterElement|null = null;
+  private tabletModeReceiver: TabletModeObserverReceiver|null = null;
+  private lidStateReceiver: LidStateObserverReceiver|null = null;
+  private keyboardTester: KeyboardTesterElement;
   private touchscreenTester: TouchscreenTesterElement|null = null;
   private touchpadTester: TouchpadTesterElement|null = null;
   private browserProxy_: DiagnosticsBrowserProxy =
@@ -107,6 +120,15 @@ export class InputListElement extends InputListElementBase {
     this.loadInitialDevices_();
     this.observeConnectedDevices_();
     this.observeInternalDisplayPowerState();
+    this.observeLidState();
+    this.observeTabletMode();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    const keyboardTester = this.shadowRoot!.querySelector('keyboard-tester');
+    assert(keyboardTester);
+    this.keyboardTester = keyboardTester;
   }
 
   private loadInitialDevices_(): void {
@@ -133,6 +155,24 @@ export class InputListElement extends InputListElementBase {
     this.inputDataProvider_.observeInternalDisplayPowerState(
         this.internalDisplayPowerStateObserverReceiver_.$
             .bindNewPipeAndPassRemote());
+  }
+
+  private observeLidState(): void {
+    this.lidStateReceiver = new LidStateObserverReceiver(this);
+    this.inputDataProvider_
+        .observeLidState(this.lidStateReceiver.$.bindNewPipeAndPassRemote())
+        .then(({isLidOpen}: {isLidOpen: boolean}) => {
+          this.onLidStateChanged(isLidOpen);
+        });
+  }
+
+  private observeTabletMode(): void {
+    this.tabletModeReceiver = new TabletModeObserverReceiver(this);
+    this.inputDataProvider_
+        .observeTabletMode(this.tabletModeReceiver.$.bindNewPipeAndPassRemote())
+        .then(({isTabletMode}: {isTabletMode: boolean}) => {
+          this.onTabletModeChanged(isTabletMode);
+        });
   }
 
   /**
@@ -234,8 +274,6 @@ export class InputListElement extends InputListElementBase {
   }
 
   private handleKeyboardTestButtonClick_(e: CustomEvent): void {
-    this.keyboardTester = this.shadowRoot!.querySelector('keyboard-tester');
-    assert(this.keyboardTester);
     const keyboard: KeyboardInfo|undefined = this.keyboards_.find(
         (keyboard: KeyboardInfo) => keyboard.id === e.detail.evdevId);
     assert(keyboard);
@@ -296,6 +334,62 @@ export class InputListElement extends InputListElementBase {
       // to avoid duplicate code in all navigatable pages.
       this.browserProxy_.recordNavigation('input');
     }
+  }
+
+  onHostDeviceStatusChanged(): void {
+    // If the keyboard tester isn't open or we aren't testing an internal
+    // keyboard, do nothing.
+    if (!this.keyboardTester.isOpen() ||
+        this.keyboardTester.keyboard.connectionType !=
+            ConnectionType.kInternal) {
+      return;
+    }
+
+    // Keyboard tester remains open if the lid is open and we are not in tablet
+    // mode.
+    if (this.hostDeviceStatus.isLidOpen &&
+        !this.hostDeviceStatus.isTabletMode) {
+      return;
+    }
+
+    this.keyboardTester.close();
+    this.dispatchEvent(new CustomEvent('show-toast', {
+      composed: true,
+      bubbles: true,
+      detail: {message: this.getKeyboardTesterClosedToastString()},
+    }));
+  }
+
+  getKeyboardTesterClosedToastString(): string {
+    if (!this.hostDeviceStatus.isLidOpen) {
+      return loadTimeData.getString('inputKeyboardTesterClosedToastLidClosed');
+    }
+
+    if (this.hostDeviceStatus.isTabletMode) {
+      return loadTimeData.getString('inputKeyboardTesterClosedToastTabletMode');
+    }
+
+    return loadTimeData.getString('deviceDisconnected');
+  }
+
+  /**
+   * Implements TabletModeObserver.OnTabletModeChanged.
+   * @param isTabletMode Is current display on tablet mode.
+   */
+  onTabletModeChanged(isTabletMode: boolean): void {
+    this.hostDeviceStatus = {
+      ...this.hostDeviceStatus,
+      isTabletMode: isTabletMode,
+    };
+    this.onHostDeviceStatusChanged();
+  }
+
+  onLidStateChanged(isLidOpen: boolean): void {
+    this.hostDeviceStatus = {
+      ...this.hostDeviceStatus,
+      isLidOpen: isLidOpen,
+    };
+    this.onHostDeviceStatusChanged();
   }
 }
 

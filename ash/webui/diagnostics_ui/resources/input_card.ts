@@ -14,7 +14,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './input_card.html.js';
-import {ConnectionType, KeyboardInfo, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {ConnectionType, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {HostDeviceStatus} from './input_list.js';
+import {getInputDataProvider} from './mojo_interface_provider.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -65,12 +67,20 @@ export class InputCardElement extends InputCardElementBase {
         type: String,
         computed: 'computeDeviceIcon_(deviceType)',
       },
+
+      hostDeviceStatus: {
+        type: Object,
+      },
     };
   }
 
   deviceType: InputCardType;
   devices: KeyboardInfo[]|TouchDeviceInfo[];
+  hostDeviceStatus: HostDeviceStatus;
+
   private deviceIcon_: string;
+  private inputDataProvider: InputDataProviderInterface =
+      getInputDataProvider();
 
   private computeDeviceIcon_(deviceType: InputCardType): string {
     return {
@@ -102,6 +112,16 @@ export class InputCardElement extends InputCardElementBase {
         'inputDescription' + connectionTypeString + deviceTypeString);
   }
 
+  private isInternalKeyboard(device: KeyboardInfo|TouchDeviceInfo): boolean {
+    return this.deviceType == InputCardType.KEYBOARD &&
+        device.connectionType == ConnectionType.kInternal;
+  }
+
+  private isInternalKeyboardTestable(): boolean {
+    return !this.hostDeviceStatus.isTabletMode &&
+        this.hostDeviceStatus.isLidOpen;
+  }
+
   /**
    * Grey out the test button if the test device is untestable. e.g. if the
    * laptop's lid is closed, the internal touchscreen is untestable.
@@ -111,10 +131,32 @@ export class InputCardElement extends InputCardElementBase {
     if ('testable' in device) {
       return (device as TouchDeviceInfo).testable;
     }
+
+    if (this.isInternalKeyboard(device)) {
+      return this.isInternalKeyboardTestable();
+    }
+
     return true;
   }
 
+  private getDeviceTestabilityErrorMessage(device: KeyboardInfo|
+                                           TouchDeviceInfo): string {
+    // If it is not an internal keyboard, return the generic untestable string.
+    if (!this.isInternalKeyboard(device)) {
+      return loadTimeData.getString('inputDeviceUntestableNote');
+    }
 
+    // Otherwise, differentiate the string based on the reason it is untestable.
+    if (this.hostDeviceStatus.isTabletMode) {
+      return loadTimeData.getString('inputKeyboardUntestableTabletModeNote');
+    }
+
+    if (!this.hostDeviceStatus.isLidOpen) {
+      return loadTimeData.getString('inputKeyboardUntestableLidClosedNote');
+    }
+
+    return loadTimeData.getString('inputDeviceUntestableNote');
+  }
 
   private handleTestButtonClick_(e: PointerEvent): void {
     const inputDeviceButton = e.target as CrButtonElement;

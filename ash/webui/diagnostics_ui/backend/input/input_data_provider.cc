@@ -21,10 +21,11 @@
 #include "ash/webui/diagnostics_ui/backend/input/input_device_information.h"
 #include "ash/webui/diagnostics_ui/backend/input/keyboard_input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/time/time.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/display/screen.h"
@@ -97,6 +98,7 @@ InputDataProvider::~InputDataProvider() {
   device_manager_->RemoveObserver(this);
   widget_->RemoveObserver(this);
   TabletMode::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   ash::Shell::Get()->display_configurator()->RemoveObserver(this);
 }
 
@@ -128,6 +130,14 @@ void InputDataProvider::Initialize(aura::Window* window) {
   widget_->AddObserver(this);
   TabletMode::Get()->AddObserver(this);
   ash::Shell::Get()->display_configurator()->AddObserver(this);
+
+  chromeos::PowerManagerClient* power_manager_client =
+      chromeos::PowerManagerClient::Get();
+  DCHECK(power_manager_client);
+  power_manager_client->AddObserver(this);
+  power_manager_client->GetSwitchStates(base::BindOnce(
+      &InputDataProvider::OnReceiveSwitchStates, weak_factory_.GetWeakPtr()));
+
   UpdateMaySendEvents();
 }
 
@@ -177,20 +187,48 @@ void InputDataProvider::OnWidgetActivationChanged(views::Widget* widget,
 void InputDataProvider::ObserveTabletMode(
     mojo::PendingRemote<mojom::TabletModeObserver> observer,
     ObserveTabletModeCallback callback) {
-  tablet_mode_observer_ =
-      mojo::Remote<mojom::TabletModeObserver>(std::move(observer));
-  std::move(callback).Run(TabletMode::Get()->InTabletMode());
+  const auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  DCHECK(tablet_mode_controller);
+  tablet_mode_observers_.Add(std::move(observer));
+  std::move(callback).Run(
+      tablet_mode_controller->AreInternalInputDeviceEventsBlocked());
 }
 
-void InputDataProvider::OnTabletModeStarted() {
-  if (tablet_mode_observer_.is_bound()) {
-    tablet_mode_observer_->OnTabletModeChanged(/*is_tablet_mode=*/true);
+void InputDataProvider::OnTabletModeEventsBlockingChanged() {
+  // For input diagnostics purposes, tablet mode only matters if internal input
+  // device events are being blocked. Thus, |is_tablet_mode| tracks whether
+  // input devices are blocked vs tablet mode directly.
+  const auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  DCHECK(tablet_mode_controller);
+  const bool is_tablet_mode =
+      tablet_mode_controller->AreInternalInputDeviceEventsBlocked();
+  for (auto& observer : tablet_mode_observers_) {
+    observer->OnTabletModeChanged(is_tablet_mode);
   }
 }
 
-void InputDataProvider::OnTabletModeEnded() {
-  if (tablet_mode_observer_.is_bound()) {
-    tablet_mode_observer_->OnTabletModeChanged(/*is_tablet_mode=*/false);
+void InputDataProvider::ObserveLidState(
+    mojo::PendingRemote<mojom::LidStateObserver> observer,
+    ObserveLidStateCallback callback) {
+  lid_state_observers_.Add(std::move(observer));
+  std::move(callback).Run(is_lid_open_);
+}
+
+void InputDataProvider::LidEventReceived(
+    chromeos::PowerManagerClient::LidState state,
+    base::TimeTicks time) {
+  // If the lid state is open or if the lid state sensors is not present, the
+  // lid is considered open
+  is_lid_open_ = state != chromeos::PowerManagerClient::LidState::CLOSED;
+  for (auto& observer : lid_state_observers_) {
+    observer->OnLidStateChanged(is_lid_open_);
+  }
+}
+
+void InputDataProvider::OnReceiveSwitchStates(
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+  if (switch_states.has_value()) {
+    LidEventReceived(switch_states->lid_state, /*time=*/{});
   }
 }
 

@@ -18,6 +18,8 @@
 #include "ash/webui/diagnostics_ui/backend/input/event_watcher_factory.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/backend/input/keyboard_input_data_event_watcher.h"
+#include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -35,6 +37,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "content/public/test/browser_task_environment.h"
@@ -381,6 +385,27 @@ class FakeTabletModeObserver : public mojom::TabletModeObserver {
  private:
   uint32_t num_tablet_mode_change_calls_ = 0;
   bool is_tablet_mode_ = false;
+};
+
+class FakeLidStateObserver : public mojom::LidStateObserver {
+ public:
+  uint32_t num_lid_state_change_calls() const {
+    return num_lid_state_change_calls_;
+  }
+
+  bool is_lid_open() { return is_lid_open_; }
+
+  // mojom::TabletModeObserver:
+  void OnLidStateChanged(bool is_lid_open) override {
+    ++num_lid_state_change_calls_;
+    is_lid_open_ = is_lid_open;
+  }
+
+  mojo::Receiver<mojom::LidStateObserver> receiver{this};
+
+ private:
+  uint32_t num_lid_state_change_calls_ = 0;
+  bool is_lid_open_ = false;
 };
 
 // A mock observer that records current internal display power state and counts
@@ -2366,13 +2391,13 @@ TEST_F(InputDataProviderTest, TabletModeObservation) {
   // Default initial state is "not-in-tablet-mode".
   ASSERT_FALSE(future.Get<0>());
 
-  provider_->OnTabletModeStarted();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(fake_observer.is_tablet_mode());
   EXPECT_EQ(1u, fake_observer.num_tablet_mode_change_calls());
 
-  provider_->OnTabletModeEnded();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(fake_observer.is_tablet_mode());
@@ -2386,13 +2411,94 @@ TEST_F(InputDataProviderTest, TabletModeObservationInitAsTabletMode) {
   base::test::TestFuture<bool> future;
 
   // Set initial state as tablet mode.
-  TabletMode::Get()->SetEnabledForTest(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Attach a tablet mode observer.
   provider_->ObserveTabletMode(
       fake_observer.receiver.BindNewPipeAndPassRemote(), future.GetCallback());
 
   // Initial state is set to "in-tablet-mode".
+  ASSERT_TRUE(future.Get<0>());
+}
+
+// Test the behavior when the lid state has changed. The lid state is
+// initialized as open.
+TEST_F(InputDataProviderTest, LidStateObservation) {
+  // Need to run loop here to give constructor time to receive response from
+  // FakePowerManagerClient.
+  base::RunLoop().RunUntilIdle();
+
+  FakeLidStateObserver fake_observer;
+  base::test::TestFuture<bool> future;
+
+  power_manager_client()->SetLidState(
+      chromeos::PowerManagerClient::LidState::OPEN, /*timestamp=*/{});
+
+  // Attach a lid state observer.
+  provider_->ObserveLidState(fake_observer.receiver.BindNewPipeAndPassRemote(),
+                             future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  // Default state is that lid is open.
+  ASSERT_TRUE(future.Get<0>());
+
+  power_manager_client()->SetLidState(
+      chromeos::PowerManagerClient::LidState::CLOSED, /*timestamp=*/{});
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(fake_observer.is_lid_open());
+  EXPECT_EQ(1u, fake_observer.num_lid_state_change_calls());
+
+  power_manager_client()->SetLidState(
+      chromeos::PowerManagerClient::LidState::OPEN, /*timestamp=*/{});
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(fake_observer.is_lid_open());
+  EXPECT_EQ(2u, fake_observer.num_lid_state_change_calls());
+}
+
+// Test the behavior when the lid state status has changed. The lid state is
+// initialized as closed.
+TEST_F(InputDataProviderTest, LidStateObservationInitAsClosed) {
+  // Need to run loop here to give constructor time to receive response from
+  // FakePowerManagerClient.
+  base::RunLoop().RunUntilIdle();
+
+  FakeLidStateObserver fake_observer;
+  base::test::TestFuture<bool> future;
+
+  power_manager_client()->SetLidState(
+      chromeos::PowerManagerClient::LidState::CLOSED, /*timestamp=*/{});
+
+  // Attach a tablet mode observer.
+  provider_->ObserveLidState(fake_observer.receiver.BindNewPipeAndPassRemote(),
+                             future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  // Default state is that lid is closed.
+  ASSERT_FALSE(future.Get<0>());
+}
+
+// Test the behavior when the lid state status has changed. The lid state is
+// initialized as closed.
+TEST_F(InputDataProviderTest, LidStateObservationInitAsUnsupported) {
+  // Need to run loop here to give constructor time to receive response from
+  // FakePowerManagerClient.
+  base::RunLoop().RunUntilIdle();
+
+  FakeLidStateObserver fake_observer;
+  base::test::TestFuture<bool> future;
+
+  power_manager_client()->SetLidState(
+      chromeos::PowerManagerClient::LidState::NOT_PRESENT, /*timestamp=*/{});
+
+  // Attach a tablet mode observer.
+  provider_->ObserveLidState(fake_observer.receiver.BindNewPipeAndPassRemote(),
+                             future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  // Default state is that lid is unsupported, which should act as though lid is
+  // open.
   ASSERT_TRUE(future.Get<0>());
 }
 
