@@ -53,9 +53,8 @@ std::vector<FieldInfo> StatementToFieldInfo(sql::Statement* s) {
         s->ColumnInt(GetColumnNumber(FieldInfoTableColumn::kFieldSignature)));
     results.back().field_type = static_cast<autofill::ServerFieldType>(
         s->ColumnInt(GetColumnNumber(FieldInfoTableColumn::kFieldType)));
-    results.back().create_time = base::Time::FromDeltaSinceWindowsEpoch(
-        (base::Microseconds(s->ColumnInt64(
-            GetColumnNumber(FieldInfoTableColumn::kCreateTime)))));
+    results.back().create_time =
+        s->ColumnTime(GetColumnNumber(FieldInfoTableColumn::kCreateTime));
   }
   return results;
 }
@@ -112,8 +111,8 @@ bool FieldInfoTable::AddRow(const FieldInfo& field) {
               field.field_signature.value());
   s.BindInt(GetColumnNumber(FieldInfoTableColumn::kFieldType),
             field.field_type);
-  s.BindInt64(GetColumnNumber(FieldInfoTableColumn::kCreateTime),
-              field.create_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s.BindTime(GetColumnNumber(FieldInfoTableColumn::kCreateTime),
+             field.create_time);
   return s.Run();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -127,8 +126,8 @@ bool FieldInfoTable::RemoveRowsByTime(base::Time remove_begin,
       db_->GetCachedStatement(SQL_FROM_HERE,
                               "DELETE FROM field_info WHERE "
                               "create_time >= ? AND create_time < ?"));
-  s.BindInt64(0, remove_begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  s.BindInt64(1, remove_end.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s.BindTime(0, remove_begin);
+  s.BindTime(1, remove_end);
   return s.Run();
 #endif  // BUILDFLAG(IS_ANDROID)
 }

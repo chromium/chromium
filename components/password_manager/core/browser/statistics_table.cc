@@ -32,8 +32,7 @@ std::vector<InteractionsStats> StatementToInteractionsStats(sql::Statement* s) {
     results.back().origin_domain = GURL(s->ColumnString(COLUMN_ORIGIN_DOMAIN));
     results.back().username_value = s->ColumnString16(COLUMN_USERNAME);
     results.back().dismissal_count = s->ColumnInt(COLUMN_DISMISSALS);
-    results.back().update_time =
-        base::Time::FromInternalValue(s->ColumnInt64(COLUMN_DATE));
+    results.back().update_time = s->ColumnTime(COLUMN_DATE);
   }
 
   return results;
@@ -93,7 +92,7 @@ bool StatisticsTable::AddRow(const InteractionsStats& stats) {
   s.BindString(COLUMN_ORIGIN_DOMAIN, stats.origin_domain.spec());
   s.BindString16(COLUMN_USERNAME, stats.username_value);
   s.BindInt(COLUMN_DISMISSALS, stats.dismissal_count);
-  s.BindInt64(COLUMN_DATE, stats.update_time.ToInternalValue());
+  s.BindTime(COLUMN_DATE, stats.update_time);
   return s.Run();
 }
 
@@ -130,8 +129,8 @@ bool StatisticsTable::RemoveStatsByOriginAndTime(
     sql::Statement delete_statement(db_->GetCachedStatement(
         SQL_FROM_HERE,
         "DELETE FROM stats WHERE update_time >= ? AND update_time < ?"));
-    delete_statement.BindInt64(0, delete_begin.ToInternalValue());
-    delete_statement.BindInt64(1, delete_end.ToInternalValue());
+    delete_statement.BindTime(0, delete_begin);
+    delete_statement.BindTime(1, delete_end);
 
     return delete_statement.Run();
   }
@@ -141,8 +140,8 @@ bool StatisticsTable::RemoveStatsByOriginAndTime(
       db_->GetCachedStatement(SQL_FROM_HERE,
                               "SELECT origin_domain FROM stats "
                               "WHERE update_time >= ? AND update_time < ?"));
-  select_statement.BindInt64(0, delete_begin.ToInternalValue());
-  select_statement.BindInt64(1, delete_end.ToInternalValue());
+  select_statement.BindTime(0, delete_begin);
+  select_statement.BindTime(1, delete_end);
 
   std::set<std::string> origins;
   while (select_statement.Step()) {
@@ -160,8 +159,8 @@ bool StatisticsTable::RemoveStatsByOriginAndTime(
         "DELETE FROM stats "
         "WHERE origin_domain = ? AND update_time >= ? AND update_time < ?"));
     origin_delete_statement.BindString(0, origin);
-    origin_delete_statement.BindInt64(1, delete_begin.ToInternalValue());
-    origin_delete_statement.BindInt64(2, delete_end.ToInternalValue());
+    origin_delete_statement.BindTime(1, delete_begin);
+    origin_delete_statement.BindTime(2, delete_end);
     success = success && origin_delete_statement.Run();
   }
 

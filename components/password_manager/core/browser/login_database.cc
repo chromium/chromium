@@ -206,7 +206,7 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   s->BindBlob(COLUMN_PASSWORD_VALUE, form.encrypted_password);
   s->BindString16(COLUMN_SUBMIT_ELEMENT, form.submit_element);
   s->BindString(COLUMN_SIGNON_REALM, form.signon_realm);
-  s->BindInt64(COLUMN_DATE_CREATED, form.date_created.ToInternalValue());
+  s->BindTime(COLUMN_DATE_CREATED, form.date_created);
   s->BindInt(COLUMN_BLOCKLISTED_BY_USER, form.blocked_by_user);
   s->BindInt(COLUMN_SCHEME, static_cast<int>(form.scheme));
   s->BindInt(COLUMN_PASSWORD_TYPE, static_cast<int>(form.type));
@@ -227,15 +227,12 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   base::Pickle usernames_pickle =
       SerializeValueElementPairs(form.all_possible_usernames);
   s->BindBlob(COLUMN_POSSIBLE_USERNAME_PAIRS, PickleToSpan(usernames_pickle));
-  s->BindInt64(COLUMN_DATE_LAST_USED,
-               form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s->BindTime(COLUMN_DATE_LAST_USED, form.date_last_used);
   base::Pickle moving_blocked_for_pickle =
       SerializeGaiaIdHashVector(form.moving_blocked_for_list);
   s->BindBlob(COLUMN_MOVING_BLOCKED_FOR,
               PickleToSpan(moving_blocked_for_pickle));
-  s->BindInt64(
-      COLUMN_DATE_PASSWORD_MODIFIED,
-      form.date_password_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s->BindTime(COLUMN_DATE_PASSWORD_MODIFIED, form.date_password_modified);
 }
 
 // Output parameter is the first one because of binding order.
@@ -678,8 +675,7 @@ bool MigrateDatabase(unsigned current_version,
     set_timestamp.Assign(
         db->GetUniqueStatement("UPDATE insecure_credentials SET create_time = "
                                "? WHERE create_time = 0"));
-    set_timestamp.BindInt64(
-        0, base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    set_timestamp.BindTime(0, base::Time::Now());
     if (!set_timestamp.Run())
       return false;
   }
@@ -1119,7 +1115,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   s.BindString(next_param++, form.action.spec());
   s.BindBlob(next_param++, encrypted_password);
   s.BindString16(next_param++, form.submit_element);
-  s.BindInt64(next_param++, form.date_created.ToInternalValue());
+  s.BindTime(next_param++, form.date_created);
   s.BindInt(next_param++, form.blocked_by_user);
   s.BindInt(next_param++, static_cast<int>(form.scheme));
   s.BindInt(next_param++, static_cast<int>(form.type));
@@ -1138,14 +1134,11 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   base::Pickle username_pickle =
       SerializeValueElementPairs(form.all_possible_usernames);
   s.BindBlob(next_param++, PickleToSpan(username_pickle));
-  s.BindInt64(next_param++,
-              form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s.BindTime(next_param++, form.date_last_used);
   base::Pickle moving_blocked_for_pickle =
       SerializeGaiaIdHashVector(form.moving_blocked_for_list);
   s.BindBlob(next_param++, PickleToSpan(moving_blocked_for_pickle));
-  s.BindInt64(
-      next_param++,
-      form.date_password_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s.BindTime(next_param++, form.date_password_modified);
   // NOTE: Add new fields here unless the field is a part of the unique key.
   // If so, add new field below.
 
@@ -1302,9 +1295,8 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
       db_.GetCachedStatement(SQL_FROM_HERE,
                              "DELETE FROM logins WHERE "
                              "date_created >= ? AND date_created < ?"));
-  s.BindInt64(0, delete_begin.ToInternalValue());
-  s.BindInt64(1, delete_end.is_null() ? std::numeric_limits<int64_t>::max()
-                                      : delete_end.ToInternalValue());
+  s.BindTime(0, delete_begin);
+  s.BindTime(1, delete_end.is_null() ? base::Time::Max() : delete_end);
 
   if (!s.Run()) {
     return false;
@@ -1374,8 +1366,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   form->submit_element = s.ColumnString16(COLUMN_SUBMIT_ELEMENT);
   tmp = s.ColumnString(COLUMN_SIGNON_REALM);
   form->signon_realm = tmp;
-  form->date_created =
-      base::Time::FromInternalValue(s.ColumnInt64(COLUMN_DATE_CREATED));
+  form->date_created = s.ColumnTime(COLUMN_DATE_CREATED);
   form->blocked_by_user = (s.ColumnInt(COLUMN_BLOCKLISTED_BY_USER) > 0);
   // TODO(crbug.com/1151214): Add metrics to capture how often these values fall
   // out of the valid enum range.
@@ -1408,16 +1399,14 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   form->generation_upload_status =
       static_cast<PasswordForm::GenerationUploadStatus>(
           s.ColumnInt(COLUMN_GENERATION_UPLOAD_STATUS));
-  form->date_last_used = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(s.ColumnInt64(COLUMN_DATE_LAST_USED)));
+  form->date_last_used = s.ColumnTime(COLUMN_DATE_LAST_USED);
   base::span<const uint8_t> moving_blocked_for_blob =
       s.ColumnBlob(COLUMN_MOVING_BLOCKED_FOR);
   if (!moving_blocked_for_blob.empty()) {
     base::Pickle pickle = PickleFromSpan(moving_blocked_for_blob);
     form->moving_blocked_for_list = DeserializeGaiaIdHashVector(pickle);
   }
-  form->date_password_modified = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(s.ColumnInt64(COLUMN_DATE_PASSWORD_MODIFIED)));
+  form->date_password_modified = s.ColumnTime(COLUMN_DATE_PASSWORD_MODIFIED);
   PopulateFormWithPasswordIssues(FormPrimaryKey(*primary_key), form);
   PopulateFormWithNotes(FormPrimaryKey(*primary_key), form);
 
@@ -1491,9 +1480,8 @@ bool LoginDatabase::GetLoginsCreatedBetween(
   DCHECK(!created_statement_.empty());
   sql::Statement s(
       db_.GetCachedStatement(SQL_FROM_HERE, created_statement_.c_str()));
-  s.BindInt64(0, begin.ToInternalValue());
-  s.BindInt64(1, end.is_null() ? std::numeric_limits<int64_t>::max()
-                               : end.ToInternalValue());
+  s.BindTime(0, begin);
+  s.BindTime(1, end.is_null() ? base::Time::Max() : end);
 
   return StatementToForms(&s, nullptr, key_to_form_map) ==
          FormRetrievalResult::kSuccess;
