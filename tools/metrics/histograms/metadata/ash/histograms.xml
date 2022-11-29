@@ -2470,6 +2470,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Float.FloatWindowDuration" units="minutes"
+    expires_after="2023-11-20">
+  <owner>nupurjain@google.com</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
+  <summary>
+    The amount of time a user keeps a floating window open and visible. Open and
+    visible means the window is in float state and is on the active desk. If a
+    window is floated and moved to an inactive desk we stop recording. The timer
+    starts when we float a window and we record the histogram when the window is
+    unfloated. The recording can also happen if a floated window is moved to an
+    inactive desk, or the desk changes; we treat this as unfloated.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Float.MultitaskMenuEntryType.{TabletOrClamshell}"
     enum="MultitaskMenuEntryType" expires_after="2023-11-11">
   <owner>nupurjain@google.com</owner>

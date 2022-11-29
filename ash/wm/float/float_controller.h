@@ -49,10 +49,6 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
     kBottomRight,
   };
 
-  // Public so it can be used by unit tests.
-  constexpr static char kFloatWindowCountsPerSessionHistogramName[] =
-      "Ash.Float.FloatWindowCountsPerSession";
-
   FloatController();
   FloatController(const FloatController&) = delete;
   FloatController& operator=(const FloatController&) = delete;
@@ -143,7 +139,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   friend class DefaultState;
   friend class TabletModeWindowState;
   friend class WindowFloatTest;
-  FRIEND_TEST_ALL_PREFIXES(WindowFloatTest, FloatWindowCountPerSession);
+  FRIEND_TEST_ALL_PREFIXES(WindowFloatMetricsTest, FloatWindowCountPerSession);
 
   // Calls `FloatImpl()` and additionally updates the magnetism if needed.
   void FloatForTablet(aura::Window* window,

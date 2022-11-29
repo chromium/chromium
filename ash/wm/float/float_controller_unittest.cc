@@ -36,6 +36,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/header_view.h"
@@ -83,10 +84,10 @@ bool IsVisiblyAnimating(aura::Window* window) {
 class WindowFloatTest : public AshTestBase {
  public:
   WindowFloatTest() = default;
-
+  explicit WindowFloatTest(base::test::TaskEnvironment::TimeSource time)
+      : AshTestBase(time) {}
   WindowFloatTest(const WindowFloatTest&) = delete;
   WindowFloatTest& operator=(const WindowFloatTest&) = delete;
-
   ~WindowFloatTest() override = default;
 
   // Creates a floated application window.
@@ -644,8 +645,21 @@ TEST_F(WindowFloatTest, FloatWindowUpdatedOnOverview) {
   EXPECT_EQ(window.get(), overview_items[0]->GetWindow());
 }
 
+// A test class that uses a mock time test environment.
+class WindowFloatMetricsTest : public WindowFloatTest {
+ public:
+  WindowFloatMetricsTest()
+      : WindowFloatTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  WindowFloatMetricsTest(const WindowFloatMetricsTest&) = delete;
+  WindowFloatMetricsTest& operator=(const WindowFloatMetricsTest&) = delete;
+  ~WindowFloatMetricsTest() override = default;
+
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
 // Tests the float window counts.
-TEST_F(WindowFloatTest, FloatWindowCountPerSession) {
+TEST_F(WindowFloatMetricsTest, FloatWindowCountPerSession) {
   // Float a window, Tests that it counts properly.
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
 
@@ -658,7 +672,63 @@ TEST_F(WindowFloatTest, FloatWindowCountPerSession) {
   NewDesk();
   std::unique_ptr<aura::Window> window_2 = CreateFloatedWindow();
   // Check total counts.
-  DCHECK_EQ(Shell::Get()->float_controller()->floated_window_counter_, 3);
+  EXPECT_EQ(Shell::Get()->float_controller()->floated_window_counter_, 3);
+}
+
+// Tests that the float window duration histogram is properly recorded.
+TEST_F(WindowFloatMetricsTest, FloatWindowDuration) {
+  constexpr char kHistogramName[] = "Ash.Float.FloatWindowDuration";
+
+  auto* desks_controller = DesksController::Get();
+  NewDesk();
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  // Float the window for 3 minutes and then maximize it. Tests that it records
+  // properly.
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  task_environment()->AdvanceClock(base::Minutes(3));
+  task_environment()->RunUntilIdle();
+  WindowState::Get(window.get())->Maximize();
+  histogram_tester_.ExpectBucketCount(kHistogramName, 3, 1);
+
+  // Float again for 3 hours. Test that it records into a different bucket.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  task_environment()->AdvanceClock(base::Hours(3));
+  task_environment()->RunUntilIdle();
+  WindowState::Get(window.get())->Maximize();
+  histogram_tester_.ExpectBucketCount(kHistogramName, 180, 1);
+
+  // Activate desk 2. At this point the floated window is still in floated
+  // state, but is hidden, so we treat it as if a float session has ended.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  task_environment()->AdvanceClock(base::Minutes(3));
+  task_environment()->RunUntilIdle();
+  ActivateDesk(desks_controller->desks()[1].get());
+  histogram_tester_.ExpectBucketCount(kHistogramName, 3, 2);
+
+  // Activate desk 1. The floated window will be visible again and we start
+  // recording the float session. Sending the window to desk 2 should record
+  // the float duration.
+  ActivateDesk(desks_controller->desks()[0].get());
+  task_environment()->AdvanceClock(base::Minutes(3));
+  task_environment()->RunUntilIdle();
+  desks_controller->SendToDeskAtIndex(window.get(), 1);
+  histogram_tester_.ExpectBucketCount(kHistogramName, 3, 3);
+
+  // Activate desk 2. The floated window will be visible again and we start
+  // recording the float session. Hiding and reshowing the window should not
+  // record, this is to simulate hiding and reshowing while staying on the
+  // active desk (i.e. showing the saved desks library).
+  ActivateDesk(desks_controller->desks()[1].get());
+  window->Hide();
+  task_environment()->AdvanceClock(base::Minutes(3));
+  task_environment()->RunUntilIdle();
+  window->Show();
+  histogram_tester_.ExpectBucketCount(kHistogramName, 3, 3);
+
+  // Closing a window should record the float duration.
+  window.reset();
+  histogram_tester_.ExpectBucketCount(kHistogramName, 3, 4);
 }
 
 class TabletWindowFloatTest : public WindowFloatTest {

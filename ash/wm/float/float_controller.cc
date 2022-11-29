@@ -27,6 +27,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -36,6 +37,12 @@
 #include "ui/display/screen.h"
 
 namespace ash {
+
+constexpr char kFloatWindowCountsPerSessionHistogramName[] =
+    "Ash.Float.FloatWindowCountsPerSession";
+constexpr char kFloatWindowDurationHistogramName[] =
+    "Ash.Float.FloatWindowDuration";
+
 namespace {
 
 // Disables the window's position auto management and returns its original
@@ -94,15 +101,18 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
         desk_(desk) {
     DCHECK(floated_window_);
     floated_window_observation_.Observe(floated_window);
+
+    if (desk->is_active())
+      float_start_time_ = base::TimeTicks::Now();
   }
 
   FloatedWindowInfo(const FloatedWindowInfo&) = delete;
   FloatedWindowInfo& operator=(const FloatedWindowInfo&) = delete;
   ~FloatedWindowInfo() override {
     // Reset the window position auto-managed status if it was auto managed.
-    if (was_position_auto_managed_) {
+    if (was_position_auto_managed_)
       WindowState::Get(floated_window_)->SetWindowPositionManaged(true);
-    }
+    MaybeRecordFloatWindowDuration();
   }
 
   const Desk* desk() const { return desk_; }
@@ -113,6 +123,16 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   MagnetismCorner magnetism_corner() const { return magnetism_corner_; }
   void set_magnetism_corner(MagnetismCorner magnetism_corner) {
     magnetism_corner_ = magnetism_corner;
+  }
+
+  void MaybeRecordFloatWindowDuration() {
+    if (!float_start_time_.is_null()) {
+      base::UmaHistogramCustomCounts(
+          kFloatWindowDurationHistogramName,
+          (base::TimeTicks::Now() - float_start_time_).InMinutes(), 1,
+          base::Days(7).InMinutes(), 100);
+      float_start_time_ = base::TimeTicks();
+    }
   }
 
   void MaybeTuckWindow(bool left) {
@@ -151,6 +171,26 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     Shell::Get()->float_controller()->OnFloatedWindowDestroying(window);
   }
 
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    if (window != floated_window_)
+      return;
+
+    // When a floated window switches desks, it is hidden or shown. We track the
+    // amount of time a floated window is visible on the active desk to avoid
+    // recording the cases if a floated window is floated indefinitely on an
+    // inactive desk. Check if the desk is active as well, as some UI such as
+    // the saved desks library view may temporarily hide the floated window on
+    // the active desk.
+    if (visible && desk_->is_active()) {
+      if (float_start_time_.is_null())
+        float_start_time_ = base::TimeTicks::Now();
+      return;
+    }
+
+    if (!visible && !desk_->is_active())
+      MaybeRecordFloatWindowDuration();
+  }
+
  private:
   // The `floated_window` this object is hosting information for.
   aura::Window* floated_window_;
@@ -173,6 +213,12 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   // ownership, since floated window should only be shown on the desk it belongs
   // to.
   const Desk* desk_;
+
+  // The start time when the floated window is on the active desk. Used for
+  // logging the amount of time a window is floated. Logged when the desk
+  // changes to inactive (when combining desks we can change desks, but remain
+  // on the active desk), or when the window is unfloated.
+  base::TimeTicks float_start_time_;
 
   // The corner the `floated_window_` should be magnetized to.
   // By default it magnetizes to the bottom right when first floated.
