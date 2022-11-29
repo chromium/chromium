@@ -115,6 +115,7 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -185,6 +186,10 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/manifest.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_pref_names.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/policy/printing_restrictions_policy_handler.h"
@@ -525,6 +530,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPasswordProtectionWarningTrigger,
     prefs::kPasswordProtectionWarningTrigger,
     base::Value::Type::INTEGER },
+#if BUILDFLAG(ENABLE_PDF)
+  { key::kPdfLocalFileAccessAllowedForDomains,
+    prefs::kPdfLocalFileAccessAllowedForDomains,
+    base::Value::Type::LIST},
+#endif  // BUILDFLAG(ENABLE_PDF)
   { key::kPolicyRefreshRate,
     policy_prefs::kUserPolicyRefreshRate,
     base::Value::Type::INTEGER },

@@ -7448,6 +7448,8 @@ static_library("browser") {
       "pdf/pdf_extension_util.h",
       "pdf/pdf_frame_util.cc",
       "pdf/pdf_frame_util.h",
+      "pdf/pdf_pref_names.cc",
+      "pdf/pdf_pref_names.h",
     ]
     deps += [
       "//components/pdf/browser",

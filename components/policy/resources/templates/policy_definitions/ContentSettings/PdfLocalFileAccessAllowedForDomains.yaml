@@ -1,0 +1,38 @@
+caption: Allow local file access to file:// URLs on these sites in the PDF Viewer
+
+desc: |-
+  Setting this policy allows the domains listed to access file:// URLs in the PDF Viewer.
+  Adding to the policy allows the domain to access file:// URLs in the PDF Viewer.
+  Removing from the policy disallows the domain from accessing file:// URLs in the PDF Viewer.
+  Leaving the policy unset disallows all domains from accessing file:// URLs in the PDF Viewer.
+
+supported_on:
+- chrome.*:110-
+- chrome_os:110-
+
+future_on:
+- fuchsia
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+default: []
+
+owners:
+- andyphan@chromium.org
+- file://pdf/OWNERS
+
+type: list
+
+schema:
+  items:
+    type: string
+  type: array
+
+example_value:
+- example.com
+- google.com
+
+tags:
+- local-data-access

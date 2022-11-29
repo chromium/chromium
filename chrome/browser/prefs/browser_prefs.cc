@@ -161,6 +161,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/http/http_server_properties_manager.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
@@ -210,6 +211,10 @@
 #include "chrome/browser/offline_pages/prefetch/prefetch_background_task_handler_impl.h"
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_pref_names.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
@@ -1393,6 +1398,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   offline_pages::OfflineMetricsCollectorImpl::RegisterPrefs(registry);
   offline_pages::prefetch_prefs::RegisterPrefs(registry);
 #endif
+
+#if BUILDFLAG(ENABLE_PDF)
+  registry->RegisterListPref(prefs::kPdfLocalFileAccessAllowedForDomains,
+                             base::Value::List());
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   PluginInfoHostImpl::RegisterUserPrefs(registry);

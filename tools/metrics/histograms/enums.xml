@@ -32507,6 +32507,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1035" label="DnsOverHttpsTemplatesWithIdentifiers"/>
   <int value="1036" label="IdleTimeoutActions"/>
   <int value="1037" label="ThrottleNonVisibleCrossOriginIframesAllowed"/>
+  <int value="1038" label="PdfLocalFileAccessAllowedForDomains"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
