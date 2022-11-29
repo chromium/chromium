@@ -24,6 +24,8 @@ source_set("connectivity") {
     "connection.h",
     "fast_pair_advertiser.cc",
     "fast_pair_advertiser.h",
+    "fido_assertion_info.cc",
+    "fido_assertion_info.h",
     "incoming_connection.cc",
     "incoming_connection.h",
     "random_session_id.cc",
