@@ -107,6 +107,7 @@ const CSSValue* ParseInset(const InsetValueSequence& array,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Unsupported inset: value must be length or percent");
+    return nullptr;
   }
 
   return css_value;
