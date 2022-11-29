@@ -4,55 +4,35 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="oobe-dialog-host-styles">
+  #dataUsageLabelContainer {
+    color: var(--google-grey-700); /* #5F6368 */
+    line-height: 18px;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-
-<link rel="import" href="../../components/oobe_icons.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../../components/buttons/oobe_text_button.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
-
-<dom-module id="hw-data-collection-element">
-  <template>
-    <style include="oobe-dialog-host-styles">
-      #dataUsageLabelContainer {
-        color: var(--google-grey-700); /* #5F6368 */
-        line-height: 18px;
-      }
-
-      #dataUsageLabel {
-        cursor: pointer;
-      }
-    </style>
-    <oobe-adaptive-dialog id="dialog" role="dialog">
-      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-      <h1 slot="title">[[i18nDynamic(locale, 'HWDataCollectionTitle')]]</h1>
-      <div slot="content" class="flex layout vertical center-justified">
-        <span inner-h-t-m-l="[[getHWDataCollectionContent_(locale)]]"></span>
-        <div id="logging" class="layout horizontal">
-          <cr-checkbox id="dataUsage" class="layout self-center"
-              checked="{{dataUsageChecked}}" on-change="onDataUsageChanged_"
-              aria-labelledby="usageStatsLabel">
-            <div id="dataUsageLabelContainer">
-              <span id="dataUsageLabel">
-                [[i18nDynamic(locale, 'HWDataCollectionUsageInfo')]]
-              </span>
-            </div>
-          </cr-checkbox>
+  #dataUsageLabel {
+    cursor: pointer;
+  }
+</style>
+<oobe-adaptive-dialog id="dialog" role="dialog">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'HWDataCollectionTitle')]]</h1>
+  <div slot="content" class="flex layout vertical center-justified">
+    <span inner-h-t-m-l="[[getHWDataCollectionContent_(locale)]]"></span>
+    <div id="logging" class="layout horizontal">
+      <cr-checkbox id="dataUsage" class="layout self-center"
+          checked="{{dataUsageChecked}}" on-change="onDataUsageChanged_"
+          aria-labelledby="usageStatsLabel">
+        <div id="dataUsageLabelContainer">
+          <span id="dataUsageLabel">
+            [[i18nDynamic(locale, 'HWDataCollectionUsageInfo')]]
+          </span>
         </div>
-      </div>
-      <div slot="bottom-buttons">
-        <oobe-text-button id="acceptButton" on-click="onAcceptButtonClicked_"
-            inverse text-key="HWDataCollectionNextButton"></oobe-text-button>
-      </div>
-    </oobe-adaptive-dialog>
-  </template>
-  <script src="hw_data_collection.js"></script>
-</dom-module>
+      </cr-checkbox>
+    </div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="acceptButton" on-click="onAcceptButtonClicked_"
+        inverse text-key="HWDataCollectionNextButton"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

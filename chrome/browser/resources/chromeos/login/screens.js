@@ -22,7 +22,7 @@ import './screens/common/fingerprint_setup.js';
 import './screens/common/gaia_signin.js';
 import './screens/common/gesture_navigation.js';
 import './screens/common/guest_tos.js';
-import './screens/common/hw_data_collection.m.js';
+import './screens/common/hw_data_collection.js';
 import './screens/common/local_state_error.js';
 import './screens/common/managed_terms_of_service.js';
 import './screens/common/marketing_opt_in.js';
