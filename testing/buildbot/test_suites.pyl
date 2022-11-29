@@ -7032,7 +7032,6 @@
         'variants': [
           'LACROS_JACUZZI',
         ],
-        'ci_only': True,
       },
     },
 
@@ -7040,12 +7039,14 @@
       'lacros_all_tast_tests': {
         'variants': [
           'LACROS_JACUZZI',
-        ]
+        ],
+        'ci_only': True,
       },
       'lacros_cq_tast_tests_jacuzzi': {
         'variants': [
           'LACROS_JACUZZI',
-        ]
+        ],
+        'ci_only': True,
       },
     },
 
