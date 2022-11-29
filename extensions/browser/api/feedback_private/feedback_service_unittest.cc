@@ -34,6 +34,7 @@ namespace {
 const std::string kFakeKey = "fake key";
 const std::string kFakeValue = "fake value";
 const std::string kTabTitleValue = "some sensitive info";
+const std::string kLacrosMemUsageWithTitleKey = "Lacros mem_usage_with_title";
 
 class MockFeedbackUploader : public FeedbackUploader {
  public:
@@ -111,6 +112,7 @@ class FeedbackServiceTest : public ApiUnitTest {
     feedback_data_->AddLog(kFakeKey, kFakeValue);
     feedback_data_->AddLog(feedback::FeedbackReport::kMemUsageWithTabTitlesKey,
                            kTabTitleValue);
+    feedback_data_->AddLog(kLacrosMemUsageWithTitleKey, kTabTitleValue);
     const FeedbackParams params{/*is_internal_email=*/false,
                                 /*load_system_info=*/false,
                                 /*send_tab_titles=*/send_tab_titles,
@@ -190,12 +192,14 @@ TEST_F(FeedbackServiceTest, SendFeedbackDoNotSendTabTitles) {
   TestSendFeedbackConcerningTabTitles(false);
   EXPECT_EQ(0u, feedback_data_->sys_info()->count(
                     feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
+  EXPECT_EQ(0u, feedback_data_->sys_info()->count(kLacrosMemUsageWithTitleKey));
 }
 
 TEST_F(FeedbackServiceTest, SendFeedbackDoSendTabTitles) {
   TestSendFeedbackConcerningTabTitles(true);
   EXPECT_EQ(1u, feedback_data_->sys_info()->count(
                     feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
+  EXPECT_EQ(1u, feedback_data_->sys_info()->count(kLacrosMemUsageWithTitleKey));
 }
 
 }  // namespace extensions

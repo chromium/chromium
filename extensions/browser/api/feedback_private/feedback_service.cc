@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -77,6 +78,7 @@ void LoadBluetoothLogs(scoped_refptr<feedback::FeedbackData> feedback_data) {
 }
 #endif
 
+constexpr char kLacrosLogEntryPrefix[] = "Lacros ";
 }  // namespace
 
 FeedbackService::FeedbackService(content::BrowserContext* browser_context)
@@ -257,6 +259,10 @@ void FeedbackService::OnAllLogsFetched(
   if (!params.send_tab_titles) {
     feedback_data->RemoveLog(
         feedback::FeedbackReport::kMemUsageWithTabTitlesKey);
+    // On Lacros, the key has a prefix "Lacros ".
+    feedback_data->RemoveLog(
+        base::StrCat({kLacrosLogEntryPrefix,
+                      feedback::FeedbackReport::kMemUsageWithTabTitlesKey}));
   }
   feedback_data->CompressSystemInfo();
 
