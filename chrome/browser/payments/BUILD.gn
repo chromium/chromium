@@ -19,6 +19,7 @@ source_set("browser_tests") {
     "ignore_payment_method_browsertest.cc",
     "journey_logger_browsertest.cc",
     "load_and_remove_iframe_with_many_payment_requests_browsertest.cc",
+    "payment_handler_change_payment_method_browsertest.cc",
     "payment_handler_change_shipping_address_option_browsertest.cc",
     "payment_handler_enable_delegations_browsertest.cc",
     "payment_handler_enforce_full_delegation_browsertest.cc",

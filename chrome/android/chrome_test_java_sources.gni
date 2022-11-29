@@ -327,7 +327,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/payments/MockPackageManagerDelegate.java",
   "javatests/src/org/chromium/chrome/browser/payments/MockPaymentApp.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentDetailsUpdateServiceHelperTest.java",
-  "javatests/src/org/chromium/chrome/browser/payments/PaymentHandlerChangePaymentMethodTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentHandlerEnableDelegationsTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentManifestDownloaderTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentManifestParserTest.java",

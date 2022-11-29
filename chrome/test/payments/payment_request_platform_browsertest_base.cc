@@ -21,6 +21,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "url/origin.h"
 
 namespace payments {
 
@@ -237,7 +238,10 @@ std::string PaymentRequestPlatformBrowserTestBase::ClearPortNumber(
              may_contain_method_url,
              "(.*\"supportedMethods\":\")(https://.*)(\",\"total\".*)", &before,
              &method, &after)
-             ? before + GURL(method).ReplaceComponents(port).spec() + after
+             ? before +
+                   url::Origin::Create(GURL(method).ReplaceComponents(port))
+                       .Serialize() +
+                   after
              : may_contain_method_url;
 }
 

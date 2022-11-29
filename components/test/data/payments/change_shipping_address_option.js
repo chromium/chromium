@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-let methodName = window.location.origin + '/pay';
+let methodName = window.location.origin;
 let request = undefined;
 
 /**
@@ -160,7 +160,7 @@ function initTestDetails(eventType) {
           ],
         },
         {
-          supportedMethods: methodName + '2',
+          supportedMethods: methodName + '/other',
           data: {soup: 'tomato'},
           total: {
             label: 'Modified total #2',
