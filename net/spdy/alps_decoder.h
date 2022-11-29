@@ -113,6 +113,9 @@ class NET_EXPORT_PRIVATE AlpsDecoder {
     // Returns an error code, or Error::kNoError if no error has occurred.
     Error error() const { return error_; }
 
+    // Returns an error code if it was bypassed, or Error::kNoError if no error was bypassed.
+    Error error_bypass() const { return error_bypass_; }
+
     // ExtensionVisitorInterface implementation.
 
     // Settings are parsed in a SpdyFramerVisitorInterface implementation,
@@ -131,6 +134,7 @@ class NET_EXPORT_PRIVATE AlpsDecoder {
     std::vector<spdy::AcceptChOriginValuePair> accept_ch_;
 
     Error error_ = Error::kNoError;
+    Error error_bypass_ = Error::kNoError;
   };
 
   SettingsParser settings_parser_;

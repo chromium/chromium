@@ -361,8 +361,9 @@ TEST_P(AlpsDecoderTestWithFeature, MalformedAcceptChFrame) {
     AlpsDecoder::Error error = decoder.Decode(frame);
     if (ShouldKillSessionOnAcceptChMalformed()) {
       EXPECT_EQ(AlpsDecoder::Error::kAcceptChMalformed, error);
-      histogram_tester.ExpectTotalCount(
-          "Net.SpdySession.AlpsDecoderStatus.Bypassed", 0);
+      histogram_tester.ExpectUniqueSample(
+          "Net.SpdySession.AlpsDecoderStatus.Bypassed",
+          static_cast<int>(AlpsDecoder::Error::kNoError), 1);
     } else {
       EXPECT_EQ(AlpsDecoder::Error::kNoError, error);
       histogram_tester.ExpectUniqueSample(

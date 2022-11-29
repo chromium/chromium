@@ -41,6 +41,11 @@ AlpsDecoder::~AlpsDecoder() = default;
 AlpsDecoder::Error AlpsDecoder::Decode(base::span<const char> data) {
   decoder_adapter_.ProcessInput(data.data(), data.size());
 
+  // Log if any errors were bypassed.
+  base::UmaHistogramEnumeration(
+      "Net.SpdySession.AlpsDecoderStatus.Bypassed",
+      accept_ch_parser_.error_bypass());
+
   if (decoder_adapter_.HasError()) {
     return Error::kFramingError;
   }
@@ -152,9 +157,7 @@ void AlpsDecoder::AcceptChParser::OnFramePayload(const char* data, size_t len) {
         return;
       } else {
         // This logs that a session termination was bypassed.
-        base::UmaHistogramEnumeration(
-            "Net.SpdySession.AlpsDecoderStatus.Bypassed",
-            Error::kAcceptChMalformed);
+        error_bypass_ = Error::kAcceptChMalformed;
         return;
       }
     }
