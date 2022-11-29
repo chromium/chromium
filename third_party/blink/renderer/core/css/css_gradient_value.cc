@@ -32,6 +32,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -821,15 +822,13 @@ bool CSSGradientValue::ShouldSerializeColorSpace() const {
   if (color_interpolation_space_ == Color::ColorInterpolationSpace::kNone)
     return false;
 
-  bool has_only_legacy_colors = true;
-  for (const auto& stop : stops_) {
-    const CSSValue* value = stop.color_;
-    if (value->IsColorValue()) {
-      Color color = static_cast<const cssvalue::CSSColor*>(value)->Value();
-      if (!color.IsLegacyColor())
-        has_only_legacy_colors = false;
-    }
-  }
+  bool has_only_legacy_colors =
+      base::ranges::all_of(stops_, [](const CSSGradientColorStop& stop) {
+        const auto* color_value =
+            DynamicTo<cssvalue::CSSColor>(stop.color_.Get());
+        return !color_value || color_value->Value().IsLegacyColor();
+      });
+
   // OKLab is the default and should not be serialized unless all colors are
   // legacy colors.
   if (!has_only_legacy_colors &&
