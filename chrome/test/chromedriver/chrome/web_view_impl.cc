@@ -1335,19 +1335,19 @@ Status WebViewImpl::CallAsyncFunctionInternal(
       return status;
     }
 
-    base::DictionaryValue* result_info = nullptr;
-    if (!query_value->GetAsDictionary(&result_info))
+    base::Value::Dict* result_info = query_value->GetIfDict();
+    if (!result_info)
       return Status(kUnknownError, "async result info is not a dictionary");
-    absl::optional<int> status_code = result_info->FindIntKey("status");
+    absl::optional<int> status_code = result_info->FindInt("status");
     if (!status_code)
       return Status(kUnknownError, "async result info has no int 'status'");
     if (*status_code != kOk) {
-      std::string message;
-      result_info->GetString("value", &message);
-      return Status(static_cast<StatusCode>(*status_code), message);
+      const std::string* message = result_info->FindString("value");
+      return Status(static_cast<StatusCode>(*status_code),
+                    message ? *message : "");
     }
 
-    if (base::Value* value = result_info->FindKey("value")) {
+    if (base::Value* value = result_info->Find("value")) {
       *result = base::Value::ToUniquePtrValue(value->Clone());
       return Status(kOk);
     }
@@ -1567,20 +1567,20 @@ Status EvaluateScriptAndGetValue(DevToolsClient* client,
 
 Status ParseCallFunctionResult(const base::Value& temp_result,
                                std::unique_ptr<base::Value>* result) {
-  const base::DictionaryValue* dict;
-  if (!temp_result.GetAsDictionary(&dict))
+  const base::Value::Dict* dict = temp_result.GetIfDict();
+  if (!dict)
     return Status(kUnknownError, "call function result must be a dictionary");
-  absl::optional<int> status_code = dict->FindIntKey("status");
+  absl::optional<int> status_code = dict->FindInt("status");
   if (!status_code) {
     return Status(kUnknownError,
                   "call function result missing int 'status'");
   }
   if (*status_code != kOk) {
-    std::string message;
-    dict->GetString("value", &message);
-    return Status(static_cast<StatusCode>(*status_code), message);
+    const std::string* message = dict->FindString("value");
+    return Status(static_cast<StatusCode>(*status_code),
+                  message ? *message : "");
   }
-  const base::Value* unscoped_value = dict->FindKey("value");
+  const base::Value* unscoped_value = dict->Find("value");
   if (unscoped_value == nullptr) {
     // Missing 'value' indicates the JavaScript code didn't return a value.
     return Status(kOk);

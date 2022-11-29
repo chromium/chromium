@@ -1133,7 +1133,7 @@ void HttpHandler::HandleCommand(
     const net::HttpServerRequestInfo& request,
     const std::string& trimmed_path,
     const HttpResponseSenderFunc& send_response_func) {
-  base::DictionaryValue params;
+  base::Value::Dict params;
   std::string session_id;
   CommandMap::const_iterator iter = command_map_->begin();
   while (true) {
@@ -1159,10 +1159,11 @@ void HttpHandler::HandleCommand(
   }
 
   if (request.data.length()) {
-    base::DictionaryValue* body_params;
     std::unique_ptr<base::Value> parsed_body =
         base::JSONReader::ReadDeprecated(request.data);
-    if (!parsed_body || !parsed_body->GetAsDictionary(&body_params)) {
+    base::Value::Dict* body_params =
+        parsed_body ? parsed_body->GetIfDict() : nullptr;
+    if (!body_params) {
       if (w3cMode(session_id, session_thread_map_)) {
         PrepareResponse(trimmed_path, send_response_func,
                         Status(kInvalidArgument, "missing command parameters"),
@@ -1175,7 +1176,7 @@ void HttpHandler::HandleCommand(
       }
       return;
     }
-    params.MergeDictionary(body_params);
+    params.Merge(std::move(*body_params));
   } else if (iter->method == kPost &&
              w3cMode(session_id, session_thread_map_)) {
     // Data in JSON format is required for POST requests. See step 5 of
@@ -1186,7 +1187,7 @@ void HttpHandler::HandleCommand(
     return;
   }
   // Pass host instead for potential WebSocketUrl if it's a new session
-  iter->command.Run(params.GetDict(),
+  iter->command.Run(params,
                     internal::IsNewSession(*iter)
                         ? request.GetHeaderValue("host")
                         : session_id,
@@ -1641,7 +1642,7 @@ bool MatchesCommand(const std::string& method,
                     const std::string& path,
                     const CommandMapping& command,
                     std::string* session_id,
-                    base::DictionaryValue* out_params) {
+                    base::Value::Dict* out_params) {
   if (!MatchesMethod(command.method, method))
     return false;
 
@@ -1652,7 +1653,7 @@ bool MatchesCommand(const std::string& method,
   if (path_parts.size() != command_path_parts.size())
     return false;
 
-  base::DictionaryValue params;
+  base::Value::Dict params;
   for (size_t i = 0; i < path_parts.size(); ++i) {
     CHECK(command_path_parts[i].length());
     if (command_path_parts[i][0] == ':') {
@@ -1672,12 +1673,12 @@ bool MatchesCommand(const std::string& method,
       if (name == "sessionId")
         *session_id = decoded;
       else
-        params.SetString(name, decoded);
+        params.Set(name, decoded);
     } else if (command_path_parts[i] != path_parts[i]) {
       return false;
     }
   }
-  out_params->MergeDictionary(&params);
+  out_params->Merge(std::move(params));
   return true;
 }
 

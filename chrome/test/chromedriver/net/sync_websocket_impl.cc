@@ -164,12 +164,13 @@ void SyncWebSocketImpl::Core::DetermineRecipient(const std::string& message,
                                                  bool* send_to_chromedriver) {
   absl::optional<base::Value> message_value =
       base::JSONReader::Read(message, base::JSON_REPLACE_INVALID_CHARACTERS);
-  base::DictionaryValue* message_dict;
-  if (!message_value || !message_value->GetAsDictionary(&message_dict)) {
+  base::Value::Dict* message_dict =
+      message_value ? message_value->GetIfDict() : nullptr;
+  if (!message_dict) {
     *send_to_chromedriver = true;
     return;
   }
-  base::Value* id = message_dict->FindKey("id");
+  base::Value* id = message_dict->Find("id");
   *send_to_chromedriver =
       id == nullptr ||
       (id->is_int() && CommandId::IsChromeDriverCommandId(id->GetInt()));

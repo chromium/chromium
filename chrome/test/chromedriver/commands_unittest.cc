@@ -41,15 +41,15 @@ void OnGetStatus(const Status& status,
                  const std::string& session_id,
                  bool w3c_compliant) {
   ASSERT_EQ(kOk, status.code());
-  base::DictionaryValue* dict;
-  ASSERT_TRUE(value->GetAsDictionary(&dict));
-  absl::optional<bool> ready = dict->FindBoolKey("ready");
+  base::Value::Dict* dict = value->GetIfDict();
+  ASSERT_TRUE(dict);
+  absl::optional<bool> ready = dict->FindBool("ready");
   ASSERT_TRUE(ready.has_value() && ready.value());
-  ASSERT_TRUE(dict->FindKey("message"));
-  ASSERT_TRUE(dict->FindPath("os.name"));
-  ASSERT_TRUE(dict->FindPath("os.version"));
-  ASSERT_TRUE(dict->FindPath("os.arch"));
-  ASSERT_TRUE(dict->FindPath("build.version"));
+  ASSERT_TRUE(dict->Find("message"));
+  ASSERT_TRUE(dict->FindByDottedPath("os.name"));
+  ASSERT_TRUE(dict->FindByDottedPath("os.version"));
+  ASSERT_TRUE(dict->FindByDottedPath("os.arch"));
+  ASSERT_TRUE(dict->FindByDottedPath("build.version"));
 }
 
 }  // namespace

@@ -116,10 +116,10 @@ TEST(ProcessExtensions, SingleExtensionWithBgPage) {
   std::unique_ptr<base::Value> manifest =
       base::JSONReader::ReadDeprecated(manifest_txt);
   ASSERT_TRUE(manifest);
-  base::DictionaryValue* manifest_dict = nullptr;
-  ASSERT_TRUE(manifest->GetAsDictionary(&manifest_dict));
-  std::string key;
-  ASSERT_TRUE(manifest_dict->GetString("key", &key));
+  base::Value::Dict* manifest_dict = manifest->GetIfDict();
+  ASSERT_TRUE(manifest_dict);
+  std::string* key = manifest_dict->FindString("key");
+  ASSERT_TRUE(key);
   ASSERT_EQ(
       "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAxbE7gPHcoZQX7Nv1Tpq8Osz3hhC"
       "fUPZpMCcsYALXYsICUMdFNPvsq4AsfzcIJN2Qc6C9GwlDgBEYQgC6zD9ULoSnHu3iJem49b"
@@ -132,7 +132,7 @@ TEST(ProcessExtensions, SingleExtensionWithBgPage) {
       "dnQtotb3/wuPvRFXqU0o0SAeEwGRoOxr6WqkOLuBuvwNtcKc/cCqxWMlcnId5TWX+tPEpUM"
       "4Imgbf6jIB2FPpSXQMLHQkag+k95aiXqkpirlhUaBA5yrClFLjw+Ld2yqJfh961yncxF+IB"
       "EmivSdNH0cYZBISf8CAwEAAQ==",
-      key);
+      *key);
   ASSERT_EQ(1u, bg_pages.size());
   ASSERT_EQ(
       "chrome-extension://ejapkfeonjhabbbnlpmcgholnoicapdb/"
@@ -183,17 +183,6 @@ TEST(ProcessExtensions, CommandLineExtensions) {
   ASSERT_TRUE(base::PathExists(base::FilePath(load.substr(3))));
 }
 
-namespace {
-
-void AssertEQ(const base::DictionaryValue& dict, const std::string& key,
-              const char* expected_value) {
-  std::string value;
-  ASSERT_TRUE(dict.GetString(key, &value));
-  ASSERT_STREQ(value.c_str(), expected_value);
-}
-
-}  // namespace
-
 TEST(PrepareUserDataDir, CustomPrefs) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -213,23 +202,22 @@ TEST(PrepareUserDataDir, CustomPrefs) {
                                   .Append(chrome::kPreferencesFilename);
   std::string prefs_str;
   ASSERT_TRUE(base::ReadFileToString(prefs_file, &prefs_str));
-  std::unique_ptr<base::Value> prefs_value =
-      base::JSONReader::ReadDeprecated(prefs_str);
-  const base::DictionaryValue* prefs_dict = nullptr;
-  ASSERT_TRUE(prefs_value->GetAsDictionary(&prefs_dict));
-  AssertEQ(*prefs_dict, "myPrefsKey", "ok");
-  AssertEQ(*prefs_dict, "pref.sub", "1");
+  absl::optional<base::Value> prefs_value = base::JSONReader::Read(prefs_str);
+  const base::Value::Dict* prefs_dict = prefs_value->GetIfDict();
+  ASSERT_TRUE(prefs_dict);
+  EXPECT_EQ("ok", *prefs_dict->FindString("myPrefsKey"));
+  EXPECT_EQ("1", *prefs_dict->FindStringByDottedPath("pref.sub"));
 
   base::FilePath local_state_file =
       temp_dir.GetPath().Append(chrome::kLocalStateFilename);
   std::string local_state_str;
   ASSERT_TRUE(base::ReadFileToString(local_state_file, &local_state_str));
-  std::unique_ptr<base::Value> local_state_value =
-      base::JSONReader::ReadDeprecated(local_state_str);
-  const base::DictionaryValue* local_state_dict = nullptr;
-  ASSERT_TRUE(local_state_value->GetAsDictionary(&local_state_dict));
-  AssertEQ(*local_state_dict, "myLocalKey", "ok");
-  AssertEQ(*local_state_dict, "local.state.sub", "2");
+  absl::optional<base::Value> local_state_value =
+      base::JSONReader::Read(local_state_str);
+  const base::Value::Dict* local_state_dict = local_state_value->GetIfDict();
+  ASSERT_TRUE(local_state_dict);
+  EXPECT_EQ("ok", *local_state_dict->FindString("myLocalKey"));
+  EXPECT_EQ("2", *local_state_dict->FindStringByDottedPath("local.state.sub"));
 }
 
 TEST(DesktopLauncher, ParseDevToolsActivePortFile_Success) {

@@ -26,7 +26,6 @@
 #include "net/http/http_status_code.h"
 
 namespace base {
-class DictionaryValue;
 class SingleThreadTaskRunner;
 }
 
@@ -183,7 +182,7 @@ bool MatchesCommand(const std::string& method,
                     const std::string& path,
                     const CommandMapping& command,
                     std::string* session_id,
-                    base::DictionaryValue* out_params);
+                    base::Value::Dict* out_params);
 
 bool IsNewSession(const CommandMapping& command);
 

@@ -1209,23 +1209,23 @@ bool ParseInspectorMessage(const std::string& message,
   // strings. For example, webplatform tests use this to check string handling
   std::unique_ptr<base::Value> message_value = base::JSONReader::ReadDeprecated(
       message, base::JSON_REPLACE_INVALID_CHARACTERS);
-  base::DictionaryValue* message_dict;
-  if (!message_value || !message_value->GetAsDictionary(&message_dict))
+  base::Value::Dict* message_dict =
+      message_value ? message_value->GetIfDict() : nullptr;
+  if (!message_dict)
     return false;
   session_id->clear();
-  if (const std::string* str = message_dict->FindStringKey("sessionId"))
+  if (const std::string* str = message_dict->FindString("sessionId"))
     *session_id = *str;
 
-  base::Value* id_value = message_dict->FindKey("id");
+  base::Value* id_value = message_dict->Find("id");
   if (!id_value) {
-    std::string method;
-    if (!message_dict->GetString("method", &method))
+    const std::string* method = message_dict->FindString("method");
+    if (!method)
       return false;
-    base::DictionaryValue* params = nullptr;
     bool is_bidi_message = false;
-    if (message_dict->GetDictionary("params", &params)) {
-      Status status =
-          IsBidiMessage(method, params->GetDict(), &is_bidi_message);
+    base::Value::Dict* params = message_dict->FindDict("params");
+    if (params) {
+      Status status = IsBidiMessage(*method, *params, &is_bidi_message);
       if (status.IsError()) {
         LOG(WARNING) << status.message();
         return false;
@@ -1234,7 +1234,7 @@ bool ParseInspectorMessage(const std::string& message,
 
     if (is_bidi_message) {
       base::Value::Dict payload;
-      Status status = DeserializePayload(params->GetDict(), &payload);
+      Status status = DeserializePayload(*params, &payload);
       if (status.IsError()) {
         LOG(WARNING) << status.message();
         return false;
@@ -1320,21 +1320,19 @@ bool ParseInspectorMessage(const std::string& message,
 
       // Replace the payload string with the deserialized value to avoid
       // double deserialization in the BidiTracker.
-      params->GetDict().Set("payload", std::move(payload));
+      params->Set("payload", std::move(payload));
     }  // BiDi message
 
     *type = kEventMessageType;
-    event->method = method;
+    event->method = *method;
     if (params) {
       event->params = base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(params->Clone()));
+          base::Value::ToUniquePtrValue(base::Value(params->Clone())));
     } else {
       event->params = std::make_unique<base::DictionaryValue>();
     }
     return true;
   } else if (id_value->is_int()) {
-    base::DictionaryValue* unscoped_error = nullptr;
-    base::DictionaryValue* unscoped_result = nullptr;
     *type = kCommandResponseMessageType;
     command_response->id = id_value->GetInt();
     // As per Chromium issue 392577, DevTools does not necessarily return a
@@ -1342,10 +1340,11 @@ bool ParseInspectorMessage(const std::string& message,
     // Tracing.start and Tracing.end command responses do not contain one.
     // So, if neither "error" nor "result" keys are present, just provide
     // a blank result dictionary.
-    if (message_dict->GetDictionary("result", &unscoped_result)) {
+    if (base::Value::Dict* unscoped_result = message_dict->FindDict("result")) {
       command_response->result = base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(unscoped_result->Clone()));
-    } else if (message_dict->GetDictionary("error", &unscoped_error)) {
+          base::Value::ToUniquePtrValue(base::Value(unscoped_result->Clone())));
+    } else if (base::Value::Dict* unscoped_error =
+                   message_dict->FindDict("error")) {
       base::JSONWriter::Write(*unscoped_error, &command_response->error);
     } else {
       command_response->result = std::make_unique<base::DictionaryValue>();
@@ -1358,12 +1357,12 @@ bool ParseInspectorMessage(const std::string& message,
 Status ParseInspectorError(const std::string& error_json) {
   std::unique_ptr<base::Value> error =
       base::JSONReader::ReadDeprecated(error_json);
-  base::DictionaryValue* error_dict;
-  if (!error || !error->GetAsDictionary(&error_dict))
+  base::Value::Dict* error_dict = error ? error->GetIfDict() : nullptr;
+  if (!error_dict)
     return Status(kUnknownError, "inspector error with no error message");
 
-  absl::optional<int> maybe_code = error_dict->FindIntKey("code");
-  std::string* maybe_message = error_dict->FindStringKey("message");
+  absl::optional<int> maybe_code = error_dict->FindInt("code");
+  std::string* maybe_message = error_dict->FindString("message");
 
   if (maybe_code.has_value()) {
     if (maybe_code.value() == kCdpMethodNotFoundCode) {
@@ -1393,7 +1392,7 @@ Status ParseInspectorError(const std::string& error_json) {
       // we have to rely on the error message content.
       return Status(kNoSuchFrame, error_message);
     }
-    absl::optional<int> error_code = error_dict->FindIntPath("code");
+    absl::optional<int> error_code = error_dict->FindInt("code");
     if (error_code == kInvalidParamsInspectorCode) {
       if (error_message == kNoTargetWithGivenIdError) {
         return Status(kNoSuchWindow, error_message);

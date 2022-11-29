@@ -677,16 +677,16 @@ Status ExecuteSendKeysToElement(Session* session,
                                     args, &result);
     if (status.IsError())
       return status;
-    const base::DictionaryValue* element_dict;
-    std::string top_element_id;
-    if (!result->GetAsDictionary(&element_dict) ||
-        !element_dict->GetString(GetElementKey(), &top_element_id))
+    const base::Value::Dict* element_dict = result->GetIfDict();
+    const std::string* top_element_id =
+        element_dict ? element_dict->FindString(GetElementKey()) : nullptr;
+    if (!top_element_id)
       return Status(kUnknownError, "no element reference returned by script");
 
     // check if top level contentEditable element is focused
     bool is_top_focused = false;
     status =
-        IsElementFocused(session, web_view, top_element_id, &is_top_focused);
+        IsElementFocused(session, web_view, *top_element_id, &is_top_focused);
     if (status.IsError())
       return status;
     // If is_text we want to send keys to the element
@@ -713,7 +713,7 @@ Status ExecuteSendKeysToElement(Session* session,
     }
     // Use top level element id for the purpose of focusing
     if (!is_text) {
-      return SendKeysToElement(session, web_view, top_element_id, is_text,
+      return SendKeysToElement(session, web_view, *top_element_id, is_text,
                                key_list);
     }
   }
@@ -970,27 +970,27 @@ Status ExecuteGetElementRect(Session* session,
     return status;
 
   // do type conversions
-  base::DictionaryValue* size_dict;
-  if (!size->GetAsDictionary(&size_dict))
-    return Status(kUnknownError, "could not convert to DictionaryValue");
-  base::DictionaryValue* location_dict;
-  if (!location->GetAsDictionary(&location_dict))
-    return Status(kUnknownError, "could not convert to DictionaryValue");
+  base::Value::Dict* size_dict = size->GetIfDict();
+  if (!size_dict)
+    return Status(kUnknownError, "could not convert to Value::Dict");
+  base::Value::Dict* location_dict = location->GetIfDict();
+  if (!location_dict)
+    return Status(kUnknownError, "could not convert to Value::Dict");
 
   // grab values
-  absl::optional<double> maybe_x = location_dict->FindDoubleKey("x");
+  absl::optional<double> maybe_x = location_dict->FindDouble("x");
   if (!maybe_x.has_value())
     return Status(kUnknownError, "x coordinate is missing in element location");
 
-  absl::optional<double> maybe_y = location_dict->FindDoubleKey("y");
+  absl::optional<double> maybe_y = location_dict->FindDouble("y");
   if (!maybe_y.has_value())
     return Status(kUnknownError, "y coordinate is missing in element location");
 
-  absl::optional<double> maybe_height = size_dict->FindDoubleKey("height");
+  absl::optional<double> maybe_height = size_dict->FindDouble("height");
   if (!maybe_height.has_value())
     return Status(kUnknownError, "height is missing in element size");
 
-  absl::optional<double> maybe_width = size_dict->FindDoubleKey("width");
+  absl::optional<double> maybe_width = size_dict->FindDouble("width");
   if (!maybe_width.has_value())
     return Status(kUnknownError, "width is missing in element size");
 

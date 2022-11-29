@@ -927,8 +927,8 @@ Status ExecuteSwitchToFrame(Session* session,
       session->GetCurrentFrameId(), script, args, &result);
   if (status.IsError())
     return status;
-  const base::DictionaryValue* element;
-  if (!result->GetAsDictionary(&element))
+  const base::Value::Dict* element = result->GetIfDict();
+  if (!element)
     return Status(kUnknownError, "fail to locate the sub frame element");
 
   std::string chrome_driver_id = GenerateId();
