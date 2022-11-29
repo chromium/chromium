@@ -6,6 +6,7 @@
 
 #include <winstring.h>
 
+#include <ostream>
 #include <string>
 
 #include "base/check.h"
