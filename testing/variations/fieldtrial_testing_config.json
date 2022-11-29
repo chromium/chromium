@@ -791,7 +791,7 @@
                         "colorful_mic": "false",
                         "enable_multi_account_check": "false",
                         "experiment_id": "48114790",
-                        "min_agsa_version": "13.37"
+                        "min_agsa_version": "13.45"
                     },
                     "enable_features": [
                         "AssistantIntentExperimentId",
@@ -3804,7 +3804,7 @@
             ]
         }
     ],
-    "DesktopPartialTranslate": [
+    "DesktopPartialTranslateGWSVisible": [
         {
             "platforms": [
                 "linux",
@@ -3813,7 +3813,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20221129",
                     "params": {
                         "DesktopPartialTranslateTextSelectionMaxCharacters": "500"
                     },
