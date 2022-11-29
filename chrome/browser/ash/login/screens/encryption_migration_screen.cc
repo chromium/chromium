@@ -27,9 +27,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
-#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -478,44 +475,33 @@ void EncryptionMigrationScreen::StartMigration() {
   if (current_battery_percent_)
     initial_battery_percent_ = *current_battery_percent_;
 
-  // Mount the existing eCryptfs vault to a temporary location for migration.
-  user_data_auth::MountRequest mount;
-  *mount.mutable_account() = cryptohome::CreateAccountIdentifierFromAccountId(
-      user_context_->GetAccountId());
-  cryptohome::AuthorizationRequest auth_request;
-  mount.set_to_migrate_from_ecryptfs(true);
-  if (IsArcKiosk()) {
-    mount.set_public_mount(true);
-  } else {
-    auth_request = CreateAuthorizationRequest();
-  }
-  *mount.mutable_authorization() = auth_request;
-  UserDataAuthClient::Get()->Mount(
-      mount, base::BindOnce(&EncryptionMigrationScreen::OnMountExistingVault,
-                            weak_ptr_factory_.GetWeakPtr()));
+  mount_performer_.MountForMigration(
+      std::move(user_context_),
+      base::BindOnce(&EncryptionMigrationScreen::OnMountExistingVault,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EncryptionMigrationScreen::OnMountExistingVault(
-    absl::optional<user_data_auth::MountReply> reply) {
-  cryptohome::MountError return_code = user_data_auth::ReplyToMountError(reply);
-  if (return_code != cryptohome::MOUNT_ERROR_NONE) {
+    std::unique_ptr<UserContext> context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    user_context_ = std::move(context);
     RecordMigrationResultMountFailure(IsResumingIncompleteMigration(),
                                       IsArcKiosk());
     UpdateUIState(EncryptionMigrationScreenView::MIGRATION_FAILED);
-    LOG(ERROR) << "Mount existing vault failed. Error: " << return_code;
+    LOG(ERROR) << "Mount existing vault failed. Error: "
+               << error->get_cryptohome_code();
     return;
   }
 
-  user_data_auth::StartMigrateToDircryptoRequest request;
-  *request.mutable_account_id() =
-      cryptohome::CreateAccountIdentifierFromAccountId(
-          user_context_->GetAccountId());
   userdataauth_observer_ = std::make_unique<base::ScopedObservation<
       UserDataAuthClient, UserDataAuthClient::Observer>>(this);
   userdataauth_observer_->Observe(UserDataAuthClient::Get());
-  UserDataAuthClient::Get()->StartMigrateToDircrypto(
-      request, base::BindOnce(&EncryptionMigrationScreen::OnMigrationRequested,
-                              weak_ptr_factory_.GetWeakPtr()));
+
+  mount_performer_.MigrateToDircrypto(
+      std::move(context),
+      base::BindOnce(&EncryptionMigrationScreen::OnMigrationRequested,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 device::mojom::WakeLock* EncryptionMigrationScreen::GetWakeLock() {
@@ -544,47 +530,28 @@ void EncryptionMigrationScreen::RemoveCryptohome() {
   user_manager::UserManager::Get()->SaveUserOAuthStatus(
       user_context_->GetAccountId(),
       user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);
-
-  const cryptohome::Identification cryptohome_id(user_context_->GetAccountId());
-
-  user_data_auth::RemoveRequest request;
-  request.mutable_identifier()->set_account_id(cryptohome_id.id());
-  UserDataAuthClient::Get()->Remove(
-      request, base::BindOnce(&EncryptionMigrationScreen::OnRemoveCryptohome,
-                              weak_ptr_factory_.GetWeakPtr()));
+  mount_performer_.RemoveUserDirectory(
+      std::move(user_context_),
+      base::BindOnce(&EncryptionMigrationScreen::OnRemoveCryptohome,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EncryptionMigrationScreen::OnRemoveCryptohome(
-    absl::optional<user_data_auth::RemoveReply> reply) {
-  cryptohome::MountError error = user_data_auth::ReplyToMountError(reply);
-  if (error == cryptohome::MOUNT_ERROR_NONE) {
+    std::unique_ptr<UserContext> context,
+    absl::optional<AuthenticationError> error) {
+  user_context_ = std::move(context);
+
+  if (!error.has_value()) {
     RecordRemoveCryptohomeResultSuccess(IsResumingIncompleteMigration(),
                                         IsArcKiosk());
   } else {
-    LOG(ERROR) << "Removing cryptohome failed. return code: " << reply->error();
+    LOG(ERROR) << "Removing cryptohome failed. return code: "
+               << error->get_cryptohome_code();
     RecordRemoveCryptohomeResultFailure(IsResumingIncompleteMigration(),
                                         IsArcKiosk());
   }
 
   UpdateUIState(EncryptionMigrationScreenView::MIGRATION_FAILED);
-}
-
-cryptohome::AuthorizationRequest
-EncryptionMigrationScreen::CreateAuthorizationRequest() {
-  // |key| is created in the same manner as CryptohomeAuthenticator.
-  const Key* key = user_context_->GetKey();
-  // If the |key| is a plain text password, crash rather than attempting to
-  // mount the cryptohome with a plain text password.
-  CHECK_NE(Key::KEY_TYPE_PASSWORD_PLAIN, key->GetKeyType());
-  cryptohome::AuthorizationRequest auth;
-  cryptohome::Key* auth_key = auth.mutable_key();
-  // Don't set the authorization's key label, implicitly setting it to an
-  // empty string, which is a wildcard allowing any key to match. This is
-  // necessary because cryptohomes created by Chrome OS M38 and older will have
-  // a legacy key with no label while those created by Chrome OS M39 and newer
-  // will have a key with the label kCryptohomeGAIAKeyLabel.
-  auth_key->set_secret(key->GetSecret());
-  return auth;
 }
 
 bool EncryptionMigrationScreen::IsArcKiosk() const {
@@ -640,10 +607,10 @@ void EncryptionMigrationScreen::DircryptoMigrationProgress(
 }
 
 void EncryptionMigrationScreen::OnMigrationRequested(
-    absl::optional<user_data_auth::StartMigrateToDircryptoReply> reply) {
-  if (!reply.has_value() ||
-      reply->error() !=
-          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    std::unique_ptr<UserContext> context,
+    absl::optional<AuthenticationError> error) {
+  user_context_ = std::move(context);
+  if (error.has_value()) {
     LOG(ERROR) << "Requesting MigrateToDircrypto failed.";
     RecordMigrationResultRequestFailure(IsResumingIncompleteMigration(),
                                         IsArcKiosk());

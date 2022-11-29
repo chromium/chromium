@@ -127,6 +127,11 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
       const UserContext& user_context,
       std::unique_ptr<StubAuthenticatorBuilder> authenticator_builder);
 
+  // Starts login attempt for a user, using actual authenticator backed by
+  // FakeUserDataAuthClient.
+  // Note that this will not wait for the login attempt to finish.
+  void AttemptLoginUsingFakeDataAuthClient(const UserContext& user_context);
+
   // Waits for the session state to change to ACTIVE. Returns immediately if the
   // session is already active.
   void WaitForActiveSession();

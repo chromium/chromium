@@ -17,6 +17,8 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/mount_performer.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -102,10 +104,8 @@ class EncryptionMigrationScreen : public BaseScreen,
   void OnGetAvailableStorage(int64_t size);
   void WaitBatteryAndMigrate();
   void StartMigration();
-  void OnMountExistingVault(absl::optional<user_data_auth::MountReply> reply);
   // Removes cryptohome and shows the error screen after the removal finishes.
   void RemoveCryptohome();
-  void OnRemoveCryptohome(absl::optional<user_data_auth::RemoveReply> reply);
 
   // Creates authorization request for MountEx method using |user_context_|.
   cryptohome::AuthorizationRequest CreateAuthorizationRequest();
@@ -114,8 +114,12 @@ class EncryptionMigrationScreen : public BaseScreen,
   bool IsArcKiosk() const;
 
   // Handlers for cryptohome API callbacks.
-  void OnMigrationRequested(
-      absl::optional<user_data_auth::StartMigrateToDircryptoReply> reply);
+  void OnMigrationRequested(std::unique_ptr<UserContext> context,
+                            absl::optional<AuthenticationError> error);
+  void OnRemoveCryptohome(std::unique_ptr<UserContext> context,
+                          absl::optional<AuthenticationError> error);
+  void OnMountExistingVault(std::unique_ptr<UserContext> context,
+                            absl::optional<AuthenticationError> error);
 
   // Records UMA about visible screen after delay.
   void OnDelayedRecordVisibleScreen(
@@ -142,6 +146,8 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   // The callback which is used to log in to the session from the migration UI.
   SkipMigrationCallback skip_migration_callback_;
+
+  MountPerformer mount_performer_;
 
   // The migration mode (ask user / start migration automatically / resume
   // incomplete migratoin).

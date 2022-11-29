@@ -176,6 +176,16 @@ void LoginManagerMixin::TearDownOnMainThread() {
   session_flags_manager_.Finalize();
 }
 
+void LoginManagerMixin::AttemptLoginUsingFakeDataAuthClient(
+    const UserContext& user_context) {
+  ExistingUserController::current_controller()->Login(user_context,
+                                                      SigninSpecifics());
+  if (skip_post_login_screens_ && ash::WizardController::default_controller()) {
+    ash::WizardController::default_controller()
+        ->SkipPostLoginScreensForTesting();
+  }
+}
+
 void LoginManagerMixin::AttemptLoginUsingAuthenticator(
     const UserContext& user_context,
     std::unique_ptr<StubAuthenticatorBuilder> authenticator_builder) {

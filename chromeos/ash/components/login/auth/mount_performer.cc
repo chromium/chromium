@@ -119,6 +119,18 @@ void MountPerformer::UnmountDirectories(std::unique_ptr<UserContext> context,
                      std::move(context), std::move(callback)));
 }
 
+void MountPerformer::MigrateToDircrypto(std::unique_ptr<UserContext> context,
+                                        AuthOperationCallback callback) {
+  user_data_auth::StartMigrateToDircryptoRequest request;
+  LOGIN_LOG(EVENT) << "Starting dircrypto migration";
+  *request.mutable_account_id() =
+      cryptohome::CreateAccountIdentifierFromAccountId(context->GetAccountId());
+  UserDataAuthClient::Get()->StartMigrateToDircrypto(
+      request, base::BindOnce(&MountPerformer::OnMigrateToDircrypto,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
+}
+
 /// ---- private callbacks ----
 
 void MountPerformer::OnCreatePersistentUser(
@@ -217,6 +229,20 @@ void MountPerformer::OnUnmount(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "Unmount failed with error" << error;
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
+    return;
+  }
+  CHECK(reply.has_value());
+  std::move(callback).Run(std::move(context), absl::nullopt);
+}
+
+void MountPerformer::OnMigrateToDircrypto(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    absl::optional<user_data_auth::StartMigrateToDircryptoReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOGIN_LOG(ERROR) << "MigrateToDircrypto failed with error " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }

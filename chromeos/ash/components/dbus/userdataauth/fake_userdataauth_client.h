@@ -91,6 +91,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
         const cryptohome::AccountIdentifier& cryptohome_id,
         HomeEncryptionMethod method);
 
+    // Marks |cryptohome_id| as failed previous migration attempt.
+    void SetEncryptionMigrationIncomplete(
+        const cryptohome::AccountIdentifier& cryptohome_id,
+        bool incomplete);
+
     // Marks a PIN key as locked or unlocked. The key is identified by the
     // |account_id| of the user it belongs to and its |label|. The key must
     // exist prior to this call, and it must be a PIN key.

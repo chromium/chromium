@@ -89,6 +89,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
   void UnmountDirectories(std::unique_ptr<UserContext> context,
                           AuthOperationCallback callback);
 
+  void MigrateToDircrypto(std::unique_ptr<UserContext> context,
+                          AuthOperationCallback callback);
+
  private:
   // Callbacks for UserDataAuthClient operations:
   void OnCreatePersistentUser(
@@ -117,6 +120,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
   void OnUnmount(std::unique_ptr<UserContext> context,
                  AuthOperationCallback callback,
                  absl::optional<user_data_auth::UnmountReply> reply);
+  void OnMigrateToDircrypto(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::StartMigrateToDircryptoReply> reply);
 
   base::WeakPtrFactory<MountPerformer> weak_factory_{this};
 };
