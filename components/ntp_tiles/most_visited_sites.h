@@ -96,13 +96,6 @@ class MostVisitedSites : public history::TopSitesObserver,
     virtual void QueryHomepageTitle(TitleCallback title_callback) = 0;
   };
 
-  class ExploreSitesClient {
-   public:
-    virtual ~ExploreSitesClient() = default;
-    virtual GURL GetExploreSitesUrl() const = 0;
-    virtual std::u16string GetExploreSitesTitle() const = 0;
-  };
-
   // Construct a MostVisitedSites instance.
   //
   // |prefs| and |suggestions| are required and may not be null. |top_sites|,
@@ -151,10 +144,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   // used during the construction of a new tile set.
   // |client| must not be null and outlive this object.
   void SetHomepageClient(std::unique_ptr<HomepageClient> client);
-
-  // Sets the client that provides the Explore Sites tile. Can be null if no
-  // such tile is desirable.
-  void SetExploreSitesClient(std::unique_ptr<ExploreSitesClient> client);
 
   // Requests an asynchronous refresh of the suggestions. Notifies the observer
   // if the request resulted in the set of tiles changing.
@@ -226,8 +215,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Workhorse for SaveNewTilesAndNotify. Implemented as a separate static and
   // public method for ease of testing.
   static NTPTilesVector MergeTiles(NTPTilesVector personal_tiles,
-                                   NTPTilesVector popular_tiles,
-                                   absl::optional<NTPTile> explore_tile);
+                                   NTPTilesVector popular_tiles);
 
   // Verifies if NTPTile App was migrated to a WebApp.
   static bool WasNtpAppMigratedToWebApp(PrefService* prefs, GURL url);
@@ -322,10 +310,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   NTPTilesVector InsertHomeTile(NTPTilesVector tiles,
                                 const std::u16string& title) const;
 
-  // Creates a tile for the Explore Sites page, if enabled. The tile is added to
-  // the front of the list.
-  absl::optional<NTPTile> CreateExploreSitesTile();
-
   void OnHomepageTitleDetermined(NTPTilesVector tiles,
                                  const absl::optional<std::u16string>& title);
 
@@ -345,7 +329,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   std::unique_ptr<IconCacher> const icon_cacher_;
   std::unique_ptr<MostVisitedSitesSupervisor> supervisor_;
   std::unique_ptr<HomepageClient> homepage_client_;
-  std::unique_ptr<ExploreSitesClient> explore_sites_client_;
   bool is_default_chrome_app_migrated_;
 
   base::ObserverList<Observer> observers_;

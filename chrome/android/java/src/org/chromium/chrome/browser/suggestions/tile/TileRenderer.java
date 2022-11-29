@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.suggestions.tile;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -18,15 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesIPH;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
@@ -153,8 +148,7 @@ public class TileRenderer {
             for (Tile tile : sectionTiles) {
                 SuggestionsTileView tileView = oldTileViews.get(tile.getData());
                 if (tileView == null || tileView.getIconView() == null
-                        || tileView.getIconView().getDrawable() == null
-                        || tile.getSource() == TileSource.EXPLORE) {
+                        || tileView.getIconView().getDrawable() == null) {
                     tileView = buildTileView(tile, parent, setupDelegate);
                 }
 
@@ -193,30 +187,9 @@ public class TileRenderer {
     @VisibleForTesting
     SuggestionsTileView buildTileView(
             Tile tile, ViewGroup parentView, TileGroup.TileSetupDelegate setupDelegate) {
-        SuggestionsTileView tileView;
-
-        if (tile.getSource() == TileSource.EXPLORE) {
-            tileView = (TopSitesTileView) LayoutInflater.from(parentView.getContext())
-                               .inflate(mTopSitesLayout, parentView, false);
-
-            tile.setIcon(VectorDrawableCompat.create(
-                    mContext.getResources(), R.drawable.ic_apps_blue_24dp, mTheme));
-            tile.setType(TileVisualType.ICON_DEFAULT);
-
-            if (LibraryLoader.getInstance().isInitialized() && setupDelegate != null) {
-                // One task to load actual icon.
-                LargeIconBridge.LargeIconCallback bridgeCallback =
-                        new LargeIconCallbackImpl(tile, setupDelegate.createIconLoadCallback(tile));
-                ExploreSitesBridge.getSummaryImage(Profile.getLastUsedRegularProfile(),
-                        mDesiredIconSize,
-                        (Bitmap img)
-                                -> bridgeCallback.onLargeIconAvailable(
-                                        img, Color.BLACK, false, IconType.FAVICON));
-            }
-        } else {
-            tileView = (SuggestionsTileView) LayoutInflater.from(parentView.getContext())
-                               .inflate(mLayout, parentView, false);
-        }
+        SuggestionsTileView tileView =
+                (SuggestionsTileView) LayoutInflater.from(parentView.getContext())
+                        .inflate(mLayout, parentView, false);
 
         tileView.initialize(tile, mTitleLinesCount);
 
@@ -233,13 +206,6 @@ public class TileRenderer {
         if (tile.getSource() == TileSource.HOMEPAGE) {
             delegate.setOnClickRunnable(() -> {
                 recordTileClickedForIPH(EventConstants.HOMEPAGE_TILE_CLICKED);
-                RecordHistogram.recordEnumeratedHistogram(
-                        "NewTabPage.SuggestTiles.SelectedTileType", SuggestTileType.OTHER,
-                        SuggestTileType.COUNT);
-            });
-        } else if (tile.getSource() == TileSource.EXPLORE) {
-            delegate.setOnClickRunnable(() -> {
-                recordTileClickedForIPH(EventConstants.EXPLORE_SITES_TILE_TAPPED);
                 RecordHistogram.recordEnumeratedHistogram(
                         "NewTabPage.SuggestTiles.SelectedTileType", SuggestTileType.OTHER,
                         SuggestTileType.COUNT);
@@ -268,10 +234,6 @@ public class TileRenderer {
 
         tileView.setOnClickListener(delegate);
         tileView.setOnCreateContextMenuListener(delegate);
-
-        if (tile.getSource() == TileSource.EXPLORE) {
-            ExploreSitesIPH.configureIPH(tileView, Profile.getLastUsedRegularProfile());
-        }
 
         return tileView;
     }
@@ -330,7 +292,7 @@ public class TileRenderer {
                 setTileIconFromRes(tile, R.drawable.ic_suggestion_magnifier);
                 if (iconCallback != null) iconCallback.run();
             });
-        } else if (mImageFetcher != null && tile.getSource() != TileSource.EXPLORE) {
+        } else if (mImageFetcher != null) {
             mImageFetcher.makeLargeIconRequest(tile.getUrl(), mMinIconSize,
                     new LargeIconCallbackImpl(tile, setupDelegate.createIconLoadCallback(tile)));
         }
@@ -338,9 +300,6 @@ public class TileRenderer {
 
     public void setTileIconFromBitmap(Tile tile, Bitmap icon) {
         int radius = Math.round(mIconCornerRadius * icon.getWidth() / mDesiredIconSize);
-        if (tile.getSource() == TileSource.EXPLORE) {
-            radius = mDesiredIconSize / 2;
-        }
         RoundedBitmapDrawable roundedIcon =
                 ViewUtils.createRoundedBitmapDrawable(mContext.getResources(), icon, radius);
         roundedIcon.setAntiAlias(true);
@@ -358,10 +317,6 @@ public class TileRenderer {
     }
 
     public void setTileIconFromColor(Tile tile, int fallbackColor, boolean isFallbackColorDefault) {
-        // Explore should not have generated icons.
-        if (tile.getSource() == TileSource.EXPLORE) {
-            return;
-        }
         mIconGenerator.setBackgroundColor(fallbackColor);
         Bitmap icon = mIconGenerator.generateIconForUrl(tile.getUrl());
         tile.setIcon(new BitmapDrawable(mContext.getResources(), icon));

@@ -34,8 +34,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesCategory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -56,7 +54,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -156,24 +153,6 @@ public class TileGroupTest {
         });
         waitForTileRemoved(siteToDismiss);
         Assert.assertEquals(2, getTileLayout().getChildCount());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"NewTabPage"})
-    public void testDismissExploreTileWithContextMenuFails() throws Exception {
-        SiteSuggestion exploreTile = recreateSuggestionsWithExploreTile();
-
-        initializeTab();
-
-        Assert.assertEquals(4, getTileLayout().getChildCount());
-
-        final View tileView = getNonNullTileViewFor(exploreTile);
-        TestTouchUtils.performLongClickOnMainSync(
-                InstrumentationRegistry.getInstrumentation(), tileView);
-        Assert.assertFalse(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
-                sActivityTestRule.getActivity(), ContextMenuManager.ContextMenuItemId.REMOVE, 0));
-        Assert.assertEquals(4, getTileLayout().getChildCount());
     }
 
     @Test
@@ -303,25 +282,5 @@ public class TileGroupTest {
         });
         callback.waitForCallback("The expected tile was not added.", 0);
         tileContainer.setOnHierarchyChangeListener(null);
-    }
-
-    private SiteSuggestion recreateSuggestionsWithExploreTile() {
-        // need a copy of the list in order to modify it.
-        final ArrayList<SiteSuggestion> currentSuggestions =
-                new ArrayList<>(mMostVisitedSites.getCurrentSites());
-
-        SiteSuggestion exploreTile =
-                new SiteSuggestion("chrome-native://explore", new GURL("chrome-native://explore"),
-                        TileTitleSource.UNKNOWN, TileSource.EXPLORE, TileSectionType.PERSONALIZED);
-        currentSuggestions.add(exploreTile);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mMostVisitedSites.setTileSuggestions(currentSuggestions));
-
-        // Set up ExploreSitesBridge for testing.
-        List<ExploreSitesCategory> category = new ArrayList<>();
-        category.add(new ExploreSitesCategory(0, 1, "foo", 0, 0));
-        ExploreSitesBridge.setCatalogForTesting(category);
-
-        return exploreTile;
     }
 }

@@ -6457,7 +6457,6 @@ test("unit_tests") {
       "../browser/android/explore_sites/image_helper_unittest.cc",
       "../browser/android/explore_sites/import_catalog_task_unittest.cc",
       "../browser/android/explore_sites/increment_shown_count_task_unittest.cc",
-      "../browser/android/explore_sites/most_visited_client_unittest.cc",
       "../browser/android/explore_sites/record_site_click_task_unittest.cc",
       "../browser/android/favicon_helper_unittest.cc",
       "../browser/android/framebust_intervention/framebust_blocked_delegate_android_unittest.cc",

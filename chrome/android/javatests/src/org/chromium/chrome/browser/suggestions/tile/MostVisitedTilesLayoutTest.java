@@ -39,6 +39,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -88,6 +89,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Batch(Batch.PER_CLASS)
 public class MostVisitedTilesLayoutTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -170,8 +172,7 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    // TODO(https://crbug.com/906151): Add new goldens and enable ExploreSites.
-    @DisableFeatures({ChromeFeatureList.EXPLORE_SITES, ChromeFeatureList.QUERY_TILES})
+    @DisableFeatures({ChromeFeatureList.QUERY_TILES})
     public void testTilesLayoutAppearance(boolean nightModeEnabled) throws Exception {
         NewTabPage ntp = setUpFakeDataToShowOnNtp(FAKE_MOST_VISITED_URLS.length);
         mRenderTestRule.render(getTilesLayout(ntp),
@@ -239,8 +240,6 @@ public class MostVisitedTilesLayoutTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
-    // TODO(https://crbug.com/906151): Add new goldens and enable ExploreSites.
-    @DisableFeatures(ChromeFeatureList.EXPLORE_SITES)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testTileAppearanceModern(boolean nightModeEnabled)
             throws IOException, InterruptedException, TimeoutException {

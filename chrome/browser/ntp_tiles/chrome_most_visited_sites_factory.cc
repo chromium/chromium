@@ -29,9 +29,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/explore_sites/most_visited_client.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
 
@@ -151,9 +149,5 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
       false
 #endif
   );
-#if BUILDFLAG(IS_ANDROID)
-  most_visited_sites->SetExploreSitesClient(
-      explore_sites::MostVisitedClient::Create());
-#endif
   return most_visited_sites;
 }

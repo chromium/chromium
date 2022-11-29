@@ -7040,12 +7040,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Got extensions? <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>Manage your extensions<ph name="END_LINK">&lt;/a&gt;</ph> in one easy place.
       </message>
 
-      <if expr="is_android">
-        <message name="IDS_NTP_EXPLORE_SITES_TILE_TITLE" desc="A label for a button that when clicked takes the user to a tab that contains categorized links to websites that are popular in their country. [CHAR_LIMIT=12]">
-          Top sites
-        </message>
-      </if>
-
       <!-- Star View menu -->
       <if expr="use_titlecase">
         <message name="IDS_STAR_VIEW_MENU_ADD_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for adding a bookmark.">

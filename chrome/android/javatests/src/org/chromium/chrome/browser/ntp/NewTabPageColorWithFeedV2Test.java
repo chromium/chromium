@@ -44,8 +44,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
                        "disable-features=IPH_FeedHeaderMenu"})
-@Features.DisableFeatures({ChromeFeatureList.EXPLORE_SITES,
-                           ChromeFeatureList.QUERY_TILES, ChromeFeatureList.VIDEO_TUTORIALS})
+@Features.DisableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.VIDEO_TUTORIALS})
 // clang-format on
 public class NewTabPageColorWithFeedV2Test {
     private static final int MIN_ITEMS_AFTER_LOAD = 10;

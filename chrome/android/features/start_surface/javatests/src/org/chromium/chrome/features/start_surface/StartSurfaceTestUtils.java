@@ -474,13 +474,8 @@ public class StartSurfaceTestUtils {
      */
     public static List<SiteSuggestion> createFakeSiteSuggestions() {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
-        siteSuggestions.add(new SiteSuggestion("0 EXPLORE_SITES",
-                // Use pre-serialized GURL to avoid loading native.
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), TileTitleSource.UNKNOWN,
-                TileSource.EXPLORE, TileSectionType.PERSONALIZED));
-
         String urlTemplate = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_NUMERAL).serialize();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 8; i++) {
             siteSuggestions.add(new SiteSuggestion(String.valueOf(i),
                     // Use pre-serialized GURL to avoid loading native.
                     GURL.deserialize(urlTemplate.replace("www.1.com", "www." + i + ".com")),

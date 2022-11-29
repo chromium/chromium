@@ -24,10 +24,8 @@ enum class TileSource {
   ALLOWLIST,
   // Tile containing the user-set home page is replacing the home page button.
   HOMEPAGE,
-  // Tile comes from explore sites list.
-  EXPLORE,
 
-  LAST = EXPLORE
+  LAST = HOMEPAGE
 };
 
 }  // namespace ntp_tiles

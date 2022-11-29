@@ -3548,12 +3548,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_EXPLORE_SITES_LOADING_ERROR_NEXT_STEPS_CHECK_CONNECTION" desc="Text on an error screen indicating that checking network connection can fix this error.">
         Checking your internet connection
       </message>
-      <message name="IDS_EXPLORE_SITES_IPH" desc="An in-product-help message for the explore sites feature on Android. The message encourages users to open a tab that contains categorized links to websites that are popular in their country.">
-        See popular websites
-      </message>
-      <message name="IDS_EXPLORE_SITES_IPH_ACCESSIBILITY" desc="An in-product-help message for the explore sites feature on Android. The message encourages users to open a tab that contains categorized links to websites that are popular in their country. This message specifies which button must be tapped so that screen reader users can find the view this is referring to.">
-        See popular websites by tapping the "Top sites" button
-      </message>
 
       <!-- Video tutorials -->
       <message name="IDS_VIDEO_TUTORIALS_CARD_CHROME_INTRO" desc="Card text prompting user to learn about an introduction to chrome. Tapping on this card will open a video tutorial.">

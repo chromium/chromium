@@ -74,8 +74,8 @@ public class NewTabPageUma {
     /** User clicked on the "Refresh" button in the "all dismissed" state. */
     public static final int ACTION_CLICKED_ALL_DISMISSED_REFRESH = 10;
 
-    /** User opened an explore sites tile. */
-    public static final int ACTION_OPENED_EXPLORE_SITES_TILE = 11;
+    /** (Obsolete) User opened an explore sites tile. */
+    // public static final int ACTION_OPENED_EXPLORE_SITES_TILE = 11;
 
     /**
      * User clicked on the "Manage Interests" item in the snippet card menu or in the feed header
