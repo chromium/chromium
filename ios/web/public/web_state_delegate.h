@@ -59,6 +59,18 @@ class WebStateDelegate {
   virtual JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       WebState* source);
 
+  // Returns whether the delegate is able to handle requests the user's
+  // permission to access `web::Permission`.
+  //
+  // If returned `true`, the delegate must use the `handler` function to answer
+  // to the permissions access request; otherwise, the delegate must NOT use the
+  // handler.
+  typedef void (^WebStatePermissionDecisionHandler)(BOOL allow);
+  virtual bool HandlePermissionsDecisionRequest(
+      WebState* source,
+      NSArray<NSNumber*>* permissions,
+      WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0));
+
   // Called when a request receives an authentication challenge specified by
   // `protection_space`, and is unable to respond using cached credentials.
   // Clients must call `callback` even if they want to cancel authentication

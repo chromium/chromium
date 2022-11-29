@@ -313,6 +313,12 @@ void WebStateImpl::RemoveAllWebFrames() {
   RealizedState()->RemoveAllWebFrames();
 }
 
+void WebStateImpl::RequestPermissionsWithDecisionHandler(
+    NSArray<NSNumber*>* permissions,
+    PermissionDecisionHandler handler) {
+  RealizedState()->RequestPermissionsWithDecisionHandler(permissions, handler);
+}
+
 #pragma mark - WebState implementation
 
 WebStateDelegate* WebStateImpl::GetDelegate() {

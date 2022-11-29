@@ -34,6 +34,7 @@
 @protocol CRWWebViewProxy;
 @protocol CRWWebViewNavigationProxy;
 @class UIViewController;
+enum WKPermissionDecision : NSInteger;
 
 namespace web {
 
@@ -245,6 +246,13 @@ class WebStateImpl final : public WebState {
 
   // Removes all current web frames.
   void RemoveAllWebFrames();
+
+  // Requests the user's permission to access requested `permissions`.
+  typedef void (^PermissionDecisionHandler)(WKPermissionDecision decision)
+      API_AVAILABLE(ios(15.0));
+  void RequestPermissionsWithDecisionHandler(NSArray<NSNumber*>* permissions,
+                                             PermissionDecisionHandler handler)
+      API_AVAILABLE(ios(15.0));
 
   // WebState:
   WebStateDelegate* GetDelegate() final;
