@@ -9,6 +9,7 @@ import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browse
 import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
 import {OfficePwaInstallPageElement} from 'chrome://cloud-upload/office_pwa_install_page.js';
 import {OneDriveUploadPageElement} from 'chrome://cloud-upload/one_drive_upload_page.js';
+import {SetupCancelDialogElement} from 'chrome://cloud-upload/setup_cancel_dialog.js';
 import {SignInPageElement} from 'chrome://cloud-upload/sign_in_page.js';
 import {WelcomePageElement} from 'chrome://cloud-upload/welcome_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -221,10 +222,10 @@ suite('<cloud-upload>', () => {
   });
 
   /**
-   * Tests that clicking the close button triggers the right `respondAndClose`
-   * mojo request.
+   * Tests that clicking the close button on the last page triggers the right
+   * `respondAndClose` mojo request.
    */
-  test('Close button', async () => {
+  test('Close button on last page', async () => {
     await setUp({
       fileName: 'file.docx',
       officePWAInstalled: false,
@@ -242,4 +243,40 @@ suite('<cloud-upload>', () => {
     assertDeepEquals(
         [UserAction.kCancel], testProxy.handler.getArgs('respondAndClose'));
   });
+
+  /**
+   * Tests that the cancel button should show the cancel dialog on each page
+   * except the last page.
+   */
+  [1, 2, 3].forEach(
+      page => test(`Close button on page ${page}`, async () => {
+        await setUp({officePWAInstalled: false});
+
+        // Go to the specified page.
+        if (page > 1) {
+          await doWelcomePage();
+        }
+        if (page > 2) {
+          await doPWAInstallPage();
+        }
+
+        // Bring up the cancel dialog and dismiss it.
+        cloudUploadApp.$('.cancel-button').click();
+        const cancelDialog =
+            cloudUploadApp.$<SetupCancelDialogElement>('setup-cancel-dialog')!;
+        assertTrue(cancelDialog.open);
+        cancelDialog.$('.action-button').click();
+        assertFalse(cancelDialog.open);
+
+        // Bring up the cancel dialog and cancel setup.
+        cloudUploadApp.$('.cancel-button').click();
+        assertTrue(cancelDialog.open);
+        assertEquals(0, testProxy.handler.getCallCount('respondAndClose'));
+
+        cancelDialog.$('.cancel-button').click();
+        await testProxy.handler.whenCalled('respondAndClose');
+        assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
+        assertDeepEquals(
+            [UserAction.kCancel], testProxy.handler.getArgs('respondAndClose'));
+      }));
 });

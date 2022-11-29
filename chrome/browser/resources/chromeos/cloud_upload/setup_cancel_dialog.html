@@ -1,0 +1,35 @@
+<style>
+  cr-dialog {
+    --cr-dialog-width: 448px;
+  }
+
+  cr-dialog [slot=title] {
+    color: var(--cros-text-color-primary);
+    /* TODO(austinct): replace once proper font is in cros_typography */
+    font: var(--cros-display-7-font);
+    padding: 24px 24px 16px;
+  }
+
+  cr-dialog [slot=body] {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-2-font);
+    padding: 0 24px;
+  }
+
+  cr-dialog [slot=button-container] {
+    padding: 49px 24px 24px;
+  }
+
+</style>
+
+<!-- TODO(b/254586358): Use localized strings -->
+<cr-dialog>
+  <div slot="title">Are you sure you want to cancel setup?</div>
+  <div slot="body">
+    You won't be able to open files in Microsoft 365 until setup is complete.
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button">Cancel setup</cr-button>
+    <cr-button class="action-button">Resume setup</cr-button>
+  </div>
+</cr-dialog>

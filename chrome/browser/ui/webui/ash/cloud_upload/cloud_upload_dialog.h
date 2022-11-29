@@ -61,6 +61,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
                     UploadRequestCallback callback,
                     const mojom::DialogPage dialog_page);
   ~CloudUploadDialog() override;
+  bool ShouldCloseDialogOnEscape() const override;
   bool ShouldShowCloseButton() const override;
   void GetDialogSize(gfx::Size* size) const override;
 
