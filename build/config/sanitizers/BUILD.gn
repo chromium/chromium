@@ -432,6 +432,7 @@ config("ubsan_flags") {
           rebase_path("//tools/ubsan/ignorelist.txt", root_build_dir)
     }
     cflags += [
+      "-fsanitize=alignment",
       "-fsanitize=bool",
       "-fsanitize=bounds",
       "-fsanitize=builtin",
