@@ -5,14 +5,11 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CAPABILITIES_SERVICE_IMPL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CAPABILITIES_SERVICE_IMPL_H_
 
-#include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "components/password_manager/core/browser/capabilities_service.h"
 
 class CapabilitiesServiceImpl : public password_manager::CapabilitiesService {
  public:
-  explicit CapabilitiesServiceImpl(
-      std::unique_ptr<autofill_assistant::AutofillAssistant>
-          autofill_assistant);
+  CapabilitiesServiceImpl();
   CapabilitiesServiceImpl(const CapabilitiesServiceImpl&) = delete;
   CapabilitiesServiceImpl& operator=(const CapabilitiesServiceImpl&) = delete;
 
@@ -22,20 +19,6 @@ class CapabilitiesServiceImpl : public password_manager::CapabilitiesService {
   void QueryPasswordChangeScriptAvailability(
       const std::vector<url::Origin>& origins,
       ResponseCallback callback) override;
-
- private:
-  using CapabilitiesInfo =
-      autofill_assistant::AutofillAssistant::CapabilitiesInfo;
-
-  void OnGetCapabilitiesResult(
-      const std::vector<url::Origin>& origins,
-      ResponseCallback callback,
-      int http_status,
-      const std::vector<
-          autofill_assistant::AutofillAssistant::CapabilitiesInfo>& infos);
-
-  // Used for capabilities requests.
-  std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant_;
 };
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CAPABILITIES_SERVICE_IMPL_H_

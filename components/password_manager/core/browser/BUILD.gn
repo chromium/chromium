@@ -413,7 +413,6 @@ source_set("capabilities") {
     deps = [
       ":browser",
       "//base",
-      "//components/autofill_assistant/browser/public",
       "//components/password_manager/core/common:features",
       "//components/password_manager/services/csv_password:service",
       "//url",
@@ -757,7 +756,6 @@ source_set("unit_tests") {
     sources += [ "login_database_ios_unittest.cc" ]
   } else {
     sources += [
-      "capabilities_service_impl_unittest.cc",
       "http_credentials_cleaner_unittest.cc",
       "saved_passwords_capabilities_fetcher_unittest.cc",
     ]

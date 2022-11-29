@@ -8,14 +8,11 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/autofill_assistant/browser/public/autofill_assistant.h"
-#include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/password_manager/core/browser/capabilities_service_impl.h"
 #include "components/password_manager/core/browser/saved_passwords_capabilities_fetcher.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
@@ -49,23 +46,12 @@ PasswordScriptsFetcherFactory::GetForBrowserContext(
 
 KeyedService* PasswordScriptsFetcherFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
-  std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
-      autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
-          browser_context,
-          std::make_unique<autofill_assistant::CommonDependenciesChrome>(
-              browser_context));
-
-  std::unique_ptr<CapabilitiesServiceImpl> service =
-      std::make_unique<CapabilitiesServiceImpl>(std::move(autofill_assistant));
-
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  password_manager::AffiliationService* affiliation_service =
-      AffiliationServiceFactory::GetForProfile(profile);
 
   return new password_manager::SavedPasswordsCapabilitiesFetcher(
-      std::move(service),
+      std::make_unique<CapabilitiesServiceImpl>(),
       std::make_unique<password_manager::SavedPasswordsPresenter>(
-          affiliation_service,
+          AffiliationServiceFactory::GetForProfile(profile),
           PasswordStoreFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           AccountPasswordStoreFactory::GetForProfile(

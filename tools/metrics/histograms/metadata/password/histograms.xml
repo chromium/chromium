@@ -1143,15 +1143,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.CapabilitiesService.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2023-04-16">
-  <owner>vizcay@google.com</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    HTTP response code of fetching domains' password change capabilities.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.CertificateErrorsWhileSeeingForms"
     enum="PasswordCertificateError" expires_after="2023-04-16">
   <owner>battre@chromium.org</owner>
