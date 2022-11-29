@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -414,6 +415,37 @@ public final class PrivacySandboxDialogTest {
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(matches(isDisplayed()));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(doesNotExist());
+
+        // Click on the settings button and verify it worked correctly.
+        onView(withId(R.id.settings_button)).perform(click());
+        onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
+        Mockito.verify(mSettingsLauncher)
+                .launchSettingsActivity(any(Context.class),
+                        eq(PrivacySandboxSettingsFragmentV4.class), any(Bundle.class));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testControllerShowsROWNotice() throws IOException {
+        // TODO(b/254408752): Verify actions are correctly recorded.
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
+        launchDialog();
+        // Verify that the ROW notice is shown
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        // Ack the notice and verify it worked correctly.
+        onView(withId(R.id.ack_button)).perform(click());
+        onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
+
+        launchDialog();
+        // Click on the expanding section and verify it worked correctly.
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+
+        scrollToPosition(0);
+        onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(matches(isDisplayed()));
+        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
         onView(withId(R.id.settings_button)).perform(click());

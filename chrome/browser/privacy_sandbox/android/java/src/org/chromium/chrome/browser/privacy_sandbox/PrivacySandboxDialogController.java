@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogConsentEEAV4;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeEEAV4;
+import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeROWV4;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
@@ -53,6 +54,11 @@ public class PrivacySandboxDialogController {
                 return true;
             case PromptType.M1_NOTICE_EEA:
                 dialog = new PrivacySandboxDialogNoticeEEAV4(context, settingsLauncher);
+                dialog.show();
+                sDialog = new WeakReference<>(dialog);
+                return true;
+            case PromptType.M1_NOTICE_ROW:
+                dialog = new PrivacySandboxDialogNoticeROWV4(context, settingsLauncher);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
