@@ -14,6 +14,7 @@ import unittest
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
+from gpu_tests import gpu_helper
 
 import gpu_path_util
 
@@ -542,7 +543,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # notifications.
     time.sleep(3)
     self._NavigateAndWaitForLoad(test_path)
-    if not self._IsIntel(self.browser.GetSystemInfo().gpu.devices[0].vendor_id):
+    if not gpu_helper.IsIntel(
+        self.browser.GetSystemInfo().gpu.devices[0].vendor_id):
       self.fail('Test did not start up on low-power GPU')
     tab = self.tab
     tab.EvaluateJavaScript('runTest()')
@@ -563,7 +565,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # notifications.
     time.sleep(3)
     self._NavigateAndWaitForLoad(test_path)
-    if not self._IsIntel(self.browser.GetSystemInfo().gpu.devices[0].vendor_id):
+    if not gpu_helper.IsIntel(
+        self.browser.GetSystemInfo().gpu.devices[0].vendor_id):
       self.fail('Test did not start up on low-power GPU')
     tab = self.tab
     tab.EvaluateJavaScript('runTest()')
@@ -584,7 +587,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # notifications.
     time.sleep(3)
     self._NavigateAndWaitForLoad(test_path)
-    if not self._IsIntel(self.browser.GetSystemInfo().gpu.devices[0].vendor_id):
+    if not gpu_helper.IsIntel(
+        self.browser.GetSystemInfo().gpu.devices[0].vendor_id):
       self.fail('Test did not start up on low-power GPU')
     tab = self.tab
     tab.EvaluateJavaScript('runTest()')

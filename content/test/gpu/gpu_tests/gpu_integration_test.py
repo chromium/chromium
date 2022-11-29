@@ -602,15 +602,11 @@ class GpuIntegrationTest(
       self._RestartBrowser('Restarting browser to clear process crash count.')
     return retval
 
-  @staticmethod
-  def _IsIntel(vendor_id: int) -> bool:
-    return vendor_id == 0x8086
-
   def _IsIntelGPUActive(self) -> bool:
     gpu = self.browser.GetSystemInfo().gpu
     # The implementation of GetSystemInfo guarantees that the first entry in the
     # GPU devices list is the active GPU.
-    return self._IsIntel(gpu.devices[0].vendor_id)
+    return gpu_helper.IsIntel(gpu.devices[0].vendor_id)
 
   def _IsDualGPUMacLaptop(self) -> bool:
     if sys.platform != 'darwin':
@@ -623,11 +619,11 @@ class GpuIntegrationTest(
       self.fail('Target machine must have a GPU')
     if len(gpu.devices) != 2:
       return False
-    if (self._IsIntel(gpu.devices[0].vendor_id)
-        and not self._IsIntel(gpu.devices[1].vendor_id)):
+    if (gpu_helper.IsIntel(gpu.devices[0].vendor_id)
+        and not gpu_helper.IsIntel(gpu.devices[1].vendor_id)):
       return True
-    if (not self._IsIntel(gpu.devices[0].vendor_id)
-        and self._IsIntel(gpu.devices[1].vendor_id)):
+    if (not gpu_helper.IsIntel(gpu.devices[0].vendor_id)
+        and gpu_helper.IsIntel(gpu.devices[1].vendor_id)):
       return True
     return False
 
@@ -830,11 +826,14 @@ class GpuIntegrationTest(
             gpu_device_tag = '%s-%s' % (gpu_vendor, gpu_device_id)
           if ii == 0 or gpu_vendor != 'intel':
             gpu_tags.extend([gpu_vendor, gpu_device_tag])
-            # This acts as a way to add expectations for Intel Gen9 GPUs
-            # without resorting to the more generic "intel" tag.
-            if gpu_vendor == 'intel' and (gpu_device_id & 0xFF00) in (
-                0x1900, 0x3100, 0x3E00, 0x5900, 0x5A00, 0x9B00):
+          # This acts as a way to add expectations for Intel GPUs without
+          # resorting to the more generic "intel" tag.
+          if ii == 0 and gpu_vendor == 'intel':
+            if gpu_helper.IsIntelGen9(gpu_device_id):
               gpu_tags.extend(['intel-gen-9'])
+            elif gpu_helper.IsIntelGen12(gpu_device_id):
+              gpu_tags.extend(['intel-gen-12'])
+
       # all spaces and underscores in the tag will be replaced by dashes
       tags.extend([re.sub('[ _]', '-', tag) for tag in gpu_tags])
 
