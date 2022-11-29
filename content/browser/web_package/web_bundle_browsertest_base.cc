@@ -291,8 +291,8 @@ FrameTreeNode* GetFirstChild(WebContents* web_contents) {
 
 std::string CreateSimpleWebBundle(const GURL& primary_url) {
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(primary_url.spec());
-  builder.AddExchange(primary_url.spec(),
+  builder.AddPrimaryURL(primary_url);
+  builder.AddExchange(primary_url,
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Ready</title>");
   std::vector<uint8_t> bundle = builder.CreateBundle();
@@ -303,7 +303,7 @@ void AddHtmlFile(web_package::WebBundleBuilder* builder,
                  const GURL& base_url,
                  const std::string& path,
                  const std::string& content) {
-  builder->AddExchange(base_url.Resolve(path).spec(),
+  builder->AddExchange(base_url.Resolve(path),
                        {{":status", "200"}, {"content-type", "text/html"}},
                        content);
 }
@@ -313,7 +313,7 @@ void AddScriptFile(web_package::WebBundleBuilder* builder,
                    const std::string& path,
                    const std::string& content) {
   builder->AddExchange(
-      base_url.Resolve(path).spec(),
+      base_url.Resolve(path),
       {{":status", "200"}, {"content-type", "application/javascript"}},
       content);
 }
@@ -321,7 +321,7 @@ void AddScriptFile(web_package::WebBundleBuilder* builder,
 std::string CreatePathTestWebBundle(const GURL& base_url) {
   const std::string primary_url_path = "/web_bundle/path_test/in_scope/";
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(base_url.Resolve(primary_url_path).spec());
+  builder.AddPrimaryURL(base_url.Resolve(primary_url_path));
   AddHtmlFile(&builder, base_url, primary_url_path, "<title>Ready</title>");
   AddHtmlFile(
       &builder, base_url, "/web_bundle/path_test/in_scope/page.html",
@@ -400,7 +400,7 @@ void SetUpSubPageTest(net::EmbeddedTestServer* primary_server,
   *third_party_origin = third_party_server->GetURL("/");
 
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(primary_url_origin->Resolve("/top").spec());
+  builder.AddPrimaryURL(primary_url_origin->Resolve("/top"));
   AddHtmlFile(&builder, *primary_url_origin, "/top", R"(
     <script>
     window.addEventListener('message',
@@ -613,7 +613,7 @@ void SetUpSharedNavigationsTest(net::EmbeddedTestServer* server,
                                 std::string* web_bundle_content) {
   SetUpNavigationTestServer(server, url_origin);
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(url_origin->Resolve("/top-page/").spec());
+  builder.AddPrimaryURL(url_origin->Resolve("/top-page/"));
   for (const auto& path : pathes)
     AddHtmlAndScriptForNavigationTest(&builder, *url_origin, path, "");
 
@@ -981,7 +981,7 @@ void SetUpIframeNavigationTest(net::EmbeddedTestServer* server,
                                std::string* web_bundle_content) {
   SetUpNavigationTestServer(server, url_origin);
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(url_origin->Resolve("/top-page/").spec());
+  builder.AddPrimaryURL(url_origin->Resolve("/top-page/"));
   const std::vector<std::string> pathes = {"/top-page/", "/1-page/",
                                            "/2-page/"};
   for (const auto& path : pathes)

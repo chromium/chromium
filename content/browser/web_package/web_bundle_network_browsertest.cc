@@ -137,12 +137,12 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, SimpleWithScript) {
       embedded_test_server()->GetURL("/web_bundle/script.js");
 
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(primary_url.spec());
-  builder.AddExchange(primary_url.spec(),
+  builder.AddPrimaryURL(primary_url);
+  builder.AddExchange(primary_url,
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<script src=\"script.js\"></script>");
   builder.AddExchange(
-      script_url.spec(),
+      script_url,
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'Ready';");
 
@@ -233,8 +233,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   const GURL inner_url =
       embedded_test_server()->GetURL("/web_bundle/inner.html");
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(primary_url.spec());
-  builder.AddExchange(inner_url.spec(),
+  builder.AddPrimaryURL(primary_url);
+  builder.AddExchange(inner_url,
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Ready</title>");
   std::vector<uint8_t> bundle = builder.CreateBundle();
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, PrimaryURLNotFound) {
   const GURL inner_url =
       embedded_test_server()->GetURL("/web_bundle/inner.html");
   web_package::WebBundleBuilder builder;
-  builder.AddExchange(inner_url.spec(),
+  builder.AddExchange(inner_url,
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Ready</title>");
   std::vector<uint8_t> bundle = builder.CreateBundle();
@@ -288,8 +288,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, ExchangeHasInvalidScheme) {
   const GURL wbn_url = embedded_test_server()->GetURL(wbn_path);
   const GURL primary_url = embedded_test_server()->GetURL(primary_url_path);
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(primary_url.spec());
-  builder.AddExchange(primary_url.spec(),
+  builder.AddPrimaryURL(primary_url);
+  builder.AddExchange(primary_url,
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Ready</title>");
   builder.AddExchange("foo://bar",
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, OutScopeSubPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL origin = embedded_test_server()->GetURL("/");
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(origin.Resolve(primary_url_path).spec());
+  builder.AddPrimaryURL(origin.Resolve(primary_url_path));
   web_bundle_browsertest_utils::AddHtmlFile(&builder, origin, primary_url_path,
                                             R"(
     <script>

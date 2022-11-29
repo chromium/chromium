@@ -213,10 +213,10 @@ class WebBundleElementBrowserTest : public ContentBrowserTest {
     GURL test1_url(https_server_.GetURL("/web_bundle/test1.txt"));
     GURL test2_url(https_server_.GetURL("/web_bundle/test2.txt"));
     web_package::WebBundleBuilder builder;
-    builder.AddExchange(test1_url.spec(),
+    builder.AddExchange(test1_url,
                         {{":status", "200"}, {"content-type", "text/plain"}},
                         "test1");
-    builder.AddExchange(test2_url.spec(),
+    builder.AddExchange(test2_url,
                         {{":status", "200"}, {"content-type", "text/plain"}},
                         "test2");
     auto bundle = builder.CreateBundle();

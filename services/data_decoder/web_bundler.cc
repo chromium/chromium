@@ -115,7 +115,7 @@ void WebBundler::WriteWebBundleIndex() {
 
   CHECK_EQ(resources.size(), bodies.size());
   web_package::WebBundleBuilder builder(web_package::BundleVersion::kB2);
-  builder.AddPrimaryURL(url.spec());
+  builder.AddPrimaryURL(url);
   for (size_t i = 0; i < resources.size(); ++i) {
     const auto& info = resources[i];
     const auto& body = bodies[i];
@@ -130,7 +130,7 @@ void WebBundler::WriteWebBundleIndex() {
     GURL::Replacements resource_replacements;
     resource_replacements.ClearRef();
     GURL resource_url = info->url.ReplaceComponents(resource_replacements);
-    builder.AddIndexEntry(resource_url.spec(), response_location);
+    builder.AddIndexEntry(resource_url, response_location);
   }
   std::vector<uint8_t> bundle = builder.CreateBundle();
   int written_size = file_.WriteAtCurrentPos(

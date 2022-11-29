@@ -4120,11 +4120,10 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Create a web bundle.
-  std::string script_url_str =
-      embedded_test_server()->GetURL("/test.js").spec();
+  GURL script_url = embedded_test_server()->GetURL("/test.js");
   web_package::WebBundleBuilder builder;
   builder.AddExchange(
-      script_url_str,
+      script_url,
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'ScriptDone';");
   builder.AddExchange(
@@ -4244,17 +4243,15 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Create a web bundle.
-  std::string pass_js_url_str =
-      embedded_test_server()->GetURL("/pass.js").spec();
-  std::string cancel_js_url_str =
-      embedded_test_server()->GetURL("/cancel.js").spec();
+  GURL pass_js_url = embedded_test_server()->GetURL("/pass.js");
+  GURL cancel_js_url = embedded_test_server()->GetURL("/cancel.js");
   web_package::WebBundleBuilder builder;
   builder.AddExchange(
-      pass_js_url_str,
+      pass_js_url,
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'script loaded';");
   builder.AddExchange(
-      cancel_js_url_str,
+      cancel_js_url,
       {{":status", "200"}, {"content-type", "application/javascript"}}, "");
   builder.AddExchange(
       pass_uuid_in_package_js_url,
@@ -4371,11 +4368,10 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest, ChangeHeader) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Create a web bundle.
-  std::string target_txt_url_str =
-      embedded_test_server()->GetURL("/target.txt").spec();
+  GURL target_txt_url = embedded_test_server()->GetURL("/target.txt");
   web_package::WebBundleBuilder builder;
   builder.AddExchange(
-      target_txt_url_str,
+      target_txt_url,
       {{":status", "200"}, {"content-type", "text/plain"}, {"foo", "bar"}},
       "Hello world");
   std::vector<uint8_t> bundle = builder.CreateBundle();
@@ -4581,35 +4577,33 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Create a web bundle.
-  std::string redirect_js_url_str =
-      embedded_test_server()->GetURL("/redirect.js").spec();
-  std::string redirected_js_url_str =
-      embedded_test_server()->GetURL("/redirected.js").spec();
-  std::string redirect_to_unlisted_js_url_str =
-      embedded_test_server()->GetURL("/redirect_to_unlisted.js").spec();
-  std::string redirected_to_unlisted_js_url_str =
-      embedded_test_server()->GetURL("/redirected_to_unlisted.js").spec();
-  std::string redirect_to_server_js_url_str =
-      embedded_test_server()->GetURL("/redirect_to_server.js").spec();
+  GURL redirect_js_url = embedded_test_server()->GetURL("/redirect.js");
+  GURL redirected_js_url = embedded_test_server()->GetURL("/redirected.js");
+  GURL redirect_to_unlisted_js_url =
+      embedded_test_server()->GetURL("/redirect_to_unlisted.js");
+  GURL redirected_to_unlisted_js_url =
+      embedded_test_server()->GetURL("/redirected_to_unlisted.js");
+  GURL redirect_to_server_js_url =
+      embedded_test_server()->GetURL("/redirect_to_server.js");
   web_package::WebBundleBuilder builder;
   builder.AddExchange(
-      redirect_js_url_str,
+      redirect_js_url,
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'redirect';");
   builder.AddExchange(
-      redirected_js_url_str,
+      redirected_js_url,
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'redirected';");
   builder.AddExchange(
-      redirect_to_unlisted_js_url_str,
+      redirect_to_unlisted_js_url,
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'redirect_to_unlisted';");
   builder.AddExchange(
-      redirected_to_unlisted_js_url_str,
+      redirected_to_unlisted_js_url,
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'redirected_to_unlisted';");
   builder.AddExchange(
-      redirect_to_server_js_url_str,
+      redirect_to_server_js_url,
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'redirect_to_server';");
   std::vector<uint8_t> bundle = builder.CreateBundle();

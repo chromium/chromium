@@ -58,6 +58,12 @@ cbor::Value WebBundleBuilder::GetCborValueOfURL(base::StringPiece url) {
   return cbor::Value(url);
 }
 
+void WebBundleBuilder::AddExchange(const GURL& url,
+                                   const Headers& response_headers,
+                                   base::StringPiece payload) {
+  AddExchange(url.spec(), response_headers, payload);
+}
+
 void WebBundleBuilder::AddExchange(base::StringPiece url,
                                    const Headers& response_headers,
                                    base::StringPiece payload) {
@@ -79,6 +85,12 @@ WebBundleBuilder::ResponseLocation WebBundleBuilder::AddResponse(
 }
 
 void WebBundleBuilder::AddIndexEntry(
+    const GURL& url,
+    const ResponseLocation& response_location) {
+  AddIndexEntry(url.spec(), response_location);
+}
+
+void WebBundleBuilder::AddIndexEntry(
     base::StringPiece url,
     const ResponseLocation& response_location) {
   delayed_index_.insert({std::string{url}, response_location});
@@ -96,6 +108,10 @@ void WebBundleBuilder::AddAuthority(cbor::Value::MapValue authority) {
 
 void WebBundleBuilder::AddVouchedSubset(cbor::Value::MapValue vouched_subset) {
   vouched_subsets_.emplace_back(std::move(vouched_subset));
+}
+
+void WebBundleBuilder::AddPrimaryURL(const GURL& url) {
+  AddPrimaryURL(url.spec());
 }
 
 void WebBundleBuilder::AddPrimaryURL(base::StringPiece url) {
