@@ -102,13 +102,6 @@ void PrerenderCommitDeferringCondition::DidFinishNavigation(
   // Since the prerender navigation finished, and
   // PrerenderNavigationThrottle disallows another navigation after the
   // initial commit, there should not be another navigation starting.
-  //
-  // There might be an unused speculative RenderFrameHost at this point, so try
-  // discarding that first.
-  // TODO(https://crbug.com/1220337): We can probably remove this now that
-  // prerender activations are synchronous.
-  prerender_frame_tree_node->render_manager()->DiscardSpeculativeRFHIfUnused(
-      NavigationDiscardReason::kCancelled);
   DCHECK(!prerender_frame_tree_node->HasNavigation());
 
   if (done_closure_) {
