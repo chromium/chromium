@@ -258,9 +258,6 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   // PendingInstall.
   void ReportSuccess();
 
-  // Records stats regarding an interrupted webstore download item.
-  void RecordInterrupt(const download::DownloadItem* download) const;
-
   // Called when crx_installer_->InstallCrx() finishes.
   void OnInstallerDone(const absl::optional<CrxInstallError>& error);
 

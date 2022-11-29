@@ -17,8 +17,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
@@ -476,7 +474,6 @@ void WebstoreInstaller::OnDownloadUpdated(DownloadItem* download) {
       ReportFailure(kDownloadCanceledError, FAILURE_REASON_CANCELLED);
       break;
     case DownloadItem::INTERRUPTED:
-      RecordInterrupt(download);
       ReportFailure(
           GetErrorMessageForDownloadInterrupt(download->GetLastReason()),
           FAILURE_REASON_OTHER);
@@ -742,33 +739,6 @@ void WebstoreInstaller::ReportSuccess() {
   }
 
   Release();  // Balanced in Start().
-}
-
-void WebstoreInstaller::RecordInterrupt(const DownloadItem* download) const {
-  base::UmaHistogramSparse("Extensions.WebstoreDownload.InterruptReason",
-                           download->GetLastReason());
-
-  // Use logarithmic bin sizes up to 1 TB.
-  const int kNumBuckets = 30;
-  const int64_t kMaxSizeKb = 1 << kNumBuckets;
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Extensions.WebstoreDownload.InterruptReceivedKBytes",
-      download->GetReceivedBytes() / 1024,
-      1,
-      kMaxSizeKb,
-      kNumBuckets);
-  int64_t total_bytes = download->GetTotalBytes();
-  if (total_bytes >= 0) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Extensions.WebstoreDownload.InterruptTotalKBytes",
-        total_bytes / 1024,
-        1,
-        kMaxSizeKb,
-        kNumBuckets);
-  }
-  UMA_HISTOGRAM_BOOLEAN(
-      "Extensions.WebstoreDownload.InterruptTotalSizeUnknown",
-      total_bytes <= 0);
 }
 
 }  // namespace extensions

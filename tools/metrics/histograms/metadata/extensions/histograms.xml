@@ -3517,37 +3517,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.WebstoreDownload.InterruptReason"
-    enum="InterruptReason" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>The reason a webstore download was interrupted.</summary>
-</histogram>
-
-<histogram name="Extensions.WebstoreDownload.InterruptReceivedKBytes"
-    units="KB" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of KBytes received for a webstore download before it was
-    interrupted.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.WebstoreDownload.InterruptTotalKBytes" units="KB"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The total expected size in KBytes of an interrupted webstore download.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.WebstoreDownload.InterruptTotalSizeUnknown"
-    enum="Boolean" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Tracks whether the total size of an interrupted webstore download was known.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.WebStoreInstall.EsbAllowlistParameter"
     enum="WebStoreInstallAllowlistParameter" expires_after="2023-10-01">
   <owner>jeffcyr@google.com</owner>
