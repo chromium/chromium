@@ -1033,9 +1033,17 @@ IN_PROC_BROWSER_TEST_F(
   expected_report.WaitForReport();
 }
 
+// TODO(https://crbug.com/1393162): Flaky timeouts on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_MultipleImpressionsPerConversion_ReportSentWithHighestPriority \
+  DISABLED_MultipleImpressionsPerConversion_ReportSentWithHighestPriority
+#else
+#define MAYBE_MultipleImpressionsPerConversion_ReportSentWithHighestPriority \
+  MultipleImpressionsPerConversion_ReportSentWithHighestPriority
+#endif
 IN_PROC_BROWSER_TEST_F(
     AttributionsBrowserTest,
-    MultipleImpressionsPerConversion_ReportSentWithHighestPriority) {
+    MAYBE_MultipleImpressionsPerConversion_ReportSentWithHighestPriority) {
   // Report will be sent for the impression with highest priority.
   ExpectedReportWaiter expected_report(
       GURL("https://b.test/.well-known/attribution-reporting/"
