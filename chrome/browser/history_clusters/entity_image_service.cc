@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
@@ -34,7 +35,7 @@ class FetchJobManager {
   struct Request {
     std::u16string query;
     std::string entity_id;
-    history::ClusterVisit* visit;
+    raw_ptr<history::ClusterVisit> visit;
   };
 
   explicit FetchJobManager(std::vector<history::Cluster>&& clusters)

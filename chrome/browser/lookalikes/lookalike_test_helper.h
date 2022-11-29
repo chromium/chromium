@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LOOKALIKES_LOOKALIKE_TEST_HELPER_H_
 #define CHROME_BROWSER_LOOKALIKES_LOOKALIKE_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 class Browser;
@@ -19,7 +20,7 @@ class LookalikeTestHelper {
   void TearDown();
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 #endif

@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -280,7 +281,7 @@ const FormStructure* WaitForMatchingForm(
     AutofillManager& manager_;
     base::RepeatingCallback<bool(const FormStructure&)> pred_;
     base::RunLoop run_loop_;
-    const FormStructure* matching_form_ = nullptr;
+    raw_ptr<const FormStructure> matching_form_ = nullptr;
   };
   return Waiter(manager, std::move(pred)).Wait(timeout);
 }

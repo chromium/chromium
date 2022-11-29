@@ -197,7 +197,7 @@ class CONTENT_EXPORT TtsControllerImpl
   TtsControllerDelegate* delegate_ = nullptr;
 #endif
 
-  RemoteTtsEngineDelegate* remote_engine_delegate_ = nullptr;
+  raw_ptr<RemoteTtsEngineDelegate> remote_engine_delegate_ = nullptr;
 
   raw_ptr<TtsEngineDelegate, DanglingUntriaged> engine_delegate_ = nullptr;
 

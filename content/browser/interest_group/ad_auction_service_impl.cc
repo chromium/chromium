@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -376,7 +377,7 @@ class FencedFrameURLMappingObserver
   }
 
   bool called_ = false;
-  absl::optional<GURL>* mapped_url_;
+  raw_ptr<absl::optional<GURL>> mapped_url_;
   bool send_reports_;
 };
 

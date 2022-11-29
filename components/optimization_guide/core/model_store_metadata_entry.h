@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_STORE_METADATA_ENTRY_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_STORE_METADATA_ENTRY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -73,7 +74,7 @@ class ModelStoreMetadataEntryUpdater : public ModelStoreMetadataEntry {
 
  private:
   // The root metadata entry that is linked with the |pref_updater_|.
-  base::Value::Dict* metadata_entry_updater_;
+  raw_ptr<base::Value::Dict> metadata_entry_updater_;
 
   ScopedDictPrefUpdate pref_updater_;
 };
