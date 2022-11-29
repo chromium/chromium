@@ -18,10 +18,6 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateContext
  public:
   explicit RuntimeFeatureStateContext() { PopulateInitialValues(); }
 
-  RuntimeFeatureStateReadContext GetRuntimeFeatureStateReadContext() const {
-    return static_cast<RuntimeFeatureStateReadContext>(*this);
-  }
-
   // Note: The Is*Enabled() functions are defined in the parent class.
 
   {% for feature in browser_write_access_features %}
