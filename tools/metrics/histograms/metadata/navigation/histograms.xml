@@ -681,12 +681,14 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.EngagementTime.HTTP" units="ms"
-    expires_after="2022-01-09">
+    expires_after="2023-11-28">
   <owner>estark@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
     The amount of time that an HTTP page was in the foreground. Recorded on
-    every page close/transition.
+    every page close/transition. This metric is exposed publicly on the HTTPS
+    Transparency Report at
+    https://transparencyreport.google.com/https/overview?hl=en.
   </summary>
 </histogram>
 
@@ -696,7 +698,9 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <owner>security-enamel@chromium.org</owner>
   <summary>
     The amount of time that an HTTPS page was in the foreground. Recorded on
-    every page close/transition.
+    every page close/transition. This metric is exposed publicly on the HTTPS
+    Transparency Report at
+    https://transparencyreport.google.com/https/overview?hl=en.
   </summary>
 </histogram>
 
