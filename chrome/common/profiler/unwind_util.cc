@@ -34,13 +34,8 @@
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/arm_cfi_table.h"
-#include "chrome/android/modules/stack_unwinder/public/module.h"
-
-#if BUILDFLAG(USE_ANDROID_UNWINDER_V2)
 #include "base/profiler/chrome_unwinder_android_v2.h"
-#else
-#include "base/profiler/chrome_unwinder_android.h"
-#endif
+#include "chrome/android/modules/stack_unwinder/public/module.h"
 
 extern "C" {
 // The address of |__executable_start| is the base address of the executable or
@@ -57,7 +52,6 @@ BASE_FEATURE(kInstallAndroidUnwindDfm,
 namespace {
 
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
-#if BUILDFLAG(USE_ANDROID_UNWINDER_V2)
 class ChromeUnwinderCreator {
  public:
   ChromeUnwinderCreator() {
@@ -86,39 +80,6 @@ class ChromeUnwinderCreator {
  private:
   base::MemoryMappedFile chrome_cfi_file_;
 };
-#else   // BUILDFLAG(USE_ANDROID_UNWINDER_V2)
-// Encapsulates the setup required to create the Chrome unwinder on Android.
-class ChromeUnwinderCreator {
- public:
-  ChromeUnwinderCreator() {
-    constexpr char kCfiFileName[] = "assets/unwind_cfi_32";
-    constexpr char kSplitName[] = "stack_unwinder";
-
-    base::MemoryMappedFile::Region cfi_region;
-    int fd = base::android::OpenApkAsset(kCfiFileName, kSplitName, &cfi_region);
-    DCHECK_GE(fd, 0);
-    bool mapped_file_ok =
-        chrome_cfi_file_.Initialize(base::File(fd), cfi_region);
-    DCHECK(mapped_file_ok);
-    chrome_cfi_table_ = base::ArmCFITable::Parse(
-        {chrome_cfi_file_.data(), chrome_cfi_file_.length()});
-    DCHECK(chrome_cfi_table_);
-  }
-
-  ChromeUnwinderCreator(const ChromeUnwinderCreator&) = delete;
-  ChromeUnwinderCreator& operator=(const ChromeUnwinderCreator&) = delete;
-
-  std::unique_ptr<base::Unwinder> Create() {
-    return std::make_unique<base::ChromeUnwinderAndroid>(
-        chrome_cfi_table_.get(),
-        reinterpret_cast<uintptr_t>(&__executable_start));
-  }
-
- private:
-  base::MemoryMappedFile chrome_cfi_file_;
-  std::unique_ptr<base::ArmCFITable> chrome_cfi_table_;
-};
-#endif  // BUILDFLAG(USE_ANDROID_UNWINDER_V2)
 
 // Encapsulates the setup required to create the Android native unwinder.
 class NativeUnwinderCreator {
