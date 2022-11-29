@@ -60,14 +60,11 @@ enum class ParseKeyResult {
 // key has expired but is otherwise valid, ignores the key rather than failing
 // the prase.
 ParseKeyResult ParseSingleKeyExceptLabel(
-    const base::Value& in,
+    const base::Value::Dict& in,
     mojom::TrustTokenVerificationKey* out) {
-  CHECK(in.is_dict());
-
   const std::string* expiry =
-      in.FindStringKey(kTrustTokenKeyCommitmentExpiryField);
-  const std::string* key_body =
-      in.FindStringKey(kTrustTokenKeyCommitmentKeyField);
+      in.FindString(kTrustTokenKeyCommitmentExpiryField);
+  const std::string* key_body = in.FindString(kTrustTokenKeyCommitmentKeyField);
   if (!expiry || !key_body)
     return ParseKeyResult::kFail;
 
@@ -121,10 +118,10 @@ bool ParseUnavailableLocalOperationFallback(
 // the latter case, updates |result| to with their parsed values. Otherwise,
 // returns false.
 bool ParseLocalOperationFieldsIfPresent(
-    const base::Value& value,
+    const base::Value::Dict& dict,
     mojom::TrustTokenKeyCommitmentResult* result) {
   const base::Value* maybe_request_issuance_locally_on =
-      value.FindKey(kTrustTokenKeyCommitmentRequestIssuanceLocallyOnField);
+      dict.Find(kTrustTokenKeyCommitmentRequestIssuanceLocallyOnField);
 
   // The local issuance field is optional...
   if (!maybe_request_issuance_locally_on)
@@ -135,7 +132,7 @@ bool ParseLocalOperationFieldsIfPresent(
     return false;
 
   for (const base::Value& maybe_os_value :
-       maybe_request_issuance_locally_on->GetListDeprecated()) {
+       maybe_request_issuance_locally_on->GetList()) {
     if (!maybe_os_value.is_string())
       return false;
     absl::optional<mojom::TrustTokenKeyCommitmentResult::Os> maybe_os =
@@ -151,7 +148,7 @@ bool ParseLocalOperationFieldsIfPresent(
   auto to_remove = base::ranges::unique(oses);
   oses.erase(to_remove, oses.end());
 
-  const std::string* maybe_fallback = value.FindStringKey(
+  const std::string* maybe_fallback = dict.FindString(
       kTrustTokenKeyCommitmentUnavailableLocalOperationFallbackField);
   if (!maybe_fallback ||
       !ParseUnavailableLocalOperationFallback(
@@ -166,56 +163,55 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
     const base::Value& commitments_by_version) {
   if (!commitments_by_version.is_dict())
     return nullptr;
+  const base::Value::Dict& commitments_dict = commitments_by_version.GetDict();
 
   auto result = mojom::TrustTokenKeyCommitmentResult::New();
 
-  const base::Value* value = nullptr;
+  const base::Value::Dict* dict = nullptr;
   // Confirm that the protocol_version field is present. If the server supports
   // multiple versions, we prefer the VOPRF version, since it's more efficient
   // (and we're free to choose which version to use).
   for (auto version : {mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf,
                        mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb}) {
     std::string version_label = internal::ProtocolVersionToString(version);
-    if (commitments_by_version.FindKey(version_label)) {
-      value = commitments_by_version.FindKey(version_label);
-      if (!value->is_dict())
+    if (commitments_dict.contains(version_label)) {
+      dict = commitments_dict.FindDict(version_label);
+      if (!dict)
         return nullptr;
       const std::string* maybe_version =
-          value->FindStringKey(kTrustTokenKeyCommitmentProtocolVersionField);
+          dict->FindString(kTrustTokenKeyCommitmentProtocolVersionField);
       if (!maybe_version || *maybe_version != version_label)
         return nullptr;
       result->protocol_version = version;
       break;
     }
   }
-  if (!value)
+  if (!dict)
     return nullptr;
 
   // Confirm that the id field is present and type-safe.
-  absl::optional<int> maybe_id =
-      value->FindIntKey(kTrustTokenKeyCommitmentIDField);
+  absl::optional<int> maybe_id = dict->FindInt(kTrustTokenKeyCommitmentIDField);
   if (!maybe_id || *maybe_id <= 0)
     return nullptr;
   result->id = *maybe_id;
 
   // Confirm that the batchsize field is present and type-safe.
   absl::optional<int> maybe_batch_size =
-      value->FindIntKey(kTrustTokenKeyCommitmentBatchsizeField);
+      dict->FindInt(kTrustTokenKeyCommitmentBatchsizeField);
   if (!maybe_batch_size || *maybe_batch_size <= 0)
     return nullptr;
   result->batch_size = *maybe_batch_size;
 
-  if (!ParseLocalOperationFieldsIfPresent(*value, result.get()))
+  if (!ParseLocalOperationFieldsIfPresent(*dict, result.get()))
     return nullptr;
 
   // Parse the key commitments in the result if available.
-  const base::Value* maybe_keys =
-      value->FindKey(kTrustTokenKeyCommitmentKeysField);
+  const base::Value* maybe_keys = dict->Find(kTrustTokenKeyCommitmentKeysField);
   if (!maybe_keys)
     return result;
   if (!maybe_keys->is_dict())
     return nullptr;
-  for (auto kv : maybe_keys->DictItems()) {
+  for (auto kv : maybe_keys->GetDict()) {
     const base::Value& item = kv.second;
     if (!item.is_dict())
       continue;
@@ -225,7 +221,7 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
     if (!ParseSingleKeyLabel(kv.first))
       return nullptr;
 
-    switch (ParseSingleKeyExceptLabel(item, key.get())) {
+    switch (ParseSingleKeyExceptLabel(item.GetDict(), key.get())) {
       case ParseKeyResult::kFail:
         return nullptr;
       case ParseKeyResult::kIgnore:

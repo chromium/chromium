@@ -496,40 +496,45 @@ class NetworkContextTest : public testing::Test {
             net::HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
             net::ProxyServer::Direct())
         ->GetInfoAsValue("", "")
-        .FindIntPath(name)
+        .GetDict()
+        .FindInt(name)
         .value_or(-1);
   }
 
   int GetSocketCountForGroup(NetworkContext* context,
                              const net::ClientSocketPool::GroupId& group) {
-    base::Value pool_info =
+    base::Value::Dict pool_info =
         context->url_request_context()
             ->http_transaction_factory()
             ->GetSession()
             ->GetSocketPool(
                 net::HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
                 net::ProxyServer::Direct())
-            ->GetInfoAsValue("", "");
+            ->GetInfoAsValue("", "")
+            .TakeDict();
 
-    int count = 0;
-    base::Value* active_socket_count = pool_info.FindPathOfType(
-        base::span<const base::StringPiece>{
-            {"groups", group.ToString(), "active_socket_count"}},
-        base::Value::Type::INTEGER);
-    if (active_socket_count)
-      count += active_socket_count->GetInt();
-    base::Value* idle_sockets = pool_info.FindPathOfType(
-        base::span<const base::StringPiece>{
-            {"groups", group.ToString(), "idle_sockets"}},
-        base::Value::Type::LIST);
+    // "groups" dictionary should always exist.
+    const base::Value::Dict& groups_dict = *pool_info.FindDict("groups");
+
+    // The dictionary for the requested group may not exist.
+    const base::Value::Dict* group_dict =
+        groups_dict.FindDict(group.ToString());
+    if (!group_dict) {
+      return 0;
+    }
+
+    int count = group_dict->FindInt("active_socket_count").value_or(0);
+
+    const base::Value::List* idle_sockets =
+        group_dict->FindList("idle_sockets");
     if (idle_sockets)
-      count += idle_sockets->GetListDeprecated().size();
-    base::Value* connect_jobs = pool_info.FindPathOfType(
-        base::span<const base::StringPiece>{
-            {"groups", group.ToString(), "connect_jobs"}},
-        base::Value::Type::LIST);
-    if (connect_jobs)
-      count += connect_jobs->GetListDeprecated().size();
+      count += idle_sockets->size();
+
+    const base::Value::List* connect_jobs =
+        group_dict->FindList("connect_jobs");
+    if (idle_sockets)
+      count += connect_jobs->size();
+
     return count;
   }
 
