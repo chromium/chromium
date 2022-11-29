@@ -95,12 +95,20 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             product_cls = _product_registry[self.options.product_name]
             self.product = product_cls(self.host, self.options,
                                        self.select_python_executable())
+            self.add_default_child_process()
         except ValueError as exc:
             self._parser.error(str(exc))
 
     @property
     def _upstream_dir(self):
         return self.fs.join(self._tmp_dir, 'upstream_wpt')
+
+    def add_default_child_process(self):
+        if self._options.processes is None:
+            if self.product.name == 'chrome' or self.product.name == 'content_shell':
+                self._options.processes = self.port.default_child_processes()
+            else:
+                self._options.processes = 1
 
     def parse_args(self, args=None):
         super().parse_args(args)
@@ -307,7 +315,6 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--processes',
             '--child-processes',
             type=lambda processes: max(0, int(processes)),
-            default=1,
             help=('Number of drivers to start in parallel. (For Android, '
                   'this number is the number of emulators started.) '
                   'The actual number of devices tested may be higher '

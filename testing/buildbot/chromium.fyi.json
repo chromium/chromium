@@ -42931,7 +42931,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--child-processes=8",
           "--product=chrome_ios",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -92615,7 +92614,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--child-processes=8",
           "--log-wptreport",
           "--xvfb"
         ],
@@ -92647,7 +92645,6 @@
       },
       {
         "args": [
-          "--child-processes=8",
           "--log-wptreport",
           "--xvfb",
           "--flag-specific",
@@ -92681,7 +92678,6 @@
       },
       {
         "args": [
-          "--child-processes=8",
           "--log-wptreport",
           "--xvfb",
           "--flag-specific",
@@ -92753,7 +92749,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--child-processes=8",
           "--log-wptreport"
         ],
         "experiment_percentage": 100,
@@ -92851,7 +92846,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--child-processes=8",
           "--log-wptreport",
           "--xvfb"
         ],
@@ -105965,7 +105959,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--child-processes=8",
           "--log-wptreport",
           "--xvfb",
           "--target",

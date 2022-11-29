@@ -5325,7 +5325,6 @@
     'wpt_web_tests': {
       'wpt_tests_suite': {
         'args': [
-          '--child-processes=8',
           '--log-wptreport',
         ],
         'merge': {
@@ -5346,7 +5345,6 @@
     'wpt_web_tests_content_shell': {
       'wpt_tests_suite': {
         'args': [
-          '--child-processes=8',
           '--log-wptreport',
           '--xvfb'
         ],
@@ -5368,7 +5366,6 @@
     'wpt_web_tests_highdpi': {
       'wpt_tests_suite_highdpi': {
         'args': [
-          '--child-processes=8',
           '--log-wptreport',
           '--xvfb',
           '--flag-specific',
@@ -5437,7 +5434,6 @@
     'wpt_web_tests_ios': {
       'wpt_tests_suite': {
         'args': [
-          '--child-processes=8',
           '--product=chrome_ios'
         ],
         'merge': {
@@ -5458,7 +5454,6 @@
     'wpt_web_tests_layout_ng_disabled': {
       'wpt_tests_suite_layout_ng_disabled': {
         'args': [
-          '--child-processes=8',
           '--log-wptreport',
           '--xvfb',
           '--flag-specific',
