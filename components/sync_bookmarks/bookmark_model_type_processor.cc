@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -47,6 +48,23 @@
 namespace sync_bookmarks {
 
 namespace {
+
+#if BUILDFLAG(IS_IOS) or BUILDFLAG(IS_ANDROID)
+// Set a lower limit for mobile platforms.
+// 1. There are not many users of bookmarks on mobiles.
+// 2. Prevents creation of an overly huge sync metadata file to be stored on
+// the disk.
+// 3. Reduced memory consumption and processing, noticeable especially during
+// an initial merge.
+// 4. A lower limit for mobile platforms reflects the lower
+// capacity/processing power of mobile devices.
+//
+// Since the bookmark model thread is the UI thread, a smoother user
+// experience outweighs the resulting downsides.
+constexpr size_t kDefaultMaxBookmarksTillSyncEnabled = 20000;
+#else
+constexpr size_t kDefaultMaxBookmarksTillSyncEnabled = 100000;
+#endif
 
 class ScopedRemoteUpdateBookmarks {
  public:
@@ -123,7 +141,8 @@ size_t CountSyncableBookmarksFromModel(bookmarks::BookmarkModel* model) {
 
 BookmarkModelTypeProcessor::BookmarkModelTypeProcessor(
     BookmarkUndoService* bookmark_undo_service)
-    : bookmark_undo_service_(bookmark_undo_service) {}
+    : bookmark_undo_service_(bookmark_undo_service),
+      max_bookmarks_till_sync_enabled_(kDefaultMaxBookmarksTillSyncEnabled) {}
 
 BookmarkModelTypeProcessor::~BookmarkModelTypeProcessor() {
   if (bookmark_model_ && bookmark_model_observer_) {

@@ -104,8 +104,6 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetWeakPtr();
 
  private:
-  static constexpr size_t kDefaultMaxBookmarksTillSyncEnabled = 100000;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // If preconditions are met, inform sync that we are ready to connect.
@@ -200,7 +198,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   std::unique_ptr<BookmarkModelObserverImpl> bookmark_model_observer_;
 
   // This member variable exists only to allow tests to override the limit.
-  size_t max_bookmarks_till_sync_enabled_ = kDefaultMaxBookmarksTillSyncEnabled;
+  size_t max_bookmarks_till_sync_enabled_;
 
   // WeakPtrFactory for this processor for ModelTypeController.
   base::WeakPtrFactory<BookmarkModelTypeProcessor>
