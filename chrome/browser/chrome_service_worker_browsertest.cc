@@ -36,6 +36,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
@@ -318,6 +319,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCount) {
   base::RunLoop ukm_loop;
+  base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_recorder;
   test_recorder.SetOnAddEntryCallback(
       ukm::builders::ServiceWorker_OnLoad::kEntryName, ukm_loop.QuitClosure());
@@ -390,6 +392,17 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCount) {
   test_recorder.ExpectEntryMetric(
       entries[0],
       ukm::builders::ServiceWorker_OnLoad::kSubResourceFallbackRatioName, 50);
+
+  // Sync the histogram data between the renderer and browser processes.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectTotalCount("ServiceWorker.Subresource.Handled.Type",
+                                    1);
+  histogram_tester.ExpectUniqueSample("ServiceWorker.Subresource.Handled.Type",
+                                      2 /* kCSSStyleSheet */, 1);
+  histogram_tester.ExpectTotalCount("ServiceWorker.Subresource.Fallbacked.Type",
+                                    1);
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.Subresource.Fallbacked.Type", 2 /* kCSSStyleSheet */, 1);
 }
 
 class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {

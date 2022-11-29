@@ -1972,6 +1972,17 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
     if (resource->GetResponse().WasFetchedViaServiceWorker()) {
       ++number_of_subresource_loads_handled_by_service_worker_;
     }
+
+    if (IsControlledByServiceWorker() ==
+        mojom::blink::ControllerServiceWorkerMode::kControlled) {
+      if (resource->GetResponse().WasFetchedViaServiceWorker()) {
+        base::UmaHistogramEnumeration("ServiceWorker.Subresource.Handled.Type",
+                                      resource->GetType());
+      } else {
+        base::UmaHistogramEnumeration(
+            "ServiceWorker.Subresource.Fallbacked.Type", resource->GetType());
+      }
+    }
   }
   context_->UpdateSubresourceLoadMetrics(
       number_of_subresources_loaded_,

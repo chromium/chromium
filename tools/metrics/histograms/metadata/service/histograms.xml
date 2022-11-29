@@ -1237,6 +1237,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.Subresource.Fallbacked.Type" enum="ResourceType"
+    expires_after="2023-06-30">
+  <owner>yyanagisawa@google.com</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Type of subresources that is controlled with a service worker, but did not
+    handled by a service worker (i.e. did not get replied via respondWith). This
+    metric is taken every time a subresource load finishes.
+
+    See ServiceWorker.Subresource.Handled.Type for handled cases.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.Subresource.Handled.Type" enum="ResourceType"
+    expires_after="2023-06-30">
+  <owner>yyanagisawa@google.com</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Type of subresources that is controlled with a service worker, and handled
+    by a service worker (i.e. get replied via respondWith). This metric is taken
+    every time a subresource load finishes.
+
+    See ServiceWorker.Subresource.Fallbacked.Type for fallbacked cases.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.WorkaroundForCrBug1342408Applied" units="cases"
     expires_after="2023-06-30">
   <owner>yyanagisawa@google.com</owner>
