@@ -53,6 +53,13 @@ enum class FingerprintLocation {
   UNKNOWN = 7,
 };
 
+// Struct that holds the description string IDs shown during the fingerprint
+// setup.
+struct FingerprintDescriptionStrings {
+  int description_id = 0;
+  int description_child_id = 0;
+};
+
 // Override quick unlock checks for testing.
 class TestApi {
  public:
@@ -131,6 +138,10 @@ FingerprintLocation GetFingerprintLocation();
 // Add fingerprint animations and illustrations. Used for the Fingerprint setup
 // screen and the settings.
 void AddFingerprintResources(content::WebUIDataSource* html_source);
+
+// Returns the resource IDs for the fingerprint setup description strings.
+FingerprintDescriptionStrings GetFingerprintDescriptionStrings(
+    FingerprintLocation location);
 
 }  // namespace quick_unlock
 }  // namespace ash

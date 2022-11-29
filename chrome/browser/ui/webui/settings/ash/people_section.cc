@@ -324,84 +324,16 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
                              bool are_fingerprint_settings_allowed) {
   html_source->AddBoolean("fingerprintUnlockEnabled",
                           are_fingerprint_settings_allowed);
-  if (are_fingerprint_settings_allowed) {
-    quick_unlock::AddFingerprintResources(html_source);
-  }
 
-  int instruction_id, aria_label_id;
-  bool aria_label_includes_device = false;
-  bool instruction_includes_device = false;
-  using FingerprintLocation = quick_unlock::FingerprintLocation;
-  switch (quick_unlock::GetFingerprintLocation()) {
-    case FingerprintLocation::TABLET_POWER_BUTTON:
-      instruction_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_POWER_BUTTON;
-      aria_label_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_POWER_BUTTON_ARIA_LABEL;
-      break;
-    case FingerprintLocation::KEYBOARD_BOTTOM_LEFT:
-      instruction_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
-      aria_label_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_BOTTOM_LEFT_ARIA_LABEL;
-      break;
-    case FingerprintLocation::KEYBOARD_BOTTOM_RIGHT:
-      instruction_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
-      aria_label_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_BOTTOM_RIGHT_ARIA_LABEL;
-      break;
-    case FingerprintLocation::KEYBOARD_TOP_RIGHT:
-      instruction_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
-      aria_label_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_TOP_RIGHT_ARIA_LABEL;
-      break;
-    case quick_unlock::FingerprintLocation::RIGHT_SIDE:
-      instruction_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
-      aria_label_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_RIGHT_SIDE_ARIA_LABEL;
-      aria_label_includes_device = true;
-      break;
-    case quick_unlock::FingerprintLocation::LEFT_SIDE:
-      instruction_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
-      aria_label_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_LEFT_SIDE_ARIA_LABEL;
-      aria_label_includes_device = true;
-      break;
-    case FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT:
-      instruction_id =
-          IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT;
-      // Use the dialog title as the aria-label, since this location does not
-      // require an aria-label.
-      aria_label_id = IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_TITLE;
-      instruction_includes_device = true;
-      break;
-    case FingerprintLocation::UNKNOWN:
-      instruction_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
-      aria_label_id =
-          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
-      break;
-  }
-  if (instruction_includes_device) {
-    html_source->AddString("configureFingerprintInstructionLocateScannerStep",
-                           l10n_util::GetStringFUTF16(
-                               instruction_id, ui::GetChromeOSDeviceName()));
-  } else {
-    html_source->AddLocalizedString(
-        "configureFingerprintInstructionLocateScannerStep", instruction_id);
-  }
-  if (aria_label_includes_device) {
-    html_source->AddString(
-        "configureFingerprintScannerStepAriaLabel",
-        l10n_util::GetStringFUTF16(aria_label_id, ui::GetChromeOSDeviceName()));
-  } else {
-    html_source->AddLocalizedString("configureFingerprintScannerStepAriaLabel",
-                                    aria_label_id);
-  }
+  if (are_fingerprint_settings_allowed)
+    quick_unlock::AddFingerprintResources(html_source);
+
+  auto fp_setup_strings = quick_unlock::GetFingerprintDescriptionStrings(
+      quick_unlock::GetFingerprintLocation());
+  html_source->AddString(
+      "configureFingerprintInstructionLocateScannerStep",
+      l10n_util::GetStringFUTF16(fp_setup_strings.description_id,
+                                 ui::GetChromeOSDeviceName()));
 }
 
 void AddSetupFingerprintDialogStrings(content::WebUIDataSource* html_source) {

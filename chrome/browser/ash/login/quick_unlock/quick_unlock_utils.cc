@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -29,6 +31,42 @@
 namespace ash {
 namespace quick_unlock {
 namespace {
+
+// Maps FingerprintLocation to FingerprintDescriptionStrings.
+constexpr auto kFingerprintLocationToStringsMap = base::MakeFixedFlatMap<
+    quick_unlock::FingerprintLocation,
+    quick_unlock::FingerprintDescriptionStrings>(
+    {{quick_unlock::FingerprintLocation::TABLET_POWER_BUTTON,
+      {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_POWER_BUTTON_DESCRIPTION,
+       IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_POWER_BUTTON_DESCRIPTION_CHILD}},
+
+     {quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_LEFT,
+      {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_KEYBOARD_BOTTOM_LEFT_DESCRIPTION,
+       IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_KEYBOARD_BOTTOM_LEFT_DESCRIPTION_CHILD}},
+
+     {quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_RIGHT,
+      {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_KEYBOARD_BOTTOM_RIGHT_DESCRIPTION,
+       IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_KEYBOARD_BOTTOM_RIGHT_DESCRIPTION_CHILD}},
+
+     {quick_unlock::FingerprintLocation::KEYBOARD_TOP_RIGHT,
+      {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_KEYBOARD_TOP_RIGHT_DESCRIPTION,
+       IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_KEYBOARD_TOP_RIGHT_DESCRIPTION_CHILD}},
+
+     {quick_unlock::FingerprintLocation::RIGHT_SIDE,
+      {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_RIGHT_SIDE_DESCRIPTION,
+       IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_RIGHT_SIDE_DESCRIPTION_CHILD}},
+
+     {quick_unlock::FingerprintLocation::LEFT_SIDE,
+      {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_SIDE_DESCRIPTION,
+       IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_SIDE_DESCRIPTION_CHILD}},
+
+     {quick_unlock::FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT,
+      {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT_DESCRIPTION,
+       IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT_DESCRIPTION_CHILD}},
+
+     {quick_unlock::FingerprintLocation::UNKNOWN,
+      {IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION,
+       IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION_CHILD}}});
 
 TestApi* g_instance = nullptr;
 
@@ -302,6 +340,13 @@ void AddFingerprintResources(content::WebUIDataSource* html_source) {
   // longer required.
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+}
+
+FingerprintDescriptionStrings GetFingerprintDescriptionStrings(
+    FingerprintLocation location) {
+  auto* location_string_it = kFingerprintLocationToStringsMap.find(location);
+  CHECK(location_string_it != kFingerprintLocationToStringsMap.end());
+  return location_string_it->second;
 }
 
 }  // namespace quick_unlock

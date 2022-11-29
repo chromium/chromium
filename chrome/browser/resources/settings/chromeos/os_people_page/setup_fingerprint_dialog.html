@@ -30,9 +30,7 @@
         aria-live="polite">
       <span>[[getInstructionMessage_(step_, problemMessage_)]]</span>
     </div>
-    <div id="scannerLocationLottie"
-        hidden="[[!showScannerLocation_(step_)]]" aria-live="polite"
-        aria-label="$i18n{configureFingerprintScannerStepAriaLabel}">
+    <div id="scannerLocationLottie" hidden="[[!showScannerLocation_(step_)]]">
       <iron-media-query query="(prefers-color-scheme: dark)"
           query-matches="{{isDarkModeActive_}}">
       </iron-media-query>

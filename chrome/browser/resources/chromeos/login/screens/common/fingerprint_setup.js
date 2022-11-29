@@ -126,14 +126,6 @@ class FingerprintSetup extends FingerprintSetupBase {
         type: Boolean,
         value: false,
       },
-      /**
-       * Indicates whether the fingerprint sensor location has a specific
-       * aria-label.
-       */
-      hasAriaLabel_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -168,7 +160,6 @@ class FingerprintSetup extends FingerprintSetupBase {
 
   onBeforeShow(data) {
     this.isChildAccount_ = data['isChildAccount'];
-    this.hasAriaLabel_ = data['hasAriaLabel'];
     this.setAnimationState_(true);
   }
 
@@ -291,24 +282,6 @@ class FingerprintSetup extends FingerprintSetupBase {
     }
 
     this.$.arc.setProgress(oldValue, newValue, newValue === 100);
-  }
-
-  /**
-   * Returns the aria-label for the dialog.
-   * New fingerprint positions do not require aria-labels since the exact
-   * fingerprint sensor location is included in the subtitle, for these
-   * locations use the screen title as the aria-label for the dialog.
-   * @private
-   */
-  getAriaLabel_(locale, hasAriaLabel, isChildAccount) {
-    if (hasAriaLabel) {
-      return this.i18n('setupFingerprintScreenAriaLabel');
-    }
-
-    if (isChildAccount) {
-      return this.i18n('setupFingerprintScreenTitleForChild');
-    }
-    return this.i18n('setupFingerprintScreenTitle');
   }
 }
 

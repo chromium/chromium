@@ -28,19 +28,6 @@ export const FingerprintSetupStep = {
 };
 
 /**
- * Fingerprint sensor locations corresponding to the FingerprintLocation
- * enumerators in
- * /chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h
- * @enum {number}
- */
-export const FingerprintLocation = {
-  TABLET_POWER_BUTTON: 0,
-  KEYBOARD_BOTTOM_LEFT: 1,
-  KEYBOARD_BOTTOM_RIGHT: 2,
-  KEYBOARD_TOP_RIGHT: 3,
-};
-
-/**
  * The amount of milliseconds after a successful but not completed scan before
  * a message shows up telling the user to scan their finger again.
  * @type {number}
