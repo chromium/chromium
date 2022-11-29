@@ -59,6 +59,8 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) FakeAttestationClient
   void GetEnrollmentPreparations(
       const ::attestation::GetEnrollmentPreparationsRequest& request,
       GetEnrollmentPreparationsCallback callback) override;
+  void GetFeatures(const ::attestation::GetFeaturesRequest& request,
+                   GetFeaturesCallback callback) override;
   void GetStatus(const ::attestation::GetStatusRequest& request,
                  GetStatusCallback callback) override;
   void Verify(const ::attestation::VerifyRequest& request,
@@ -102,6 +104,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) FakeAttestationClient
       std::deque<bool> sequence) override;
   void ConfigureEnrollmentPreparationsStatus(
       ::attestation::AttestationStatus status) override;
+  ::attestation::GetFeaturesReply* mutable_features_reply() override;
   ::attestation::GetStatusReply* mutable_status_reply() override;
   void AllowlistCertificateRequest(
       const ::attestation::GetCertificateRequest& request) override;
@@ -161,6 +164,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) FakeAttestationClient
   bool is_prepared_ = true;
   std::deque<bool> preparation_sequences_;
 
+  ::attestation::GetFeaturesReply features_reply_;
   ::attestation::GetStatusReply status_reply_;
 
   // Maintains the allowlisted certificate requests.

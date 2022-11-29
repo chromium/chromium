@@ -125,6 +125,11 @@ class AttestationClientImpl : public AttestationClient {
                     std::move(callback));
   }
 
+  void GetFeatures(const ::attestation::GetFeaturesRequest& request,
+                   GetFeaturesCallback callback) override {
+    CallProtoMethod(attestation::kGetFeatures, request, std::move(callback));
+  }
+
   void GetStatus(const ::attestation::GetStatusRequest& request,
                  GetStatusCallback callback) override {
     CallProtoMethod(attestation::kGetStatus, request, std::move(callback));

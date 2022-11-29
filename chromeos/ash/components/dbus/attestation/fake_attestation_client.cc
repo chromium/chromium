@@ -67,6 +67,7 @@ bool GetCertificateRequestEqual(::attestation::GetCertificateRequest r1,
 }  // namespace
 
 FakeAttestationClient::FakeAttestationClient() {
+  features_reply_.set_is_available(true);
   status_reply_.set_enrolled(true);
 }
 
@@ -173,6 +174,12 @@ void FakeAttestationClient::GetEnrollmentPreparations(
   }
 
   PostProtoResponse(std::move(callback), reply);
+}
+
+void FakeAttestationClient::GetFeatures(
+    const ::attestation::GetFeaturesRequest& request,
+    GetFeaturesCallback callback) {
+  PostProtoResponse(std::move(callback), features_reply_);
 }
 
 void FakeAttestationClient::GetStatus(
@@ -395,6 +402,11 @@ void FakeAttestationClient::ConfigureEnrollmentPreparationsStatus(
     ::attestation::AttestationStatus status) {
   CHECK_NE(status, ::attestation::STATUS_SUCCESS);
   preparations_status_ = status;
+}
+
+::attestation::GetFeaturesReply*
+FakeAttestationClient::mutable_features_reply() {
+  return &features_reply_;
 }
 
 ::attestation::GetStatusReply* FakeAttestationClient::mutable_status_reply() {

@@ -42,6 +42,8 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) AttestationClient {
       const ::attestation::RegisterKeyWithChapsTokenReply&)>;
   using GetEnrollmentPreparationsCallback = base::OnceCallback<void(
       const ::attestation::GetEnrollmentPreparationsReply&)>;
+  using GetFeaturesCallback =
+      base::OnceCallback<void(const ::attestation::GetFeaturesReply&)>;
   using GetStatusCallback =
       base::OnceCallback<void(const ::attestation::GetStatusReply&)>;
   using VerifyCallback =
@@ -92,6 +94,9 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) AttestationClient {
     // calls, call ConfigureEnrollmentPreparations(Sequence)?.
     virtual void ConfigureEnrollmentPreparationsStatus(
         ::attestation::AttestationStatus status) = 0;
+
+    // Gets the mutable |GetFeaturesReply| that is returned when queried.
+    virtual ::attestation::GetFeaturesReply* mutable_features_reply() = 0;
 
     // Gets the mutable |GetStatusReply| that is returned when queried.
     virtual ::attestation::GetStatusReply* mutable_status_reply() = 0;
@@ -265,6 +270,9 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) AttestationClient {
   virtual void GetEnrollmentPreparations(
       const ::attestation::GetEnrollmentPreparationsRequest& request,
       GetEnrollmentPreparationsCallback callback) = 0;
+
+  virtual void GetFeatures(const ::attestation::GetFeaturesRequest& request,
+                           GetFeaturesCallback callback) = 0;
 
   virtual void GetStatus(const ::attestation::GetStatusRequest& request,
                          GetStatusCallback callback) = 0;
