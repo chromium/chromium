@@ -4,6 +4,8 @@
 
 #include "ui/base/win/foreground_helper.h"
 
+#include <ostream>
+
 #include "base/logging.h"
 #include "ui/gfx/win/window_impl.h"
 
