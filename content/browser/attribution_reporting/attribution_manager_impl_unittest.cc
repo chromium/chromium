@@ -19,6 +19,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -255,6 +258,12 @@ class AttributionManagerImplTest : public testing::Test {
     content::SetNetworkConnectionTrackerForTesting(
         network::TestNetworkConnectionTracker::GetInstance());
 
+    storage_task_runner_ =
+        base::ThreadPool::CreateUpdateableSequencedTaskRunner(
+            {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+             base::ThreadPolicy::MUST_USE_FOREGROUND});
+
     CreateManager();
     CreateAggregationService();
   }
@@ -285,7 +294,8 @@ class AttributionManagerImplTest : public testing::Test {
         std::move(storage_delegate), std::move(cookie_checker),
         std::move(report_sender),
         static_cast<StoragePartitionImpl*>(
-            browser_context_->GetDefaultStoragePartition()));
+            browser_context_->GetDefaultStoragePartition()),
+        storage_task_runner_);
   }
 
   void ShutdownManager() {
@@ -349,6 +359,7 @@ class AttributionManagerImplTest : public testing::Test {
   raw_ptr<MockCookieChecker> cookie_checker_;
   raw_ptr<MockReportSender> report_sender_;
   raw_ptr<MockAggregationService> aggregation_service_;
+  scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner_;
 
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
 };

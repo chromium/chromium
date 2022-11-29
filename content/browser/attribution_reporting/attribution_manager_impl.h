@@ -38,6 +38,7 @@ class SuitableOrigin;
 namespace base {
 class FilePath;
 class TimeDelta;
+class UpdateableSequencedTaskRunner;
 }  // namespace base
 
 namespace storage {
@@ -111,7 +112,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
-      StoragePartitionImpl* storage_partition);
+      StoragePartitionImpl* storage_partition,
+      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
   static std::unique_ptr<AttributionManagerImpl> CreateWithNewDbForTesting(
       StoragePartitionImpl* storage_partition,
@@ -181,7 +183,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
-      std::unique_ptr<AttributionDataHostManager> data_host_manager);
+      std::unique_ptr<AttributionDataHostManager> data_host_manager,
+      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
   void MaybeEnqueueEvent(SourceOrTrigger event);
   void ProcessEvents();
@@ -245,6 +248,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                                    bool is_debug_cookie_set,
                                    const CreateReportResult& result);
 
+  void OnClearDataComplete();
+
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;
 
@@ -260,6 +265,16 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // Controls the maximum size of `pending_events_` to avoid unbounded memory
   // growth with adversarial input.
   size_t max_pending_events_;
+
+  // The task runner for all attribution reporting storage operations.
+  // Updateable to allow for priority to be temporarily increased to
+  // `USER_VISIBLE` when a clear data task is queued or running. Otherwise
+  // `BEST_EFFORT` is used.
+  scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner_;
+
+  // How many clear data storage tasks are queued or running currently, i.e.
+  // have been posted but the reply has not been run.
+  int num_pending_clear_data_tasks_ = 0;
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
 

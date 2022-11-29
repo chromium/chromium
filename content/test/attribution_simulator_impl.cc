@@ -20,11 +20,15 @@
 #include "base/functional/overloaded.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
@@ -558,7 +562,11 @@ base::Value RunAttributionSimulation(
           options.noise_mode, options.delay_mode, options.config,
           std::move(rng)),
       std::move(cookie_checker), std::make_unique<FakeReportSender>(),
-      storage_partition);
+      storage_partition,
+      base::ThreadPool::CreateUpdateableSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+           base::ThreadPolicy::MUST_USE_FOREGROUND}));
 
   AttributionEventHandler handler(
       manager.get(), storage_partition,

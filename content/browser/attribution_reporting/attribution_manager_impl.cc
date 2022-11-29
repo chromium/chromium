@@ -14,14 +14,18 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -137,18 +141,6 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
   base::RepeatingClosure send_reports_;
   const raw_ref<base::SequenceBound<AttributionStorage>> attribution_storage_;
 };
-
-// The shared-task runner for all attribution storage operations. Note that
-// different AttributionManagerImpl perform operations on the same task
-// runner. This prevents any potential races when a given context is destroyed
-// and recreated for the same backing storage. This uses
-// BLOCK_SHUTDOWN as some data deletion operations may be running when the
-// browser is closed, and we want to ensure all data is deleted correctly.
-base::LazyThreadPoolSequencedTaskRunner g_storage_task_runner =
-    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::TaskPriority::BEST_EFFORT,
-                         base::MayBlock(),
-                         base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
 
 bool IsStorageKeySessionOnly(
     scoped_refptr<storage::SpecialStoragePolicy> storage_policy,
@@ -405,12 +397,13 @@ AttributionManagerImpl::CreateForTesting(
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
-    StoragePartitionImpl* storage_partition) {
+    StoragePartitionImpl* storage_partition,
+    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner) {
   return base::WrapUnique(new AttributionManagerImpl(
       storage_partition, user_data_directory, max_pending_events,
       std::move(special_storage_policy), std::move(storage_delegate),
       std::move(cookie_checker), std::move(report_sender),
-      /*data_host_manager=*/nullptr));
+      /*data_host_manager=*/nullptr, std::move(storage_task_runner)));
 }
 
 // static
@@ -437,7 +430,17 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
           std::make_unique<AttributionReportNetworkSender>(
               storage_partition->GetURLLoaderFactoryForBrowserProcess()),
-          std::make_unique<AttributionDataHostManagerImpl>(this)) {}
+          std::make_unique<AttributionDataHostManagerImpl>(this),
+          // This uses BLOCK_SHUTDOWN as some data deletion operations may be
+          // running when the browser is closed, and we want to ensure all data
+          // is deleted correctly. Additionally, we use MUST_USE_FOREGROUND to
+          // avoid priority inversions if a task is already running when the
+          // priority is increased.
+          base::ThreadPool::CreateUpdateableSequencedTaskRunner(
+              base::TaskTraits(base::TaskPriority::BEST_EFFORT,
+                               base::MayBlock(),
+                               base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+                               base::ThreadPolicy::MUST_USE_FOREGROUND))) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
@@ -447,11 +450,13 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
-    std::unique_ptr<AttributionDataHostManager> data_host_manager)
+    std::unique_ptr<AttributionDataHostManager> data_host_manager,
+    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner)
     : storage_partition_(storage_partition),
       max_pending_events_(max_pending_events),
+      storage_task_runner_(std::move(storage_task_runner)),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
-          g_storage_task_runner.Get(),
+          storage_task_runner_,
           g_run_in_memory ? base::FilePath() : user_data_directory,
           std::move(storage_delegate))),
       scheduler_timer_(std::make_unique<AttributionReportScheduler>(
@@ -464,6 +469,7 @@ AttributionManagerImpl::AttributionManagerImpl(
       report_sender_(std::move(report_sender)) {
   DCHECK(storage_partition_);
   DCHECK_GT(max_pending_events_, 0u);
+  DCHECK(storage_task_runner_);
   DCHECK(cookie_checker_);
   DCHECK(report_sender_);
 }
@@ -480,10 +486,10 @@ AttributionManagerImpl::~AttributionManagerImpl() {
   StoragePartition::StorageKeyMatcherFunction
       session_only_storage_key_predicate = base::BindRepeating(
           &IsStorageKeySessionOnly, std::move(special_storage_policy_));
-  attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
-      .WithArgs(base::Time::Min(), base::Time::Max(),
-                std::move(session_only_storage_key_predicate),
-                /*delete_rate_limit_data=*/true);
+  ClearData(base::Time::Min(), base::Time::Max(),
+            std::move(session_only_storage_key_predicate),
+            /*filter_builder=*/nullptr,
+            /*delete_rate_limit_data=*/true, /*done=*/base::DoNothing());
 }
 
 void AttributionManagerImpl::AddObserver(AttributionObserver* observer) {
@@ -767,23 +773,29 @@ void AttributionManagerImpl::ClearData(
     BrowsingDataFilterBuilder* filter_builder,
     bool delete_rate_limit_data,
     base::OnceClosure done) {
+  // When a clear data task is queued or running, we use a higher priority.
+  ++num_pending_clear_data_tasks_;
+  storage_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter),
                 delete_rate_limit_data)
-      .Then(base::BindOnce(
-          [](base::OnceClosure done,
-             base::WeakPtr<AttributionManagerImpl> manager) {
-            std::move(done).Run();
+      .Then(std::move(done).Then(
+          base::BindOnce(&AttributionManagerImpl::OnClearDataComplete,
+                         weak_factory_.GetWeakPtr())));
+}
 
-            if (manager) {
-              manager->NotifySourcesChanged();
-              manager->NotifyReportsChanged(
-                  AttributionReport::Type::kEventLevel);
-              manager->NotifyReportsChanged(
-                  AttributionReport::Type::kAggregatableAttribution);
-            }
-          },
-          std::move(done), weak_factory_.GetWeakPtr()));
+void AttributionManagerImpl::OnClearDataComplete() {
+  DCHECK_GT(num_pending_clear_data_tasks_, 0);
+  --num_pending_clear_data_tasks_;
+
+  // No more clear data tasks, so we can reset the priority.
+  if (num_pending_clear_data_tasks_ == 0)
+    storage_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
+
+  NotifySourcesChanged();
+  NotifyReportsChanged(AttributionReport::Type::kEventLevel);
+  NotifyReportsChanged(AttributionReport::Type::kAggregatableAttribution);
 }
 
 void AttributionManagerImpl::GetReportsToSend() {
