@@ -592,15 +592,16 @@ content::Referrer CreateReferrer(const GURL& url,
       content::Referrer(referring_url.GetAsReferrer(), params.referrer_policy));
 }
 
-content::WebContents* GetWebContentsToUse(content::WebContents* web_contents) {
+content::WebContents* GetWebContentsToUse(
+    content::RenderFrameHost* render_frame_host) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If we're viewing in a MimeHandlerViewGuest, use its embedder WebContents.
   auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
+      extensions::MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host);
   if (guest_view)
     return guest_view->embedder_web_contents();
 #endif
-  return web_contents;
+  return content::WebContents::FromRenderFrameHost(render_frame_host);
 }
 
 bool g_custom_id_ranges_initialized = false;
@@ -723,7 +724,7 @@ RenderViewContextMenu::RenderViewContextMenu(
       protocol_handler_registry_(
           ProtocolHandlerRegistryFactory::GetForBrowserContext(GetProfile())),
       accessibility_labels_submenu_model_(this),
-      embedder_web_contents_(GetWebContentsToUse(source_web_contents_)),
+      embedder_web_contents_(GetWebContentsToUse(&render_frame_host)),
       autofill_context_menu_manager_(
           autofill::PersonalDataManagerFactory::GetForProfile(
               GetProfile()->GetOriginalProfile()),
@@ -1756,7 +1757,7 @@ void RenderViewContextMenu::AppendMediaItems() {
 
 void RenderViewContextMenu::AppendPluginItems() {
   if (params_.page_url == params_.src_url ||
-      (guest_view::GuestViewBase::IsGuest(source_web_contents_) &&
+      (guest_view::GuestViewBase::IsGuest(GetRenderFrameHost()) &&
        (!embedder_web_contents_ || !embedder_web_contents_->IsSavable()))) {
     // Both full page and embedded plugins are hosted as guest now,
     // the difference is a full page plugin is not considered as savable.
@@ -3083,8 +3084,8 @@ bool RenderViewContextMenu::IsReloadEnabled() const {
 }
 
 bool RenderViewContextMenu::IsViewSourceEnabled() const {
-  if (!!extensions::MimeHandlerViewGuest::FromWebContents(
-          source_web_contents_)) {
+  if (!!extensions::MimeHandlerViewGuest::FromRenderFrameHost(
+          GetRenderFrameHost())) {
     return false;
   }
   // Disallow ViewSource if DevTools are disabled.
@@ -3117,8 +3118,8 @@ bool RenderViewContextMenu::IsTranslateEnabled() const {
   // If no |chrome_translate_client| attached with this WebContents or we're
   // viewing in a MimeHandlerViewGuest translate will be disabled.
   if (!chrome_translate_client ||
-      !!extensions::MimeHandlerViewGuest::FromWebContents(
-          source_web_contents_)) {
+      !!extensions::MimeHandlerViewGuest::FromRenderFrameHost(
+          GetRenderFrameHost())) {
     return false;
   }
   std::string source_lang =
