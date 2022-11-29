@@ -65,6 +65,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
       mojo::PendingRemote<mojom::P2PSocketClient> client,
       mojo::PendingReceiver<mojom::P2PSocket> socket,
       P2PSocketType type,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
       net::NetLog* net_log,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
       P2PMessageThrottler* throttler);

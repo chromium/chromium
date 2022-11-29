@@ -347,6 +347,7 @@ void P2PSocketManager::CreateSocket(
     const net::IPEndPoint& local_address,
     const P2PPortRange& port_range,
     const P2PHostAndIPEndPoint& remote_address,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingRemote<mojom::P2PSocketClient> client,
     mojo::PendingReceiver<mojom::P2PSocket> receiver) {
   if (port_range.min_port > port_range.max_port ||
@@ -366,6 +367,7 @@ void P2PSocketManager::CreateSocket(
   }
   std::unique_ptr<P2PSocket> socket =
       P2PSocket::Create(this, std::move(client), std::move(receiver), type,
+                        net::NetworkTrafficAnnotationTag(traffic_annotation),
                         url_request_context_->net_log(),
                         proxy_resolving_socket_factory_.get(), &throttler_);
 

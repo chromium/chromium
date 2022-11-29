@@ -53,14 +53,14 @@ interface P2PSocketManager {
                IPEndPoint local_address,
                P2PPortRange port_range,
                P2PHostAndIPEndPoint remote_address,
+               MutableNetworkTrafficAnnotationTag traffic_annotation,
                pending_remote<P2PSocketClient> client,
                pending_receiver<P2PSocket> socket);
 };
 
 interface P2PSocket {
   Send(mojo_base.mojom.ReadOnlyBuffer data,
-       P2PPacketInfo packet_info,
-       network.mojom.MutableNetworkTrafficAnnotationTag traffic_annotation);
+       P2PPacketInfo packet_info);
   SetOption(P2PSocketOption option, int32 value);
 };
 

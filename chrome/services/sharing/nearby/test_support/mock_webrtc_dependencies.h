@@ -47,15 +47,17 @@ class MockWebRtcDependencies : public network::mojom::P2PSocketManager,
        network::mojom::P2PSocketManager::GetHostAddressWithFamilyCallback
            callback),
       (override));
-  MOCK_METHOD(void,
-              CreateSocket,
-              (network::P2PSocketType type,
-               const net::IPEndPoint& local_address,
-               const network::P2PPortRange& port_range,
-               const network::P2PHostAndIPEndPoint& remote_address,
-               mojo::PendingRemote<network::mojom::P2PSocketClient> client,
-               mojo::PendingReceiver<network::mojom::P2PSocket> receiver),
-              (override));
+  MOCK_METHOD(
+      void,
+      CreateSocket,
+      (network::P2PSocketType type,
+       const net::IPEndPoint& local_address,
+       const network::P2PPortRange& port_range,
+       const network::P2PHostAndIPEndPoint& remote_address,
+       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+       mojo::PendingRemote<network::mojom::P2PSocketClient> client,
+       mojo::PendingReceiver<network::mojom::P2PSocket> receiver),
+      (override));
 
   // sharing::mojom::MdnsResponderFactory overrides:
   MOCK_METHOD(

@@ -57,7 +57,9 @@ void P2PSocketClient::Init(network::P2PSocketType type,
   state_ = STATE_OPENING;
   socket_manager_->CreateSocket(
       type, local_address, network::P2PPortRange(min_port, max_port),
-      remote_address, receiver_.BindNewPipeAndPassRemote(),
+      remote_address,
+      net::MutableNetworkTrafficAnnotationTag(traffic_annotation_),
+      receiver_.BindNewPipeAndPassRemote(),
       socket_.BindNewPipeAndPassReceiver());
   receiver_.set_disconnect_handler(base::BindOnce(
       &P2PSocketClient::OnConnectionError, base::Unretained(this)));
@@ -81,8 +83,7 @@ void P2PSocketClient::SendWithPacketId(const net::IPEndPoint& address,
                                        base::span<const uint8_t> data,
                                        const rtc::PacketOptions& options,
                                        uint64_t packet_id) {
-  socket_->Send(data, network::P2PPacketInfo(address, options, packet_id),
-                net::MutableNetworkTrafficAnnotationTag(traffic_annotation_));
+  socket_->Send(data, network::P2PPacketInfo(address, options, packet_id));
 }
 
 void P2PSocketClient::SetOption(network::P2PSocketOption option, int value) {

@@ -50,11 +50,8 @@ bool IsPseudoTlsClientSocket(P2PSocketType type) {
 P2PSocketTcp::SendBuffer::SendBuffer() : rtc_packet_id(-1) {}
 P2PSocketTcp::SendBuffer::SendBuffer(
     int32_t rtc_packet_id,
-    scoped_refptr<net::DrainableIOBuffer> buffer,
-    const net::NetworkTrafficAnnotationTag traffic_annotation)
-    : rtc_packet_id(rtc_packet_id),
-      buffer(buffer),
-      traffic_annotation(traffic_annotation) {}
+    scoped_refptr<net::DrainableIOBuffer> buffer)
+    : rtc_packet_id(rtc_packet_id), buffer(buffer) {}
 P2PSocketTcp::SendBuffer::SendBuffer(const SendBuffer& rhs) = default;
 P2PSocketTcp::SendBuffer::~SendBuffer() = default;
 
@@ -63,9 +60,11 @@ P2PSocketTcpBase::P2PSocketTcpBase(
     mojo::PendingRemote<mojom::P2PSocketClient> client,
     mojo::PendingReceiver<mojom::P2PSocket> socket,
     P2PSocketType type,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory)
     : P2PSocket(delegate, std::move(client), std::move(socket), P2PSocket::TCP),
       type_(type),
+      traffic_annotation_(traffic_annotation),
       proxy_resolving_socket_factory_(proxy_resolving_socket_factory) {}
 
 P2PSocketTcpBase::~P2PSocketTcpBase() = default;
@@ -267,7 +266,7 @@ void P2PSocketTcpBase::DoWrite() {
     int result = socket_->Write(
         write_buffer_.buffer.get(), write_buffer_.buffer->BytesRemaining(),
         base::BindOnce(&P2PSocketTcp::OnWritten, base::Unretained(this)),
-        net::NetworkTrafficAnnotationTag(write_buffer_.traffic_annotation));
+        traffic_annotation_);
 
     if (result == net::ERR_IO_PENDING) {
       write_pending_ = true;
@@ -350,10 +349,8 @@ bool P2PSocketTcpBase::HandleReadResult(int result) {
   return true;
 }
 
-void P2PSocketTcpBase::Send(
-    base::span<const uint8_t> data,
-    const P2PPacketInfo& packet_info,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+void P2PSocketTcpBase::Send(base::span<const uint8_t> data,
+                            const P2PPacketInfo& packet_info) {
   // Renderer should use this socket only to send data to |remote_address_|.
   if (data.size() > kMaximumPacketSize ||
       !(packet_info.destination == remote_address_.ip_address)) {
@@ -374,8 +371,7 @@ void P2PSocketTcpBase::Send(
     }
   }
 
-  DoSend(packet_info.destination, data, packet_info.packet_options,
-         net::NetworkTrafficAnnotationTag(traffic_annotation));
+  DoSend(packet_info.destination, data, packet_info.packet_options);
 }
 
 void P2PSocketTcpBase::SetOption(P2PSocketOption option, int32_t value) {
@@ -399,11 +395,13 @@ P2PSocketTcp::P2PSocketTcp(
     mojo::PendingRemote<mojom::P2PSocketClient> client,
     mojo::PendingReceiver<mojom::P2PSocket> socket,
     P2PSocketType type,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory)
     : P2PSocketTcpBase(delegate,
                        std::move(client),
                        std::move(socket),
                        type,
+                       traffic_annotation,
                        proxy_resolving_socket_factory) {
   DCHECK(type == P2P_SOCKET_TCP_CLIENT || type == P2P_SOCKET_SSLTCP_CLIENT ||
          type == P2P_SOCKET_TLS_CLIENT);
@@ -427,17 +425,14 @@ bool P2PSocketTcp::ProcessInput(base::span<const uint8_t> input,
   return OnPacket(input.subspan(kPacketHeaderSize, packet_size));
 }
 
-void P2PSocketTcp::DoSend(
-    const net::IPEndPoint& to,
-    base::span<const uint8_t> data,
-    const rtc::PacketOptions& options,
-    const net::NetworkTrafficAnnotationTag traffic_annotation) {
+void P2PSocketTcp::DoSend(const net::IPEndPoint& to,
+                          base::span<const uint8_t> data,
+                          const rtc::PacketOptions& options) {
   int buffer_size = kPacketHeaderSize + data.size();
   SendBuffer send_buffer(
       options.packet_id,
       base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size),
-      traffic_annotation);
+          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size));
   *reinterpret_cast<uint16_t*>(send_buffer.buffer->data()) =
       base::HostToNet16(data.size());
   memcpy(send_buffer.buffer->data() + kPacketHeaderSize, data.data(),
@@ -458,11 +453,13 @@ P2PSocketStunTcp::P2PSocketStunTcp(
     mojo::PendingRemote<mojom::P2PSocketClient> client,
     mojo::PendingReceiver<mojom::P2PSocket> socket,
     P2PSocketType type,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory)
     : P2PSocketTcpBase(delegate,
                        std::move(client),
                        std::move(socket),
                        type,
+                       traffic_annotation,
                        proxy_resolving_socket_factory) {
   DCHECK(type == P2P_SOCKET_STUN_TCP_CLIENT ||
          type == P2P_SOCKET_STUN_SSLTCP_CLIENT ||
@@ -488,11 +485,9 @@ bool P2PSocketStunTcp::ProcessInput(base::span<const uint8_t> input,
   return OnPacket(input.subspan(0, packet_size));
 }
 
-void P2PSocketStunTcp::DoSend(
-    const net::IPEndPoint& to,
-    base::span<const uint8_t> data,
-    const rtc::PacketOptions& options,
-    const net::NetworkTrafficAnnotationTag traffic_annotation) {
+void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
+                              base::span<const uint8_t> data,
+                              const rtc::PacketOptions& options) {
   // Each packet is expected to have header (STUN/TURN ChannelData), where
   // header contains message type and and length of message.
   if (data.size() < kPacketHeaderSize + kPacketLengthOffset) {
@@ -517,8 +512,7 @@ void P2PSocketStunTcp::DoSend(
   SendBuffer send_buffer(
       options.packet_id,
       base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size),
-      traffic_annotation);
+          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size));
   memcpy(send_buffer.buffer->data(), data.data(), data.size());
 
   cricket::ApplyPacketOptions(

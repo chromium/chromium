@@ -141,26 +141,28 @@ std::unique_ptr<P2PSocket> P2PSocket::Create(
     mojo::PendingRemote<mojom::P2PSocketClient> client,
     mojo::PendingReceiver<mojom::P2PSocket> socket,
     P2PSocketType type,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
     net::NetLog* net_log,
     ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
     P2PMessageThrottler* throttler) {
   switch (type) {
     case P2P_SOCKET_UDP:
-      return std::make_unique<P2PSocketUdp>(
-          delegate, std::move(client), std::move(socket), throttler, net_log);
+      return std::make_unique<P2PSocketUdp>(delegate, std::move(client),
+                                            std::move(socket), throttler,
+                                            traffic_annotation, net_log);
     case P2P_SOCKET_TCP_CLIENT:
     case P2P_SOCKET_SSLTCP_CLIENT:
     case P2P_SOCKET_TLS_CLIENT:
-      return std::make_unique<P2PSocketTcp>(delegate, std::move(client),
-                                            std::move(socket), type,
-                                            proxy_resolving_socket_factory);
+      return std::make_unique<P2PSocketTcp>(
+          delegate, std::move(client), std::move(socket), type,
+          traffic_annotation, proxy_resolving_socket_factory);
 
     case P2P_SOCKET_STUN_TCP_CLIENT:
     case P2P_SOCKET_STUN_SSLTCP_CLIENT:
     case P2P_SOCKET_STUN_TLS_CLIENT:
-      return std::make_unique<P2PSocketStunTcp>(delegate, std::move(client),
-                                                std::move(socket), type,
-                                                proxy_resolving_socket_factory);
+      return std::make_unique<P2PSocketStunTcp>(
+          delegate, std::move(client), std::move(socket), type,
+          traffic_annotation, proxy_resolving_socket_factory);
   }
 
   NOTREACHED();

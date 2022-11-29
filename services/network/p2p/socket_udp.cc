@@ -84,18 +84,15 @@ std::unique_ptr<net::DatagramServerSocket> DefaultSocketFactory(
 
 namespace network {
 
-P2PSocketUdp::PendingPacket::PendingPacket(
-    const net::IPEndPoint& to,
-    base::span<const uint8_t> content,
-    const rtc::PacketOptions& options,
-    uint64_t id,
-    const net::NetworkTrafficAnnotationTag traffic_annotation)
+P2PSocketUdp::PendingPacket::PendingPacket(const net::IPEndPoint& to,
+                                           base::span<const uint8_t> content,
+                                           const rtc::PacketOptions& options,
+                                           uint64_t id)
     : to(to),
       data(base::MakeRefCounted<net::IOBuffer>(content.size())),
       size(content.size()),
       packet_options(options),
-      id(id),
-      traffic_annotation(traffic_annotation) {
+      id(id) {
   memcpy(data->data(), content.data(), content.size());
 }
 
@@ -103,26 +100,32 @@ P2PSocketUdp::PendingPacket::PendingPacket(const PendingPacket& other) =
     default;
 P2PSocketUdp::PendingPacket::~PendingPacket() = default;
 
-P2PSocketUdp::P2PSocketUdp(Delegate* Delegate,
-                           mojo::PendingRemote<mojom::P2PSocketClient> client,
-                           mojo::PendingReceiver<mojom::P2PSocket> socket,
-                           P2PMessageThrottler* throttler,
-                           net::NetLog* net_log,
-                           const DatagramServerSocketFactory& socket_factory)
+P2PSocketUdp::P2PSocketUdp(
+    Delegate* Delegate,
+    mojo::PendingRemote<mojom::P2PSocketClient> client,
+    mojo::PendingReceiver<mojom::P2PSocket> socket,
+    P2PMessageThrottler* throttler,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    net::NetLog* net_log,
+    const DatagramServerSocketFactory& socket_factory)
     : P2PSocket(Delegate, std::move(client), std::move(socket), P2PSocket::UDP),
       throttler_(throttler),
+      traffic_annotation_(traffic_annotation),
       net_log_(net_log),
       socket_factory_(socket_factory) {}
 
-P2PSocketUdp::P2PSocketUdp(Delegate* Delegate,
-                           mojo::PendingRemote<mojom::P2PSocketClient> client,
-                           mojo::PendingReceiver<mojom::P2PSocket> socket,
-                           P2PMessageThrottler* throttler,
-                           net::NetLog* net_log)
+P2PSocketUdp::P2PSocketUdp(
+    Delegate* Delegate,
+    mojo::PendingRemote<mojom::P2PSocketClient> client,
+    mojo::PendingReceiver<mojom::P2PSocket> socket,
+    P2PMessageThrottler* throttler,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    net::NetLog* net_log)
     : P2PSocketUdp(Delegate,
                    std::move(client),
                    std::move(socket),
                    throttler,
+                   traffic_annotation,
                    net_log,
                    base::BindRepeating(&DefaultSocketFactory)) {}
 
@@ -377,10 +380,8 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
   return true;
 }
 
-void P2PSocketUdp::Send(
-    base::span<const uint8_t> data,
-    const P2PPacketInfo& packet_info,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+void P2PSocketUdp::Send(base::span<const uint8_t> data,
+                        const P2PPacketInfo& packet_info) {
   if (data.size() > kMaximumPacketSize) {
     NOTREACHED();
     OnError();
@@ -388,14 +389,12 @@ void P2PSocketUdp::Send(
   }
 
   if (send_pending_) {
-    send_queue_.push_back(
-        PendingPacket(packet_info.destination, data, packet_info.packet_options,
-                      packet_info.packet_id,
-                      net::NetworkTrafficAnnotationTag(traffic_annotation)));
+    send_queue_.push_back(PendingPacket(packet_info.destination, data,
+                                        packet_info.packet_options,
+                                        packet_info.packet_id));
   } else {
     PendingPacket packet(packet_info.destination, data,
-                         packet_info.packet_options, packet_info.packet_id,
-                         net::NetworkTrafficAnnotationTag(traffic_annotation));
+                         packet_info.packet_options, packet_info.packet_id);
 
     // We are not going to use |this| again, so it's safe to ignore the result.
     std::ignore = DoSend(packet);
