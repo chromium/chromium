@@ -10,6 +10,7 @@ import time
 import os
 import argparse
 import logging
+from datetime import datetime
 
 from kasa import SmartStrip
 
@@ -60,17 +61,37 @@ class KasaPlugController():
         return
     print("Cannot find device!")
 
+  def discharge_to(self, level: int, battery):
+    while battery.percent > level:
+      print(f"Waiting to discharge to {level}%."
+            f" Currently at {battery.percent}%")
+      battery = psutil.sensors_battery()
+
+      # Perform arbitrary operations as fast as possible to burn
+      # CPU and discharge faster.
+      f_value = 0.81
+      start = datetime.now()
+      while ((datetime.now() - start).total_seconds() < 10):
+        f_value = f_value * 1.7272882
+        f_value = f_value / 1.7272882
+
+    print("Discharge complete")
+
   def charge_to(self, level: int):
     """Ensures the current device reaches the charge level |level|.
     """
-
+    battery = psutil.sensors_battery()
     # Get the host name of the device
     device = os.uname()[1].split('.')[0]
+
+    if battery.percent > level:
+      self.turn_off(device)
+      self.discharge_to(level, battery)
+      return
 
     print(f"Plugging in {device}...")
     self.turn_on(device)
 
-    battery = psutil.sensors_battery()
     while not battery.power_plugged:
       battery = psutil.sensors_battery()
       time.sleep(0.100)
@@ -78,7 +99,7 @@ class KasaPlugController():
 
     while battery.percent < level:
       print(f"Waiting for {device} to be charged to {level}%."
-            " Currently at {battery.percent}%")
+            f" Currently at {battery.percent}%")
       battery = psutil.sensors_battery()
       time.sleep(10)
 
