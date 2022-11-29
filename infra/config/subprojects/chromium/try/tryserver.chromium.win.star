@@ -64,10 +64,7 @@ try_.builder(
     executable = "recipe:chromium_libfuzzer_trybot",
     main_list_view = "try",
     os = os.WINDOWS_ANY,
-    # TODO(crbug.com/1351569): Restore to the CQ when its machines are fixed.
-    tryjob = try_.job(
-        experiment_percentage = 50,
-    ),
+    tryjob = try_.job(),
     goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
