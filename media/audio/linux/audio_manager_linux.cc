@@ -15,9 +15,7 @@
 #include "media/audio/alsa/audio_manager_alsa.h"
 #endif
 
-#if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
-#include "media/audio/cras/audio_manager_chromeos.h"
-#elif defined(USE_CRAS)
+#if defined(USE_CRAS)
 #include "media/audio/cras/audio_manager_cras.h"
 #endif
 
@@ -40,13 +38,8 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
 
 #if defined(USE_CRAS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseCras)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    return std::make_unique<AudioManagerChromeOS>(std::move(audio_thread),
-                                                  audio_log_factory);
-#else
     return std::make_unique<AudioManagerCras>(std::move(audio_thread),
-                                                   audio_log_factory);
-#endif
+                                              audio_log_factory);
   }
 #endif // defined(USE_CRAS)
 

@@ -17,7 +17,7 @@ namespace media {
 
 enum class DeviceType { kInput, kOutput };
 
-struct CrasDevice {
+struct MEDIA_EXPORT CrasDevice {
   CrasDevice();
   explicit CrasDevice(struct libcras_node_info* node, DeviceType type);
   explicit CrasDevice(DeviceType type,

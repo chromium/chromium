@@ -13,10 +13,8 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "media/audio/audio_device_description.h"
-#include "media/audio/cras/audio_manager_chromeos.h"
+#include "media/audio/cras/audio_manager_cras.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
@@ -38,11 +36,11 @@ using testing::StrictMock;
 
 namespace media {
 
-class MockAudioManagerCras : public AudioManagerChromeOS {
+class MockAudioManagerCras : public AudioManagerCras {
  public:
   MockAudioManagerCras()
-      : AudioManagerChromeOS(std::make_unique<TestAudioThread>(),
-                             &fake_audio_log_factory_) {}
+      : AudioManagerCras(std::make_unique<TestAudioThread>(),
+                         &fake_audio_log_factory_) {}
 
   // We need to override this function in order to skip the checking the number
   // of active output streams. It is because the number of active streams
@@ -64,17 +62,11 @@ class CrasUnifiedStreamTest : public testing::Test {
 
  protected:
   CrasUnifiedStreamTest() {
-    ash::CrasAudioClient::InitializeFake();
-    ash::CrasAudioHandler::InitializeForTesting();
     mock_manager_.reset(new StrictMock<MockAudioManagerCras>());
     base::RunLoop().RunUntilIdle();
   }
 
-  ~CrasUnifiedStreamTest() override {
-    mock_manager_->Shutdown();
-    ash::CrasAudioHandler::Shutdown();
-    ash::CrasAudioClient::Shutdown();
-  }
+  ~CrasUnifiedStreamTest() override { mock_manager_->Shutdown(); }
 
   CrasUnifiedStream* CreateStream(ChannelLayoutConfig layout) {
     return CreateStream(layout, kTestFramesPerPacket);
