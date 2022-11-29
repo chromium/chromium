@@ -4,10 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 
-#include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
-#include "third_party/blink/renderer/core/animation/interpolation_environment.h"
-#include "third_party/blink/renderer/core/animation/interpolation_type.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value.h"
 
 namespace blink {
 
@@ -31,10 +28,8 @@ TransitionInterpolation::CurrentNonInterpolableValue() const {
   return merge_.non_interpolable_value.get();
 }
 
-void TransitionInterpolation::Apply(StyleResolverState& state) const {
-  CSSInterpolationTypesMap map(state.GetDocument().GetPropertyRegistry(),
-                               state.GetDocument());
-  CSSInterpolationEnvironment environment(map, state);
+void TransitionInterpolation::Apply(
+    InterpolationEnvironment& environment) const {
   type_.Apply(CurrentInterpolableValue(), CurrentNonInterpolableValue(),
               environment);
 }

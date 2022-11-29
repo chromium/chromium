@@ -589,14 +589,15 @@ void StyleCascade::ApplyInterpolation(
     CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
 
+  CSSInterpolationTypesMap map(state_.GetDocument().GetPropertyRegistry(),
+                               state_.GetDocument());
+  CSSInterpolationEnvironment environment(map, state_, this, &resolver);
+
   const Interpolation& interpolation = *interpolations.front();
   if (IsA<InvalidatableInterpolation>(interpolation)) {
-    CSSInterpolationTypesMap map(state_.GetDocument().GetPropertyRegistry(),
-                                 state_.GetDocument());
-    CSSInterpolationEnvironment environment(map, state_, this, &resolver);
     InvalidatableInterpolation::ApplyStack(interpolations, environment);
   } else {
-    To<TransitionInterpolation>(interpolation).Apply(state_);
+    To<TransitionInterpolation>(interpolation).Apply(environment);
   }
 
   // Applying a color property interpolation will also unconditionally apply
