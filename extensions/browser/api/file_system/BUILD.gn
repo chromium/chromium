@@ -23,7 +23,6 @@ source_set("file_system") {
     "//build:chromeos_buildflags",
     "//components/filename_generation",
     "//content/public/browser",
-    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/browser/api/file_handlers",
     "//extensions/common",
     "//extensions/common/api",

@@ -16,7 +16,7 @@ source_set("metrics_private") {
 
   deps = [
     "//components/variations",
-    "//extensions/browser/api:bulk_api_implementation",
+    "//content/public/browser",
     "//extensions/common/api",
   ]
 

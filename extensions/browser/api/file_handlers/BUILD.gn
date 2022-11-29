@@ -28,7 +28,6 @@ source_set("file_handlers") {
     "//components/file_access",
     "//content/public/browser",
     "//content/public/common",
-    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/common",
     "//extensions/common/api",
     "//net",

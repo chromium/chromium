@@ -21,10 +21,7 @@ group("api") {
   ]
 }
 
-# TODO(https://crbug.com/1381644): This target should not exist. It's a
-# mishmash of various APIs and utilities. Instead, these should be extracted
-# into individual utility targets or separate API implementation targets.
-source_set("bulk_api_implementation") {
+source_set("async_api_function") {
   sources = [
     "async_api_function.cc",
     "async_api_function.h",
@@ -32,46 +29,16 @@ source_set("bulk_api_implementation") {
 
   public_deps = [
     "//base",
-    "//content/public/browser",
-    "//content/public/common",
-    "//extensions/common",
-    "//extensions/common/api",
-    "//ipc",
-  ]
-
-  deps = [
-    "//base:i18n",
-    "//build:chromeos_buildflags",
-    "//components/keyed_service/content:content",
     "//extensions/browser:browser_sources",
-    "//extensions/common:mojom",
-    "//extensions/common/api",
-    "//extensions/strings",
-    "//services/device/public/cpp/hid",
-    "//services/device/public/mojom",
   ]
 
-  # TODO(michaelpg): Move these deps to the individual APIs that require them.
-  deps += [
-    "//components/onc",
-    "//components/storage_monitor",
-    "//device/bluetooth",
-  ]
-
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/dbus/permission_broker",
-      "//components/prefs:prefs",
-      "//ui/base/clipboard",
-    ]
-  }
+  deps = [ "//content/public/browser" ]
 }
 
 # The collection of API implementations.
 group("api_implementations") {
   public_deps = [
     "//extensions/browser:browser_sources",
-    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/browser/api/alarms",
     "//extensions/browser/api/app_current_window_internal",
     "//extensions/browser/api/app_runtime",

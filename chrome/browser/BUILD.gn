@@ -7945,7 +7945,10 @@ source_set("browser_themes") {
     "//ui/gfx",
   ]
   if (enable_extensions) {
-    deps += [ "//extensions/browser/api:api_implementations" ]
+    deps += [
+      "//extensions/browser/api:api_implementations",
+      "//extensions/common",
+    ]
   }
 }
 

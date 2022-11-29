@@ -29,6 +29,7 @@ source_set("vpn_provider") {
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/browser",
+    "//extensions/common",
   ]
 
   if (is_chromeos_ash) {

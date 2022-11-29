@@ -19,12 +19,14 @@ source_set("serial") {
 
   deps = [
     "//content/public/common",
-    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
     "//services/service_manager/public/cpp",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  public_deps = [
+    "//content/public/browser",
+    "//extensions/browser:browser_sources",
+  ]
 }

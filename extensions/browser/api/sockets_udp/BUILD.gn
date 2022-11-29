@@ -16,11 +16,13 @@ source_set("sockets_udp") {
   ]
 
   deps = [
-    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/browser/api/socket",
     "//extensions/common",
     "//extensions/common/api",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  public_deps = [
+    "//content/public/browser",
+    "//extensions/browser:browser_sources",
+  ]
 }

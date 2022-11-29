@@ -18,7 +18,6 @@ source_set("sockets_tcp") {
   deps = [
     "//base",
     "//content/public/browser",
-    "//extensions/browser/api:bulk_api_implementation",
     "//extensions/browser/api/socket",
     "//extensions/common",
     "//extensions/common/api",
