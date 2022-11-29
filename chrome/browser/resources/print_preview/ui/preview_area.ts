@@ -611,6 +611,14 @@ export class PrintPreviewPreviewAreaElement extends
     const newValue = this.getSettingValue('mediaSize') as MediaSizeValue;
     if (newValue.height_microns !== lastTicket.mediaSize.height_microns ||
         newValue.width_microns !== lastTicket.mediaSize.width_microns ||
+        newValue.imageable_area_left_microns !==
+            lastTicket.mediaSize.imageable_area_left_microns ||
+        newValue.imageable_area_bottom_microns !==
+            lastTicket.mediaSize.imageable_area_bottom_microns ||
+        newValue.imageable_area_right_microns !==
+            lastTicket.mediaSize.imageable_area_right_microns ||
+        newValue.imageable_area_top_microns !==
+            lastTicket.mediaSize.imageable_area_top_microns ||
         (this.destination.id !== lastTicket.deviceName &&
          this.getSettingValue('margins') === MarginsType.MINIMUM)) {
       return true;
