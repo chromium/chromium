@@ -35,6 +35,28 @@ Googlers can access [go/chrome-eng-review](https://goto.google.com/chrome-eng-re
 existing topics in g/chrome-eng-review, and can also come to office hours to ask
 questions.
 
+### Rust
+
+Rust is allowed for third-party libraries as long as there is a business need,
+which includes the following:
+
+* The Rust implementation is the best (e.g., speed, memory, lack of bugs) or
+only existing implementation available for the third-party library.
+* The Rust implementation allows the operation to move to a higher privileged
+process, and this benefits the product by improving on guardrail metrics (e.g.
+through avoiding process startup, IPC overheads, or C++ memory-unsafety
+mitigations).
+* The Rust implementation can meaningfully reduce our expected risk of
+(memory/crashes/undefined behavior) bugs, when compared to the existing
+third-party library and related C++ code required to use the library. We realize
+assessing risk is quite complex and very nuanced. If this is the criteria by
+which the third-party library is being added, chrome-eng-review@google.com and
+chrome-rust@google.com may ask for more data.
+
+Support for third-party libraries written in Rust is in active development. If
+the library you wish to add is in Rust, reach out to chrome-rust@google.com
+first.
+
 ### A note on size constraints
 
 The size of Chromium derived executables can impact overall performance of those binaries as they
