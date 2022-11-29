@@ -6,18 +6,16 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_ANDROID_H_
 
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
-#include "ui/accessibility/android/accessibility_state.h"
 
 namespace content {
 
 class BrowserContext;
 
 class BrowserAccessibilityStateImplAndroid
-    : public BrowserAccessibilityStateImpl,
-      public ui::AccessibilityState::Delegate {
+    : public BrowserAccessibilityStateImpl {
  public:
   BrowserAccessibilityStateImplAndroid();
-  ~BrowserAccessibilityStateImplAndroid() override;
+  ~BrowserAccessibilityStateImplAndroid() override = default;
 
   void CollectAccessibilityServiceStats();
   void RecordAccessibilityServiceStatsHistogram(int event_type_mask,
@@ -26,8 +24,7 @@ class BrowserAccessibilityStateImplAndroid
                                                 int capabilities_mask,
                                                 std::string histogram);
 
-  // ui::AccessibilityState::Delegate overrides
-  void OnAnimatorDurationScaleChanged() override;
+  bool HasSpokenFeedbackServicePresent() override;
 
  protected:
   void UpdateHistogramsOnOtherThread() override;

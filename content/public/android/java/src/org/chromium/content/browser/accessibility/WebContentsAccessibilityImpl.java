@@ -95,7 +95,6 @@ import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
-import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -121,9 +120,11 @@ import java.util.Set;
 @JNINamespace("content")
 public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompat
         implements AccessibilityStateChangeListener, WebContentsAccessibility, WindowEventObserver,
-                   UserData, AccessibilityState.Listener,
+                   UserData, BrowserAccessibilityState.Listener,
                    ViewAndroidDelegate.ContainerViewObserver {
-    private static final String TAG = "A11yImpl";
+    // Public catch-all TAG for logging in the accessibility component.
+    public static final String TAG = "ClankAccessibility";
+
     // The following constants have been hard coded so we can support actions newer than our
     // minimum SDK without having to break methods into a series of subclasses.
     // TODO(mschillaci): Remove these once they are added to the AccessibilityNodeInfoCompat class.
@@ -305,7 +306,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             moveAccessibilityFocusToIdAndRefocusIfNeeded(mAccessibilityFocusId);
         });
 
-        AccessibilityState.addListener(this);
+        BrowserAccessibilityState.addListener(this);
 
         // Define our delays on a per event type basis.
         Map<Integer, Integer> eventThrottleDelays = new HashMap<Integer, Integer>();
@@ -421,7 +422,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // Define a set of relevant AccessibilityEvents if the OnDemand feature is enabled.
         if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
             Runnable serviceMaskRunnable = () -> {
-                int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
+                int serviceEventMask =
+                        BrowserAccessibilityState.getAccessibilityServiceEventTypeMask();
                 mEventDispatcher.updateRelevantEventTypes(
                         convertMaskToEventTypes(serviceEventMask));
                 mEventDispatcher.setOnDemandEnabled(true);
@@ -458,7 +460,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @VisibleForTesting
     @Override
     public void setBrowserAccessibilityStateForTesting() {
-        AccessibilityState.setEventTypeMaskForTesting();
+        BrowserAccessibilityState.setEventTypeMaskForTesting();
     }
 
     @VisibleForTesting
@@ -502,12 +504,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @VisibleForTesting
     public void setEventTypeMaskEmptyForTesting() {
-        AccessibilityState.setEventTypeMaskEmptyForTesting();
+        BrowserAccessibilityState.setEventTypeMaskEmptyForTesting();
     }
 
     @VisibleForTesting
     public void setScreenReaderModeForTesting(boolean enabled) {
-        AccessibilityState.setScreenReaderModeForTesting(enabled);
+        BrowserAccessibilityState.setScreenReaderModeForTesting(enabled);
     }
 
     @CalledByNative
@@ -620,7 +622,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
             // Update the AXMode based on screen reader status.
             WebContentsAccessibilityImplJni.get().setAXMode(mNativeObj,
-                    AccessibilityState.screenReaderMode(),
+                    BrowserAccessibilityState.screenReaderMode(),
                     /* isAccessibilityEnabled= */ true);
 
             // Update the state of how passwords are exposed based on user settings.
@@ -631,7 +633,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // Update the state of enabling/disabling the image descriptions feature. To enable the
             // feature, this instance must be a candidate and a screen reader must be enabled.
             WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(mNativeObj,
-                    mIsImageDescriptionsCandidate && AccessibilityState.screenReaderMode());
+                    mIsImageDescriptionsCandidate && BrowserAccessibilityState.screenReaderMode());
         }
     }
 
@@ -668,7 +670,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             onNativeInit();
         }
         if (!isEnabled()) {
-            boolean screenReaderMode = AccessibilityState.screenReaderMode();
+            boolean screenReaderMode = BrowserAccessibilityState.screenReaderMode();
             WebContentsAccessibilityImplJni.get().enable(mNativeObj, screenReaderMode);
             return null;
         }
@@ -822,7 +824,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (isNativeInitialized()
                 && ContentFeatureList.isEnabled(
                         ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
-            int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
+            int serviceEventMask = BrowserAccessibilityState.getAccessibilityServiceEventTypeMask();
             mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
         }
     }
@@ -1122,7 +1124,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!isNativeInitialized()) return;
         // Update the AXMode based on screen reader status.
         WebContentsAccessibilityImplJni.get().setAXMode(
-                mNativeObj, AccessibilityState.screenReaderMode(), isAccessibilityEnabled());
+                mNativeObj, BrowserAccessibilityState.screenReaderMode(), isAccessibilityEnabled());
     }
 
     // Returns true if the hover event is to be consumed by accessibility feature.

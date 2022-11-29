@@ -4,13 +4,18 @@
 
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
 
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/android/content_jni_headers/BrowserAccessibilityState_jni.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/accessibility/android/accessibility_state.h"
 #include "ui/gfx/animation/animation.h"
+
+using base::android::AttachCurrentThread;
+using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
@@ -248,35 +253,40 @@ enum {
 }  // namespace
 
 BrowserAccessibilityStateImplAndroid::BrowserAccessibilityStateImplAndroid() {
-  ui::AccessibilityState::RegisterObservers();
-  ui::AccessibilityState::RegisterAnimatorDurationScaleDelegate(this);
-}
-
-BrowserAccessibilityStateImplAndroid::~BrowserAccessibilityStateImplAndroid() {
-  ui::AccessibilityState::UnregisterAnimatorDurationScaleDelegate(this);
+  // Setup the listeners for accessibility state changes, so we can
+  // inform the renderer about changes.
+  JNIEnv* env = AttachCurrentThread();
+  Java_BrowserAccessibilityState_registerObservers(env);
 }
 
 void BrowserAccessibilityStateImplAndroid::CollectAccessibilityServiceStats() {
+  JNIEnv* env = AttachCurrentThread();
   int event_type_mask =
-      ui::AccessibilityState::GetAccessibilityServiceEventTypeMask();
-  int feedback_type_mask =
-      ui::AccessibilityState::GetAccessibilityServiceFeedbackTypeMask();
+      Java_BrowserAccessibilityState_getAccessibilityServiceEventTypeMask(env);
 
-  int flags_mask = ui::AccessibilityState::GetAccessibilityServiceFlagsMask();
+  int feedback_type_mask =
+      Java_BrowserAccessibilityState_getAccessibilityServiceFeedbackTypeMask(
+          env);
+
+  int flags_mask =
+      Java_BrowserAccessibilityState_getAccessibilityServiceFlagsMask(env);
 
   int capabilities_mask =
-      ui::AccessibilityState::GetAccessibilityServiceCapabilitiesMask();
+      Java_BrowserAccessibilityState_getAccessibilityServiceCapabilitiesMask(
+          env);
 
-  std::vector<std::string> service_ids =
-      ui::AccessibilityState::GetAccessibilityServiceIds();
+  auto service_ids =
+      Java_BrowserAccessibilityState_getAccessibilityServiceIds(env);
 
-  int len = service_ids.size();
+  jsize len = env->GetArrayLength(service_ids.obj());
   bool has_assistive_tech = false;
   bool has_password_manager = false;
   bool has_unknown = false;
 
-  for (int i = 0; i < len; ++i) {
-    std::string service_id = service_ids[i];
+  for (jsize i = 0; i < len; ++i) {
+    auto* id = env->GetObjectArrayElement(service_ids.obj(), i);
+    std::string service_id =
+        base::android::ConvertJavaStringToUTF8(env, static_cast<jstring>(id));
     std::string service_package = service_id.erase(service_id.find("/"));
     uint32_t service_hash = base::PersistentHash(service_package);
 
@@ -393,18 +403,6 @@ void BrowserAccessibilityStateImplAndroid::
   CAPABILITY_TYPE_HISTOGRAM(capabilities_mask, CAN_TAKE_SCREENSHOT, histogram);
 }
 
-void BrowserAccessibilityStateImplAndroid::OnAnimatorDurationScaleChanged() {
-  // We need to call into gfx::Animation and WebContentsImpl on the UI thread,
-  // so ensure that we setup the notification on the correct thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  gfx::Animation::UpdatePrefersReducedMotion();
-  for (content::WebContentsImpl* wc :
-       content::WebContentsImpl::GetAllWebContents()) {
-    wc->OnWebPreferencesChanged();
-  }
-}
-
 void BrowserAccessibilityStateImplAndroid::UpdateHistogramsOnOtherThread() {
   BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
 
@@ -440,6 +438,23 @@ void BrowserAccessibilityStateImplAndroid::SetImageLabelsModeForProfile(
     ui::AXMode ax_mode = web_contents_vector[i]->GetAccessibilityMode();
     ax_mode.set_mode(ui::AXMode::kLabelImages, enabled);
     web_contents_vector[i]->SetAccessibilityMode(ax_mode);
+  }
+}
+
+bool BrowserAccessibilityStateImplAndroid::HasSpokenFeedbackServicePresent() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_BrowserAccessibilityState_hasSpokenFeedbackServicePresent(env);
+}
+
+// static
+void JNI_BrowserAccessibilityState_OnAnimatorDurationScaleChanged(JNIEnv* env) {
+  // We need to call into gfx::Animation and WebContentsImpl on the UI thread,
+  // so ensure that we setup the notification on the correct thread.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  gfx::Animation::UpdatePrefersReducedMotion();
+  for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
+    wc->OnWebPreferencesChanged();
   }
 }
 

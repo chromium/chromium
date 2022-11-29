@@ -37,12 +37,12 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/security_state/core/security_state.h"
 #include "components/version_info/android/channel_getter.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "ui/accessibility/android/accessibility_state.h"
 #include "url/gurl.h"
 
 using ::base::android::AppendJavaStringArrayToStringVector;
@@ -427,7 +427,8 @@ bool ClientAndroid::IsAccessibilityEnabled() const {
 }
 
 bool ClientAndroid::IsSpokenFeedbackAccessibilityServiceEnabled() const {
-  return ui::AccessibilityState::HasSpokenFeedbackServicePresent();
+  return content::BrowserAccessibilityState::GetInstance()
+      ->HasSpokenFeedbackServicePresent();
 }
 
 content::WebContents* ClientAndroid::GetWebContents() const {
