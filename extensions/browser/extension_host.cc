@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -491,11 +492,6 @@ void ExtensionHost::RecordStopLoadingUMA() {
       UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.BackgroundPageLoadTime2",
                                  load_start_->Elapsed());
     }
-  } else if (extension_host_type_ == mojom::ViewType::kExtensionPopup) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.PopupLoadTime2",
-                               load_start_->Elapsed());
-    UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.PopupCreateTime",
-                               create_start_.Elapsed());
   }
 }
 

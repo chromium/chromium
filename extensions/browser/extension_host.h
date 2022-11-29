@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/timer/elapsed_timer.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -25,11 +24,15 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/stack_frame.h"
 
+namespace base {
+class ElapsedTimer;
+}  // namespace base
+
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
 class SiteInstance;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -236,13 +239,6 @@ class ExtensionHost : public DeferredStartRenderHost,
 
   // The type of view being hosted.
   mojom::ViewType extension_host_type_;
-
-  // Measures how long since the ExtensionHost object was created. This can be
-  // used to measure the responsiveness of UI. For example, it's important to
-  // keep this as low as possible for popups. Contrast this to |load_start_|,
-  // for which a low value does not necessarily mean a responsive UI, as
-  // ExtensionHosts may sit in an ExtensionHostQueue for a long time.
-  base::ElapsedTimer create_start_;
 
   // Measures how long since the initial URL started loading. This timer is
   // started only once the ExtensionHost has exited the ExtensionHostQueue.
