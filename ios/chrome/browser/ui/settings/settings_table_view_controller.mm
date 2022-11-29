@@ -1367,13 +1367,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       [[TableViewInfoButtonItem alloc] initWithType:type];
   infoButton.text = text;
   infoButton.statusText = status;
-  if (image)
+  if (image) {
     infoButton.iconImage = image;
-  if (UseSymbols()) {
-    DCHECK(imageBackground);
-    infoButton.iconBackgroundColor = imageBackground;
-    infoButton.iconTintColor = UIColor.whiteColor;
-    infoButton.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
+    if (UseSymbols()) {
+      DCHECK(imageBackground);
+      infoButton.iconBackgroundColor = imageBackground;
+      infoButton.iconTintColor = UIColor.whiteColor;
+      infoButton.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
+    }
   }
   infoButton.accessibilityHint = accessibilityHint;
   infoButton.accessibilityIdentifier = accessibilityIdentifier;
