@@ -553,6 +553,11 @@ int PaymentRequestDialogView::GetActualDialogWidth() const {
   return actual_width;
 }
 
+void PaymentRequestDialogView::OnPaymentHandlerTitleSet() {
+  if (observer_for_testing_)
+    observer_for_testing_->OnPaymentHandlerTitleSet();
+}
+
 void PaymentRequestDialogView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   if (being_closed_)

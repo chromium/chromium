@@ -258,6 +258,11 @@ void PaymentRequestBrowserTestBase::OnPaymentHandlerWindowOpened() {
     event_waiter_->OnEvent(DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED);
 }
 
+void PaymentRequestBrowserTestBase::OnPaymentHandlerTitleSet() {
+  if (event_waiter_)
+    event_waiter_->OnEvent(DialogEvent::PAYMENT_HANDLER_TITLE_SET);
+}
+
 // Install the payment app specified by `hostname`, e.g., "a.com". Specify the
 // filename of the service worker with `service_worker_filename`. Note that
 // the origin has to be initialized first to be supported here. The payment
@@ -691,8 +696,13 @@ void PaymentRequestBrowserTestBase::RetryPaymentRequest(
 }
 
 bool PaymentRequestBrowserTestBase::IsViewVisible(DialogViewID view_id) const {
-  views::View* view =
-      delegate_->dialog_view()->GetViewByID(static_cast<int>(view_id));
+  return IsViewVisible(view_id, dialog_view());
+}
+
+bool PaymentRequestBrowserTestBase::IsViewVisible(
+    DialogViewID view_id,
+    views::View* dialog_view) const {
+  views::View* view = dialog_view->GetViewByID(static_cast<int>(view_id));
   return view && view->GetVisible();
 }
 
@@ -811,7 +821,13 @@ void PaymentRequestBrowserTestBase::WaitForAnimation(
 
 const std::u16string& PaymentRequestBrowserTestBase::GetLabelText(
     DialogViewID view_id) {
-  views::View* view = dialog_view()->GetViewByID(static_cast<int>(view_id));
+  return GetLabelText(view_id, dialog_view());
+}
+
+const std::u16string& PaymentRequestBrowserTestBase::GetLabelText(
+    DialogViewID view_id,
+    views::View* dialog_view) {
+  views::View* view = dialog_view->GetViewByID(static_cast<int>(view_id));
   DCHECK(view);
   return static_cast<views::Label*>(view)->GetText();
 }
@@ -943,6 +959,9 @@ std::ostream& operator<<(
       break;
     case DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED:
       out << "PAYMENT_HANDLER_WINDOW_OPENED";
+      break;
+    case DialogEvent::PAYMENT_HANDLER_TITLE_SET:
+      out << "PAYMENT_HANDLER_TITLE_SET";
       break;
   }
   return out;

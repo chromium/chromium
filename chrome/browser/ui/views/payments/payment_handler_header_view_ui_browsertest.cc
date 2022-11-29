@@ -6,7 +6,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
@@ -29,34 +28,81 @@ class PaymentHandlerHeaderViewUITest : public PaymentRequestBrowserTestBase {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, BasicHeader) {
-  autofill::AutofillProfile profile(autofill::test::GetFullProfile());
-  AddAutofillProfile(profile);
-  autofill::CreditCard card(autofill::test::GetCreditCard());
-  card.set_billing_address_id(profile.guid());
-  AddCreditCard(card);
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
+                       HeaderHasCorrectDetails) {
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
 
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "install()"));
-
-  ResetEventWaiterForDialogOpened();
-  EXPECT_EQ(
-      "success",
-      content::EvalJs(GetActiveWebContents(),
-                      "paymentRequestWithOptions({requestShipping: true})"));
-  WaitForObservedEvent();
-
-  EXPECT_TRUE(IsPayButtonEnabled());
-  EXPECT_FALSE(IsViewVisible(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET));
-
+  // Trigger PaymentRequest, and wait until the PaymentHandler has loaded a
+  // web-contents that has set a title.
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  WaitForObservedEvent();
+
+  // We always push the initial browser sheet to the stack, even if it isn't
+  // shown. Since it also defines a SHEET_TITLE, we have to explicitly test the
+  // front PaymentHandler view here.
+  ViewStack* view_stack = dialog_view()->view_stack_for_testing();
+
+  EXPECT_TRUE(IsViewVisible(DialogViewID::BACK_BUTTON, view_stack->top()));
+  EXPECT_TRUE(IsViewVisible(DialogViewID::SHEET_TITLE, view_stack->top()));
+  EXPECT_TRUE(
+      IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON, view_stack->top()));
+  EXPECT_TRUE(IsViewVisible(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET,
+                            view_stack->top()));
+
+  // This page has a <title>, and so should show the sheet title rather than the
+  // origin as the title.
+  EXPECT_EQ(u"Payment App",
+            GetLabelText(DialogViewID::SHEET_TITLE, view_stack->top()));
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
+  std::string method_name;
+  InstallPaymentAppWithoutIcon("a.com", "/payment_handler_sw.js", &method_name);
+
+  // Trigger PaymentRequest. Since the Payment App has no icon this will show
+  // the browser sheet first, and we have to manually select the payment app to
+  // continue.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  WaitForObservedEvent();
+
+  // Select the installed payment app.
+  OpenPaymentMethodScreen();
+  ResetEventWaiter(DialogEvent::BACK_NAVIGATION);
+  views::View* list_view = dialog_view()->GetViewByID(
+      static_cast<int>(DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW));
+  ASSERT_TRUE(list_view);
+  EXPECT_EQ(1u, list_view->children().size());
+  ClickOnDialogViewAndWait(list_view->children()[0]);
+
+  // The pay button should be enabled now.
+  ASSERT_TRUE(IsPayButtonEnabled());
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON);
 
-  EXPECT_TRUE(IsViewVisible(DialogViewID::BACK_BUTTON));
-  EXPECT_TRUE(IsViewVisible(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET));
-
-  NavigateTo("/payment_handler.html");
+  // The payment app has no icon, so it should not be displayed on the header.
+  EXPECT_FALSE(IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON));
 }
 
 }  // namespace

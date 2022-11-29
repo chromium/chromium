@@ -62,6 +62,9 @@ std::u16string GetPaymentHandlerDialogTitle(
   if (!web_contents)
     return std::u16string();
 
+  // If a page has no explicit <title> set or if it is still loading, the title
+  // may be the URL of the page. We don't wish to show that to a user as the
+  // origin is also shown.
   const std::u16string title = web_contents->GetTitle();
   const std::u16string https_prefix =
       base::StrCat({url::kHttpsScheme16, url::kStandardSchemeSeparator16});
@@ -140,6 +143,8 @@ class ReadOnlyOriginView : public views::View {
       views::ImageView* app_icon_view =
           AddChildView(CreateAppIconView(/*icon_resource_id=*/0, icon_bitmap,
                                          /*tooltip_text=*/page_title));
+      app_icon_view->SetID(
+          static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
       // We should set image size in density independent pixels here, since
       // views::ImageView objects are rastered at the device scale factor.
       app_icon_view->SetImageSize(gfx::Size(
@@ -363,6 +368,10 @@ void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
 void PaymentHandlerWebFlowViewController::TitleWasSet(
     content::NavigationEntry* entry) {
   UpdateHeaderView();
+
+  std::u16string title = GetPaymentHandlerDialogTitle(web_contents());
+  if (!title.empty())
+    dialog()->OnPaymentHandlerTitleSet();
 }
 
 void PaymentHandlerWebFlowViewController::AbortPayment() {

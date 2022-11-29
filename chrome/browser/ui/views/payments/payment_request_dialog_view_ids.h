@@ -14,8 +14,7 @@ namespace payments {
 
 enum class DialogViewID : int {
   VIEW_ID_NONE = autofill::MAX_VALID_FIELD_TYPE,
-  CONTENT_VIEW,        // The main content view filled by each sheet
-  SECURITY_ICON_VIEW,  // The view indicates security state of the page
+  CONTENT_VIEW,  // The main content view filled by each sheet
 
   // The following are views::Button (clickable).
   PAYMENT_SHEET_CONTACT_INFO_SECTION,
@@ -49,7 +48,6 @@ enum class DialogViewID : int {
   ORDER_SUMMARY_LINE_ITEM_2,
   ORDER_SUMMARY_LINE_ITEM_3,
   DATA_SOURCE_LABEL,
-  GOOGLE_PAYMENTS_EDIT_LINK_LABEL,
 
   // This is the title used at the top of each sheet.
   SHEET_TITLE,
@@ -77,23 +75,19 @@ enum class DialogViewID : int {
   CHECKMARK_VIEW,
 
   // The CVC text field in the unmask sheet.
+  // TODO(crbug.com/1209835): Deprecated; remove usage.
   CVC_PROMPT_TEXT_FIELD,
-  CVC_ERROR_LABEL,
-  CVC_ERROR_ICON,
-  CVC_MONTH,
-  CVC_YEAR,
 
   // The following are the ids for the individual sheets.
   CONTACT_INFO_EDITOR_SHEET,
   CREDIT_CARD_EDITOR_SHEET,
-  CVC_UNMASK_SHEET,
   SHIPPING_ADDRESS_EDITOR_SHEET,
-
-  // The combobox to choose a billing address to associate to a credit card.
-  CREDIT_CARD_BILLING_ADDRESS,
 
   // The sheet opens payment app window.
   PAYMENT_APP_OPENED_WINDOW_SHEET,
+
+  // The icon displayed in the header for a payment app's window.
+  PAYMENT_APP_HEADER_ICON,
 
   // NOTE: Keep these values last.
   // Used to offset the IDs of input fields, which gets added to the Autofill

@@ -104,11 +104,15 @@ async function launch() {
 
 /**
  * Launches the payment handler without waiting for a response to be returned.
+ * @param {string} methodNameOverride - The payment method to launch. If not
+ *     specified, the global methodName set from install() will be used.
  * @return {string} The 'success' or error message.
  */
-function launchWithoutWaitForResponse() {
+function launchWithoutWaitForResponse(methodNameOverride) {
+  let method =
+      (methodNameOverride !== undefined) ? methodNameOverride : methodName;
   try {
-    request = new PaymentRequest([{supportedMethods: methodName}], {
+    request = new PaymentRequest([{supportedMethods: method}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
     });
     request.show();
