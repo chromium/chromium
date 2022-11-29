@@ -87,8 +87,8 @@ impl<'b, 'p, T> ReadDataBuffer<'b, 'p, T> {
 
         if result != MojoResult::Okay {
             // The Mojo function can return two possible errors:
-            // * MojoResult::InvalidArgument indicating either the handle is
-            //   invalid or elems_read is larger than self.buffer.
+            // * MojoResult::InvalidArgument indicating either the handle is invalid or
+            //   elems_read is larger than self.buffer.
             // * MojoResult::FailedPrecondition if not in a two-phase read.
             //
             // Either indicates a bug in the wrapper code and other errors are
@@ -171,8 +171,8 @@ impl<'b, 'p, T> WriteDataBuffer<'b, 'p, T> {
         });
         if result != MojoResult::Okay {
             // The Mojo function can return two possible errors:
-            // * MojoResult::InvalidArgument indicating either the handle is
-            //   invalid or elems_written is larger than self.buffer.
+            // * MojoResult::InvalidArgument indicating either the handle is invalid or
+            //   elems_written is larger than self.buffer.
             // * MojoResult::FailedPrecondition if not in a two-phase read.
             //
             // Either indicates a bug in the wrapper code and other errors are

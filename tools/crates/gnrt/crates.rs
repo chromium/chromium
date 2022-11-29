@@ -21,7 +21,8 @@ pub enum Visibility {
     Public,
     /// The crate can be used by only third-party crates.
     ThirdParty,
-    /// The crate can be used by any test target, and in production by third-party crates.
+    /// The crate can be used by any test target, and in production by
+    /// third-party crates.
     TestOnlyAndThirdParty,
 }
 

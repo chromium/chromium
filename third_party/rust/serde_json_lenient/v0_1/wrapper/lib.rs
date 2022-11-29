@@ -72,27 +72,29 @@ mod ffi {
         message: String,
     }
 
-    /// Options for parsing JSON inputs. A mirror of the C++ `base::JSONParserOptions` bitflags,
-    /// represented as a friendlier struct-of-bools instead, and with additional fields
+    /// Options for parsing JSON inputs. A mirror of the C++
+    /// `base::JSONParserOptions` bitflags, represented as a friendlier
+    /// struct-of-bools instead, and with additional fields
     struct JsonOptions {
         /// Allows commas to exist after the last element in structures.
         allow_trailing_commas: bool,
-        /// If set the parser replaces invalid code points (i.e. lone surrogates) with the Unicode
-        /// replacement character (U+FFFD). If not set, invalid code points trigger a hard error and
+        /// If set the parser replaces invalid code points (i.e. lone
+        /// surrogates) with the Unicode replacement character (U+FFFD).
+        /// If not set, invalid code points trigger a hard error and
         /// parsing fails.
         replace_invalid_characters: bool,
         /// Allows both C (/* */) and C++ (//) style comments.
         allow_comments: bool,
-        /// Permits unescaped ASCII control characters (such as unescaped \r and \n) in the range
-        /// [0x00,0x1F].
+        /// Permits unescaped ASCII control characters (such as unescaped \r and
+        /// \n) in the range [0x00,0x1F].
         allow_control_chars: bool,
         /// Permits \\v vertical tab escapes.
         allow_vert_tab: bool,
         /// Permits \\xNN escapes as described above.
         allow_x_escapes: bool,
 
-        /// The maximum recursion depth to walk while parsing nested JSON objects. JSON beyond the
-        /// specified depth will be ignored.
+        /// The maximum recursion depth to walk while parsing nested JSON
+        /// objects. JSON beyond the specified depth will be ignored.
         max_depth: usize,
     }
 }
@@ -102,14 +104,17 @@ pub type JsonOptions = ffi::JsonOptions;
 pub type Functions = ffi::Functions;
 pub type ContextPointer = ffi::ContextPointer;
 
-/// Decode a JSON input from `json` and call back out to functions defined in `options` when
-/// visiting each node in order for the caller to construct an output.
+/// Decode a JSON input from `json` and call back out to functions defined in
+/// `options` when visiting each node in order for the caller to construct an
+/// output.
 ///
-/// The first item visited will be appened to the `ctx` as if the `ctx` were a list. This means the
-/// `ContextPointer` in `ctx` must already be a list aggregate type, unless the caller has extra
-/// logic to handle the first element visited.
+/// The first item visited will be appened to the `ctx` as if the `ctx` were a
+/// list. This means the `ContextPointer` in `ctx` must already be a list
+/// aggregate type, unless the caller has extra logic to handle the first
+/// element visited.
 ///
-/// The `error` is only written to when there is an error decoding and `false` is returned.
+/// The `error` is only written to when there is an error decoding and `false`
+/// is returned.
 ///
 /// # Returns
 ///
@@ -136,16 +141,17 @@ pub fn decode_json(
     // We track recursion depth ourselves to limit it to `max_depth` option.
     deserializer.disable_recursion_limit();
 
-    // The first element visited will be treated as if being appended to a list, as is specified in
-    // the contract of `decode_json()`.
+    // The first element visited will be treated as if being appended to a list, as
+    // is specified in the contract of `decode_json()`.
     //
-    // SAFETY: We have only a single ContextPointer around at a time, so this reference will not
-    // alias. The lifetime of the ContextPointer exceeds this function's lifetime, so we are okay to
-    // tie it to the `target`'s lifetime which is shorter.
+    // SAFETY: We have only a single ContextPointer around at a time, so this
+    // reference will not alias. The lifetime of the ContextPointer exceeds this
+    // function's lifetime, so we are okay to tie it to the `target`'s lifetime
+    // which is shorter.
     //
-    // Dereferencing the ContextPointer in C++ would be Undefined Behaviour since it's not a similar
-    // type to the actual type it's pointing to, but Rust allows us to make a reference to it
-    // regardless.
+    // Dereferencing the ContextPointer in C++ would be Undefined Behaviour since
+    // it's not a similar type to the actual type it's pointing to, but Rust
+    // allows us to make a reference to it regardless.
     let target = visitor::DeserializationTarget::List { ctx };
 
     let result =
@@ -157,9 +163,9 @@ pub fn decode_json(
             error.as_mut().column = err.column().try_into().unwrap_or(-1);
             error.as_mut().message.clear();
             // The following line pulls in a lot of binary bloat, due to all the formatter
-            // implementations required to stringify error messages. This error message is used in
-            // only a couple of places outside unit tests so we could consider trying
-            // to eliminate.
+            // implementations required to stringify error messages. This error message is
+            // used in only a couple of places outside unit tests so we could
+            // consider trying to eliminate.
             error.as_mut().message.push_str(&err.to_string());
             false
         }

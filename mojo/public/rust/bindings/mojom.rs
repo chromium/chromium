@@ -162,7 +162,8 @@ pub trait MojomUnion: MojomEncodable {
         Bits(8 * (UNION_SIZE as usize))
     }
 
-    /// The encoding routine for when the union is inlined into the current context.
+    /// The encoding routine for when the union is inlined into the current
+    /// context.
     fn inline_encode(self, encoder: &mut Encoder, context: Context) {
         {
             let state = encoder.get_mut(&context);
@@ -178,7 +179,8 @@ pub trait MojomUnion: MojomEncodable {
         }
     }
 
-    /// The decoding routine for when the union is inlined into the current context.
+    /// The decoding routine for when the union is inlined into the current
+    /// context.
     fn inline_decode(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         {
             let state = decoder.get_mut(&context);
@@ -341,9 +343,9 @@ pub trait MojomMessage: MojomStruct {
 
 /// The trait for a "container" type intended to be used in MojomInterfaceRecv.
 ///
-/// This trait contains the decode logic which decodes based on the message header
-/// and returns itself: a union type which may contain any of the possible messages
-/// that may be sent across this interface.
+/// This trait contains the decode logic which decodes based on the message
+/// header and returns itself: a union type which may contain any of the
+/// possible messages that may be sent across this interface.
 pub trait MojomMessageOption: Sized {
     /// Decodes the actual payload of the message.
     ///

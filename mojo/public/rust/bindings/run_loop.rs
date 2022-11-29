@@ -34,8 +34,8 @@ use crate::system::{Handle, MojoResult, MOJO_INDEFINITE};
 /// Define the equivalent of MOJO_INDEFINITE for absolute deadlines
 const MOJO_INDEFINITE_ABSOLUTE: system::MojoTimeTicks = 0;
 
-// TODO(mknyszek): The numbers below are arbitrary and come from the C++ bindings,
-// and should probably be changed at some point
+// TODO(mknyszek): The numbers below are arbitrary and come from the C++
+// bindings, and should probably be changed at some point
 
 /// Initial size of the result buffer.
 const INITIAL_WAIT_SET_NUM_RESULTS: usize = 16;
@@ -358,9 +358,9 @@ impl<'h, 't> RunLoop<'h, 't> {
 
     /// Removes an entry from the runloop.
     ///
-    /// Since we cannot remove from the deadlines heap, we just leave the deadline
-    /// in there as "stale", and we handle those when trying to find the next closest
-    /// deadline.
+    /// Since we cannot remove from the deadlines heap, we just leave the
+    /// deadline in there as "stale", and we handle those when trying to
+    /// find the next closest deadline.
     pub fn deregister(&mut self, token: Token) -> bool {
         match self.handlers.remove(&token) {
             Some(_) => {
@@ -576,7 +576,8 @@ impl<'h, 't> RunLoop<'h, 't> {
                 // Clear the buffer since we don't need the results anymore.
                 // Helps prevent a copy if we resize the buffer.
                 results_buffer.clear();
-                // If we reached the capcity of `results_buffer` there's a chance there were more handles available. Grow the buffer.
+                // If we reached the capcity of `results_buffer` there's a chance there were
+                // more handles available. Grow the buffer.
                 let capacity = results_buffer.capacity();
                 if capacity < MAXIMUM_WAIT_SET_NUM_RESULTS && capacity == num_results {
                     results_buffer.reserve(capacity);

@@ -6,7 +6,8 @@ use std::ptr;
 use std::slice;
 
 use crate::system::ffi;
-// This full import is intentional; nearly every type in mojo_types needs to be used.
+// This full import is intentional; nearly every type in mojo_types needs to be
+// used.
 use crate::system::handle;
 use crate::system::handle::{CastHandle, Handle};
 use crate::system::mojo_types::*;

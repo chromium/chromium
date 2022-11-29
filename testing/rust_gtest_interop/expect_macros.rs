@@ -91,8 +91,9 @@ macro_rules! expect_false {
     };
 }
 
-/// Evaluates and compares the two given expressions. If not equal, a failure is reported to Gtest.
-/// The expressions must evaluate to the same type, which must be PartialEq.
+/// Evaluates and compares the two given expressions. If not equal, a failure is
+/// reported to Gtest. The expressions must evaluate to the same type, which
+/// must be PartialEq.
 ///
 /// # Examples
 /// ```
@@ -120,8 +121,9 @@ macro_rules! expect_eq {
     };
 }
 
-/// Evaluates and compares the two given expressions. If equal, a failure is reported to Gtest.
-/// The expressions must evaluate to the same type, which must be PartialEq.
+/// Evaluates and compares the two given expressions. If equal, a failure is
+/// reported to Gtest. The expressions must evaluate to the same type, which
+/// must be PartialEq.
 ///
 /// # Examples
 /// ```
@@ -149,9 +151,10 @@ macro_rules! expect_ne {
     };
 }
 
-/// Evaluates and compares the two given expressions. If the first is not greater than the second, a
-/// failure is reported to Gtest. The expressions must evaluate to the same type, which must be
-/// PartialOrd. If a PartialOrd comparison fails, the result is false.
+/// Evaluates and compares the two given expressions. If the first is not
+/// greater than the second, a failure is reported to Gtest. The expressions
+/// must evaluate to the same type, which must be PartialOrd. If a PartialOrd
+/// comparison fails, the result is false.
 ///
 /// # Examples
 /// ```
@@ -179,9 +182,10 @@ macro_rules! expect_gt {
     };
 }
 
-/// Evaluates and compares the two given expressions. If the first is not less than the second, a
-/// failure is reported to Gtest. The expressions must evaluate to the same type, which must be
-/// PartialOrd. If a PartialOrd comparison fails, the result is false.
+/// Evaluates and compares the two given expressions. If the first is not less
+/// than the second, a failure is reported to Gtest. The expressions must
+/// evaluate to the same type, which must be PartialOrd. If a PartialOrd
+/// comparison fails, the result is false.
 ///
 /// # Examples
 /// ```
@@ -209,9 +213,10 @@ macro_rules! expect_lt {
     };
 }
 
-/// Evaluates and compares the two given expressions. If the first is not greater than or equal to
-/// the second, a failure is reported to Gtest. The expressions must evaluate to the same type,
-/// which must be PartialOrd. If a PartialOrd comparison fails, the result is false.
+/// Evaluates and compares the two given expressions. If the first is not
+/// greater than or equal to the second, a failure is reported to Gtest. The
+/// expressions must evaluate to the same type, which must be PartialOrd. If a
+/// PartialOrd comparison fails, the result is false.
 ///
 /// # Examples
 /// ```
@@ -238,9 +243,10 @@ macro_rules! expect_ge {
     };
 }
 
-/// Evaluates and compares the two given expressions. If the first is not less than or equal to the
-/// second, a failure is reported to Gtest. The expressions must evaluate to the same type, /which
-/// must be PartialOrd. If a PartialOrd comparison fails, the result is false.
+/// Evaluates and compares the two given expressions. If the first is not less
+/// than or equal to the second, a failure is reported to Gtest. The expressions
+/// must evaluate to the same type, /which must be PartialOrd. If a PartialOrd
+/// comparison fails, the result is false.
 ///
 /// # Examples
 /// ```
@@ -267,16 +273,18 @@ macro_rules! expect_le {
     };
 }
 
-// TODO(danakj): There's a bunch more useful macros to write, even ignoring gmock:
+// TODO(danakj): There's a bunch more useful macros to write, even ignoring
+// gmock:
 // - EXPECT_NONFATAL_FAILURE
 // - SCOPED_TRACE
 // - EXPECT_DEATH
 // - FAIL (fatal failure, would this work?)
 // - ADD_FAILURE
 // - SUCCEED
-// - EXPECT_PANIC (catch_unwind() with an error if no panic, but this depends on us using a stdlib
-//   with -Cpanic=unwind in tests, currently we use -Cpanic=abort.)
-// - EXPECT_NO_PANIC (Like above, depende on -Cpanic=unwind, or else all panics just abort the
-//   process.)
+// - EXPECT_PANIC (catch_unwind() with an error if no panic, but this depends on
+//   us using a stdlib with -Cpanic=unwind in tests, currently we use
+//   -Cpanic=abort.)
+// - EXPECT_NO_PANIC (Like above, depende on -Cpanic=unwind, or else all panics
+//   just abort the process.)
 // - EXPECT_FLOAT_EQ (Comparison for equality within a small range.)
 // - EXPECT_NEAR (Comparison for equality within a user-specified range.)

@@ -10,8 +10,8 @@ use crate::crates;
 use crate::manifest::CargoManifest;
 use crate::paths;
 
-/// Runs the download subcommand, which downloads a crate from crates.io and unpacks it into the
-/// Chromium tree.
+/// Runs the download subcommand, which downloads a crate from crates.io and
+/// unpacks it into the Chromium tree.
 pub fn download(
     name: &str,
     version: semver::Version,
@@ -40,12 +40,13 @@ pub fn download(
         return ExitCode::FAILURE;
     }
 
-    // Makes the directory where the build file will go. The crate's source code will go below it.
-    // This directory and its parents are allowed to exist already.
+    // Makes the directory where the build file will go. The crate's source code
+    // will go below it. This directory and its parents are allowed to exist
+    // already.
     std::fs::create_dir_all(&build_path)
         .expect("Could not make the third-party directory '{build_path}' for the crate");
-    // Makes the directory where the source code will be unzipped. It should not exist or we'd be
-    // clobbering existing files.
+    // Makes the directory where the source code will be unzipped. It should not
+    // exist or we'd be clobbering existing files.
     std::fs::create_dir(&crate_path).expect("Crate directory '{crate_path}' already exists");
 
     let mut untar = process::Command::new("tar")

@@ -29,12 +29,12 @@ pub enum DeserializationTarget<'c> {
     Dict { ctx: Pin<&'c mut ContextPointer>, key: String },
 }
 
-/// A deserializer and visitor type that is used to visit each value in the JSON input when it is
-/// deserialized.
+/// A deserializer and visitor type that is used to visit each value in the JSON
+/// input when it is deserialized.
 ///
-/// Normally serde deserialization instantiates a new object, but this visitor is designed to call
-/// back into C++ for creating the deserialized objects. To achieve this we use a feature of serde
-/// called "stateful deserialization" (https://docs.serde.rs/serde/de/trait.DeserializeSeed.html).
+/// Normally serde deserialization instantiates a new object, but this visitor
+/// is designed to call back into C++ for creating the deserialized objects. To
+/// achieve this we use a feature of serde called "stateful deserialization" (https://docs.serde.rs/serde/de/trait.DeserializeSeed.html).
 pub struct ValueVisitor<'f, 'c> {
     fns: &'f Functions,
     aggregate: DeserializationTarget<'c>,
@@ -54,7 +54,8 @@ impl<'f, 'c> ValueVisitor<'f, 'c> {
 }
 
 impl<'de, 'f, 'c> Visitor<'de> for ValueVisitor<'f, 'c> {
-    // We call out to C++ to construct the deserialized type, so no output from the visitor.
+    // We call out to C++ to construct the deserialized type, so no output from the
+    // visitor.
     type Value = ();
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -142,8 +143,9 @@ impl<'de, 'f, 'c> Visitor<'de> for ValueVisitor<'f, 'c> {
     where
         M: MapAccess<'de>,
     {
-        // TODO(danakj): base::Value::Dict doesn't expose a way to reserve space, so we don't bother
-        // using `access.size_hint()` here, unlike when creating a list.
+        // TODO(danakj): base::Value::Dict doesn't expose a way to reserve space, so we
+        // don't bother using `access.size_hint()` here, unlike when creating a
+        // list.
         let mut inner_ctx = match self.aggregate {
             DeserializationTarget::List { ctx } => self.fns.list_append_dict(ctx),
             DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_dict(ctx, &key),
@@ -180,7 +182,8 @@ impl<'de, 'f, 'c> Visitor<'de> for ValueVisitor<'f, 'c> {
 }
 
 impl<'de, 'f, 'c> DeserializeSeed<'de> for ValueVisitor<'f, 'c> {
-    // We call out to C++ to construct the deserialized type, so no output from here.
+    // We call out to C++ to construct the deserialized type, so no output from
+    // here.
     type Value = ();
 
     fn deserialize<D>(self, deserializer: D) -> Result<Self::Value, D::Error>

@@ -118,9 +118,10 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     }
     // [build-dependencies] is not used in third_party.toml.
 
-    // For crates used in first-party tests, we do not build a separate library from production
-    // (unlike standard Rust tests, and those found in third-party crates.) So we merge the
-    // dev_dependencies from third_party.toml into the regular dependencies.
+    // For crates used in first-party tests, we do not build a separate library from
+    // production (unlike standard Rust tests, and those found in third-party
+    // crates.) So we merge the dev_dependencies from third_party.toml into the
+    // regular dependencies.
     third_party_manifest
         .dependency_spec
         .dependencies

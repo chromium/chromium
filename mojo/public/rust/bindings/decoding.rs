@@ -195,9 +195,10 @@ impl<'slice> DecodingState<'slice> {
 
     /// Decode a pointer from the buffer as a global offset into the buffer.
     ///
-    /// The pointer in the buffer is an offset relative to the pointer to another
-    /// location in the buffer. We convert that to an absolute offset with respect
-    /// to the buffer before returning. This is our defintion of a pointer.
+    /// The pointer in the buffer is an offset relative to the pointer to
+    /// another location in the buffer. We convert that to an absolute
+    /// offset with respect to the buffer before returning. This is our
+    /// defintion of a pointer.
     pub fn decode_pointer(&mut self) -> Option<u64> {
         self.align_to_byte();
         self.align_to_bytes(8);
@@ -279,8 +280,9 @@ impl<'slice> DecodingState<'slice> {
                 let len = versions.len();
                 let (latest_version, _) = versions[len - 1];
                 let (_, size) = versions[idx - 1];
-                // If this is higher than any version we know, its okay for the size to be bigger,
-                // but if its a version we know about, it must match the size.
+                // If this is higher than any version we know, its okay for the size to be
+                // bigger, but if its a version we know about, it must match the
+                // size.
                 if (version > latest_version && bytes < size)
                     || (version <= latest_version && bytes != size)
                 {
@@ -374,7 +376,8 @@ impl<'slice> Decoder<'slice> {
         } else {
             return Err(ValidationError::UnexpectedInvalidHandle);
         };
-        // If the index exceeds our number of handles or if we have already claimed that handle
+        // If the index exceeds our number of handles or if we have already claimed that
+        // handle
         if real_index >= self.handles.len() || real_index < self.handles_claimed {
             return Err(ValidationError::IllegalHandle);
         }

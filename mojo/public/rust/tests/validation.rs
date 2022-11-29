@@ -22,7 +22,6 @@ use crate::util::mojom_validation::*;
 ///   1. Decode the header of the validation input.
 ///   2. Decode the payload of the validation input, expecting a validation
 ///      error.
-///
 macro_rules! validation_tests {
     ($($name:ident => $req_type:ident;)*) => {
         tests! {

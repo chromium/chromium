@@ -70,16 +70,17 @@ fn test() -> std::result::Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-// This test intentionally fails due to returning Err, and displays the message "uhoh."
+// This test intentionally fails due to returning Err, and displays the message
+// "uhoh."
 #[gtest(Test, DISABLED_WithError)]
 fn test() -> std::result::Result<(), Box<dyn std::error::Error>> {
     expect_true!(true);
     Err("uhoh".into())
 }
 
-// TODO(danakj): It would be nice to test expect macros, but we would need to hook up
-// EXPECT_NONFATAL_FAILURE to do so. There's no way to fail a test in a way that we accept, the bots
-// see the failure even if the process returns 0.
+// TODO(danakj): It would be nice to test expect macros, but we would need to
+// hook up EXPECT_NONFATAL_FAILURE to do so. There's no way to fail a test in a
+// way that we accept, the bots see the failure even if the process returns 0.
 // #[gtest(ExpectFailTest, Failures)]
 // fn test() {
 //     expect_eq!(1 + 1, 1 + 2);

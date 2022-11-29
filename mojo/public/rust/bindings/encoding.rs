@@ -88,7 +88,8 @@ pub trait MojomNumeric:
     + PartialEq<Self>
     + Default
 {
-    /// Converts the primitive to a little-endian representation (the mojom endianness).
+    /// Converts the primitive to a little-endian representation (the mojom
+    /// endianness).
     fn to_mojom_endian(self) -> Self;
 }
 
@@ -389,8 +390,8 @@ impl<'slice> Encoder<'slice> {
         &mut self.states[context.id()]
     }
 
-    /// Signal to finish encoding by destroying the Encoder and returning the final
-    /// handle vector.
+    /// Signal to finish encoding by destroying the Encoder and returning the
+    /// final handle vector.
     ///
     /// Note: No byte buffer is returned as that is pre-allocated.
     pub fn unwrap(self) -> Vec<UntypedHandle> {
