@@ -272,15 +272,15 @@ EnrollmentHandler::EnrollmentHandler(
       std::make_unique<CloudPolicyClient::RegistrationParameters>(
           em::DeviceRegisterRequest::DEVICE,
           EnrollmentModeToRegistrationFlavor(enrollment_config.mode));
-  register_params_->SetPsmExecutionResult(
-      GetPsmExecutionResult(*g_browser_process->local_state()));
-  register_params_->SetPsmDeterminationTimestamp(
-      GetPsmDeterminationTimestamp(*g_browser_process->local_state()));
+  register_params_->psm_execution_result =
+      GetPsmExecutionResult(*g_browser_process->local_state());
+  register_params_->psm_determination_timestamp =
+      GetPsmDeterminationTimestamp(*g_browser_process->local_state());
   // License type is set only if terminal license is used. Unset field is
   // treated as enterprise license.
   if (license_type == LicenseType::kTerminal) {
-    register_params_->SetLicenseType(
-        em::LicenseType_LicenseTypeEnum::LicenseType_LicenseTypeEnum_KIOSK);
+    register_params_->license_type =
+        em::LicenseType_LicenseTypeEnum::LicenseType_LicenseTypeEnum_KIOSK;
   }
 
   register_params_->requisition = requisition;

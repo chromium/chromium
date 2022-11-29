@@ -174,23 +174,6 @@ CloudPolicyClient::RegistrationParameters::RegistrationParameters(
 
 CloudPolicyClient::RegistrationParameters::~RegistrationParameters() = default;
 
-void CloudPolicyClient::RegistrationParameters::SetPsmExecutionResult(
-    absl::optional<
-        enterprise_management::DeviceRegisterRequest::PsmExecutionResult>
-        new_psm_result) {
-  psm_execution_result = new_psm_result;
-}
-
-void CloudPolicyClient::RegistrationParameters::SetPsmDeterminationTimestamp(
-    absl::optional<int64_t> new_psm_timestamp) {
-  psm_determination_timestamp = new_psm_timestamp;
-}
-
-void CloudPolicyClient::RegistrationParameters::SetLicenseType(
-    em::LicenseType_LicenseTypeEnum license_type) {
-  license_type_ = license_type;
-}
-
 CloudPolicyClient::Observer::~Observer() = default;
 
 CloudPolicyClient::CloudPolicyClient(
@@ -1668,9 +1651,9 @@ void CloudPolicyClient::CreateDeviceRegisterRequest(
     request->set_psm_determination_timestamp_ms(
         params.psm_determination_timestamp.value());
   }
-  if (params.license_type_.has_value()) {
+  if (params.license_type.has_value()) {
     request->mutable_license_type()->set_license_type(
-        params.license_type_.value());
+        params.license_type.value());
   }
 }
 

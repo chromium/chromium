@@ -141,24 +141,11 @@ class POLICY_EXPORT CloudPolicyClient {
         enterprise_management::DeviceRegisterRequest::Flavor flavor);
     ~RegistrationParameters();
 
-    // A setter for |psm_execution_result| field.
-    void SetPsmExecutionResult(
-        absl::optional<
-            enterprise_management::DeviceRegisterRequest::PsmExecutionResult>
-            new_psm_result);
-
-    // A setter for |psm_determination_timestamp| field.
-    void SetPsmDeterminationTimestamp(
-        absl::optional<int64_t> new_psm_timestamp);
-
-    void SetLicenseType(
-        enterprise_management::LicenseType_LicenseTypeEnum license_type);
-
     enterprise_management::DeviceRegisterRequest::Type registration_type;
     enterprise_management::DeviceRegisterRequest::Flavor flavor;
 
     absl::optional<enterprise_management::LicenseType_LicenseTypeEnum>
-        license_type_;
+        license_type;
 
     // Lifetime of registration. Used for easier clean up of ephemeral session
     // registrations.

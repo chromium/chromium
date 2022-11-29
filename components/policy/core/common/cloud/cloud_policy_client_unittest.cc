@@ -1671,9 +1671,9 @@ TEST_P(CloudPolicyClientRegisterWithPsmParamsTest,
   CloudPolicyClient::RegistrationParameters device_attestation(
       em::DeviceRegisterRequest::DEVICE,
       em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
-  device_attestation.SetPsmDeterminationTimestamp(
-      kExpectedPsmDeterminationTimestamp);
-  device_attestation.SetPsmExecutionResult(psm_execution_result);
+  device_attestation.psm_determination_timestamp =
+      kExpectedPsmDeterminationTimestamp;
+  device_attestation.psm_execution_result = psm_execution_result;
   client_->RegisterWithCertificate(
       device_attestation, std::string() /* client_id */, kEnrollmentCertificate,
       std::string() /* sub_organization */, std::move(fake_signing_service));
