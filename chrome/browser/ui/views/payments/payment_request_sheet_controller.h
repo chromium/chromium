@@ -126,6 +126,21 @@ class PaymentRequestSheetController {
   // +---------------------------+
   virtual std::unique_ptr<views::View> CreateExtraFooterView();
 
+  // Creates and returns a header for all the sheets in the PaymentRequest
+  // dialog. The header contains an optional back arrow button (if
+  // |ShouldShowHeaderBackArrow| returns true) and a content view created by
+  // |CreateHeaderContentView|. The background is set based on
+  // |GetHeaderBackground|, and its color is used to decide which color to use
+  // to paint the arrow.
+  //
+  // The passed-in `view` must be the `header_view_` - it is only passed as an
+  // argument because this is required by ViewFactory.
+  //
+  // +---------------------------+
+  // | <- | header_content_view  |
+  // +---------------------------+
+  void PopulateSheetHeaderView(views::View* view);
+
   // Creates and returns the view to be inserted in the header, next to the
   // close/back button. This is typically the sheet's title but it can be
   // overriden to return a different kind of view as long as it fits inside the

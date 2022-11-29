@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
@@ -47,8 +46,6 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -109,29 +106,6 @@ class ChromeLogoImageView : public views::ImageView {
 
 BEGIN_METADATA(ChromeLogoImageView, views::ImageView)
 END_METADATA
-
-class PaymentRequestBackArrowButton : public views::ImageButton {
- public:
-  explicit PaymentRequestBackArrowButton(
-      views::Button::PressedCallback back_arrow_callback)
-      : views::ImageButton(back_arrow_callback) {
-    ConfigureVectorImageButton(this);
-    constexpr int kBackArrowSize = 16;
-    SetSize(gfx::Size(kBackArrowSize, kBackArrowSize));
-    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    const auto* const cp = GetColorProvider();
-    views::SetImageFromVectorIconWithColor(
-        this, vector_icons::kBackArrowIcon,
-        cp->GetColor(kColorPaymentsRequestBackArrowButtonIcon),
-        cp->GetColor(kColorPaymentsRequestBackArrowButtonIconDisabled));
-  }
-};
 
 // |s1|, |s2|, and |s3| are lines identifying the profile. |s1| is the
 // "headline" which may be emphasized depending on |type|. If |enabled| is
@@ -253,34 +227,6 @@ class PaymentRequestRowBorderPainter : public views::Painter {
 };
 
 }  // namespace
-
-void PopulateSheetHeaderView(bool show_back_arrow,
-                             std::unique_ptr<views::View> header_content_view,
-                             views::Button::PressedCallback back_arrow_callback,
-                             views::View* container,
-                             std::unique_ptr<views::Background> background) {
-  container->SetBackground(std::move(background));
-  views::BoxLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  // Need some spacing if the optional back arrow presents.
-  constexpr int kPaddingBetweenArrowAndTitle = 8;
-  layout->set_between_child_spacing(kPaddingBetweenArrowAndTitle);
-
-  constexpr int kVerticalInset = 14;
-  constexpr int kHeaderHorizontalInset = 16;
-  container->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kVerticalInset, kHeaderHorizontalInset, kVerticalInset,
-                        kHeaderHorizontalInset)));
-
-  if (show_back_arrow)
-    container->AddChildView(
-        std::make_unique<PaymentRequestBackArrowButton>(back_arrow_callback));
-
-  layout->SetFlexForView(
-      container->AddChildView(std::move(header_content_view)), 1);
-}
 
 std::unique_ptr<views::ImageView> CreateAppIconView(
     int icon_resource_id,

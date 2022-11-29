@@ -13,14 +13,12 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/views/controls/button/button.h"
 
 namespace autofill {
 class AutofillProfile;
 }
 
 namespace views {
-class Background;
 class Border;
 class ImageView;
 class Label;
@@ -51,20 +49,6 @@ constexpr int kPreferredPaymentHandlerDialogHeight = 600;
 // Fixed width of the amount sections in the payment sheet and the order summary
 // sheet, in pixels.
 constexpr int kAmountSectionWidth = 96;
-
-// Creates and returns a header for all the sheets in the PaymentRequest dialog.
-// The header contains an optional back arrow button (if |show_back_arrow| is
-// true) and a |header_content_view|. |back_arrow_callback| is called when
-// pressing the back button. |background| is applied to |container| and its
-// color is used to decide which color to use to paint the arrow.
-// +---------------------------+
-// | <- | header_content_view  |
-// +---------------------------+
-void PopulateSheetHeaderView(bool show_back_arrow,
-                             std::unique_ptr<views::View> header_content_view,
-                             views::Button::PressedCallback back_arrow_callback,
-                             views::View* container,
-                             std::unique_ptr<views::Background> background);
 
 // Returns an instrument image view for the given |icon_bitmap| or
 // |icon_resource_id| and wanted |opacity|. Includes a rounded rect border.
