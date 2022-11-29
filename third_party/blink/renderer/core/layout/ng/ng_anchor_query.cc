@@ -232,6 +232,7 @@ void NGLogicalAnchorQuery::SetFromPhysical(
 absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     const ScopedCSSName* anchor_name,
     AnchorValue anchor_value,
+    float percentage,
     LayoutUnit available_size,
     const WritingModeConverter& container_converter,
     WritingDirectionMode self_writing_direction,
@@ -278,6 +279,26 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
       // See |AnchorValue::kLeft|.
       value = anchor.Bottom() - offset_to_padding_box.top;
       break;
+    case AnchorValue::kPercentage: {
+      LayoutUnit size;
+      if (is_y_axis) {
+        value = anchor.Y() - offset_to_padding_box.top;
+        size = anchor.Height();
+        // The percentage is logical, between the `start` and `end` sides.
+        // Convert to the physical percentage.
+        // https://drafts.csswg.org/css-anchor-1/#anchor-pos
+        if (container_converter.GetWritingDirection().IsFlippedY())
+          percentage = 100 - percentage;
+      } else {
+        value = anchor.X() - offset_to_padding_box.left;
+        size = anchor.Width();
+        // Convert the logical percentage to physical. See above.
+        if (container_converter.GetWritingDirection().IsFlippedX())
+          percentage = 100 - percentage;
+      }
+      value += LayoutUnit::FromFloatRound(size * percentage / 100);
+      break;
+    }
     case AnchorValue::kStart:
     case AnchorValue::kEnd:
     case AnchorValue::kSelfStart:
@@ -287,7 +308,6 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
       NOTREACHED();
       return absl::nullopt;
     case AnchorValue::kCenter:
-    case AnchorValue::kPercentage:
       // TODO(crbug.com/1382524): Not implemented yet.
       NOTREACHED();
       return absl::nullopt;
@@ -361,7 +381,8 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
   switch (anchor_query.Type()) {
     case AnchorQueryType::kAnchor:
       return EvaluateAnchor(anchor_query.AnchorName(),
-                            anchor_query.AnchorSide());
+                            anchor_query.AnchorSide(),
+                            anchor_query.AnchorSidePercentageOrZero());
     case AnchorQueryType::kAnchorSize:
       return EvaluateAnchorSize(anchor_query.AnchorName(),
                                 anchor_query.AnchorSize());
@@ -370,13 +391,14 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
     const ScopedCSSName* anchor_name,
-    AnchorValue anchor_value) const {
+    AnchorValue anchor_value,
+    float percentage) const {
   has_anchor_functions_ = true;
   if (const NGLogicalAnchorQuery* anchor_query = AnchorQuery()) {
     return anchor_query->EvaluateAnchor(
-        anchor_name, anchor_value, available_size_, container_converter_,
-        self_writing_direction_, offset_to_padding_box_, is_y_axis_,
-        is_right_or_bottom_);
+        anchor_name, anchor_value, percentage, available_size_,
+        container_converter_, self_writing_direction_, offset_to_padding_box_,
+        is_y_axis_, is_right_or_bottom_);
   }
   return absl::nullopt;
 }

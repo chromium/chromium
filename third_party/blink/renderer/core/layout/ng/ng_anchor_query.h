@@ -129,6 +129,7 @@ class CORE_EXPORT NGLogicalAnchorQuery
   absl::optional<LayoutUnit> EvaluateAnchor(
       const ScopedCSSName* anchor_name,
       AnchorValue anchor_value,
+      float percentage,
       LayoutUnit available_size,
       const WritingModeConverter& container_converter,
       WritingDirectionMode self_writing_direction,
@@ -204,7 +205,8 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   const NGLogicalAnchorQuery* AnchorQuery() const;
 
   absl::optional<LayoutUnit> EvaluateAnchor(const ScopedCSSName* anchor_name,
-                                            AnchorValue anchor_value) const;
+                                            AnchorValue anchor_value,
+                                            float percentage) const;
   absl::optional<LayoutUnit> EvaluateAnchorSize(
       const ScopedCSSName* anchor_name,
       AnchorSizeValue anchor_size_value) const;

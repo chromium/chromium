@@ -38,6 +38,10 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
     DCHECK_EQ(AnchorSide(), AnchorValue::kPercentage);
     return side_percentage_;
   }
+  float AnchorSidePercentageOrZero() const {
+    DCHECK_EQ(type_, AnchorQueryType::kAnchor);
+    return AnchorSide() == AnchorValue::kPercentage ? side_percentage_ : 0;
+  }
   AnchorSizeValue AnchorSize() const {
     DCHECK_EQ(type_, AnchorQueryType::kAnchorSize);
     return value_.anchor_size;
