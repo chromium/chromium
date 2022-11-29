@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-textarea' is a component similar to native textarea,
+ * @fileoverview 'cr-textarea' is a component similar to native textarea,
  * and inherits styling from cr-input.
  */
-import '//resources/cr_elements/cr_hidden_style.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_input/cr_input_style.css.js';
+import '../cr_hidden_style.css.js';
+import '../cr_shared_style.css.js';
+import '../cr_input/cr_input_style.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './settings_textarea.html.js';
+import {getTemplate} from './cr_textarea.html.js';
 
-export interface SettingsTextareaElement {
+export interface CrTextareaElement {
   $: {
     firstFooter: HTMLElement,
     footerContainer: HTMLElement,
@@ -26,9 +26,9 @@ export interface SettingsTextareaElement {
   };
 }
 
-export class SettingsTextareaElement extends PolymerElement {
+export class CrTextareaElement extends PolymerElement {
   static get is() {
-    return 'settings-textarea';
+    return 'cr-textarea';
   }
 
   static get template() {
@@ -187,8 +187,8 @@ export class SettingsTextareaElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-textarea': SettingsTextareaElement;
+    'cr-textarea': CrTextareaElement;
   }
 }
 
-customElements.define(SettingsTextareaElement.is, SettingsTextareaElement);
+customElements.define(CrTextareaElement.is, CrTextareaElement);

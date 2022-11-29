@@ -14,19 +14,19 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../controls/settings_textarea.js';
 import '../../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsTextareaElement} from '../../controls/settings_textarea.js';
 import {castExists} from '../assert_extras.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
@@ -421,7 +421,7 @@ class KerberosAddAccountDialogElement extends
     // Don't fall for the classical blunder 0 == false.
     if (result.errorInfo.lineIndex !== undefined) {
       const textArea = castExists(
-          this.shadowRoot!.querySelector<SettingsTextareaElement>('#config')!
+          this.shadowRoot!.querySelector<CrTextareaElement>('#config')!
               .shadowRoot!.querySelector<HTMLTextAreaElement>('#input'));
       errorLine = this.selectAndScrollTo_(textArea, result.errorInfo.lineIndex);
     }

@@ -5,16 +5,16 @@
         width: 100%;
       }
 
-      settings-textarea {
+      cr-textarea {
         width: 100%;
         --cr-input-width: 75%;
-        --settings-textarea-footer-display: flex;
+        --cr-textarea-footer-display: flex;
       }
     </style>
     <!-- Max length of 100 KB to prevent browser from freezing. -->
-    <settings-textarea id="input" value="{{value}}" rows=1 autogrow="true"
+    <cr-textarea id="input" value="{{value}}" rows=1 autogrow="true"
         placeholder="$i18n{secureDnsCustomPlaceholder}" invalid="[[showError_]]"
         first-footer="[[errorText_]]" maxlength="102400" spellcheck="false"
         on-keypress="onKeyPress_" on-input="onInput_"
         on-blur="validate" on-change="validate">
-    </settings-textarea>
+    </cr-textarea>

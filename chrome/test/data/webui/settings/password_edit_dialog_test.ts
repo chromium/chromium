@@ -9,7 +9,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PasswordDialogMode, PasswordEditDialogElement, SettingsTextareaElement} from 'chrome://settings/lazy_load.js';
+import {CrTextareaElement, PasswordDialogMode, PasswordEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -414,7 +414,7 @@ suite('PasswordEditDialog', function() {
     assertEquals(
         addDialog.i18n('addPasswordFootnote'),
         addDialog.$.footnote.innerText.trim());
-    assertFalse(!!addDialog.shadowRoot!.querySelector('settings-textarea'));
+    assertFalse(!!addDialog.shadowRoot!.querySelector('cr-textarea'));
   });
 
   test('hasCorrectInitialStateWhenAddPasswordWithNotes', function() {
@@ -427,8 +427,7 @@ suite('PasswordEditDialog', function() {
     assertEquals('', addDialog.$.passwordInput.value);
     assertEquals('password', addDialog.$.passwordInput.type);
     assertTrue(isVisible(addDialog.$.footnote));
-    assertEquals(
-        '', addDialog.shadowRoot!.querySelector('settings-textarea')!.value);
+    assertEquals('', addDialog.shadowRoot!.querySelector('cr-textarea')!.value);
   });
 
   test('showsStorePickerForAccountStoreUserWhenAddPassword', function() {
@@ -687,8 +686,7 @@ suite('PasswordEditDialog', function() {
     const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
     assertEditDialogParts(passwordDialog);
     const noteElement =
-        passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
-            '#note');
+        passwordDialog.shadowRoot!.querySelector<CrTextareaElement>('#note');
     assertTrue(!!noteElement);
     assertTrue(!noteElement.readonly);
   });
@@ -700,7 +698,7 @@ suite('PasswordEditDialog', function() {
         {url: 'goo.gl', username: 'bart', id: 42, note: 'some note'});
     const editDialog = elementFactory.createPasswordEditDialog(entry);
     const noteElement =
-        editDialog.shadowRoot!.querySelector<SettingsTextareaElement>('#note')!;
+        editDialog.shadowRoot!.querySelector<CrTextareaElement>('#note')!;
 
     const expectedParams: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
       username: 'new_username',
@@ -739,8 +737,7 @@ suite('PasswordEditDialog', function() {
     const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
     assertEditDialogParts(passwordDialog);
     assertFalse(
-        !!passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
-            '#note'));
+        !!passwordDialog.shadowRoot!.querySelector<CrTextareaElement>('#note'));
   });
 
   test('federatedCredentialDoesntHaveNotes', async function() {
@@ -751,8 +748,7 @@ suite('PasswordEditDialog', function() {
         elementFactory.createPasswordEditDialog(federationEntry);
     assertFederatedDialogParts(passwordDialog);
     assertFalse(
-        !!passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
-            '#note'));
+        !!passwordDialog.shadowRoot!.querySelector<CrTextareaElement>('#note'));
   });
 
   test('showNoteWarningInEditModeWhen900Characters', async function() {
@@ -768,8 +764,7 @@ suite('PasswordEditDialog', function() {
 
     assertEditDialogParts(passwordDialog);
     const noteElement =
-        passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
-            '#note');
+        passwordDialog.shadowRoot!.querySelector<CrTextareaElement>('#note');
     assertEquals(
         passwordDialog.i18n('passwordNoteCharacterCountWarning', 1000),
         noteElement!.$.firstFooter.textContent!.trim());
@@ -791,8 +786,9 @@ suite('PasswordEditDialog', function() {
         elementFactory.createPasswordEditDialog(commonEntry, [], false);
 
     assertTrue(passwordDialog.$.actionButton.disabled);
-    assertTrue(passwordDialog.shadowRoot!
-                   .querySelector<SettingsTextareaElement>('#note')!.invalid);
+    assertTrue(
+        passwordDialog.shadowRoot!.querySelector<CrTextareaElement>(
+                                      '#note')!.invalid);
   });
 
   test('changingTheTextInTextareaChangesActionButtonStatus', async function() {
@@ -806,8 +802,7 @@ suite('PasswordEditDialog', function() {
     const passwordDialog =
         elementFactory.createPasswordEditDialog(commonEntry, [], false);
     const noteElement =
-        passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
-            '#note');
+        passwordDialog.shadowRoot!.querySelector<CrTextareaElement>('#note');
 
     assertFalse(passwordDialog.$.actionButton.disabled);
 
@@ -854,7 +849,7 @@ suite('PasswordEditDialog', function() {
 
     assertEquals(1, passwordManager.getCallCount('extendAuthValidity'));
 
-    passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
+    passwordDialog.shadowRoot!.querySelector<CrTextareaElement>(
                                   '#note')!.value = 'personal account';
 
     assertEquals(2, passwordManager.getCallCount('extendAuthValidity'));

@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AutofillManagerImpl, CountryDetailManager, CountryDetailManagerImpl, CrInputElement, SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsAutofillSectionElement, SettingsTextareaElement} from 'chrome://settings/lazy_load.js';
+import {AutofillManagerImpl, CountryDetailManager, CountryDetailManagerImpl, CrInputElement, CrTextareaElement, SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsAutofillSectionElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -361,9 +361,8 @@ suite('AutofillSectionAddressTests', function() {
     const address = createEmptyAddressEntry();
     const dialog = await createAddressDialog(address);
     const honorificElement =
-        dialog.$.dialog
-            .querySelectorAll<SettingsTextareaElement|CrInputElement>(
-                'settings-textarea, cr-input')[0]!;
+        dialog.$.dialog.querySelectorAll<CrTextareaElement|CrInputElement>(
+            'cr-textarea, cr-input')[0]!;
     assertEquals(undefined, honorificElement.value);
     assertFalse(!!address.honorific);
 
@@ -409,9 +408,8 @@ suite('AutofillSectionAddressTests', function() {
     const dialog = await createAddressDialog(createEmptyAddressEntry());
     const saveButton = dialog.$.saveButton;
     const testElements =
-        dialog.$.dialog
-            .querySelectorAll<SettingsTextareaElement|CrInputElement>(
-                'settings-textarea, cr-input');
+        dialog.$.dialog.querySelectorAll<CrTextareaElement|CrInputElement>(
+            'cr-textarea, cr-input');
 
     // The country can be preselected. Clear it to ensure the form is empty.
     await expectEvent(dialog, 'on-update-can-save', function() {
@@ -543,16 +541,15 @@ suite('AutofillSectionAddressLocaleTests', function() {
       // Honorific
       if (honorific_enabled) {
         row = rows[index]!;
-        const cols =
-            row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
-                '.address-column');
+        const cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
+            '.address-column');
         assertEquals(1, cols.length);
         assertEquals(address.honorific, cols[0]!.value);
         index++;
       }
       // Name
       row = rows[index]!;
-      let cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      let cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.fullNames![0], cols[0]!.value);
@@ -560,7 +557,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       // Organization
       if (company_enabled) {
         row = rows[index]!;
-        cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+        cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
             '.address-column');
         assertEquals(1, cols.length);
         assertEquals(address.companyName, cols[0]!.value);
@@ -568,14 +565,14 @@ suite('AutofillSectionAddressLocaleTests', function() {
       }
       // Street address
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.addressLines, cols[0]!.value);
       index++;
       // City, State, ZIP code
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(3, cols.length);
       assertEquals(address.addressLevel2, cols[0]!.value);
@@ -584,7 +581,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       index++;
       // Phone, Email
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(2, cols.length);
       assertEquals(address.phoneNumbers![0], cols[0]!.value);
@@ -627,16 +624,15 @@ suite('AutofillSectionAddressLocaleTests', function() {
       // Honorific
       if (honorific_enabled) {
         row = rows[index]!;
-        const cols =
-            row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
-                '.address-column');
+        const cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
+            '.address-column');
         assertEquals(1, cols.length);
         assertEquals(address.honorific, cols[0]!.value);
         index++;
       }
       // Name
       row = rows[index]!;
-      let cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      let cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.fullNames![0], cols[0]!.value);
@@ -644,7 +640,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       // Organization
       if (company_enabled) {
         row = rows[index]!;
-        cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+        cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
             '.address-column');
         assertEquals(1, cols.length);
         assertEquals(address.companyName, cols[0]!.value);
@@ -652,35 +648,35 @@ suite('AutofillSectionAddressLocaleTests', function() {
       }
       // Street address
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.addressLines, cols[0]!.value);
       index++;
       // Post Town
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.addressLevel2, cols[0]!.value);
       index++;
       // Postal code
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.postalCode, cols[0]!.value);
       index++;
       // County
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.addressLevel1, cols[0]!.value);
       index++;
       // Phone, Email
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(2, cols.length);
       assertEquals(address.phoneNumbers![0], cols[0]!.value);
@@ -722,16 +718,15 @@ suite('AutofillSectionAddressLocaleTests', function() {
       // Honorific
       if (honorific_enabled) {
         row = rows[index]!;
-        const cols =
-            row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
-                '.address-column');
+        const cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
+            '.address-column');
         assertEquals(1, cols.length);
         assertEquals(address.honorific, cols[0]!.value);
         index++;
       }
       // Name
       row = rows[index]!;
-      let cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      let cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.fullNames![0], cols[0]!.value);
@@ -739,7 +734,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       // Organization
       if (company_enabled) {
         row = rows[index]!;
-        cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+        cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
             '.address-column');
         assertEquals(1, cols.length);
         assertEquals(address.companyName, cols[0]!.value);
@@ -747,14 +742,14 @@ suite('AutofillSectionAddressLocaleTests', function() {
       }
       // Street address
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.addressLines, cols[0]!.value);
       index++;
       // City, Postal code
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(2, cols.length);
       assertEquals(address.addressLevel2, cols[0]!.value);
@@ -762,7 +757,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       index++;
       // Phone, Email
       row = rows[index]!;
-      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(2, cols.length);
       assertEquals(address.phoneNumbers![0], cols[0]!.value);
@@ -797,8 +792,8 @@ suite('AutofillSectionAddressLocaleTests', function() {
                    // City, State, ZIP code
                    const row = rows[3 + experimental_fields_count]!;
                    const cols =
-                       row.querySelectorAll<SettingsTextareaElement|
-                                            CrInputElement>('.address-column');
+                       row.querySelectorAll<CrTextareaElement|CrInputElement>(
+                           '.address-column');
                    assertEquals(3, cols.length);
                    cols[0]!.value = city;
                    cols[1]!.value = state;
@@ -816,7 +811,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
               // City, Postal code
               const row = rows[3 + experimental_fields_count]!;
               const cols =
-                  row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+                  row.querySelectorAll<CrTextareaElement|CrInputElement>(
                       '.address-column');
               assertEquals(2, cols.length);
               assertEquals(city, cols[0]!.value);
@@ -833,9 +828,8 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
             // City, State, ZIP code
             const row = rows[3 + experimental_fields_count]!;
-            const cols =
-                row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
-                    '.address-column');
+            const cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
+                '.address-column');
             assertEquals(3, cols.length);
             assertEquals(city, cols[0]!.value);
             assertEquals(state, cols[1]!.value);

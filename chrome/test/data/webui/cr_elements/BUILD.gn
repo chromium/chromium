@@ -34,6 +34,7 @@ non_preprocessed_files = [
   "cr_grid_focus_test.ts",
   "cr_icon_button_tests.ts",
   "cr_input_test.ts",
+  "cr_textarea_focus_test.ts",
   "cr_lazy_render_tests.ts",
   "cr_link_row_tests.ts",
   "cr_lottie_tests.ts",

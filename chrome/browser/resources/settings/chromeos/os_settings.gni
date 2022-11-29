@@ -141,7 +141,6 @@ web_component_files = [
   "controls/settings_dropdown_menu.ts",
   "controls/settings_radio_group.ts",
   "controls/settings_slider.ts",
-  "controls/settings_textarea.ts",
   "controls/settings_toggle_button.ts",
   "people_page/signout_dialog.ts",
   "people_page/sync_account_control.ts",

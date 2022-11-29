@@ -32,7 +32,7 @@
       }
 
       cr-input:not(.last-row),
-      settings-textarea,
+      cr-textarea,
       .md-select {
         margin-bottom: var(--cr-form-field-bottom-spacing);
       }
@@ -70,11 +70,11 @@
           <div class="address-row">
             <template is="dom-repeat" items="[[item]]">
               <template is="dom-if" if="[[item.isTextArea]]">
-                <settings-textarea label="[[item.component.fieldName]]"
+                <cr-textarea label="[[item.component.fieldName]]"
                     value="{{item.value}}" on-value-changed="updateCanSave_"
                     class$="address-column [[long_(item)]]"
                     spellcheck="false" maxlength="1000">
-                </settings-textarea>
+                </cr-textarea>
               </template>
               <template is="dom-if" if="[[!item.isTextArea]]">
                 <cr-input type="text" label="[[item.component.fieldName]]"

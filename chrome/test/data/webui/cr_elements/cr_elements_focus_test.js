@@ -152,3 +152,14 @@ var CrElementsToolbarFocusTest = class extends CrElementsFocusTest {
 TEST_F('CrElementsToolbarFocusTest', 'All', function() {
   mocha.run();
 });
+
+var CrElementsTextareaFocusTest = class extends CrElementsFocusTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_textarea_focus_test.js';
+  }
+};
+
+TEST_F('CrElementsTextareaFocusTest', 'All', function() {
+  mocha.run();
+});

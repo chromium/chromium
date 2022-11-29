@@ -103,18 +103,6 @@ TEST_F('CrSettingsMenuInteractiveTest', 'All', function() {
   mocha.run();
 });
 
-var CrSettingsTextareaInteractiveTest =
-    class extends CrSettingsInteractiveUITest {
-  /** @override */
-  get browsePreload() {
-    return `chrome://settings/test_loader.html?module=settings/settings_textarea_tests.js`;
-  }
-};
-
-TEST_F('CrSettingsTextareaInteractiveTest', 'All', function() {
-  mocha.run();
-});
-
 var CrSettingsReviewNotificationPermissionsInteractiveUITest =
     class extends CrSettingsInteractiveUITest {
   /** @override */

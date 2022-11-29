@@ -42,6 +42,7 @@ if (include_polymer) {
     "cr_input/cr_input.ts",
     "cr_link_row/cr_link_row.ts",
     "cr_lottie/cr_lottie.ts",
+    "cr_textarea/cr_textarea.ts",
     "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
     "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
     "cr_radio_button/cr_card_radio_button.ts",
