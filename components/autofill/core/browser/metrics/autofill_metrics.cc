@@ -1129,9 +1129,12 @@ void AutofillMetrics::LogWebauthnResult(WebauthnFlowEvent event,
 
 // static
 void AutofillMetrics::LogUnmaskPromptEvent(UnmaskPromptEvent event,
-                                           bool has_valid_nickname) {
-  base::UmaHistogramEnumeration("Autofill.UnmaskPrompt.Events", event,
-                                NUM_UNMASK_PROMPT_EVENTS);
+                                           bool has_valid_nickname,
+                                           CreditCard::RecordType card_type) {
+  base::UmaHistogramEnumeration("Autofill.UnmaskPrompt" +
+                                    GetHistogramStringForCardType(card_type) +
+                                    ".Events",
+                                event, NUM_UNMASK_PROMPT_EVENTS);
   if (has_valid_nickname) {
     base::UmaHistogramEnumeration("Autofill.UnmaskPrompt.Events.WithNickname",
                                   event, NUM_UNMASK_PROMPT_EVENTS);

@@ -4004,6 +4004,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.UnmaskPrompt.Events" enum="AutofillUnmaskPromptEvent"
     expires_after="2023-03-19">
+  <obsolete>
+    Deprecated in M109. Subsumed by Autofill.UnmaskPrompt.{CardType}.Events.
+  </obsolete>
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -4097,6 +4100,18 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
   <token key="Result" variants="Autofill.PaymentsRpcResult"/>
+</histogram>
+
+<histogram name="Autofill.UnmaskPrompt.{CardType}.Events"
+    enum="AutofillUnmaskPromptEvent" expires_after="2023-11-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Events tracking the usage of the unmasking prompt, recorded for {CardType}.
+    This prompt is triggered when a user selects a masked card in a autofill
+    dropdown.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
 <histogram name="Autofill.Upload.BackoffDelay" units="ms" expires_after="never">

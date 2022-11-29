@@ -73,7 +73,8 @@ void CardUnmaskPromptControllerImpl::ShowPrompt(
   unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;
   unmasking_number_of_attempts_ = 0;
   AutofillMetrics::LogUnmaskPromptEvent(AutofillMetrics::UNMASK_PROMPT_SHOWN,
-                                        card_.HasNonEmptyValidNickname());
+                                        card_.HasNonEmptyValidNickname(),
+                                        card_.record_type());
 }
 
 void CardUnmaskPromptControllerImpl::OnVerificationResult(
@@ -423,7 +424,8 @@ bool CardUnmaskPromptControllerImpl::ShouldDismissUnmaskPromptUponResult(
 void CardUnmaskPromptControllerImpl::LogOnCloseEvents() {
   AutofillMetrics::UnmaskPromptEvent close_reason_event = GetCloseReasonEvent();
   AutofillMetrics::LogUnmaskPromptEvent(close_reason_event,
-                                        card_.HasNonEmptyValidNickname());
+                                        card_.HasNonEmptyValidNickname(),
+                                        card_.record_type());
   AutofillMetrics::LogUnmaskPromptEventDuration(
       AutofillClock::Now() - shown_timestamp_, close_reason_event,
       card_.HasNonEmptyValidNickname());
