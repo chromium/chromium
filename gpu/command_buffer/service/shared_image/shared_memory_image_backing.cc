@@ -139,7 +139,8 @@ SharedMemoryImageBacking::ProduceOverlay(SharedImageManager* manager,
   if (!shared_memory_wrapper_.IsValid())
     return nullptr;
 
-  auto gl_image = base::MakeRefCounted<gl::GLImageMemory>(size());
+  auto gl_image =
+      base::WrapRefCounted<gl::GLImageMemory>(new gl::GLImageMemory(size()));
   if (!gl_image->Initialize(shared_memory_wrapper_.GetMemory(),
                             ToBufferFormat(format()),
                             shared_memory_wrapper_.GetStride(),

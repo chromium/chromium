@@ -43,10 +43,10 @@
 namespace gl {
 namespace {
 
-class GLImageRefCountedMemory : public GLImageMemory {
+class GLImageRefCountedMemory : public GLImageMemoryForTesting {
  public:
   explicit GLImageRefCountedMemory(const gfx::Size& size)
-      : GLImageMemory(size) {}
+      : GLImageMemoryForTesting(size) {}
 
   GLImageRefCountedMemory(const GLImageRefCountedMemory&) = delete;
   GLImageRefCountedMemory& operator=(const GLImageRefCountedMemory&) = delete;

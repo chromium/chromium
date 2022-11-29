@@ -494,4 +494,9 @@ bool GLImageMemory::ValidFormat(gfx::BufferFormat format) {
   return false;
 }
 
+GLImageMemoryForTesting::GLImageMemoryForTesting(const gfx::Size& size)
+    : GLImageMemory(size) {}
+
+GLImageMemoryForTesting::~GLImageMemoryForTesting() = default;
+
 }  // namespace gl

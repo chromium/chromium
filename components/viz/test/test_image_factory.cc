@@ -18,10 +18,10 @@ namespace viz {
 
 namespace {
 
-class GLImageSharedMemory : public gl::GLImageMemory {
+class GLImageSharedMemory : public gl::GLImageMemoryForTesting {
  public:
   explicit GLImageSharedMemory(const gfx::Size& size)
-      : gl::GLImageMemory(size) {}
+      : gl::GLImageMemoryForTesting(size) {}
 
   GLImageSharedMemory(const GLImageSharedMemory&) = delete;
   GLImageSharedMemory& operator=(const GLImageSharedMemory&) = delete;
