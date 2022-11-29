@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
@@ -25,12 +26,23 @@ namespace extensions {
 namespace api {
 namespace file_manager_private {
 struct FileTransferStatus;
+struct IndividualFileTransferStatus;
 struct FileWatchEvent;
 }  // namespace file_manager_private
 }  // namespace api
 }  // namespace extensions
 
 namespace file_manager {
+
+using extensions::api::file_manager_private::FileTransferStatus;
+using extensions::api::file_manager_private::IndividualFileTransferStatus;
+
+using IndividualFileTransferEntry = IndividualFileTransferStatus::Entry;
+
+using IndividualFileTransferEntries = std::vector<IndividualFileTransferEntry>;
+
+using IndividualFileTransferEntriesCallback =
+    base::OnceCallback<void(IndividualFileTransferEntries entries)>;
 
 // Files app's event router handling DriveFS-related events.
 class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
@@ -64,6 +76,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
  private:
   struct SyncingStatusState {
     SyncingStatusState();
+    SyncingStatusState(const SyncingStatusState& other);
     ~SyncingStatusState();
 
     std::map<int64_t, int64_t> group_id_to_bytes_to_transfer;
@@ -88,11 +101,13 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
 
   virtual bool IsPathWatched(const base::FilePath& path) = 0;
 
-  void BroadcastOnFileTransfersUpdatedEvent(
-      const extensions::api::file_manager_private::FileTransferStatus& status);
+  void BroadcastTransferEvent(
+      const extensions::events::HistogramValue event_type,
+      const FileTransferStatus& status);
 
-  void BroadcastOnPinTransfersUpdatedEvent(
-      const extensions::api::file_manager_private::FileTransferStatus& status);
+  void BroadcastIndividualTransfersEvent(
+      const extensions::events::HistogramValue event_type,
+      const std::vector<IndividualFileTransferStatus>& status);
 
   void BroadcastOnDirectoryChangedEvent(
       const base::FilePath& directory,
@@ -102,12 +117,32 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   virtual void BroadcastEvent(
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      base::Value::List event_args) = 0;
+      base::Value::List event_args,
+      bool dispatch_to_system_notification = true) = 0;
 
-  extensions::api::file_manager_private::FileTransferStatus
-  CreateFileTransferStatus(
-      const std::vector<drivefs::mojom::ItemEvent*>& item_events,
-      SyncingStatusState* state);
+  virtual void PathsToEntries(
+      const std::vector<base::FilePath>& paths,
+      const GURL& source_url,
+      IndividualFileTransferEntriesCallback callback) = 0;
+
+  // Send single event with aggregate sync information for all ItemEvents.
+  // Note: this assumes all ItemEvents have the same `reason`.
+  void BroadcastAggregateTransferEventForItems(
+      const std::vector<const drivefs::mojom::ItemEvent*>& items,
+      const extensions::events::HistogramValue& event_type,
+      const std::string& event_name,
+      SyncingStatusState& state);
+
+  // Send single event with array of per-file sync information for all
+  // ItemEvents. Note: this assumes all ItemEvents have the same `reason`.
+  void BroadcastIndividualTransferEventsForItems(
+      const std::vector<const drivefs::mojom::ItemEvent*>& items,
+      const extensions::events::HistogramValue& event_type,
+      const std::string& event_name);
+
+  void OnEntries(const extensions::events::HistogramValue& event_type,
+                 std::vector<IndividualFileTransferStatus> statuses,
+                 IndividualFileTransferEntries entries);
 
   // This is owned by EventRouter and only shared with this class.
   SystemNotificationManager* notification_manager_;
@@ -117,6 +152,8 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   // Set of paths for which Drive transfer events are ignored.
   std::set<base::FilePath> ignored_file_paths_;
   base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;
+
+  base::WeakPtrFactory<DriveFsEventRouter> weak_ptr_factory_{this};
 };
 
 }  // namespace file_manager

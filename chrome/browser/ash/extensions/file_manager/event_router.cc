@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
@@ -383,17 +384,95 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
 
   void BroadcastEvent(extensions::events::HistogramValue histogram_value,
                       const std::string& event_name,
-                      base::Value::List event_args) override {
+                      base::Value::List event_args,
+                      bool dispatch_to_system_notification = true) override {
     std::unique_ptr<extensions::Event> event =
         std::make_unique<extensions::Event>(histogram_value, event_name,
                                             std::move(event_args));
-    system_notification_manager()->HandleEvent(*event.get());
+    if (dispatch_to_system_notification) {
+      system_notification_manager()->HandleEvent(*event.get());
+    }
     extensions::EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
+  }
+
+  void PathsToEntries(const std::vector<base::FilePath>& paths,
+                      const GURL& source_url,
+                      IndividualFileTransferEntriesCallback callback) override {
+    auto origin = url::Origin::Create(source_url);
+
+    auto* file_system_context =
+        util::GetFileSystemContextForSourceURL(profile_, source_url);
+    if (file_system_context == nullptr) {
+      LOG(ERROR) << "Could not find file system context";
+      std::move(callback).Run(IndividualFileTransferEntries());
+      return;
+    }
+
+    auto* drive_integration_service =
+        DriveIntegrationServiceFactory::FindForProfile(profile_);
+    if (!drive_integration_service) {
+      LOG(ERROR) << "Could not find drive integration service";
+      std::move(callback).Run(IndividualFileTransferEntries());
+      return;
+    }
+    auto mount_path = drive_integration_service->GetMountPointPath();
+
+    file_manager::util::FileDefinitionList file_definition_list;
+    for (const auto& path : paths) {
+      auto absolute_path = mount_path;
+      base::FilePath("/").AppendRelativePath(path, &absolute_path);
+      file_manager::util::FileDefinition file_definition;
+      if (!file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
+              profile_, source_url, absolute_path,
+              &file_definition.virtual_path)) {
+        LOG(ERROR)
+            << "Could not convert absolute path to relative file system path.";
+      }
+      file_definition_list.push_back(std::move(file_definition));
+    }
+
+    file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
+        file_system_context, origin, std::move(file_definition_list),
+        base::BindOnce(&DriveFsEventRouterImpl::
+                           OnConvertFileDefinitionListToEntryDefinitionList_,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void OnConvertFileDefinitionListToEntryDefinitionList_(
+      IndividualFileTransferEntriesCallback callback,
+      std::unique_ptr<file_manager::util::EntryDefinitionList>
+          entry_definition_list) {
+    if (entry_definition_list == nullptr) {
+      LOG(WARNING)
+          << "Failed to convert file definition list to entry definition list";
+      std::move(callback).Run(IndividualFileTransferEntries());
+      return;
+    }
+
+    IndividualFileTransferEntries entries;
+    for (const auto& def : *entry_definition_list) {
+      if (def.error != base::File::FILE_OK) {
+        LOG(WARNING) << "File entry ignored: " << static_cast<int>(def.error);
+        entries.emplace_back();
+        continue;
+      }
+      IndividualFileTransferEntry entry;
+      entry.additional_properties.Set("fileSystemName", def.file_system_name);
+      entry.additional_properties.Set("fileSystemRoot",
+                                      def.file_system_root_url);
+      entry.additional_properties.Set(
+          "fileFullPath", base::FilePath("/").Append(def.full_path).value());
+      entry.additional_properties.Set("fileIsDirectory", def.is_directory);
+      entries.push_back(std::move(entry));
+    }
+    std::move(callback).Run(std::move(entries));
   }
 
   Profile* const profile_;
   const std::map<base::FilePath, std::unique_ptr<FileWatcher>>* const
       file_watchers_;
+
+  base::WeakPtrFactory<DriveFsEventRouterImpl> weak_ptr_factory_{this};
 };
 
 // Observes App Service and notifies Files app when there are any changes in the
