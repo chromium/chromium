@@ -12,7 +12,6 @@ namespace blink {
 NGMathSpaceLayoutAlgorithm::NGMathSpaceLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
-  DCHECK(params.fragment_geometry.scrollbar.IsEmpty());
   DCHECK(params.space.IsNewFormattingContext());
 }
 

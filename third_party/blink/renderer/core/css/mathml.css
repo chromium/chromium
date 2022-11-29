@@ -68,10 +68,6 @@ math[display="inline" i] {
     outline: auto 1px -webkit-focus-ring-color;
 }
 
-mspace {
-    overflow: hidden !important;
-}
-
 /* <mrow>-like elements */
 semantics > :not(:first-child) {
   display: none;
