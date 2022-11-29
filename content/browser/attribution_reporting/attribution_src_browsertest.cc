@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -143,15 +144,15 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   const auto& source_data = data_host->source_data();
 
   EXPECT_EQ(source_data.size(), 1u);
-  EXPECT_EQ(source_data.front()->source_event_id, 5UL);
-  EXPECT_EQ(source_data.front()->destination,
+  EXPECT_EQ(source_data.front().source_event_id, 5UL);
+  EXPECT_EQ(source_data.front().destination,
             *SuitableOrigin::Deserialize("https://d.test"));
-  EXPECT_EQ(source_data.front()->priority, 0);
-  EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
-  EXPECT_FALSE(source_data.front()->debug_key);
-  EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
-  EXPECT_THAT(source_data.front()->aggregation_keys->keys, IsEmpty());
-  EXPECT_FALSE(source_data.front()->debug_reporting);
+  EXPECT_EQ(source_data.front().priority, 0);
+  EXPECT_EQ(source_data.front().expiry, absl::nullopt);
+  EXPECT_FALSE(source_data.front().debug_key);
+  EXPECT_THAT(source_data.front().filter_data.filter_values(), IsEmpty());
+  EXPECT_THAT(source_data.front().aggregation_keys.keys(), IsEmpty());
+  EXPECT_FALSE(source_data.front().debug_reporting);
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -190,15 +191,15 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
     disconnect_loop.Run();
 
     EXPECT_EQ(source_data.size(), 1u);
-    EXPECT_EQ(source_data.front()->source_event_id, 5UL);
-    EXPECT_EQ(source_data.front()->destination,
+    EXPECT_EQ(source_data.front().source_event_id, 5UL);
+    EXPECT_EQ(source_data.front().destination,
               *SuitableOrigin::Deserialize("https://d.test"));
-    EXPECT_EQ(source_data.front()->priority, 0);
-    EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
-    EXPECT_FALSE(source_data.front()->debug_key);
-    EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
-    EXPECT_THAT(source_data.front()->aggregation_keys->keys, IsEmpty());
-    EXPECT_FALSE(source_data.front()->debug_reporting);
+    EXPECT_EQ(source_data.front().priority, 0);
+    EXPECT_EQ(source_data.front().expiry, absl::nullopt);
+    EXPECT_FALSE(source_data.front().debug_key);
+    EXPECT_THAT(source_data.front().filter_data.filter_values(), IsEmpty());
+    EXPECT_THAT(source_data.front().aggregation_keys.keys(), IsEmpty());
+    EXPECT_FALSE(source_data.front().debug_reporting);
   }
 }
 
@@ -534,16 +535,16 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   const auto& source_data = data_host->source_data();
 
   EXPECT_EQ(source_data.size(), 1u);
-  EXPECT_EQ(source_data.front()->source_event_id, 5UL);
-  EXPECT_EQ(source_data.front()->destination,
+  EXPECT_EQ(source_data.front().source_event_id, 5UL);
+  EXPECT_EQ(source_data.front().destination,
             *SuitableOrigin::Deserialize("https://d.test"));
-  EXPECT_EQ(source_data.front()->priority, 10);
-  EXPECT_EQ(source_data.front()->expiry, base::Seconds(1000));
-  EXPECT_EQ(source_data.front()->debug_key, 789u);
-  EXPECT_THAT(source_data.front()->filter_data->filter_values,
+  EXPECT_EQ(source_data.front().priority, 10);
+  EXPECT_EQ(source_data.front().expiry, base::Seconds(1000));
+  EXPECT_EQ(source_data.front().debug_key, 789u);
+  EXPECT_THAT(source_data.front().filter_data.filter_values(),
               UnorderedElementsAre(Pair("a", IsEmpty()),
                                    Pair("b", ElementsAre("1", "2"))));
-  EXPECT_TRUE(source_data.front()->debug_reporting);
+  EXPECT_TRUE(source_data.front().debug_reporting);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -573,13 +574,13 @@ IN_PROC_BROWSER_TEST_F(
   const auto& source_data = data_host->source_data();
 
   EXPECT_EQ(source_data.size(), 1u);
-  EXPECT_EQ(source_data.front()->source_event_id, 5UL);
-  EXPECT_EQ(source_data.front()->destination,
+  EXPECT_EQ(source_data.front().source_event_id, 5UL);
+  EXPECT_EQ(source_data.front().destination,
             *SuitableOrigin::Deserialize("https://d.test"));
-  EXPECT_EQ(source_data.front()->priority, 0);
-  EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
-  EXPECT_FALSE(source_data.front()->debug_key);
-  EXPECT_THAT(source_data.front()->aggregation_keys->keys,
+  EXPECT_EQ(source_data.front().priority, 0);
+  EXPECT_EQ(source_data.front().expiry, absl::nullopt);
+  EXPECT_FALSE(source_data.front().debug_key);
+  EXPECT_THAT(source_data.front().aggregation_keys.keys(),
               UnorderedElementsAre(
                   Pair("key1", absl::MakeUint128(/*high=*/0, /*low=*/5)),
                   Pair("key2", absl::MakeUint128(/*high=*/0, /*low=*/345))));
@@ -611,11 +612,11 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   const auto& source_data = data_host->source_data();
 
   EXPECT_EQ(source_data.size(), 2u);
-  EXPECT_EQ(source_data.front()->source_event_id, 1UL);
-  EXPECT_EQ(source_data.front()->destination,
+  EXPECT_EQ(source_data.front().source_event_id, 1UL);
+  EXPECT_EQ(source_data.front().destination,
             *SuitableOrigin::Deserialize("https://d.test"));
-  EXPECT_EQ(source_data.back()->source_event_id, 5UL);
-  EXPECT_EQ(source_data.back()->destination,
+  EXPECT_EQ(source_data.back().source_event_id, 5UL);
+  EXPECT_EQ(source_data.back().destination,
             *SuitableOrigin::Deserialize("https://d.test"));
 }
 
@@ -646,8 +647,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Only the second source is registered.
   EXPECT_EQ(source_data.size(), 1u);
-  EXPECT_EQ(source_data.back()->source_event_id, 5UL);
-  EXPECT_EQ(source_data.back()->destination,
+  EXPECT_EQ(source_data.back().source_event_id, 5UL);
+  EXPECT_EQ(source_data.back().destination,
             *SuitableOrigin::Deserialize("https://d.test"));
 }
 
@@ -707,8 +708,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Only the second source is registered.
   EXPECT_EQ(source_data.size(), 1u);
-  EXPECT_EQ(source_data.back()->source_event_id, 5UL);
-  EXPECT_EQ(source_data.back()->destination,
+  EXPECT_EQ(source_data.back().source_event_id, 5UL);
+  EXPECT_EQ(source_data.back().destination,
             *SuitableOrigin::Deserialize("https://d.test"));
 }
 
@@ -1266,10 +1267,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Only the second source is registered.
   EXPECT_EQ(source_data.size(), 1u);
-  EXPECT_EQ(source_data.back()->source_event_id, 5UL);
-  EXPECT_EQ(source_data.back()->destination,
+  EXPECT_EQ(source_data.back().source_event_id, 5UL);
+  EXPECT_EQ(source_data.back().destination,
             *SuitableOrigin::Deserialize("https://d.test"));
-  EXPECT_THAT(source_data.back()->aggregation_keys->keys, SizeIs(2));
+  EXPECT_THAT(source_data.back().aggregation_keys.keys(), SizeIs(2));
 }
 
 class AttributionSrcPrerenderBrowserTest : public AttributionSrcBrowserTest {
@@ -1352,7 +1353,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
   const auto& source_data = data_host->source_data();
 
   EXPECT_EQ(source_data.size(), 1u);
-  EXPECT_EQ(source_data.front()->source_event_id, 5UL);
+  EXPECT_EQ(source_data.front().source_event_id, 5UL);
 }
 
 class AttributionSrcFencedFrameBrowserTest : public AttributionSrcBrowserTest {

@@ -31,22 +31,17 @@ using ::attribution_reporting::SuitableOrigin;
 
 using FilterValues = WTF::HashMap<String, WTF::Vector<String>>;
 
-class FilterValuesBuilder {
+class FiltersBuilder {
  public:
-  FilterValuesBuilder() = default;
-  ~FilterValuesBuilder() = default;
+  FiltersBuilder() = default;
+  ~FiltersBuilder() = default;
 
-  FilterValuesBuilder& AddFilter(String filter_name,
-                                 Vector<String> filter_values) {
+  FiltersBuilder& AddFilter(String filter_name, Vector<String> filter_values) {
     filter_values_.insert(std::move(filter_name), std::move(filter_values));
     return *this;
   }
 
-  mojom::blink::AttributionFilterDataPtr BuildFilterData() const {
-    return mojom::blink::AttributionFilterData::New(filter_values_);
-  }
-
-  mojom::blink::AttributionFiltersPtr BuildFilters() const {
+  mojom::blink::AttributionFiltersPtr Build() const {
     return mojom::blink::AttributionFilters::New(filter_values_);
   }
 
@@ -72,104 +67,6 @@ class VectorBuilder {
 };
 
 }  // namespace
-
-TEST(AttributionResponseParsingTest, ParseAggregationKeys) {
-  const struct {
-    String description;
-    std::unique_ptr<JSONValue> json;
-    mojom::blink::AttributionAggregationKeysPtr expected;
-  } kTestCases[] = {
-      {"Null", nullptr, mojom::blink::AttributionAggregationKeys::New()},
-      {"Not a dictionary", std::make_unique<JSONArray>(), nullptr},
-      {"key not a string", ParseJSON(R"({"key":123})"), nullptr},
-      {"Invalid key", ParseJSON(R"({"key":"0xG59"})"), nullptr},
-      {"One valid key", ParseJSON(R"({"key":"0x159"})"),
-       mojom::blink::AttributionAggregationKeys::New(
-           WTF::HashMap<String, absl::uint128>(
-               {{"key", absl::MakeUint128(/*high=*/0, /*low=*/345)}}))},
-      {"Two valid keys",
-       ParseJSON(R"({"key1":"0x159","key2":"0x50000000000000159"})"),
-       mojom::blink::AttributionAggregationKeys::New(
-           WTF::HashMap<String, absl::uint128>({
-               {"key1", absl::MakeUint128(/*high=*/0, /*low=*/345)},
-               {"key2", absl::MakeUint128(/*high=*/5, /*low=*/345)},
-           }))},
-      {"Second key invalid", ParseJSON(R"({"key1":"0x159","key2":""})"),
-       nullptr},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    mojom::blink::AttributionAggregationKeysPtr actual =
-        ParseAggregationKeys(test_case.json.get());
-    EXPECT_EQ(!!test_case.expected, !!actual) << test_case.description;
-    if (test_case.expected) {
-      EXPECT_EQ(test_case.expected->keys, actual->keys)
-          << test_case.description;
-    }
-  }
-}
-
-TEST(AttributionResponseParsingTest, ParseAggregationKeys_CheckSize) {
-  struct AttributionAggregatableSourceSizeTestCase {
-    String description;
-    bool valid;
-    wtf_size_t key_count;
-    wtf_size_t key_size;
-
-    std::unique_ptr<JSONValue> GetHeader() const {
-      auto object = std::make_unique<JSONObject>();
-      for (wtf_size_t i = 0u; i < key_count; ++i) {
-        object->SetString(GetKey(i), "0x1");
-      }
-      return object;
-    }
-
-    WTF::HashMap<String, absl::uint128> GetAggregationKeys() const {
-      WTF::HashMap<String, absl::uint128> aggregation_keys;
-      if (!valid)
-        return aggregation_keys;
-
-      for (wtf_size_t i = 0u; i < key_count; ++i) {
-        aggregation_keys.insert(GetKey(i),
-                                absl::MakeUint128(/*high=*/0, /*low=*/1));
-      }
-
-      return aggregation_keys;
-    }
-
-   private:
-    String GetKey(wtf_size_t index) const {
-      // Note that this might not be robust as
-      // `attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger` varies
-      // which might generate invalid JSON.
-      return String(
-          std::string(key_size, 'A' + index % 26 + 32 * (index / 26)));
-    }
-  };
-
-  const AttributionAggregatableSourceSizeTestCase kTestCases[] = {
-      {"empty", true, 0, 0},
-      {"max_keys", true,
-       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger, 1},
-      {"too_many_keys", false,
-       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1, 1},
-      {"max_key_size", true, 1,
-       attribution_reporting::kMaxBytesPerAggregationKeyId},
-      {"excessive_key_size", false, 1,
-       attribution_reporting::kMaxBytesPerAggregationKeyId + 1},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    std::unique_ptr<JSONValue> json = test_case.GetHeader();
-    mojom::blink::AttributionAggregationKeysPtr actual =
-        ParseAggregationKeys(json.get());
-    EXPECT_EQ(test_case.valid, !!actual) << test_case.description;
-    if (test_case.valid) {
-      EXPECT_EQ(test_case.GetAggregationKeys(), actual->keys)
-          << test_case.description;
-    }
-  }
-}
 
 TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
   const struct {
@@ -220,13 +117,13 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
                absl::MakeUint128(/*high=*/0, /*low=*/1024),
                /*source_keys=*/Vector<String>{"key"},
                /*filters=*/
-               FilterValuesBuilder()
+               FiltersBuilder()
                    .AddFilter("filter", Vector<String>{"value1"})
-                   .BuildFilters(),
+                   .Build(),
                /*not_filters=*/
-               FilterValuesBuilder()
+               FiltersBuilder()
                    .AddFilter("filter", Vector<String>{"value2"})
-                   .BuildFilters()))
+                   .Build()))
            .Build()},
       {"Two valid trigger data",
        ParseJSON(R"([{"key_piece":"0x400","source_keys":["key1"]},
@@ -430,7 +327,7 @@ TEST(AttributionResponseParsingTest,
   }
 }
 
-TEST(AttributionResponseParsingTest, ParseFilterValues) {
+TEST(AttributionResponseParsingTest, ParseFilters) {
   const auto make_filter_data_with_keys = [](wtf_size_t n) {
     auto root = std::make_unique<JSONObject>();
     for (wtf_size_t i = 0; i < n; ++i) {
@@ -483,7 +380,7 @@ TEST(AttributionResponseParsingTest, ParseFilterValues) {
       {
           "source_type",
           ParseJSON(R"json({"source_type": []})json"),
-          FilterValuesBuilder().AddFilter("source_type", {}).BuildFilters(),
+          FiltersBuilder().AddFilter("source_type", {}).Build(),
       },
       {
           "multiple",
@@ -491,10 +388,10 @@ TEST(AttributionResponseParsingTest, ParseFilterValues) {
             "a": ["b"],
             "c": ["e", "d"]
           })json"),
-          FilterValuesBuilder()
+          FiltersBuilder()
               .AddFilter("a", {"b"})
               .AddFilter("c", {"e", "d"})
-              .BuildFilters(),
+              .Build(),
       },
       {
           "not_dictionary",
@@ -534,38 +431,34 @@ TEST(AttributionResponseParsingTest, ParseFilterValues) {
   };
 
   for (const auto& test_case : kTestCases) {
-    FilterValues actual;
-    bool valid = ParseFilterValues(test_case.json.get(), actual);
-    EXPECT_EQ(valid, !test_case.expected.is_null()) << test_case.description;
+    mojom::blink::AttributionFiltersPtr actual =
+        ParseFilters(test_case.json.get());
+    EXPECT_EQ(!!actual, !test_case.expected.is_null()) << test_case.description;
 
     if (test_case.expected) {
-      EXPECT_EQ(test_case.expected->filter_values, actual)
+      EXPECT_EQ(test_case.expected->filter_values, actual->filter_values)
           << test_case.description;
     }
   }
 
   {
     std::unique_ptr<JSONValue> json = make_filter_data_with_keys(50);
-    FilterValues filter_values;
-    EXPECT_TRUE(ParseFilterValues(json.get(), filter_values));
+    EXPECT_TRUE(ParseFilters(json.get()));
   }
 
   {
     std::unique_ptr<JSONValue> json = make_filter_data_with_key_length(25);
-    FilterValues filter_values;
-    EXPECT_TRUE(ParseFilterValues(json.get(), filter_values));
+    EXPECT_TRUE(ParseFilters(json.get()));
   }
 
   {
     std::unique_ptr<JSONValue> json = make_filter_data_with_values(50);
-    FilterValues filter_values;
-    EXPECT_TRUE(ParseFilterValues(json.get(), filter_values));
+    EXPECT_TRUE(ParseFilters(json.get()));
   }
 
   {
     std::unique_ptr<JSONValue> json = make_filter_data_with_value_length(25);
-    FilterValues filter_values;
-    EXPECT_TRUE(ParseFilterValues(json.get(), filter_values));
+    EXPECT_TRUE(ParseFilters(json.get()));
   }
 }
 
@@ -694,491 +587,6 @@ TEST(AttributionResponseParsingTest, ParseTriggerRegistrationHeader) {
 
       EXPECT_EQ(test_case.expected->debug_reporting,
                 trigger_data.debug_reporting)
-          << test_case.description;
-    }
-  }
-}
-
-TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
-  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
-
-  const struct {
-    String description;
-    String json;
-    mojom::blink::AttributionSourceDataPtr expected;
-  } kTestCases[] = {
-      {
-          "invalid_json",
-          "!",
-          nullptr,
-      },
-      {
-          "root_not_object",
-          R"json([])json",
-          nullptr,
-      },
-      {
-          "required_fields_only",
-          R"json({
-            "destination": "https://d.test"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "missing_destination",
-          R"json({
-            "source_event_id": "1"
-          })json",
-          nullptr,
-      },
-      {
-          "source_event_id_not_string",
-          R"json({
-            "source_event_id": 1,
-            "destination": "https://d.test"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "invalid_source_event_id",
-          R"json({
-            "source_event_id": "-5",
-            "destination": "https://d.test"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "valid_source_event_id",
-          R"json({
-            "source_event_id": "1",
-            "destination": "https://d.test"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/1,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "destination_not_string",
-          R"json({
-            "destination": 4
-          })json",
-          nullptr,
-      },
-      {
-          "destination_not_potentially_trustworthy",
-          R"json({
-            "destination": "http://d.test"
-          })json",
-          nullptr,
-      },
-      {
-          "valid_priority",
-          R"json({
-            "destination": "https://d.test",
-            "priority": "5"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/5,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "priority_not_string",
-          R"json({
-            "destination": "https://d.test",
-            "priority": 5
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "invalid_priority",
-          R"json({
-            "destination": "https://d.test",
-            "priority": "abc"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "valid_expiry",
-          R"json({
-            "destination": "https://d.test",
-            "expiry": "5"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/base::Seconds(5),
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "expiry_not_string",
-          R"json({
-            "destination": "https://d.test",
-            "expiry": 5
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "invalid_expiry",
-          R"json({
-            "destination": "https://d.test",
-            "expiry": "abc"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "valid_event_report_window",
-          R"json({
-            "destination": "https://d.test",
-            "expiry": "5",
-            "event_report_window": "10"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/base::Seconds(5),
-              /*event_report_window=*/base::Seconds(10),
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "invalid_event_report_window",
-          R"json({
-            "destination": "https://d.test",
-            "expiry": "5",
-            "event_report_window": "NaN"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/base::Seconds(5),
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "valid_aggregatable_report_window",
-          R"json({
-            "destination": "https://d.test",
-            "expiry": "5",
-            "aggregatable_report_window": "10"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/base::Seconds(5),
-              /*event_report_window=*/absl::nullopt,
-              /*event_report_window=*/base::Seconds(10),
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "invalid_aggregatable_report_window",
-          R"json({
-            "destination": "https://d.test",
-            "expiry": "5",
-            "aggregatable_report_window": "NaN"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/base::Seconds(5),
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "valid_debug_key",
-          R"json({
-            "destination": "https://d.test",
-            "debug_key": "5"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/5,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "valid_filter_data",
-          R"json({
-            "destination": "https://d.test",
-            "filter_data": {"SOURCE_TYPE": []}
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/
-              FilterValuesBuilder()
-                  .AddFilter("SOURCE_TYPE", {})
-                  .BuildFilterData(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "invalid_source_type_key_in_filter_data",
-          R"json({
-            "destination": "https://d.test",
-            "filter_data": {"source_type": []}
-          })json",
-          nullptr,
-      },
-      {
-          "unknown_field",
-          R"json({
-            "destination": "https://d.test",
-            "a": {"b": {"c": {"d": "e"}}}
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-      {
-          "valid_debug_reporting",
-          R"json({
-            "destination": "https://d.test",
-            "debug_reporting": true
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/true),
-      },
-      {
-          "debug_reporting_not_boolean",
-          R"json({
-            "destination": "https://d.test",
-            "debug_reporting": "true"
-          })json",
-          mojom::blink::AttributionSourceData::New(
-              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
-              /*reporting_origin=*/reporting_origin,
-              /*source_event_id=*/0,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0,
-              /*debug_key=*/absl::nullopt,
-              /*filter_data=*/mojom::blink::AttributionFilterData::New(),
-              /*aggregation_keys=*/
-              mojom::blink::AttributionAggregationKeys::New(),
-              /*debug_reporting=*/false),
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    mojom::blink::AttributionSourceData source_data;
-    // This field is not populated by `ParseSourceRegistrationHeader()`, so just
-    // set it to an arbitrary origin so we can ensure it isn't changed.
-    source_data.reporting_origin = reporting_origin;
-
-    bool valid = ParseSourceRegistrationHeader(test_case.json, source_data);
-    EXPECT_EQ(valid, !test_case.expected.is_null()) << test_case.description;
-
-    if (test_case.expected) {
-      EXPECT_EQ(test_case.expected->destination, source_data.destination)
-          << test_case.description;
-
-      EXPECT_EQ(test_case.expected->reporting_origin,
-                source_data.reporting_origin)
-          << test_case.description;
-
-      EXPECT_EQ(test_case.expected->source_event_id,
-                source_data.source_event_id)
-          << test_case.description;
-
-      EXPECT_EQ(test_case.expected->expiry, source_data.expiry)
-          << test_case.description;
-
-      EXPECT_EQ(test_case.expected->event_report_window,
-                source_data.event_report_window)
-          << test_case.description;
-
-      EXPECT_EQ(test_case.expected->aggregatable_report_window,
-                source_data.aggregatable_report_window)
-          << test_case.description;
-
-      EXPECT_EQ(test_case.expected->priority, source_data.priority)
-          << test_case.description;
-
-      EXPECT_EQ(test_case.expected->debug_key, source_data.debug_key)
-          << test_case.description;
-
-      EXPECT_EQ(test_case.expected->filter_data, source_data.filter_data)
-          << test_case.description;
-
-      // This field is not populated by `ParseSourceRegistrationHeader()`, but
-      // check it for equality with the test case anyway.
-      EXPECT_EQ(test_case.expected->aggregation_keys,
-                source_data.aggregation_keys)
           << test_case.description;
     }
   }
@@ -1422,9 +830,9 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
                   /*priority=*/0,
                   /*dedup_key=*/absl::nullopt,
                   /*filters=*/
-                  FilterValuesBuilder()
+                  FiltersBuilder()
                       .AddFilter("source_type", {"navigation"})
-                      .BuildFilters(),
+                      .Build(),
                   /*not_filters=*/mojom::blink::AttributionFilters::New()))
               .Build(),
       },
@@ -1451,9 +859,9 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
                   /*dedup_key=*/absl::nullopt,
                   /*filters=*/mojom::blink::AttributionFilters::New(),
                   /*not_filters=*/
-                  FilterValuesBuilder()
+                  FiltersBuilder()
                       .AddFilter("source_type", {"navigation"})
-                      .BuildFilters()))
+                      .Build()))
               .Build(),
       },
       {
@@ -1499,8 +907,7 @@ TEST(AttributionResponseParsingTest, FilterValuesHistogram) {
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
     std::unique_ptr<JSONValue> json = make_filter_data(test_case.size);
-    FilterValues filter_values;
-    ParseFilterValues(json.get(), filter_values);
+    ParseFilters(json.get());
     histograms.ExpectUniqueSample("Conversions.ValuesPerFilter", test_case.size,
                                   test_case.expected);
   }
@@ -1527,36 +934,8 @@ TEST(AttributionResponseParsingTest, FiltersSizeHistogram) {
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
     std::unique_ptr<JSONValue> json = make_filter_data(test_case.size);
-    FilterValues filter_values;
-    ParseFilterValues(json.get(), filter_values);
+    ParseFilters(json.get());
     histograms.ExpectUniqueSample("Conversions.FiltersPerFilterData",
-                                  test_case.size, test_case.expected);
-  }
-}
-
-TEST(AttributionResponseParsingTest, SourceAggregationKeysHistogram) {
-  const auto make_aggregatable_source_with_keys = [](wtf_size_t n) {
-    auto object = std::make_unique<JSONObject>();
-    for (wtf_size_t i = 0; i < n; ++i) {
-      object->SetString(String::Number(i), "0x1");
-    }
-    return object;
-  };
-
-  const struct {
-    wtf_size_t size;
-    bool expected;
-  } kTestCases[] = {
-      {0, true},
-      {attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger, true},
-      {attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1, false},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    base::HistogramTester histograms;
-    auto json = make_aggregatable_source_with_keys(test_case.size);
-    ParseAggregationKeys(json.get());
-    histograms.ExpectUniqueSample("Conversions.AggregatableKeysPerSource",
                                   test_case.size, test_case.expected);
   }
 }

@@ -25,6 +25,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -47,6 +48,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::SourceRegistration;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
@@ -189,15 +191,16 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
       *SuitableOrigin::Deserialize("https://trigger.example");
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
+  auto aggregation_keys = *attribution_reporting::AggregationKeys::FromKeys(
+      {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}});
+
   EXPECT_CALL(
       mock_manager_,
       HandleSource(AllOf(
           SourceTypeIs(AttributionSourceType::kEvent), SourceEventIdIs(10),
           DestinationOriginIs(destination_origin),
           ImpressionOriginIs(page_origin), SourcePriorityIs(20),
-          SourceDebugKeyIs(789),
-          AggregationKeysAre(*attribution_reporting::AggregationKeys::FromKeys(
-              {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
+          SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
           SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
   {
     RemoteDataHost data_host_remote{.task_environment =
@@ -208,19 +211,12 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
 
     task_environment_.FastForwardBy(base::Milliseconds(1));
 
-    auto source_data = blink::mojom::AttributionSourceData::New();
-    source_data->source_event_id = 10;
-    source_data->destination = destination_origin;
-    source_data->reporting_origin = reporting_origin;
-    source_data->priority = 20;
-    source_data->debug_key = 789;
-    source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregation_keys =
-        blink::mojom::AttributionAggregationKeys::New();
-    source_data->aggregation_keys->keys = {
-        {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},
-    };
-    source_data->debug_reporting = true;
+    SourceRegistration source_data(destination_origin, reporting_origin);
+    source_data.source_event_id = 10;
+    source_data.priority = 20;
+    source_data.debug_key = 789;
+    source_data.aggregation_keys = aggregation_keys;
+    source_data.debug_reporting = true;
     data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
@@ -231,109 +227,6 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
                                    base::Milliseconds(1), 1);
   // kSuccess = 0.
   histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 0, 1);
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       SourceDataHost_FilterSizeCheckPerformed) {
-  for (const auto& test_case : kAttributionFilterSizeTestCases) {
-    base::HistogramTester histograms;
-
-    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
-    EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://page.example"),
-        /*is_within_fenced_frame=*/false);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    auto source_data = blink::mojom::AttributionSourceData::New();
-    source_data->destination =
-        *SuitableOrigin::Deserialize("https://trigger.example");
-    source_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-    source_data->filter_data =
-        blink::mojom::AttributionFilterData::New(test_case.AsMap());
-    source_data->aggregation_keys =
-        blink::mojom::AttributionAggregationKeys::New();
-    data_host_remote->SourceDataAvailable(std::move(source_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
-
-    if (!test_case.valid) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Invalid filter data.");
-    }
-
-    // kSuccess = 0, kInvalidData = 3.
-    histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric,
-                                  test_case.valid ? 0 : 3, 1);
-  }
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       SourceDataHost_FilterSourceTypeCheckPerformed) {
-  const struct {
-    std::string description;
-    base::flat_map<std::string, std::vector<std::string>> filter_data;
-    bool valid;
-  } kTestCases[]{
-      {
-          "valid",
-          {{"SOURCE_TYPE", {}}},
-          true,
-      },
-      {
-          "invalid",
-          {{"source_type", {}}},
-          false,
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    base::HistogramTester histograms;
-
-    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
-    EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://page.example"),
-        /*is_within_fenced_frame=*/false);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    auto source_data = blink::mojom::AttributionSourceData::New();
-    source_data->destination =
-        *SuitableOrigin::Deserialize("https://trigger.example");
-    source_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-    source_data->filter_data =
-        blink::mojom::AttributionFilterData::New(test_case.filter_data);
-    source_data->aggregation_keys =
-        blink::mojom::AttributionAggregationKeys::New();
-    data_host_remote->SourceDataAvailable(std::move(source_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
-
-    if (!test_case.valid) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Invalid filter data.");
-    }
-
-    // kSuccess = 0, kInvalidData = 3.
-    histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric,
-                                  test_case.valid ? 0 : 3, 1);
-  }
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -366,25 +259,20 @@ TEST_F(AttributionDataHostManagerImplTest,
         data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
         /*is_within_fenced_frame=*/false);
 
-    auto source_data = blink::mojom::AttributionSourceData::New();
-    source_data->destination = destination_origin;
-    source_data->reporting_origin = reporting_origin;
-    source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregation_keys =
-        blink::mojom::AttributionAggregationKeys::New();
-    data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
+    SourceRegistration source_data(destination_origin, reporting_origin);
+    data_host_remote.data_host->SourceDataAvailable(source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(1);
 
-    data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
+    data_host_remote.data_host->SourceDataAvailable(source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(2);
 
-    source_data->destination =
+    source_data.destination =
         *SuitableOrigin::Deserialize("https://other-trigger.example");
-    data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
+    data_host_remote.data_host->SourceDataAvailable(source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(3);
@@ -396,78 +284,6 @@ TEST_F(AttributionDataHostManagerImplTest,
                                 1);
   // kSuccess = 0.
   histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 4);
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       SourceDataHost_AggregatableSourceizeCheckPerformed) {
-  struct AggregatableSourceizeTestCase {
-    const char* description;
-    bool valid;
-    size_t key_count;
-    size_t key_size;
-
-    base::flat_map<std::string, absl::uint128> GetAggregationKeys() const {
-      base::flat_map<std::string, absl::uint128> keys;
-      for (size_t i = 0u; i < key_count; ++i) {
-        std::string key(key_size, 'A' + i);
-        keys.emplace(std::move(key), absl::MakeUint128(/*high=*/i, /*low=*/i));
-      }
-      return keys;
-    }
-  };
-
-  const AggregatableSourceizeTestCase kTestCases[] = {
-      {"empty", true, 0, 0},
-      {"max_keys", true,
-       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger, 1},
-      {"too_many_keys", false,
-       attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1, 1},
-      {"max_key_size", true, 1,
-       attribution_reporting::kMaxBytesPerAggregationKeyId},
-      {"excessive_key_size", false, 1,
-       attribution_reporting::kMaxBytesPerAggregationKeyId + 1},
-  };
-
-  for (auto& test_case : kTestCases) {
-    base::HistogramTester histograms;
-
-    SCOPED_TRACE(
-        test_case.description);  // Since EXPECT_CALL doesn't support <<
-    EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://page.example"),
-        /*is_within_fenced_frame=*/false);
-
-    auto source_data = blink::mojom::AttributionSourceData::New();
-    source_data->destination =
-        *SuitableOrigin::Deserialize("https://trigger.example");
-    source_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-    source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregation_keys =
-        blink::mojom::AttributionAggregationKeys::New(
-            test_case.GetAggregationKeys());
-    data_host_remote->SourceDataAvailable(std::move(source_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
-
-    if (!test_case.valid) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Invalid aggregatable source.");
-    }
-
-    // kSuccess = 0, kInvalidData = 3.
-    histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric,
-                                  test_case.valid ? 0 : 3, 1);
-  }
 }
 
 TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
@@ -900,12 +716,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     {
       mojo::test::BadMessageObserver bad_message_observer;
 
-      auto source_data = blink::mojom::AttributionSourceData::New();
-      source_data->destination = destination_origin;
-      source_data->reporting_origin = reporting_origin;
-      source_data->filter_data = blink::mojom::AttributionFilterData::New();
-      source_data->aggregation_keys =
-          blink::mojom::AttributionAggregationKeys::New();
+      SourceRegistration source_data(destination_origin, reporting_origin);
 
       data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
       data_host_remote.data_host.FlushForTesting();
@@ -960,19 +771,14 @@ TEST_F(AttributionDataHostManagerImplTest,
         data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
         /*is_within_fenced_frame=*/false);
 
-    auto source_data = blink::mojom::AttributionSourceData::New();
-    source_data->destination = destination_origin;
-    source_data->reporting_origin = reporting_origin;
-    source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregation_keys =
-        blink::mojom::AttributionAggregationKeys::New();
+    SourceRegistration source_data(destination_origin, reporting_origin);
 
-    data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
+    data_host_remote.data_host->SourceDataAvailable(source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(1);
 
-    data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
+    data_host_remote.data_host->SourceDataAvailable(source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(2);
@@ -1018,6 +824,10 @@ TEST_F(AttributionDataHostManagerImplTest,
   const auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
+  const auto aggregation_keys =
+      *attribution_reporting::AggregationKeys::FromKeys(
+          {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}});
+
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -1028,10 +838,7 @@ TEST_F(AttributionDataHostManagerImplTest,
             SourceTypeIs(AttributionSourceType::kNavigation),
             SourceEventIdIs(10), DestinationOriginIs(destination_origin),
             ImpressionOriginIs(page_origin), SourcePriorityIs(20),
-            SourceDebugKeyIs(789),
-            AggregationKeysAre(
-                *attribution_reporting::AggregationKeys::FromKeys(
-                    {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
+            SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
             SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_manager_, HandleSource);
@@ -1053,27 +860,20 @@ TEST_F(AttributionDataHostManagerImplTest,
         attribution_src_token, page_origin,
         AttributionNavigationType::kContextMenu);
 
-    auto source_data = blink::mojom::AttributionSourceData::New();
-    source_data->source_event_id = 10;
-    source_data->destination = destination_origin;
-    source_data->reporting_origin = reporting_origin;
-    source_data->priority = 20;
-    source_data->debug_key = 789;
-    source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregation_keys =
-        blink::mojom::AttributionAggregationKeys::New();
-    source_data->aggregation_keys->keys = {
-        {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},
-    };
-    source_data->debug_reporting = true;
-    data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
+    SourceRegistration source_data(destination_origin, reporting_origin);
+    source_data.source_event_id = 10;
+    source_data.priority = 20;
+    source_data.debug_key = 789;
+    source_data.aggregation_keys = aggregation_keys;
+    source_data.debug_reporting = true;
+    data_host_remote.data_host->SourceDataAvailable(source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(1);
 
     // This should succeed even though the destination site doesn't match the
     // final navigation site.
-    source_data->destination =
+    source_data.destination =
         *SuitableOrigin::Deserialize("https://trigger2.example");
     data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
@@ -1780,13 +1580,9 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
       *SuitableOrigin::Deserialize("https://page2.example"),
       /*is_within_fenced_frame=*/false);
 
-  auto source_data = blink::mojom::AttributionSourceData::New();
-  source_data->destination = *SuitableOrigin::Deserialize("https://dest.test");
-  source_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://report1.test");
-  source_data->filter_data = blink::mojom::AttributionFilterData::New();
-  source_data->aggregation_keys =
-      blink::mojom::AttributionAggregationKeys::New();
+  SourceRegistration source_data(
+      *SuitableOrigin::Deserialize("https://dest.test"),
+      *SuitableOrigin::Deserialize("https://report1.test"));
   source_data_host_remote->SourceDataAvailable(std::move(source_data));
   source_data_host_remote.FlushForTesting();
 
@@ -1935,18 +1731,14 @@ TEST_F(AttributionDataHostManagerImplTest,
       *SuitableOrigin::Deserialize("https://page.example"),
       AttributionNavigationType::kAnchor);
 
-  auto source_data = blink::mojom::AttributionSourceData::New();
-  source_data->source_event_id = 1;
-  source_data->destination = destination_origin;
-  source_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://reporter.example");
-  source_data->filter_data = blink::mojom::AttributionFilterData::New();
-  source_data->aggregation_keys =
-      blink::mojom::AttributionAggregationKeys::New();
-  data_host_remote1->SourceDataAvailable(source_data.Clone());
+  SourceRegistration source_data(
+      destination_origin,
+      *SuitableOrigin::Deserialize("https://reporter.example"));
+  source_data.source_event_id = 1;
+  data_host_remote1->SourceDataAvailable(source_data);
   data_host_remote1.FlushForTesting();
 
-  source_data->source_event_id = 2;
+  source_data.source_event_id = 2;
   data_host_remote2->SourceDataAvailable(std::move(source_data));
   data_host_remote2.FlushForTesting();
 }
@@ -1973,13 +1765,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  auto source_data = blink::mojom::AttributionSourceData::New();
-  source_data->source_event_id = 10;
-  source_data->destination = destination_origin;
-  source_data->reporting_origin = reporting_origin;
-  source_data->filter_data = blink::mojom::AttributionFilterData::New();
-  source_data->aggregation_keys =
-      blink::mojom::AttributionAggregationKeys::New();
+  SourceRegistration source_data(destination_origin, reporting_origin);
+  source_data.source_event_id = 10;
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
 }

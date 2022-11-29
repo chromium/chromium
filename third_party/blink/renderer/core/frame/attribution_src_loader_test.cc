@@ -10,6 +10,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
@@ -79,7 +80,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
 
   ~MockDataHost() override = default;
 
-  const Vector<mojom::blink::AttributionSourceDataPtr>& source_data() const {
+  const Vector<attribution_reporting::SourceRegistration>& source_data() const {
     return source_data_;
   }
 
@@ -96,7 +97,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
 
   // mojom::blink::AttributionDataHost:
   void SourceDataAvailable(
-      mojom::blink::AttributionSourceDataPtr data) override {
+      attribution_reporting::SourceRegistration data) override {
     source_data_.push_back(std::move(data));
   }
 
@@ -105,7 +106,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     trigger_data_.push_back(std::move(data));
   }
 
-  Vector<mojom::blink::AttributionSourceDataPtr> source_data_;
+  Vector<attribution_reporting::SourceRegistration> source_data_;
 
   Vector<mojom::blink::AttributionTriggerDataPtr> trigger_data_;
 

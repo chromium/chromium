@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -53,6 +54,8 @@ base::expected<SuitableOrigin, SourceRegistrationError> ParseDestination(
 }
 
 }  // namespace
+
+SourceRegistration::SourceRegistration() = default;
 
 SourceRegistration::SourceRegistration(SuitableOrigin destination,
                                        SuitableOrigin reporting_origin)
@@ -114,6 +117,21 @@ SourceRegistration::Parse(base::Value::Dict registration,
   result.debug_reporting = ParseDebugReporting(registration);
 
   return result;
+}
+
+// static
+base::expected<SourceRegistration, SourceRegistrationError>
+SourceRegistration::Parse(base::StringPiece json,
+                          SuitableOrigin reporting_origin) {
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
+  if (!value)
+    return base::unexpected(SourceRegistrationError::kInvalidJson);
+
+  if (!value->is_dict())
+    return base::unexpected(SourceRegistrationError::kRootWrongType);
+
+  return Parse(std::move(*value).TakeDict(), std::move(reporting_origin));
 }
 
 }  // namespace attribution_reporting

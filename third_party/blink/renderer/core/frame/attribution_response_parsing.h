@@ -24,27 +24,9 @@ namespace attribution_response_parsing {
 // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md
 // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md
 
-// Example JSON schema:
-// [{
-//   "id": "campaignCounts",
-//   "key_piece": "0x159"
-// },
-// {
-//   "id": "geoValue",
-//   "key_piece": "0x5"
-// }]
-//
-// Returns `nullptr` on failure.
-CORE_EXPORT mojom::blink::AttributionAggregationKeysPtr ParseAggregationKeys(
-    const JSONValue* json);
-
 // Parses a 64-bit unsigned integer encoded as a base-10
 // string. Returns `absl::nullopt` on failure.
 CORE_EXPORT absl::optional<uint64_t> ParseUint64(const String& string);
-
-CORE_EXPORT bool ParseSourceRegistrationHeader(
-    const String& json_string,
-    mojom::blink::AttributionSourceData& source_data);
 
 CORE_EXPORT bool ParseTriggerRegistrationHeader(
     const String& json_string,
@@ -70,10 +52,9 @@ CORE_EXPORT bool ParseEventTriggerData(
 //   "xyz": ["123", "456"]
 // }
 //
-// Returns whether parsing was successful.
-CORE_EXPORT bool ParseFilterValues(
-    const JSONValue* json,
-    WTF::HashMap<String, WTF::Vector<String>>& filter_values);
+// Returns `nullptr` on failure.
+CORE_EXPORT mojom::blink::AttributionFiltersPtr ParseFilters(
+    const JSONValue* json);
 
 // Example JSON schema:
 // [{

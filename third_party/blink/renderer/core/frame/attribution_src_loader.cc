@@ -12,6 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/types/expected.h"
+#include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/structured_headers.h"
@@ -52,6 +55,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -663,11 +667,9 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   DCHECK_EQ(type_, SrcType::kSource);
   DCHECK(!json.IsNull());
 
-  auto source_data = mojom::blink::AttributionSourceData::New();
-  source_data->reporting_origin = std::move(reporting_origin);
-
-  if (!attribution_response_parsing::ParseSourceRegistrationHeader(
-          json, *source_data)) {
+  auto source_data = attribution_reporting::SourceRegistration::Parse(
+      StringUTF8Adaptor(json).AsStringPiece(), std::move(reporting_origin));
+  if (!source_data.has_value()) {
     LogAuditIssue(loader_->local_frame_->DomWindow(),
                   AttributionReportingIssueType::kInvalidRegisterSourceHeader,
                   /*element=*/nullptr, request_id,
@@ -675,7 +677,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     return;
   }
 
-  data_host_->SourceDataAvailable(std::move(source_data));
+  data_host_->SourceDataAvailable(std::move(*source_data));
 }
 
 void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(

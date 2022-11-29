@@ -17,10 +17,10 @@
 #include "base/types/expected.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
-#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -29,9 +29,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
@@ -373,10 +371,10 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
 }
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
-    blink::mojom::AttributionSourceDataPtr data) {
+    attribution_reporting::SourceRegistration data) {
   // This is validated by the Mojo typemapping.
-  DCHECK(data->reporting_origin.IsValid());
-  DCHECK(data->destination.IsValid());
+  DCHECK(data.reporting_origin.IsValid());
+  DCHECK(data.destination.IsValid());
 
   FrozenContext& context = receivers_.current_context();
 
@@ -390,61 +388,21 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   context.registration_type = RegistrationType::kSource;
 
-  base::Time source_time = base::Time::Now();
-
-  // When converting mojo values to the browser process equivalents, it should
-  // not be possible for there to be an error except in the case of a bad
-  // renderer. All of the validation here is also performed renderer-side.
-
-  absl::optional<attribution_reporting::FilterData> filter_data =
-      attribution_reporting::FilterData::Create(
-          std::move(data->filter_data->filter_values));
-  if (!filter_data.has_value()) {
-    RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
-    mojo::ReportBadMessage("AttributionDataHost: Invalid filter data.");
-    return;
-  }
-
-  absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
-      attribution_reporting::AggregationKeys::FromKeys(
-          std::move(data->aggregation_keys->keys));
-  if (!aggregation_keys.has_value()) {
-    RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
-    mojo::ReportBadMessage("AttributionDataHost: Invalid aggregatable source.");
-    return;
-  }
-
   RecordSourceDataHandleStatus(DataHandleStatus::kSuccess);
 
   context.num_data_registered++;
-
-  StorableSource storable_source(
-      CommonSourceInfo(
-          data->source_event_id, context.context_origin,
-          std::move(data->destination), std::move(data->reporting_origin),
-          source_time,
-          CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
-                                          context.source_type),
-          data->event_report_window
-              ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
-                    data->event_report_window, source_time,
-                    context.source_type))
-              : absl::nullopt,
-          data->aggregatable_report_window
-              ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
-                    data->aggregatable_report_window, source_time,
-                    context.source_type))
-              : absl::nullopt,
-          context.source_type, data->priority, std::move(*filter_data),
-          data->debug_key, std::move(*aggregation_keys)),
-      context.is_within_fenced_frame, data->debug_reporting);
 
   if (context.nav_type.has_value()) {
     base::UmaHistogramEnumeration(
         "Conversions.SourceRegistration.NavigationType.Background",
         *context.nav_type);
   }
-  attribution_manager_->HandleSource(std::move(storable_source));
+
+  attribution_manager_->HandleSource(
+      StorableSource(std::move(data),
+                     /*source_time=*/base::Time::Now(),
+                     /*source_origin=*/context.context_origin,
+                     context.source_type, context.is_within_fenced_frame));
 }
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(

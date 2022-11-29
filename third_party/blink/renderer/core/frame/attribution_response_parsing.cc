@@ -10,19 +10,14 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
-#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -77,29 +72,21 @@ bool ParseAttributionAggregationKey(const JSONValue* value,
   return true;
 }
 
-absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(const String& s) {
-  bool valid = false;
-  int64_t seconds = s.ToInt64Strict(&valid);
-  if (valid)
-    return base::Seconds(seconds);
-  return absl::nullopt;
-}
-
 }  // namespace
 
-bool ParseFilterValues(
-    const JSONValue* value,
-    WTF::HashMap<String, WTF::Vector<String>>& filter_values) {
+mojom::blink::AttributionFiltersPtr ParseFilters(const JSONValue* value) {
+  auto filters = mojom::blink::AttributionFilters::New();
+
   if (!value)
-    return true;
+    return filters;
 
   const JSONObject* object = JSONObject::Cast(value);
   if (!object)
-    return false;
+    return nullptr;
 
   const wtf_size_t num_filters = object->size();
   if (num_filters > attribution_reporting::kMaxFiltersPerSource)
-    return false;
+    return nullptr;
 
   attribution_reporting::RecordFiltersPerFilterData(num_filters);
 
@@ -108,16 +95,16 @@ bool ParseFilterValues(
 
     if (entry.first.CharactersSizeInBytes() >
         attribution_reporting::kMaxBytesPerFilterString) {
-      return false;
+      return nullptr;
     }
 
     const JSONArray* array = JSONArray::Cast(entry.second);
     if (!array)
-      return false;
+      return nullptr;
 
     const wtf_size_t num_values = array->size();
     if (num_values > attribution_reporting::kMaxValuesPerFilter)
-      return false;
+      return nullptr;
 
     attribution_reporting::RecordValuesPerFilter(num_values);
 
@@ -126,61 +113,20 @@ bool ParseFilterValues(
     for (wtf_size_t j = 0; j < num_values; ++j) {
       String value_str;
       if (!array->at(j)->AsString(&value_str))
-        return false;
+        return nullptr;
 
       if (value_str.CharactersSizeInBytes() >
           attribution_reporting::kMaxBytesPerFilterString) {
-        return false;
+        return nullptr;
       }
 
       values.push_back(std::move(value_str));
     }
 
-    filter_values.insert(entry.first, std::move(values));
+    filters->filter_values.insert(entry.first, std::move(values));
   }
 
-  return true;
-}
-
-mojom::blink::AttributionAggregationKeysPtr ParseAggregationKeys(
-    const JSONValue* json) {
-  auto aggregation_keys = mojom::blink::AttributionAggregationKeys::New();
-
-  // Aggregation keys may be omitted.
-  if (!json)
-    return aggregation_keys;
-
-  const auto* object = JSONObject::Cast(json);
-  if (!object)
-    return nullptr;
-
-  const wtf_size_t num_keys = object->size();
-  if (num_keys > attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger)
-    return nullptr;
-
-  attribution_reporting::RecordAggregatableKeysPerSource(num_keys);
-
-  aggregation_keys->keys.ReserveCapacityForSize(num_keys);
-
-  for (wtf_size_t i = 0; i < num_keys; ++i) {
-    JSONObject::Entry entry = object->at(i);
-    String key_id = entry.first;
-    JSONValue* value = entry.second;
-    DCHECK(value);
-
-    if (key_id.CharactersSizeInBytes() >
-        attribution_reporting::kMaxBytesPerAggregationKeyId) {
-      return nullptr;
-    }
-
-    absl::uint128 key;
-    if (!ParseAttributionAggregationKey(value, &key))
-      return nullptr;
-
-    aggregation_keys->keys.insert(std::move(key_id), key);
-  }
-
-  return aggregation_keys;
+  return filters;
 }
 
 absl::optional<uint64_t> ParseUint64(const String& string) {
@@ -189,84 +135,6 @@ absl::optional<uint64_t> ParseUint64(const String& string) {
   if (is_valid)
     return value;
   return absl::nullopt;
-}
-
-bool ParseSourceRegistrationHeader(
-    const String& json_string,
-    mojom::blink::AttributionSourceData& source_data) {
-  // TODO(apaseltiner): Consider applying a max stack depth to this.
-  std::unique_ptr<JSONValue> json = ParseJSON(json_string);
-
-  if (!json)
-    return false;
-
-  JSONObject* object = JSONObject::Cast(json.get());
-  if (!object)
-    return false;
-
-  String destination_string;
-  if (!object->GetString("destination", &destination_string))
-    return false;
-  absl::optional<attribution_reporting::SuitableOrigin> destination =
-      attribution_reporting::SuitableOrigin::Create(
-          SecurityOrigin::CreateFromString(destination_string)->ToUrlOrigin());
-  if (!destination)
-    return false;
-  source_data.destination = std::move(*destination);
-
-  // Treat invalid source_event_id, expiry, event_report_window,
-  // aggregatable_report_window, priority, and debug key as if they were
-  // not set.
-
-  if (String s; object->GetString("source_event_id", &s)) {
-    bool valid = false;
-    uint64_t source_event_id = s.ToUInt64Strict(&valid);
-    if (valid)
-      source_data.source_event_id = source_event_id;
-  }
-
-  if (String s; object->GetString("priority", &s)) {
-    bool valid = false;
-    int64_t priority = s.ToInt64Strict(&valid);
-    if (valid)
-      source_data.priority = priority;
-  }
-
-  if (String s; object->GetString("expiry", &s))
-    source_data.expiry = ParseTimeDeltaInSeconds(s);
-
-  if (String s; object->GetString("event_report_window", &s))
-    source_data.event_report_window = ParseTimeDeltaInSeconds(s);
-
-  if (String s; object->GetString("aggregatable_report_window", &s))
-    source_data.aggregatable_report_window = ParseTimeDeltaInSeconds(s);
-
-  if (String s; object->GetString("debug_key", &s))
-    source_data.debug_key = ParseUint64(s);
-
-  source_data.filter_data = mojom::blink::AttributionFilterData::New();
-  if (!ParseFilterValues(object->Get("filter_data"),
-                         source_data.filter_data->filter_values)) {
-    return false;
-  }
-
-  // "source_type" is automatically generated in source filter data during
-  // attribution source matching, so it is an error to specify it here.
-  // TODO(apaseltiner): Report a DevTools issue for this.
-  if (source_data.filter_data->filter_values.Contains("source_type"))
-    return false;
-
-  source_data.aggregation_keys =
-      ParseAggregationKeys(object->Get("aggregation_keys"));
-  if (!source_data.aggregation_keys)
-    return false;
-
-  if (bool debug_reporting;
-      object->GetBoolean("debug_reporting", &debug_reporting)) {
-    source_data.debug_reporting = debug_reporting;
-  }
-
-  return true;
 }
 
 bool ParseEventTriggerData(
@@ -317,17 +185,13 @@ bool ParseEventTriggerData(
     if (String s; object_val->GetString("deduplication_key", &s))
       event_trigger->dedup_key = ParseUint64(s);
 
-    event_trigger->filters = mojom::blink::AttributionFilters::New();
-    if (!ParseFilterValues(object_val->Get("filters"),
-                           event_trigger->filters->filter_values)) {
+    event_trigger->filters = ParseFilters(object_val->Get("filters"));
+    if (!event_trigger->filters)
       return false;
-    }
 
-    event_trigger->not_filters = mojom::blink::AttributionFilters::New();
-    if (!ParseFilterValues(object_val->Get("not_filters"),
-                           event_trigger->not_filters->filter_values)) {
+    event_trigger->not_filters = ParseFilters(object_val->Get("not_filters"));
+    if (!event_trigger->not_filters)
       return false;
-    }
 
     event_trigger_data.push_back(std::move(event_trigger));
   }
@@ -402,17 +266,13 @@ bool ParseAttributionAggregatableTriggerData(
       data->source_keys.push_back(std::move(source_key));
     }
 
-    data->filters = mojom::blink::AttributionFilters::New();
-    if (!ParseFilterValues(object->Get("filters"),
-                           data->filters->filter_values)) {
+    data->filters = ParseFilters(object->Get("filters"));
+    if (!data->filters)
       return false;
-    }
 
-    data->not_filters = mojom::blink::AttributionFilters::New();
-    if (!ParseFilterValues(object->Get("not_filters"),
-                           data->not_filters->filter_values)) {
+    data->not_filters = ParseFilters(object->Get("not_filters"));
+    if (!data->not_filters)
       return false;
-    }
 
     trigger_data.push_back(std::move(data));
   }
@@ -476,19 +336,13 @@ bool ParseTriggerRegistrationHeader(
     return false;
   }
 
-  trigger_data.filters = mojom::blink::AttributionFilters::New();
-
-  if (!ParseFilterValues(object->Get("filters"),
-                         trigger_data.filters->filter_values)) {
+  trigger_data.filters = ParseFilters(object->Get("filters"));
+  if (!trigger_data.filters)
     return false;
-  }
 
-  trigger_data.not_filters = mojom::blink::AttributionFilters::New();
-
-  if (!ParseFilterValues(object->Get("not_filters"),
-                         trigger_data.not_filters->filter_values)) {
+  trigger_data.not_filters = ParseFilters(object->Get("not_filters"));
+  if (!trigger_data.not_filters)
     return false;
-  }
 
   if (!ParseAttributionAggregatableTriggerData(
           object->Get("aggregatable_trigger_data"),

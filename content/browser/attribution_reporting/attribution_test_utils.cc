@@ -28,6 +28,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -113,7 +114,7 @@ void MockDataHost::WaitForTriggerData(size_t num_trigger_data) {
 }
 
 void MockDataHost::SourceDataAvailable(
-    blink::mojom::AttributionSourceDataPtr data) {
+    attribution_reporting::SourceRegistration data) {
   source_data_.push_back(std::move(data));
   if (source_data_.size() < min_source_data_count_) {
     return;

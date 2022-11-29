@@ -21,6 +21,8 @@
 
 namespace attribution_reporting {
 class SuitableOrigin;
+
+struct SourceRegistration;
 }  // namespace attribution_reporting
 
 namespace base {
@@ -87,8 +89,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   struct NavigationRedirectSourceRegistrations;
 
   // blink::mojom::AttributionDataHost:
-  void SourceDataAvailable(
-      blink::mojom::AttributionSourceDataPtr data) override;
+  void SourceDataAvailable(attribution_reporting::SourceRegistration) override;
   void TriggerDataAvailable(
       blink::mojom::AttributionTriggerDataPtr data) override;
 

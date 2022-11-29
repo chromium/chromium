@@ -39,6 +39,7 @@ class CONTENT_EXPORT StorableSource {
     kMaxValue = kSuccessNoised,
   };
 
+  // TODO(apaseltiner): Make this constructor test-only.
   StorableSource(CommonSourceInfo common_info,
                  bool is_within_fenced_frame,
                  bool debug_reporting);

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -17,11 +18,18 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace mojo {
+struct DefaultConstructTraits;
+}  // namespace mojo
+
 namespace attribution_reporting {
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
   Parse(base::Value::Dict, SuitableOrigin reporting_origin);
+
+  static base::expected<SourceRegistration, mojom::SourceRegistrationError>
+  Parse(base::StringPiece json, SuitableOrigin reporting_origin);
 
   SourceRegistration(SuitableOrigin destination,
                      SuitableOrigin reporting_origin);
@@ -45,6 +53,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   absl::optional<uint64_t> debug_key;
   AggregationKeys aggregation_keys;
   bool debug_reporting = false;
+
+ private:
+  friend mojo::DefaultConstructTraits;
+
+  // Creates an invalid instance for use with Mojo deserialization, which
+  // requires types to be default-constructible.
+  SourceRegistration();
 };
 
 }  // namespace attribution_reporting

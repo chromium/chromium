@@ -28,6 +28,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -133,7 +134,7 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
   void WaitForSourceData(size_t num_source_data);
   void WaitForTriggerData(size_t num_trigger_data);
 
-  const std::vector<blink::mojom::AttributionSourceDataPtr>& source_data()
+  const std::vector<attribution_reporting::SourceRegistration>& source_data()
       const {
     return source_data_;
   }
@@ -149,13 +150,12 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
 
  private:
   // blink::mojom::AttributionDataHost:
-  void SourceDataAvailable(
-      blink::mojom::AttributionSourceDataPtr data) override;
+  void SourceDataAvailable(attribution_reporting::SourceRegistration) override;
   void TriggerDataAvailable(
       blink::mojom::AttributionTriggerDataPtr data) override;
 
   size_t min_source_data_count_ = 0;
-  std::vector<blink::mojom::AttributionSourceDataPtr> source_data_;
+  std::vector<attribution_reporting::SourceRegistration> source_data_;
 
   size_t min_trigger_data_count_ = 0;
   std::vector<blink::mojom::AttributionTriggerDataPtr> trigger_data_;

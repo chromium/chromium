@@ -32,8 +32,6 @@ bool IsValid(const AggregationKeys::Keys& keys) {
          });
 }
 
-}  // namespace
-
 void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count) {
   const int kExclusiveMaxHistogramValue = 101;
 
@@ -43,6 +41,8 @@ void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count) {
 
   base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource", count);
 }
+
+}  // namespace
 
 // static
 absl::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {

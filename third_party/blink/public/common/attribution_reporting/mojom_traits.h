@@ -9,7 +9,11 @@
 
 #include <utility>
 
+#include "base/time/time.h"
+#include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -116,6 +120,151 @@ struct BLINK_COMMON_EXPORT
       return false;
 
     *out = std::move(*os_trigger);
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AttributionFilterDataDataView,
+                 attribution_reporting::FilterData> {
+  static const attribution_reporting::FilterValues& filter_values(
+      const attribution_reporting::FilterData& filter_data) {
+    return filter_data.filter_values();
+  }
+
+  // TODO(apaseltiner): Define this in a separate .cc file.
+  static bool Read(blink::mojom::AttributionFilterDataDataView data,
+                   attribution_reporting::FilterData* out) {
+    attribution_reporting::FilterValues filter_values;
+    if (!data.ReadFilterValues(&filter_values))
+      return false;
+
+    absl::optional<attribution_reporting::FilterData> filter_data =
+        attribution_reporting::FilterData::Create(std::move(filter_values));
+    if (!filter_data.has_value())
+      return false;
+
+    *out = std::move(*filter_data);
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AttributionAggregationKeysDataView,
+                 attribution_reporting::AggregationKeys> {
+  static const attribution_reporting::AggregationKeys::Keys& keys(
+      const attribution_reporting::AggregationKeys& aggregation_keys) {
+    return aggregation_keys.keys();
+  }
+
+  // TODO(apaseltiner): Define this in a separate .cc file.
+  static bool Read(blink::mojom::AttributionAggregationKeysDataView data,
+                   attribution_reporting::AggregationKeys* out) {
+    attribution_reporting::AggregationKeys::Keys keys;
+    if (!data.ReadKeys(&keys))
+      return false;
+
+    absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
+        attribution_reporting::AggregationKeys::FromKeys(std::move(keys));
+    if (!aggregation_keys.has_value())
+      return false;
+
+    *out = std::move(*aggregation_keys);
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AttributionSourceDataDataView,
+                 attribution_reporting::SourceRegistration> {
+  static const attribution_reporting::SuitableOrigin& destination(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.destination;
+  }
+
+  static const attribution_reporting::SuitableOrigin& reporting_origin(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.reporting_origin;
+  }
+
+  static uint64_t source_event_id(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.source_event_id;
+  }
+
+  static absl::optional<base::TimeDelta> expiry(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.expiry;
+  }
+
+  static absl::optional<base::TimeDelta> event_report_window(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.event_report_window;
+  }
+
+  static absl::optional<base::TimeDelta> aggregatable_report_window(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.aggregatable_report_window;
+  }
+
+  static int64_t priority(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.priority;
+  }
+
+  static absl::optional<uint64_t> debug_key(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.debug_key;
+  }
+
+  static const attribution_reporting::FilterData& filter_data(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.filter_data;
+  }
+
+  static const attribution_reporting::AggregationKeys& aggregation_keys(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.aggregation_keys;
+  }
+
+  static bool debug_reporting(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.debug_reporting;
+  }
+
+  // TODO(apaseltiner): Define this in a separate .cc file.
+  static bool Read(blink::mojom::AttributionSourceDataDataView data,
+                   attribution_reporting::SourceRegistration* out) {
+    if (!data.ReadDestination(&out->destination))
+      return false;
+
+    if (!data.ReadReportingOrigin(&out->reporting_origin))
+      return false;
+
+    if (!data.ReadExpiry(&out->expiry))
+      return false;
+
+    if (!data.ReadEventReportWindow(&out->event_report_window))
+      return false;
+
+    if (!data.ReadAggregatableReportWindow(&out->aggregatable_report_window))
+      return false;
+
+    if (!data.ReadDebugKey(&out->debug_key))
+      return false;
+
+    if (!data.ReadFilterData(&out->filter_data))
+      return false;
+
+    if (!data.ReadAggregationKeys(&out->aggregation_keys))
+      return false;
+
+    out->source_event_id = data.source_event_id();
+    out->priority = data.priority();
+    out->debug_reporting = data.debug_reporting();
     return true;
   }
 };
