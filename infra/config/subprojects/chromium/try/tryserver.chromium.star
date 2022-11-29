@@ -14,9 +14,11 @@ try_.defaults.set(
     cores = 32,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
+    goma_backend = None,
     os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
@@ -34,9 +36,6 @@ try_.builder(
     mirrors = [
         "ci/android-official",
     ],
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -45,9 +44,6 @@ try_.builder(
     mirrors = [
         "ci/fuchsia-official",
     ],
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -56,9 +52,6 @@ try_.builder(
     mirrors = [
         "ci/linux-official",
     ],
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -71,7 +64,9 @@ try_.builder(
     # TODO(crbug.com/1279290) builds with PGO change take long time.
     # Keep in sync with mac-official in ci/chromium.star.
     execution_timeout = 9 * time.hour,
+    goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
+    reclient_instance = None,
 )
 
 try_.builder(
@@ -82,9 +77,6 @@ try_.builder(
     ],
     os = os.WINDOWS_DEFAULT,
     execution_timeout = 6 * time.hour,
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(

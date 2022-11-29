@@ -88,7 +88,9 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    goma_backend = goma.backend.RBE_PROD,
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     os = os.WINDOWS_ANY,
     builderless = True,
 )

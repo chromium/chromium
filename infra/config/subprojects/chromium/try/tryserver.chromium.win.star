@@ -55,6 +55,7 @@ try_.builder(
         "pool_size": 20,
         "tests": "*",
     },
+    goma_backend = None,
 )
 
 try_.builder(
@@ -113,6 +114,7 @@ try_.builder(
     mirrors = [
         "ci/win32-archive-rel",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -147,6 +149,7 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -154,6 +157,7 @@ try_.builder(
     mirrors = [
         "ci/Win x64 Builder",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -181,6 +185,7 @@ try_.builder(
         "ci/Win10 Tests x64 (dbg)",
     ],
     os = os.WINDOWS_10,
+    goma_backend = None,
 )
 
 try_.builder(
@@ -201,6 +206,7 @@ try_.builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     os = os.WINDOWS_10,
+    goma_backend = None,
 )
 
 try_.builder(

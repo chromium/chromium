@@ -135,7 +135,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win-fieldtrial-rel": {
@@ -217,7 +217,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win10_chromium_x64_rel_ng-inverse-fyi": {
@@ -254,7 +254,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win_archive": {
@@ -264,7 +264,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "x86",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win_chromium_compile_dbg_ng": {
@@ -288,7 +288,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "x86",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win_chromium_x64_rel_ng": {
@@ -299,7 +299,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win_optional_gpu_tests_rel": {

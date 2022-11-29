@@ -890,7 +890,7 @@
       'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols',
       'mac12.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac12.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols',
-      'win10.20h2-blink-rel': 'release_bot_blink_x86_minimal_symbols',
+      'win10.20h2-blink-rel': 'release_bot_blink_x86_minimal_symbols_reclient',
       'win11-blink-rel': 'release_bot_blink_x64_minimal_symbols_reclient',
     },
 
@@ -955,7 +955,7 @@
       'linux-official': 'official_optimize_reclient_trybot',
       'mac-official': 'official_optimize_goma_trybot',
       'win-official': 'official_optimize_reclient_trybot',
-      'win32-official': 'x86_official_optimize_goma_trybot',
+      'win32-official': 'x86_official_optimize_reclient_trybot',
     },
 
     'tryserver.chromium.accessibility': {
@@ -1315,14 +1315,14 @@
       'linux-clang-tidy-rel': 'release_trybot_reclient',
       'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot',
       'mac-clang-tidy-rel': 'release_trybot',
-      'win10-clang-tidy-rel': 'release_trybot',
+      'win10-clang-tidy-rel': 'release_trybot_reclient',
     },
 
     'tryserver.chromium.updater': {
        'mac-updater-try-builder-dbg': 'updater_debug_bot',
        'mac-updater-try-builder-rel': 'updater_release_trybot',
-       'win-updater-try-builder-dbg': 'updater_debug_bot',
-       'win-updater-try-builder-rel': 'updater_release_trybot',
+       'win-updater-try-builder-dbg': 'updater_debug_bot_reclient',
+       'win-updater-try-builder-rel': 'updater_release_trybot_reclient',
     },
 
     'tryserver.chromium.win': {
@@ -1337,21 +1337,21 @@
       'gpu-fyi-try-win10-nvidia-rel-64': 'gpu_fyi_tests_release_trybot',
       'win-annotator-rel': 'release_trybot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient',
-      'win-celab-try-rel': 'release_bot_minimal_symbols',
+      'win-celab-try-rel': 'release_bot_minimal_symbols_reclient',
       'win-fieldtrial-rel': 'release_bot_minimal_symbols',
       'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot_reclient',
       'win-perfetto-rel': 'perfetto_release_trybot',
       'win-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win10-wpt-content-shell-fyi-rel': 'release_trybot',
       'win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials',
-      'win10_chromium_x64_dbg_ng': 'gpu_tests_debug_bot',
+      'win10_chromium_x64_dbg_ng': 'gpu_tests_debug_bot_reclient',
       'win10_chromium_x64_rel_ng-inverse-fyi': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
-      'win11-x64-fyi-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
-      'win_archive': 'release_trybot_x86',
+      'win11-x64-fyi-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
+      'win_archive': 'release_trybot_x86_reclient',
       'win_chromium_compile_dbg_ng': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
-      'win_chromium_compile_rel_ng': 'gpu_tests_release_trybot_x86_resource_allowlisting',
-      'win_chromium_x64_rel_ng': 'gpu_tests_release_trybot',
+      'win_chromium_compile_rel_ng': 'gpu_tests_release_trybot_x86_resource_allowlisting_reclient',
+      'win_chromium_x64_rel_ng': 'gpu_tests_release_trybot_reclient',
       'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'win_upload_clang': 'release_bot',
       'win_x64_archive': 'release_trybot',
@@ -2909,10 +2909,6 @@
       'gpu_tests', 'release_trybot_reclient', 'x86',
     ],
 
-    'gpu_tests_release_trybot_x86_resource_allowlisting': [
-      'gpu_tests', 'release_trybot', 'x86', 'resource_allowlisting',
-    ],
-
     'gpu_tests_release_trybot_x86_resource_allowlisting_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'x86', 'resource_allowlisting',
     ],
@@ -3490,8 +3486,8 @@
       'release_bot_blink_reclient', 'x64', 'minimal_symbols',
     ],
 
-    'release_bot_blink_x86_minimal_symbols': [
-      'release_bot_blink', 'x86', 'minimal_symbols',
+    'release_bot_blink_x86_minimal_symbols_reclient': [
+      'release_bot_blink_reclient', 'x86', 'minimal_symbols',
     ],
 
     'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient': [
@@ -3678,8 +3674,8 @@
       'release_trybot', 'tsan'
     ],
 
-    'release_trybot_x86': [
-      'release_trybot', 'x86',
+    'release_trybot_x86_reclient': [
+      'release_trybot_reclient', 'x86',
     ],
 
     'tsan_disable_nacl_debug_bot_reclient': [
@@ -3734,6 +3730,10 @@
       'updater_on_win_mac', 'release_trybot',
     ],
 
+    'updater_release_trybot_reclient': [
+      'updater_on_win_mac', 'release_trybot_reclient',
+    ],
+
     'v8_future_debug_bot_reclient': [
       'v8_future', 'debug_bot_reclient',
     ],
@@ -3754,12 +3754,12 @@
       'arm64', 'disable_nacl', 'minimal_symbols', 'release_bot_reclient',
     ],
 
-    'x86_official_optimize_goma_trybot': [
-      'official_optimize_goma_trybot', 'x86',
-    ],
-
     'x86_official_optimize_reclient': [
       'official_optimize_reclient', 'x86',
+    ],
+
+    'x86_official_optimize_reclient_trybot': [
+      'official_optimize_reclient_trybot', 'x86',
     ],
   },
 

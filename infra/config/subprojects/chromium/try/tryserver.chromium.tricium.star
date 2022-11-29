@@ -113,4 +113,5 @@ try_.builder(
     name = "win10-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     os = os.WINDOWS_DEFAULT,
+    goma_backend = None,
 )
