@@ -30,7 +30,6 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -110,7 +109,6 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         List<Integer> sortedTabIndexList = filterTabs(tabs, tabList);
 
         if (sortedTabIndexList.size() == 0) {
-            showToastOnShareFail();
             logShareActionState(TabSelectionEditorShareActionState.ALL_TABS_FILTERED);
             return false;
         }
@@ -226,16 +224,6 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     private static void logShareActionState(@TabSelectionEditorShareActionState int action) {
         RecordHistogram.recordEnumeratedHistogram("Android.TabMultiSelectV2.SharingState", action,
                 TabSelectionEditorShareActionState.NUM_ENTRIES);
-    }
-
-    private void showToastOnShareFail() {
-        // TODO(crbug.com/1373579): Consider changing from the more generic current string to a
-        // descriptive situational string indicating what went wrong.
-        String toastText = mContext.getResources().getString(
-                R.string.browser_sharing_error_dialog_text_internal_error);
-        Toast toast =
-                Toast.makeText(mContext.getApplicationContext(), toastText, Toast.LENGTH_SHORT);
-        toast.show();
     }
 
     private boolean shouldFilterUrl(GURL url) {
