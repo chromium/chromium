@@ -657,4 +657,31 @@ ChromeVariationsConfiguration::GetRegisteredFeatures() const {
   return features;
 }
 
+const GroupConfig& ChromeVariationsConfiguration::GetGroupConfig(
+    const base::Feature& group) const {
+  auto it = group_configs_.find(group.name);
+  DCHECK(it != group_configs_.end());
+  return it->second;
+}
+
+const GroupConfig& ChromeVariationsConfiguration::GetGroupConfigByName(
+    const std::string& group_name) const {
+  auto it = group_configs_.find(group_name);
+  DCHECK(it != group_configs_.end());
+  return it->second;
+}
+
+const Configuration::GroupConfigMap&
+ChromeVariationsConfiguration::GetRegisteredGroupConfigs() const {
+  return group_configs_;
+}
+
+const std::vector<std::string>
+ChromeVariationsConfiguration::GetRegisteredGroups() const {
+  std::vector<std::string> groups;
+  for (const auto& element : group_configs_)
+    groups.push_back(element.first);
+  return groups;
+}
+
 }  // namespace feature_engagement

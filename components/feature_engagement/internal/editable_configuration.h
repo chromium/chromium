@@ -29,15 +29,29 @@ class EditableConfiguration : public Configuration {
       const std::string& feature_name) const override;
   const Configuration::ConfigMap& GetRegisteredFeatureConfigs() const override;
   const std::vector<std::string> GetRegisteredFeatures() const override;
+  const GroupConfig& GetGroupConfig(const base::Feature& group) const override;
+  const GroupConfig& GetGroupConfigByName(
+      const std::string& group_name) const override;
+  const Configuration::GroupConfigMap& GetRegisteredGroupConfigs()
+      const override;
+  const std::vector<std::string> GetRegisteredGroups() const override;
 
   // Adds a new FeatureConfig to the current configurations. If it already
   // exists, the contents are replaced.
   void SetConfiguration(const base::Feature* feature,
                         const FeatureConfig& feature_config);
 
+  // Adds a new GroupConfig to the current configuration. If it already
+  // exists, the contents are replaced.
+  void SetConfiguration(const base::Feature* group,
+                        const GroupConfig& group_config);
+
  private:
   // The current configurations.
   ConfigMap configs_;
+
+  // The current group configurations.
+  GroupConfigMap group_configs_;
 };
 
 }  // namespace feature_engagement

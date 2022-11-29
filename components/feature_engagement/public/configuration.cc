@@ -201,4 +201,31 @@ std::ostream& operator<<(std::ostream& os,
             << ", availability: " << feature_config.availability << " }";
 }
 
+GroupConfig::GroupConfig() = default;
+
+GroupConfig::GroupConfig(const GroupConfig& other) = default;
+
+GroupConfig::~GroupConfig() = default;
+
+bool operator==(const GroupConfig& lhs, const GroupConfig& rhs) {
+  return std::tie(lhs.valid, lhs.trigger, lhs.event_configs,
+                  lhs.session_rate) ==
+         std::tie(rhs.valid, rhs.trigger, rhs.event_configs, rhs.session_rate);
+}
+
+std::ostream& operator<<(std::ostream& os, const GroupConfig& group_config) {
+  os << "{ valid: " << group_config.valid
+     << ", trigger: " << group_config.trigger << ", event_configs: [";
+  bool first = true;
+  for (const auto& event_config : group_config.event_configs) {
+    if (first) {
+      first = false;
+      os << event_config;
+    } else {
+      os << ", " << event_config;
+    }
+  }
+  return os << "], session_rate: " << group_config.session_rate << " }";
+}
+
 }  // namespace feature_engagement

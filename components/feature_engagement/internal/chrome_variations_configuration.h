@@ -31,6 +31,12 @@ class ChromeVariationsConfiguration : public Configuration {
       const std::string& feature_name) const override;
   const Configuration::ConfigMap& GetRegisteredFeatureConfigs() const override;
   const std::vector<std::string> GetRegisteredFeatures() const override;
+  const GroupConfig& GetGroupConfig(const base::Feature& group) const override;
+  const GroupConfig& GetGroupConfigByName(
+      const std::string& group_name) const override;
+  const Configuration::GroupConfigMap& GetRegisteredGroupConfigs()
+      const override;
+  const std::vector<std::string> GetRegisteredGroups() const override;
 
   // Parses the variations configuration for all of the given |features| and
   // stores the result. It is only valid to call ParseFeatureConfig once.
@@ -45,6 +51,9 @@ class ChromeVariationsConfiguration : public Configuration {
 
   // The current configurations.
   ConfigMap configs_;
+
+  // The current group configurations.
+  GroupConfigMap group_configs_;
 };
 
 }  // namespace feature_engagement

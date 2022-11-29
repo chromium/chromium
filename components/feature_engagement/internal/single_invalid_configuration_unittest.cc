@@ -19,6 +19,13 @@ BASE_FEATURE(kSingleTestFeatureBar,
              "test_bar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSingleTestGroupBaz,
+             "test_group_baz",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSingleTestGroupQux,
+             "test_group_qux",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 class SingleInvalidConfigurationTest : public ::testing::Test {
  public:
   SingleInvalidConfigurationTest() = default;
@@ -42,6 +49,14 @@ TEST_F(SingleInvalidConfigurationTest, AllConfigurationsAreInvalid) {
   FeatureConfig bar_config =
       configuration_.GetFeatureConfig(kSingleTestFeatureBar);
   EXPECT_FALSE(bar_config.valid);
+
+  GroupConfig baz_group_config =
+      configuration_.GetGroupConfig(kSingleTestGroupBaz);
+  EXPECT_FALSE(baz_group_config.valid);
+
+  GroupConfig qux_group_config =
+      configuration_.GetGroupConfig(kSingleTestGroupQux);
+  EXPECT_FALSE(qux_group_config.valid);
 }
 
 }  // namespace feature_engagement

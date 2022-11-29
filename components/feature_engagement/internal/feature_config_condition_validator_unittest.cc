@@ -62,6 +62,12 @@ FeatureConfig GetNonBlockingFeatureConfig() {
   return config;
 }
 
+GroupConfig GetValidGroupConfig() {
+  GroupConfig config;
+  config.valid = true;
+  return config;
+}
+
 SessionRateImpact CreateSessionRateImpactTypeExplicit(
     std::vector<std::string> affected_features) {
   SessionRateImpact impact;
@@ -72,7 +78,10 @@ SessionRateImpact CreateSessionRateImpactTypeExplicit(
 
 class TestConfiguration : public Configuration {
  public:
-  TestConfiguration() { config_ = GetValidFeatureConfig(); }
+  TestConfiguration() {
+    config_ = GetValidFeatureConfig();
+    group_config_ = GetValidGroupConfig();
+  }
   ~TestConfiguration() override = default;
 
   // Configuration implementation.
@@ -90,10 +99,26 @@ class TestConfiguration : public Configuration {
   const std::vector<std::string> GetRegisteredFeatures() const override {
     return std::vector<std::string>();
   }
+  const GroupConfig& GetGroupConfig(const base::Feature& group) const override {
+    return group_config_;
+  }
+  const GroupConfig& GetGroupConfigByName(
+      const std::string& group_name) const override {
+    return group_config_;
+  }
+  const Configuration::GroupConfigMap& GetRegisteredGroupConfigs()
+      const override {
+    return group_map_;
+  }
+  const std::vector<std::string> GetRegisteredGroups() const override {
+    return std::vector<std::string>();
+  }
 
  private:
   FeatureConfig config_;
+  GroupConfig group_config_;
   Configuration::ConfigMap map_;
+  Configuration::GroupConfigMap group_map_;
 };
 
 class TestEventModel : public EventModel {
