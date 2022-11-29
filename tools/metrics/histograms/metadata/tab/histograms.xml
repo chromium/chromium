@@ -2785,6 +2785,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tabs.Tasks.OrderValidOnStartup" units="boolean"
+    expires_after="M114">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    [Android] boolean value indicating whether the invariant that tab groups are
+    contiguous holds. Recorded on cold start after all tabs are restored.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Tasks.TabAddedWithValidProposedPosition" units="boolean"
+    expires_after="M114">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    [Android] boolean value indicating whether a tab that was added to the
+    TabModel would have been added at the correct position if
+    TabGroupModelFilter had not interved to move it so it respected group
+    position. Recorded each time a tab is added to the TabModel.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.Tasks.TabCreated.Count{TabCreatedReason}" units="tabs"
     expires_after="2020-06-30">
   <owner>yusufo@chromium.org</owner>

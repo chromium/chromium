@@ -111,6 +111,20 @@ public class ChromeTabCreator extends TabCreator {
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
+     * @param position the requested position (index in the tab model)
+     * @return The new tab.
+     */
+    @Override
+    public Tab createNewTab(
+            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
+        return createNewTab(loadUrlParams, type, parent, position, null);
+    }
+
+    /**
+     * Creates a new tab and posts to UI.
+     * @param loadUrlParams parameters of the url load.
+     * @param type Information about how the tab was launched.
+     * @param parent the parent tab, if present.
      * @param intent the source of the url if it isn't null.
      * @return The new tab.
      */

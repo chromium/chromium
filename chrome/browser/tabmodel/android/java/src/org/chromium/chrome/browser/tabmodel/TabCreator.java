@@ -41,6 +41,18 @@ public abstract class TabCreator {
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent);
 
     /**
+     * Creates a new tab and posts to UI.
+     * @param loadUrlParams parameters of the url load.
+     * @param type Information about how the tab was launched.
+     * @param parent the parent tab, if present.
+     * @param position the requested position (index in the tab model)
+     * @return The new tab or null if no tab was created.
+     */
+    @Nullable
+    public abstract Tab createNewTab(
+            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position);
+
+    /**
      * On restore, allows us to create a frozen version of a tab using saved tab state we read
      * from disk.
      * @param state    The tab state that the tab can be restored from.

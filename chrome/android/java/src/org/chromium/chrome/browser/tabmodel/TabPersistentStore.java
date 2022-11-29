@@ -818,7 +818,7 @@ public class TabPersistentStore {
             Log.w(TAG, "Failed to restore TabState; creating Tab with last known URL.");
             Tab fallbackTab = mTabCreatorManager.getTabCreator(isIncognito)
                                       .createNewTab(new LoadUrlParams(tabToRestore.url),
-                                              TabLaunchType.FROM_RESTORE, null);
+                                              TabLaunchType.FROM_RESTORE, null, restoredIndex);
 
             if (fallbackTab == null) {
                 RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
@@ -833,8 +833,8 @@ public class TabPersistentStore {
             RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
                     TabRestoreMethod.CREATE_NEW_TAB, TabRestoreMethod.NUM_ENTRIES);
 
-            tabId = fallbackTab.getId();
-            model.moveTab(tabId, restoredIndex);
+            // restoredIndex might not be the one used in createNewTab so update accordingly.
+            restoredIndex = model.indexOf(fallbackTab);
         }
 
         // If the tab is being restored from a merge and its index is 0, then the model being

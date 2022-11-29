@@ -40,6 +40,13 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
             forgetAllOpeners();
         }
 
+        // TODO(crbug/1383067): This is a bandaid fix to ensure tab groups are contiguous such that
+        // no tabs within a group are separate from one another and that no tab that is not part of
+        // a group can be added in-between members of a group. This doesn't address the issue of
+        // moving tabs to be between members of a group, however when a group is moved it is moved
+        // tab-by-tab so it is difficult to enforce anything there without significant refactoring.
+        position = getValidPositionConsideringRelatedTabs(newTab, position);
+
         return position;
     }
 
@@ -105,6 +112,12 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
             }
         }
         return NO_TAB;
+    }
+
+    private int getValidPositionConsideringRelatedTabs(Tab newTab, int position) {
+        TabModelFilter filter = mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
+                newTab.isIncognito());
+        return filter.getValidPosition(newTab, position);
     }
 
     /**

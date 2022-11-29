@@ -137,6 +137,13 @@ public class TabDelegate extends AsyncTabCreator {
     }
 
     @Override
+    public Tab createNewTab(
+            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
+        // Ignore position as it isn't supported for async creation.
+        return createNewTab(loadUrlParams, type, parent);
+    }
+
+    @Override
     public void createNewTab(
             AsyncTabCreationParams asyncParams, @TabLaunchType int type, int parentId) {
         assert asyncParams != null;

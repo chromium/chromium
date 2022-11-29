@@ -48,13 +48,19 @@ public class MockTabCreator extends TabCreator {
 
     @Override
     public Tab createNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent) {
+        return createNewTab(loadUrlParams, type, parent, TabModel.INVALID_TAB_INDEX);
+    }
+
+    @Override
+    public Tab createNewTab(
+            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
         Tab tab = new MockTab(0, mIsIncognito, TabLaunchType.FROM_LINK);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(false));
         if (loadUrlParams != null) {
             ((TabImpl) tab).initialize(null, null, loadUrlParams, null, null, false, null);
         }
         mSelector.getModel(mIsIncognito)
-                .addTab(tab, TabModel.INVALID_TAB_INDEX, type, TabCreationState.LIVE_IN_FOREGROUND);
+                .addTab(tab, position, type, TabCreationState.LIVE_IN_FOREGROUND);
         storeTabInfo(null, tab.getId());
         return tab;
     }
