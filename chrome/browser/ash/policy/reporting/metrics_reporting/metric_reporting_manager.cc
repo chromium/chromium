@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -15,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/strings/string_piece.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
@@ -33,6 +31,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/collector_base.h"
+#include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_event_observer_manager.h"
 #include "components/reporting/metrics/metric_report_queue.h"
@@ -46,12 +45,12 @@ namespace em = enterprise_management;
 namespace reporting {
 namespace {
 
-constexpr char kAudioTelemetry[] = "audio_telemetry";
-constexpr char kBootPerformance[] = "boot_performance";
-constexpr char kHttpsLatency[] = "https_latency";
-constexpr char kNetworkTelemetry[] = "network_telemetry";
-constexpr char kPeripheralTelemetry[] = "peripheral_telemetry";
-constexpr char kDisplaysTelemetry[] = "displays_telemetry";
+constexpr char kSamplerAudioTelemetry[] = "audio_telemetry";
+constexpr char kSamplerBootPerformance[] = "boot_performance";
+constexpr char kSamplerHttpsLatency[] = "https_latency";
+constexpr char kSamplerNetworkTelemetry[] = "network_telemetry";
+constexpr char kSamplerPeripheralTelemetry[] = "peripheral_telemetry";
+constexpr char kSamplerDisplaysTelemetry[] = "displays_telemetry";
 
 }  // namespace
 
@@ -122,7 +121,10 @@ void MetricReportingManager::OnLogin(Profile* profile) {
           EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY);
 
   InitOnAffiliatedLogin(profile);
-  DelayedInitOnAffiliatedLogin(profile);
+  delayed_init_on_login_timer_.Start(
+      FROM_HERE, delegate_->GetInitDelay(),
+      base::BindOnce(&MetricReportingManager::DelayedInitOnAffiliatedLogin,
+                     base::Unretained(this), profile));
 }
 
 void MetricReportingManager::DeviceSettingsUpdated() {
@@ -131,13 +133,13 @@ void MetricReportingManager::DeviceSettingsUpdated() {
   }
 }
 
-std::vector<CollectorBase*> MetricReportingManager::GetTelemetryCollectors(
+std::vector<ConfiguredSampler*> MetricReportingManager::GetTelemetrySamplers(
     MetricEventType event_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (event_type) {
     case NETWORK_SIGNAL_STRENGTH_LOW:
     case NETWORK_SIGNAL_STRENGTH_RECOVERED:
-      return GetTelemetryCollectorsFromSetting(
+      return GetTelemetrySamplersFromSetting(
           ::ash::kReportDeviceSignalStrengthEventDrivenTelemetry);
     default:
       return {};
@@ -151,6 +153,9 @@ MetricReportingManager::MetricReportingManager(
   if (delegate_->IsDeprovisioned()) {
     return;
   }
+  // Initialize telemetry samplers that can be used before login.
+  InitDeviceTelemetrySamplers();
+
   info_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kDevice, Destination::INFO_METRIC, Priority::SLOW_BATCH);
   telemetry_report_queue_ = delegate_->CreatePeriodicUploadReportQueue(
@@ -159,7 +164,8 @@ MetricReportingManager::MetricReportingManager(
       metrics::GetDefaultReportUploadFrequency());
   event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kDevice, Destination::EVENT_METRIC, Priority::SLOW_BATCH);
-  DelayedInit();
+  delayed_init_timer_.Start(FROM_HERE, delegate_->GetInitDelay(), this,
+                            &MetricReportingManager::DelayedInit);
 
   if (managed_session_service) {
     managed_session_observation_.Observe(managed_session_service);
@@ -173,12 +179,12 @@ void MetricReportingManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   delegate_.reset();
-  telemetry_collectors_.clear();
-  info_collectors_.clear();
+  one_shot_collectors_.clear();
+  periodic_collectors_.clear();
   event_observer_managers_.clear();
-  samplers_.clear();
+  info_samplers_.clear();
+  telemetry_sampler_map_.clear();
   info_report_queue_.reset();
-  network_bandwidth_collector_.reset();
   telemetry_report_queue_.reset();
   user_telemetry_report_queue_.reset();
   event_report_queue_.reset();
@@ -186,12 +192,22 @@ void MetricReportingManager::Shutdown() {
   user_peripheral_events_and_telemetry_report_queue_.reset();
 }
 
+void MetricReportingManager::InitDeviceTelemetrySamplers() {
+  auto boot_performance_sampler = std::make_unique<CrosHealthdMetricSampler>(
+      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBootPerformance,
+      CrosHealthdMetricSampler::MetricType::kTelemetry);
+  InitTelemetryConfiguredSampler(
+      /*sampler_name=*/kSamplerBootPerformance,
+      std::move(boot_performance_sampler),
+      /*enable_setting_path=*/::ash::kReportDeviceBootMode,
+      /*default_value=*/true);
+}
+
 void MetricReportingManager::DelayedInit() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (delegate_->IsDeprovisioned()) {
     return;
   }
-  // Info collectors init is delayed by default.
+
   CreateCrosHealthdInfoCollector(
       ::ash::cros_healthd::mojom::ProbeCategoryEnum::kCpu,
       ::ash::kReportDeviceCpuInfo,
@@ -222,18 +238,11 @@ void MetricReportingManager::DelayedInit() {
       /*setting_enabled_default_value=*/true);
 
   // Boot performance telemetry collector.
-  auto boot_performance_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBootPerformance,
-      CrosHealthdMetricSampler::MetricType::kTelemetry);
-  InitOneShotTelemetryCollector(
-      /*collector_name=*/kBootPerformance, boot_performance_sampler.get(),
-      telemetry_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDeviceBootMode,
-      /*enable_default_value=*/true, delegate_->GetInitDelay());
-  samplers_.push_back(std::move(boot_performance_sampler));
+  InitOneShotTelemetryCollector(kSamplerBootPerformance,
+                                telemetry_report_queue_.get());
 
-  initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
-                              &MetricReportingManager::UploadTelemetry);
+  initial_upload_timer_.Start(FROM_HERE, delegate_->GetInitialUploadDelay(),
+                              this, &MetricReportingManager::UploadTelemetry);
 }
 
 void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
@@ -241,17 +250,17 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
     return;
   }
 
+  InitTelemetrySamplersOnAffiliatedLogin();
+
   InitEventObserverManager(
       std::make_unique<AudioEventsObserver>(), user_event_report_queue_.get(),
       /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
-      metrics::kReportDeviceAudioStatusDefaultValue,
-      /*init_delay=*/base::TimeDelta());
+      metrics::kReportDeviceAudioStatusDefaultValue);
   // Network health events observer.
   InitEventObserverManager(
       std::make_unique<NetworkEventsObserver>(), event_report_queue_.get(),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      metrics::kReportDeviceNetworkStatusDefaultValue,
-      /*init_delay=*/base::TimeDelta());
+      metrics::kReportDeviceNetworkStatusDefaultValue);
   InitPeripheralsCollectors();
 
   // Start observing app events only if the feature flag is set.
@@ -260,21 +269,55 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
     InitEventObserverManager(
         std::move(app_events_observer), user_event_report_queue_.get(),
         /*enable_setting_path=*/::ash::kReportDeviceAppInfo,
-        metrics::kReportDeviceAppInfoDefaultValue,
-        /*init_delay=*/base::TimeDelta());
+        metrics::kReportDeviceAppInfoDefaultValue);
   }
+}
+
+void MetricReportingManager::InitTelemetrySamplersOnAffiliatedLogin() {
+  // Initialize telemetry samplers that can only be used after affiliated login.
+  auto audio_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
+      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kAudio,
+      CrosHealthdMetricSampler::MetricType::kTelemetry);
+  InitTelemetryConfiguredSampler(
+      /*sampler_name=*/kSamplerAudioTelemetry,
+      std::move(audio_telemetry_sampler),
+      /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
+      metrics::kReportDeviceAudioStatusDefaultValue);
+  InitNetworkConfiguredSampler(/*sampler_name=*/kSamplerHttpsLatency,
+                               delegate_->GetHttpsLatencySampler());
+  InitNetworkConfiguredSampler(
+      /*sampler_name=*/kSamplerNetworkTelemetry,
+      delegate_->GetNetworkTelemetrySampler());
+  auto peripheral_telemetry_sampler =
+      std::make_unique<CrosHealthdMetricSampler>(
+          ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBus,
+          CrosHealthdMetricSampler::MetricType::kTelemetry);
+  InitTelemetryConfiguredSampler(
+      /*sampler_name=*/kSamplerPeripheralTelemetry,
+      std::move(peripheral_telemetry_sampler),
+      /*enable_setting_path=*/::ash::kReportDevicePeripherals,
+      metrics::kReportDevicePeripheralsDefaultValue);
+  auto displays_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
+      ash::cros_healthd::mojom::ProbeCategoryEnum::kDisplay,
+      CrosHealthdMetricSampler::MetricType::kTelemetry);
+  InitTelemetryConfiguredSampler(
+      /*sampler_name=*/kSamplerDisplaysTelemetry,
+      std::move(displays_telemetry_sampler),
+      /*enable_setting_path=*/::ash::kReportDeviceGraphicsStatus,
+      metrics::kReportDeviceGraphicsStatusDefaultValue);
 }
 
 void MetricReportingManager::DelayedInitOnAffiliatedLogin(Profile* profile) {
   if (delegate_->IsDeprovisioned()) {
     return;
   }
+
   InitNetworkCollectors(profile);
   InitAudioCollectors();
   InitDisplayCollectors();
 
-  initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
-                              &MetricReportingManager::UploadTelemetry);
+  initial_upload_timer_.Start(FROM_HERE, delegate_->GetInitialUploadDelay(),
+                              this, &MetricReportingManager::UploadTelemetry);
 }
 
 void MetricReportingManager::InitInfoCollector(
@@ -286,93 +329,89 @@ void MetricReportingManager::InitInfoCollector(
   if (!info_report_queue_) {
     return;
   }
-
-  info_collectors_.push_back(delegate_->CreateOneShotCollector(
+  one_shot_collectors_.emplace_back(delegate_->CreateOneShotCollector(
       sampler.get(), info_report_queue_.get(), &reporting_settings_,
-      enable_setting_path, setting_enabled_default_value,
-      delegate_->GetInitDelay()));
-  samplers_.push_back(std::move(sampler));
+      enable_setting_path, setting_enabled_default_value));
+  info_samplers_.emplace_back(std::move(sampler));
 }
 
 void MetricReportingManager::InitOneShotTelemetryCollector(
-    const std::string& collector_name,
-    Sampler* sampler,
-    MetricReportQueue* metric_report_queue,
-    const std::string& enable_setting_path,
-    bool enable_default_value,
-    base::TimeDelta init_delay) {
+    const std::string& sampler_name,
+    MetricReportQueue* metric_report_queue) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(telemetry_collectors_, collector_name));
+  DCHECK(base::Contains(telemetry_sampler_map_, sampler_name));
+
   if (!metric_report_queue) {
     return;
   }
 
-  auto collector = delegate_->CreateOneShotCollector(
-      sampler, metric_report_queue, &reporting_settings_, enable_setting_path,
-      enable_default_value, init_delay);
-  telemetry_collectors_.insert({collector_name, std::move(collector)});
+  auto* const configured_sampler =
+      telemetry_sampler_map_.at(sampler_name).get();
+  periodic_collectors_.emplace_back(delegate_->CreateOneShotCollector(
+      configured_sampler->GetSampler(), metric_report_queue,
+      &reporting_settings_, configured_sampler->GetEnableSettingPath(),
+      configured_sampler->GetSettingEnabledDefaultValue()));
 }
 
 void MetricReportingManager::InitPeriodicCollector(
-    const std::string& collector_name,
-    Sampler* sampler,
+    const std::string& sampler_name,
     MetricReportQueue* metric_report_queue,
-    const std::string& enable_setting_path,
-    bool enable_default_value,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
-    int rate_unit_to_ms,
-    base::TimeDelta init_delay) {
+    int rate_unit_to_ms) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(telemetry_collectors_, collector_name));
+  DCHECK(base::Contains(telemetry_sampler_map_, sampler_name));
+
   if (!metric_report_queue) {
     return;
   }
 
-  auto collector = delegate_->CreatePeriodicCollector(
-      sampler, metric_report_queue, &reporting_settings_, enable_setting_path,
-      enable_default_value, rate_setting_path, default_rate, rate_unit_to_ms,
-      init_delay);
-  telemetry_collectors_.insert({collector_name, std::move(collector)});
+  auto* const configured_sampler =
+      telemetry_sampler_map_.at(sampler_name).get();
+  periodic_collectors_.emplace_back(delegate_->CreatePeriodicCollector(
+      configured_sampler->GetSampler(), metric_report_queue,
+      &reporting_settings_, configured_sampler->GetEnableSettingPath(),
+      configured_sampler->GetSettingEnabledDefaultValue(), rate_setting_path,
+      default_rate, rate_unit_to_ms));
 }
 
 void MetricReportingManager::InitPeriodicEventCollector(
-    Sampler* sampler,
+    const std::string& sampler_name,
     std::unique_ptr<PeriodicEventCollector::EventDetector> event_detector,
     MetricReportQueue* metric_report_queue,
-    const std::string& enable_setting_path,
-    bool enable_default_value,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
-    int rate_unit_to_ms,
-    base::TimeDelta init_delay) {
+    int rate_unit_to_ms) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(base::Contains(telemetry_sampler_map_, sampler_name));
+
   if (!metric_report_queue) {
     return;
   }
 
+  auto* const configured_sampler =
+      telemetry_sampler_map_.at(sampler_name).get();
   auto periodic_event_collector = std::make_unique<PeriodicEventCollector>(
-      sampler, std::move(event_detector), &reporting_settings_,
-      rate_setting_path, default_rate, rate_unit_to_ms);
+      configured_sampler->GetSampler(), std::move(event_detector),
+      &reporting_settings_, rate_setting_path, default_rate, rate_unit_to_ms);
   InitEventObserverManager(std::move(periodic_event_collector),
-                           metric_report_queue, enable_setting_path,
-                           enable_default_value, init_delay);
+                           metric_report_queue,
+                           configured_sampler->GetEnableSettingPath(),
+                           configured_sampler->GetSettingEnabledDefaultValue());
 }
 
 void MetricReportingManager::InitEventObserverManager(
     std::unique_ptr<MetricEventObserver> event_observer,
     MetricReportQueue* metric_report_queue,
     const std::string& enable_setting_path,
-    bool setting_enabled_default_value,
-    base::TimeDelta init_delay) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    bool setting_enabled_default_value) {
   if (!metric_report_queue) {
     return;
   }
   event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
       std::move(event_observer), metric_report_queue, &reporting_settings_,
       enable_setting_path, setting_enabled_default_value,
-      /*collector_pool=*/this, init_delay));
+      /*sampler_pool=*/this));
 }
 
 void MetricReportingManager::UploadTelemetry() {
@@ -392,32 +431,41 @@ void MetricReportingManager::CreateCrosHealthdInfoCollector(
                     default_value);
 }
 
-void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
+void MetricReportingManager::InitTelemetryConfiguredSampler(
+    const std::string& sampler_name,
+    std::unique_ptr<Sampler> sampler,
+    const std::string& enable_setting_path,
+    bool default_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Network health telemetry.
-  InitNetworkPeriodicCollector(kNetworkTelemetry,
-                               delegate_->GetNetworkTelemetrySampler());
 
-  // HttpsLatency collectors.
-  auto https_latency_sampler = delegate_->GetHttpsLatencySampler();
+  auto configured_sampler = std::make_unique<ConfiguredSampler>(
+      std::move(sampler), enable_setting_path, default_value,
+      &reporting_settings_);
+  telemetry_sampler_map_.insert({sampler_name, std::move(configured_sampler)});
+}
+
+void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
+  // Network health telemetry.
+  InitNetworkPeriodicCollector(kSamplerNetworkTelemetry,
+                               telemetry_report_queue_.get());
+
+  // HttpsLatency telemetry.
+  InitNetworkPeriodicCollector(kSamplerHttpsLatency,
+                               telemetry_report_queue_.get());
+
   // HttpsLatency events.
   InitPeriodicEventCollector(
-      https_latency_sampler.get(),
-      std::make_unique<HttpsLatencyEventDetector>(), event_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      metrics::kReportDeviceNetworkStatusDefaultValue,
+      kSamplerHttpsLatency, std::make_unique<HttpsLatencyEventDetector>(),
+      event_report_queue_.get(),
       ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs,
       metrics::GetDefaultEventCheckingRate(
-          metrics::kDefaultNetworkTelemetryEventCheckingRate),
-      /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
-  // HttpsLatency telemetry.
-  InitNetworkPeriodicCollector(kHttpsLatency, std::move(https_latency_sampler));
+          metrics::kDefaultNetworkTelemetryEventCheckingRate));
 
   // Network bandwidth telemetry.
-  auto network_bandwidth_sampler = std::make_unique<NetworkBandwidthSampler>(
+  network_bandwidth_sampler_ = std::make_unique<NetworkBandwidthSampler>(
       g_browser_process->network_quality_tracker(), profile);
-  network_bandwidth_collector_ = delegate_->CreatePeriodicCollector(
-      network_bandwidth_sampler.get(), user_telemetry_report_queue_.get(),
+  periodic_collectors_.emplace_back(delegate_->CreatePeriodicCollector(
+      network_bandwidth_sampler_.get(), user_telemetry_report_queue_.get(),
       &reporting_settings_,
       /*enable_setting_path=*/
       ::ash::kReportDeviceNetworkStatus,
@@ -425,43 +473,36 @@ void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
       ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
       metrics::GetDefaultCollectionRate(
           metrics::kDefaultNetworkTelemetryCollectionRate),
-      /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
-  samplers_.push_back(std::move(network_bandwidth_sampler));
+      /*rate_unit_to_ms=*/1));
 }
 
 void MetricReportingManager::InitNetworkPeriodicCollector(
-    const std::string& collector_name,
+    const std::string& sampler_name,
+    MetricReportQueue* metric_report_queue) {
+  InitPeriodicCollector(sampler_name, metric_report_queue,
+                        ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
+                        metrics::GetDefaultCollectionRate(
+                            metrics::kDefaultNetworkTelemetryCollectionRate));
+}
+
+void MetricReportingManager::InitNetworkConfiguredSampler(
+    const std::string& sampler_name,
     std::unique_ptr<Sampler> sampler) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  InitPeriodicCollector(
-      collector_name, sampler.get(), telemetry_report_queue_.get(),
+  InitTelemetryConfiguredSampler(
+      sampler_name, std::move(sampler),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      metrics::kReportDeviceNetworkStatusDefaultValue,
-      ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
-      metrics::GetDefaultCollectionRate(
-          metrics::kDefaultNetworkTelemetryCollectionRate),
-      /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
-  samplers_.push_back(std::move(sampler));
+      metrics::kReportDeviceNetworkStatusDefaultValue);
 }
 
 void MetricReportingManager::InitAudioCollectors() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto audio_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kAudio,
-      CrosHealthdMetricSampler::MetricType::kTelemetry);
-  InitPeriodicCollector(kAudioTelemetry, audio_telemetry_sampler.get(),
+  InitPeriodicCollector(kSamplerAudioTelemetry,
                         user_telemetry_report_queue_.get(),
-                        /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
-                        metrics::kReportDeviceAudioStatusDefaultValue,
                         ::ash::kReportDeviceAudioStatusCheckingRateMs,
                         metrics::GetDefaultCollectionRate(
-                            metrics::kDefaultAudioTelemetryCollectionRate),
-                        /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
-  samplers_.push_back(std::move(audio_telemetry_sampler));
+                            metrics::kDefaultAudioTelemetryCollectionRate));
 }
 
 void MetricReportingManager::InitPeripheralsCollectors() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Peripheral events
   if (!user_peripheral_events_and_telemetry_report_queue_) {
     return;
@@ -471,40 +512,24 @@ void MetricReportingManager::InitPeripheralsCollectors() {
       user_peripheral_events_and_telemetry_report_queue_.get(),
       &reporting_settings_, ::ash::kReportDevicePeripherals,
       metrics::kReportDevicePeripheralsDefaultValue,
-      /*collector_pool=*/this));
+      /*sampler_pool=*/this));
 
   // Peripheral telemetry
-  auto peripheral_telemetry_sampler =
-      std::make_unique<CrosHealthdMetricSampler>(
-          ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBus,
-          CrosHealthdMetricSampler::MetricType::kTelemetry);
   InitOneShotTelemetryCollector(
-      kPeripheralTelemetry, peripheral_telemetry_sampler.get(),
-      user_peripheral_events_and_telemetry_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDevicePeripherals,
-      metrics::kReportDevicePeripheralsDefaultValue,
-      /*init_delay=*/base::TimeDelta());
-  samplers_.push_back(std::move(peripheral_telemetry_sampler));
+      kSamplerPeripheralTelemetry,
+      user_peripheral_events_and_telemetry_report_queue_.get());
 }
 
 void MetricReportingManager::InitDisplayCollectors() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto displays_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      ash::cros_healthd::mojom::ProbeCategoryEnum::kDisplay,
-      CrosHealthdMetricSampler::MetricType::kTelemetry);
-  InitPeriodicCollector(
-      kDisplaysTelemetry, displays_telemetry_sampler.get(),
-      telemetry_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDeviceGraphicsStatus,
-      metrics::kReportDeviceGraphicsStatusDefaultValue,
-      ::ash::kReportUploadFrequency,
-      metrics::GetDefaultCollectionRate(metrics::kDefaultReportUploadFrequency),
-      /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
-  samplers_.push_back(std::move(displays_telemetry_sampler));
+  InitPeriodicCollector(kSamplerDisplaysTelemetry,
+                        telemetry_report_queue_.get(),
+                        ::ash::kReportUploadFrequency,
+                        metrics::GetDefaultCollectionRate(
+                            metrics::kDefaultGraphicsTelemetryCollectionRate));
 }
 
-std::vector<CollectorBase*>
-MetricReportingManager::GetTelemetryCollectorsFromSetting(
+std::vector<ConfiguredSampler*>
+MetricReportingManager::GetTelemetrySamplersFromSetting(
     base::StringPiece setting_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -515,9 +540,9 @@ MetricReportingManager::GetTelemetryCollectorsFromSetting(
     return {};
   }
 
-  std::vector<CollectorBase*> samplers;
+  std::vector<ConfiguredSampler*> samplers;
   for (const base::Value& telemetry : *telemetry_list) {
-    if (samplers.size() == telemetry_collectors_.size()) {
+    if (samplers.size() == telemetry_sampler_map_.size()) {
       // All samplers are already used, remaining telemetry names would be
       // either invalid or duplicates.
       break;
@@ -525,18 +550,13 @@ MetricReportingManager::GetTelemetryCollectorsFromSetting(
 
     const std::string* telemetry_name = telemetry.GetIfString();
     if (telemetry_name &&
-        base::Contains(telemetry_collectors_, *telemetry_name) &&
+        base::Contains(telemetry_sampler_map_, *telemetry_name) &&
         !base::Contains(samplers,
-                        telemetry_collectors_.at(*telemetry_name).get())) {
-      samplers.push_back(telemetry_collectors_.at(*telemetry_name).get());
+                        telemetry_sampler_map_.at(*telemetry_name).get())) {
+      samplers.push_back(telemetry_sampler_map_.at(*telemetry_name).get());
     }
   }
   return samplers;
-}
-
-base::TimeDelta MetricReportingManager::GetUploadDelay() const {
-  // Upload delay time starts after init delay.
-  return delegate_->GetInitDelay() + delegate_->GetInitialUploadDelay();
 }
 
 }  // namespace reporting
