@@ -11028,10 +11028,7 @@ if (is_win) {
 group("closure_compile") {
   testonly = true
 
-  deps = [
-    "base:closure_compile",
-    "data:closure_compile",
-  ]
+  deps = [ "data:closure_compile" ]
 }
 
 # This is split out here instead of being part of //chrome/test:browser_tests

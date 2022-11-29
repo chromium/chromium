@@ -54,7 +54,6 @@ copy("web_ui_test_mojom_js_module") {
 
 group("closure_compile") {
   deps = [
-    ":closure_compile_local",
     "cast:closure_compile",
     "extensions/api_test/file_system_provider/service_worker:closure_compile",
   ]
@@ -62,21 +61,4 @@ group("closure_compile") {
   if (is_chromeos_ash) {
     deps += [ "webui:closure_compile" ]
   }
-}
-
-js_type_check("closure_compile_local") {
-  deps = [
-    ":test_api_js",
-    "cast",
-  ]
-}
-
-js_library("test_api_js") {
-  sources = [ "webui/test_api.js" ]
-  externs_list = [
-    "//third_party/chaijs/externs/chai-3.5.js",
-    "//ui/webui/resources/js/dom_automation_controller.js",
-    "//third_party/closure_compiler/externs/test.js",
-  ]
-  deps = [ ":web_ui_test_bindings_js_library_for_compile" ]
 }
