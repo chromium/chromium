@@ -4,6 +4,8 @@
 
 #include "components/heavy_ad_intervention/heavy_ad_helper.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "components/grit/components_resources.h"
