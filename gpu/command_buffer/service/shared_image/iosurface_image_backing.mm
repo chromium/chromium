@@ -551,33 +551,6 @@ std::unique_ptr<SkiaImageRepresentation> IOSurfaceImageBacking::ProduceSkia(
       tracker);
 }
 
-MemoryIOSurfaceRepresentation::MemoryIOSurfaceRepresentation(
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    MemoryTypeTracker* tracker,
-    scoped_refptr<gl::GLImageMemory> image_memory)
-    : MemoryImageRepresentation(manager, backing, tracker),
-      image_memory_(std::move(image_memory)) {}
-
-MemoryIOSurfaceRepresentation::~MemoryIOSurfaceRepresentation() = default;
-
-SkPixmap MemoryIOSurfaceRepresentation::BeginReadAccess() {
-  return SkPixmap(backing()->AsSkImageInfo(), image_memory_->memory(),
-                  image_memory_->stride());
-}
-
-std::unique_ptr<MemoryImageRepresentation> IOSurfaceImageBacking::ProduceMemory(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
-  gl::GLImageMemory* image_memory =
-      gl::GLImageMemory::FromGLImage(image_.get());
-  if (!image_memory)
-    return nullptr;
-
-  return std::make_unique<MemoryIOSurfaceRepresentation>(
-      manager, this, tracker, base::WrapRefCounted(image_memory));
-}
-
 void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   if (in_fence) {
     // TODO(dcastagna): Don't wait for the fence if the SharedImage is going

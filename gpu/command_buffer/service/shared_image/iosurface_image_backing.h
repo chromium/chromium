@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_image_memory.h"
 
 namespace gl {
 class ScopedEGLSurfaceIOSurface;
@@ -167,21 +166,6 @@ class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
   scoped_refptr<gl::GLImage> gl_image_;
 };
 
-class MemoryIOSurfaceRepresentation : public MemoryImageRepresentation {
- public:
-  MemoryIOSurfaceRepresentation(SharedImageManager* manager,
-                                SharedImageBacking* backing,
-                                MemoryTypeTracker* tracker,
-                                scoped_refptr<gl::GLImageMemory> image_memory);
-  ~MemoryIOSurfaceRepresentation() override;
-
- protected:
-  SkPixmap BeginReadAccess() override;
-
- private:
-  scoped_refptr<gl::GLImageMemory> image_memory_;
-};
-
 // This class is only put into unique_ptrs and is never copied or assigned.
 class SharedEventAndSignalValue {
  public:
@@ -259,9 +243,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
-  std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
 
   // IOSurfaceBackingEGLState::Client:
