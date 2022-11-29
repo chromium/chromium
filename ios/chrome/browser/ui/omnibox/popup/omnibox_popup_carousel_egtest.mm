@@ -281,6 +281,33 @@ id<GREYMatcher> CarouselMatcher() {
   [ChromeEarlGrey verifyShareActionWithURL:page1ServerURL pageTitle:page1Title];
 }
 
+// Tests the "Open in New Tab" action of the carousel context menu.
+- (void)testMostVisitedNewTab {
+  [self addNumberOfMostVisitedTiles:2];
+  Page page1 = Page(1);
+  id<GREYMatcher> tile1 = TileWithTitle(PageTitle(page1));
+  GURL page1ServerURL = self.testServer->GetURL(PageURL(page1));
+
+  [self focusOmniboxFromWebPageZero];
+  [self longPressMostVisitedTile:tile1];
+
+  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:page1ServerURL.GetContent()];
+}
+
+// Tests the "Open in New Incognito Tab" action of the carousel context menu.
+- (void)testMostVisitedNewIncognitoTab {
+  [self addNumberOfMostVisitedTiles:2];
+  Page page1 = Page(1);
+  id<GREYMatcher> tile1 = TileWithTitle(PageTitle(page1));
+  GURL page1ServerURL = self.testServer->GetURL(PageURL(page1));
+
+  [self focusOmniboxFromWebPageZero];
+  [self longPressMostVisitedTile:tile1];
+
+  [ChromeEarlGrey
+      verifyOpenInIncognitoActionWithURL:page1ServerURL.GetContent()];
+}
+
 #pragma mark - Helpers
 
 /// Loads the page number `pageNumber` from `testServer`.
