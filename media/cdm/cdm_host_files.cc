@@ -84,16 +84,16 @@ CdmHostFiles::Status CdmHostFiles::InitVerification(
   // Call |init_verification_func| on the CDM with |cdm_host_files|. Note that
   // the ownership of these files are transferred to the CDM, which will close
   // the files immediately after use.
-  DVLOG(1) << __func__ << ": Calling " << kInitVerificationFuncName
-           << "() with " << cdm_host_files.size() << " files.";
+  VLOG(1) << __func__ << ": Calling " << kInitVerificationFuncName << "() with "
+          << cdm_host_files.size() << " files.";
   for (const auto& host_file : cdm_host_files) {
-    DVLOG(1) << " - File Path: " << host_file.file_path;
-    DVLOG(1) << " - File: " << host_file.file;
-    DVLOG(1) << " - Sig File: " << host_file.sig_file;
+    VLOG(1) << " - File Path: " << host_file.file_path;
+    VLOG(1) << " - File: " << host_file.file;
+    VLOG(1) << " - Sig File: " << host_file.sig_file;
   }
 
   if (!init_verification_func(cdm_host_files_ptr, cdm_host_files.size())) {
-    DVLOG(1) << "Failed to verify CDM host.";
+    LOG(ERROR) << "Failed to verify CDM host.";
     CloseAllFiles();
     return Status::kInitVerificationFailed;
   }
