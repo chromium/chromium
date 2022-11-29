@@ -7,9 +7,9 @@
  * text to speech.
  */
 
-import {Msgs} from './msgs.js';
-import {TtsInterface} from './tts_interface.js';
-import * as ttsTypes from './tts_types.js';
+import {Msgs} from '../common/msgs.js';
+import {TtsInterface} from '../common/tts_interface.js';
+import * as ttsTypes from '../common/tts_types.js';
 
 /**
  * @typedef {{
