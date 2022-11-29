@@ -90,14 +90,12 @@ class PLATFORM_EXPORT MediaStreamSource final
       bool requires_consumer = false);
 
   // TODO(crbug.com/1302689): Remove once all callers have been migrated.
-  [[deprecated(
-      "Provide a WebPlatformMediaStreamSource during "
-      "construction")]] MediaStreamSource(const String& id,
-                                          StreamType type,
-                                          const String& name,
-                                          bool remote,
-                                          ReadyState state = kReadyStateLive,
-                                          bool requires_consumer = false);
+  MediaStreamSource(const String& id,
+                    StreamType type,
+                    const String& name,
+                    bool remote,
+                    ReadyState state = kReadyStateLive,
+                    bool requires_consumer = false);
 
   const String& Id() const { return id_; }
   StreamType GetType() const { return type_; }
