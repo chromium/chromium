@@ -876,52 +876,6 @@ void FakeUserDataAuthClient::RemoveKey(
     user_state.auth_factors.erase(label);
   }
 }
-void FakeUserDataAuthClient::MassRemoveKeys(
-    const ::user_data_auth::MassRemoveKeysRequest& request,
-    MassRemoveKeysCallback callback) {
-  ReturnProtobufMethodCallback(::user_data_auth::MassRemoveKeysReply(),
-                               std::move(callback));
-}
-
-void FakeUserDataAuthClient::MigrateKey(
-    const ::user_data_auth::MigrateKeyRequest& request,
-    MigrateKeyCallback callback) {
-  ::user_data_auth::MigrateKeyReply reply;
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-
-  const cryptohome::Key& key = request.authorization_request().key();
-  std::string matched_factor_label;
-  switch (AuthenticateViaAuthFactors(
-      request.account_id(), /*factor_label=*/key.data().label(),
-      /*secret=*/key.secret(), /*wildcard_allowed=*/true,
-      &matched_factor_label)) {
-    case AuthResult::kAuthSuccess:
-      // Can proceed to the migration.
-      break;
-    case AuthResult::kUserNotFound:
-      reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
-      return;
-    case AuthResult::kFactorNotFound:
-      reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
-      return;
-    case AuthResult::kAuthFailed:
-      reply.set_error(
-          ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
-      return;
-  }
-  UserCryptohomeState& user_state = users_[request.account_id()];
-
-  // Update the fake auth factor according to the new secret.
-  cryptohome::Key new_key = key;
-  if (new_key.data().label().empty())
-    new_key.mutable_data()->set_label(matched_factor_label);
-  new_key.set_secret(request.secret());
-  const auto [new_label, new_factor] =
-      KeyToFakeAuthFactor(new_key, enable_auth_check_);
-  DCHECK_EQ(new_label, matched_factor_label);
-  user_state.auth_factors[matched_factor_label] = new_factor;
-}
-
 void FakeUserDataAuthClient::StartFingerprintAuthSession(
     const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
     StartFingerprintAuthSessionCallback callback) {

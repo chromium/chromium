@@ -66,16 +66,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
               (const ::user_data_auth::RemoveKeyRequest& request,
                RemoveKeyCallback callback),
               (override));
-  MOCK_METHOD(void,
-              MassRemoveKeys,
-              (const ::user_data_auth::MassRemoveKeysRequest& request,
-               MassRemoveKeysCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              MigrateKey,
-              (const ::user_data_auth::MigrateKeyRequest& request,
-               MigrateKeyCallback callback),
-              (override));
   MOCK_METHOD(
       void,
       StartFingerprintAuthSession,

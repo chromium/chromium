@@ -159,20 +159,6 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
-  void MassRemoveKeys(const ::user_data_auth::MassRemoveKeysRequest& request,
-                      MassRemoveKeysCallback callback) override {
-    CallProtoMethod(::user_data_auth::kMassRemoveKeys,
-                    ::user_data_auth::kUserDataAuthInterface, request,
-                    std::move(callback));
-  }
-
-  void MigrateKey(const ::user_data_auth::MigrateKeyRequest& request,
-                  MigrateKeyCallback callback) override {
-    CallProtoMethod(::user_data_auth::kMigrateKey,
-                    ::user_data_auth::kUserDataAuthInterface, request,
-                    std::move(callback));
-  }
-
   void StartFingerprintAuthSession(
       const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
       StartFingerprintAuthSessionCallback callback) override {

@@ -63,10 +63,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       chromeos::DBusMethodCallback<::user_data_auth::AddKeyReply>;
   using RemoveKeyCallback =
       chromeos::DBusMethodCallback<::user_data_auth::RemoveKeyReply>;
-  using MassRemoveKeysCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::MassRemoveKeysReply>;
-  using MigrateKeyCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::MigrateKeyReply>;
   using StartFingerprintAuthSessionCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::StartFingerprintAuthSessionReply>;
   using EndFingerprintAuthSessionCallback = chromeos::DBusMethodCallback<
@@ -200,15 +196,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Remove a key from user's vault.
   virtual void RemoveKey(const ::user_data_auth::RemoveKeyRequest& request,
                          RemoveKeyCallback callback) = 0;
-
-  // Remove multiple keys from user's vault.
-  virtual void MassRemoveKeys(
-      const ::user_data_auth::MassRemoveKeysRequest& request,
-      MassRemoveKeysCallback callback) = 0;
-
-  // Change the user vault's key's authentication.
-  virtual void MigrateKey(const ::user_data_auth::MigrateKeyRequest& request,
-                          MigrateKeyCallback callback) = 0;
 
   // Starts a fingerprint auth session.
   virtual void StartFingerprintAuthSession(
