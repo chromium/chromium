@@ -14,13 +14,13 @@ namespace {
 
 constexpr char kCommandLineArgs[] = "command-line-args";
 
-base::Value CreateConfigWithSwitchValue(std::string switch_name,
-                                        std::string switch_value) {
+base::Value::Dict CreateConfigWithSwitchValue(std::string switch_name,
+                                              std::string switch_value) {
   base::Value::Dict config_dict;
   base::Value::Dict args;
   args.Set(switch_name, switch_value);
   config_dict.Set(kCommandLineArgs, std::move(args));
-  return base::Value(std::move(config_dict));
+  return config_dict;
 }
 
 }  // namespace
@@ -71,8 +71,7 @@ TEST_F(WebEngineConfigTest, WronglyTypedCommandLineArgs) {
   config.Set(kCommandLineArgs, std::move(args));
 
   base::CommandLine command(base::CommandLine::NO_PROGRAM);
-  EXPECT_FALSE(UpdateCommandLineFromConfigFile(base::Value(std::move(config)),
-                                               &command));
+  EXPECT_FALSE(UpdateCommandLineFromConfigFile(config, &command));
 }
 
 TEST_F(WebEngineConfigTest, WithGoogleApiKeyValue) {

@@ -41,10 +41,10 @@ constexpr char kHeadlessConfigKey[] = "headless";
 
 // Returns the value of |config_key| or false if it is not set.
 bool GetConfigBool(base::StringPiece config_key) {
-  const absl::optional<base::Value>& config =
+  const absl::optional<base::Value::Dict>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (config)
-    return config->FindBoolPath(config_key).value_or(false);
+    return config->FindBool(config_key).value_or(false);
   return false;
 }
 

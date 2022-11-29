@@ -19,7 +19,7 @@ static void LoadConfigAndUpdateCommandLine(base::CommandLine* command_line) {
   if (!is_browser_process)
     return;
 
-  const absl::optional<base::Value>& config =
+  const absl::optional<base::Value::Dict>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (!config)
     return;

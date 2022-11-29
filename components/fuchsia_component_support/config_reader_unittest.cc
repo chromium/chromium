@@ -28,10 +28,9 @@ TEST(ConfigReaderTest, SingleConfigJson) {
 
   auto config = LoadConfigFromDirForTest(temp_dir.GetPath());
   ASSERT_TRUE(config.has_value());
-  ASSERT_TRUE(config->is_dict());
 
-  EXPECT_EQ(config->DictSize(), 1u);
-  const std::string* value = config->FindStringKey("name");
+  EXPECT_EQ(config->size(), 1u);
+  const std::string* value = config->FindString("name");
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, "value");
 }
@@ -48,19 +47,18 @@ TEST(ConfigReaderTest, MultipleConfigJson) {
 
   auto config = LoadConfigFromDirForTest(temp_dir.GetPath());
   ASSERT_TRUE(config.has_value());
-  ASSERT_TRUE(config->is_dict());
 
-  EXPECT_EQ(config->DictSize(), 3u);
+  EXPECT_EQ(config->size(), 3u);
 
-  std::string* value = config->FindStringKey("name1");
+  std::string* value = config->FindString("name1");
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, "value?");
 
-  value = config->FindStringKey("name2");
+  value = config->FindString("name2");
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, "value!");
 
-  value = config->FindStringKey("name3");
+  value = config->FindString("name3");
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, "value...");
 }

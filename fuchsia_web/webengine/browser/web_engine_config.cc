@@ -46,10 +46,9 @@ void AppendToSwitch(base::StringPiece switch_name,
   command_line->AppendSwitchNative(switch_name, new_value);
 }
 
-bool AddCommandLineArgsFromConfig(const base::Value& config,
+bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
                                   base::CommandLine* command_line) {
-  const base::Value::Dict* args =
-      config.GetDict().FindDict("command-line-args");
+  const base::Value::Dict* args = config.FindDict("command-line-args");
   if (!args)
     return true;
 
@@ -132,7 +131,7 @@ bool AddCommandLineArgsFromConfig(const base::Value& config,
 
 }  // namespace
 
-bool UpdateCommandLineFromConfigFile(const base::Value& config,
+bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
                                      base::CommandLine* command_line) {
   // The FieldTrialList should be initialized only after config is loaded.
   CHECK(!base::FieldTrialList::GetInstance());
@@ -147,22 +146,21 @@ bool UpdateCommandLineFromConfigFile(const base::Value& config,
   const bool widevine_enabled =
       command_line->HasSwitch(switches::kEnableWidevine);
 
-  const base::Value::Dict& dict = config.GetDict();
   const bool allow_protected_graphics =
-      dict.FindBool("allow-protected-graphics").value_or(false);
+      config.FindBool("allow-protected-graphics").value_or(false);
   const bool force_protected_graphics =
-      dict.FindBool("force-protected-graphics").value_or(false);
+      config.FindBool("force-protected-graphics").value_or(false);
   const bool enable_protected_graphics =
       ((playready_enabled || widevine_enabled) && allow_protected_graphics) ||
       force_protected_graphics;
   const bool use_overlays_for_video =
-      dict.FindBool("use-overlays-for-video").value_or(false);
+      config.FindBool("use-overlays-for-video").value_or(false);
 
   if (enable_protected_graphics) {
     command_line->AppendSwitch(switches::kEnableVulkanProtectedMemory);
     command_line->AppendSwitch(switches::kEnableProtectedVideoBuffers);
     const bool force_protected_video_buffers =
-        dict.FindBool("force-protected-video-buffers").value_or(false);
+        config.FindBool("force-protected-video-buffers").value_or(false);
     if (force_protected_video_buffers) {
       command_line->AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
     }

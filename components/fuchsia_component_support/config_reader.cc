@@ -19,21 +19,22 @@ namespace fuchsia_component_support {
 
 namespace {
 
-bool HaveConflicts(const base::Value& dict1, const base::Value& dict2) {
-  for (auto item : dict1.DictItems()) {
-    const base::Value* value = dict2.FindKey(item.first);
+bool HaveConflicts(const base::Value::Dict& dict1,
+                   const base::Value::Dict& dict2) {
+  for (auto item : dict1) {
+    const base::Value* value = dict2.Find(item.first);
     if (!value)
       continue;
     if (!value->is_dict())
       return true;
-    if (HaveConflicts(item.second, *value))
+    if (HaveConflicts(item.second.GetDict(), value->GetDict()))
       return true;
   }
 
   return false;
 }
 
-base::Value ReadConfigFile(const base::FilePath& path) {
+base::Value::Dict ReadConfigFile(const base::FilePath& path) {
   std::string file_content;
   bool loaded = base::ReadFileToString(path, &file_content);
   CHECK(loaded) << "Couldn't read config file: " << path;
@@ -43,18 +44,19 @@ base::Value ReadConfigFile(const base::FilePath& path) {
       << "Failed to parse " << path << ": " << parsed.error().message;
   CHECK(parsed->is_dict()) << "Config is not a JSON dictionary: " << path;
 
-  return std::move(*parsed);
+  return std::move(parsed->GetDict());
 }
 
-absl::optional<base::Value> ReadConfigsFromDir(const base::FilePath& dir) {
+absl::optional<base::Value::Dict> ReadConfigsFromDir(
+    const base::FilePath& dir) {
   base::FileEnumerator configs(dir, false, base::FileEnumerator::FILES,
                                "*.json");
-  absl::optional<base::Value> config;
+  absl::optional<base::Value::Dict> config;
   for (base::FilePath path; !(path = configs.Next()).empty();) {
-    base::Value path_config = ReadConfigFile(path);
+    base::Value::Dict path_config = ReadConfigFile(path);
     if (config) {
       CHECK(!HaveConflicts(*config, path_config));
-      config->MergeDictionary(&path_config);
+      config->Merge(std::move(path_config));
     } else {
       config = std::move(path_config);
     }
@@ -65,16 +67,16 @@ absl::optional<base::Value> ReadConfigsFromDir(const base::FilePath& dir) {
 
 }  // namespace
 
-const absl::optional<base::Value>& LoadPackageConfig() {
+const absl::optional<base::Value::Dict>& LoadPackageConfig() {
   // Package configurations do not change at run-time, so read the configuration
   // on the first call and cache the result.
-  static base::NoDestructor<absl::optional<base::Value>> config(
+  static base::NoDestructor<absl::optional<base::Value::Dict>> config(
       ReadConfigsFromDir(base::FilePath("/config/data")));
 
   return *config;
 }
 
-absl::optional<base::Value> LoadConfigFromDirForTest(  // IN-TEST
+absl::optional<base::Value::Dict> LoadConfigFromDirForTest(  // IN-TEST
     const base::FilePath& dir) {
   return ReadConfigsFromDir(dir);
 }
