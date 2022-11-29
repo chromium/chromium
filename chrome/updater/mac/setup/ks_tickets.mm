@@ -19,26 +19,35 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
 
 + (nullable NSDictionary<NSString*, KSTicket*>*)readStoreWithPath:
     (nonnull NSString*)path {
-  if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+  if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
     VLOG(0) << "Ticket store does not exist at "
             << base::SysNSStringToUTF8(path);
     return [NSDictionary dictionary];
   }
-  NSError* readError = nil;
+
+  NSError* error = nil;
   NSData* storeData = [NSData dataWithContentsOfFile:path
                                              options:0  // Use normal IO
-                                               error:&readError];
+                                               error:&error];
   if (!storeData) {
     VLOG(0) << "Failed to decode ticket store at "
-            << base::SysNSStringToUTF8(path) << ": " << readError;
+            << base::SysNSStringToUTF8(path) << ": " << error;
     return nil;
   }
-  if (![storeData length])
+  if (!storeData.length) {
     return [NSDictionary dictionary];
+  }
+
   NSDictionary* store = nil;
   @try {  // Unarchiver can throw
     NSKeyedUnarchiver* unpacker =
-        [[NSKeyedUnarchiver alloc] initForReadingWithData:storeData];
+        [[[NSKeyedUnarchiver alloc] initForReadingFromData:storeData
+                                                     error:&error] autorelease];
+    if (!unpacker) {
+      VLOG(0) << base::SysNSStringToUTF8(
+          [NSString stringWithFormat:@"Ticket error %@", error]);
+      return nil;
+    }
     unpacker.requiresSecureCoding = YES;
     NSSet* classes =
         [NSSet setWithObjects:[NSDictionary class], [KSTicket class],
@@ -46,6 +55,7 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
                               [NSURL class], nil];
     store = [unpacker decodeObjectOfClasses:classes
                                      forKey:NSKeyedArchiveRootObjectKey];
+    [unpacker finishDecoding];
   } @catch (id e) {
     VLOG(0) << base::SysNSStringToUTF8(
         [NSString stringWithFormat:@"Ticket exception %@", e]);
