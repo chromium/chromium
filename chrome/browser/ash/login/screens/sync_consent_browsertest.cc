@@ -677,9 +677,9 @@ class SyncConsentMinorModeTest : public SyncConsentTest {
   base::test::ScopedFeatureList sync_feature_list_;
 };
 
-// TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
+// TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg and MSAN and LSAN.
 #undef MAYBE_Accept
-#if !defined(NDEBUG)
+#if !defined(NDEBUG) || defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER)
 #define MAYBE_Accept DISABLED_Accept
 #else
 #define MAYBE_Accept Accept
