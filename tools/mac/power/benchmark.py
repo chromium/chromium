@@ -79,6 +79,14 @@ def main():
                       default=False,
                       help='Print verbose output.')
 
+  parser.add_argument(
+      "--brightness_level",
+      type=int,
+      required=False,
+      # This is the average brightness from UMA data.
+      default=65,
+      help="Desired brightness level.")
+
   # If an ip is provided for the Kasa switch it needs to be fully set up
   # (see plug.py). It will be used to keep the machine charged between
   # scenarios.
@@ -112,8 +120,7 @@ def main():
   logging.info(f'Outputing results in {os.path.abspath(output_dir)}')
   with DriverContext(output_dir, args.power_sampler) as driver:
     driver.CheckEnv(not args.no_checks)
-    # This is the average brightness from UMA data.
-    driver.SetMainDisplayBrightness(65)
+    driver.SetMainDisplayBrightness(args.brightness_level)
 
     driver.WaitBatteryNotFull()
 
