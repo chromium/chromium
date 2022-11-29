@@ -95,7 +95,6 @@ class SplitCompatEngine implements InstallEngine {
 
             if (status == SplitInstallSessionStatus.INSTALLED) {
                 mFacade.updateCrashKeys();
-                mFacade.updateBundleUtils();
             }
 
             for (String moduleName : modules) {

@@ -9,9 +9,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -58,7 +56,6 @@ public class BundleUtils {
     private static Boolean sIsBundle;
     private static final Object sSplitLock = new Object();
 
-    private static ApplicationInfo sAppInfo;
     // This cache is needed to support the workaround for b/172602571, see
     // createIsolatedSplitContext() for more info.
     private static final SimpleArrayMap<String, ClassLoader> sCachedClassLoaders =
@@ -74,7 +71,6 @@ public class BundleUtils {
 
     public static void resetForTesting() {
         sIsBundle = null;
-        sAppInfo = null;
         sCachedClassLoaders.clear();
         sInflationClassLoaders.clear();
         sSplitCompatClassLoaderInstance = null;
@@ -112,41 +108,9 @@ public class BundleUtils {
         return BuildConfig.ISOLATED_SPLITS_ENABLED;
     }
 
-    /**
-     * Updates the ApplicationInfo used to know what splits are installed.
-     */
-    public static void invalidateListOfInstalledSplits() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Context c = ContextUtils.getApplicationContext();
-            try {
-                // Re-query list of installed split from package manager rather than from
-                // Context.getApplicationInfo(), because the latter is not updated yet.
-                // b/258453540
-                PackageInfo pi = c.getPackageManager().getPackageInfo(c.getPackageName(), 0);
-                synchronized (sSplitLock) {
-                    sAppInfo = pi.applicationInfo;
-                }
-                Log.i(TAG, "invalidateListOfInstalledSplits()");
-            } catch (NameNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static String getSplitApkPath(String splitName) {
-        ApplicationInfo appInfo;
-        synchronized (sSplitLock) {
-            appInfo = sAppInfo;
-            if (appInfo == null) {
-                // For the initial initialization, use the readily available ApplicationInfo from
-                // the application Context. When modules are installed on-the-fly,
-                // setInstalledSplits() is used to set them from the potentially more up-to-date
-                // PackageManager results.
-                appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
-                sAppInfo = appInfo;
-            }
-        }
+        ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
         String[] splitNames = appInfo.splitNames;
         if (splitNames == null) {
             return null;
