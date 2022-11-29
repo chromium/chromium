@@ -42,6 +42,11 @@ base::TimeDelta GetMaxTimeToPrompt() {
              : features::kTrustSafetySentimentSurveyMaxTimeToPrompt.Get();
 }
 
+base::TimeDelta GetMinSessionTime() {
+  DCHECK(base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2));
+  return features::kTrustSafetySentimentSurveyV2MinSessionTime.Get();
+}
+
 int GetRequiredNtpCount() {
   return base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2)
              ? base::RandInt(
@@ -75,6 +80,8 @@ std::string GetHatsTriggerForFeatureArea(
         return kHatsSurveyTriggerTrustSafetyV2BrowsingData;
       case (TrustSafetySentimentService::FeatureArea::kPrivacyGuide):
         return kHatsSurveyTriggerTrustSafetyV2PrivacyGuide;
+      case (TrustSafetySentimentService::FeatureArea::kControlGroup):
+        return kHatsSurveyTriggerTrustSafetyV2ControlGroup;
       default:
         NOTREACHED();
         return "";
@@ -135,6 +142,7 @@ bool VersionCheck(TrustSafetySentimentService::FeatureArea feature_area) {
     case (TrustSafetySentimentService::FeatureArea::kPasswordCheck):
     case (TrustSafetySentimentService::FeatureArea::kBrowsingData):
     case (TrustSafetySentimentService::FeatureArea::kPrivacyGuide):
+    case (TrustSafetySentimentService::FeatureArea::kControlGroup):
       return isV2 == true;
     // Both Versions
     case (TrustSafetySentimentService::FeatureArea::kTrustedSurface):
@@ -171,6 +179,10 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
       case (TrustSafetySentimentService::FeatureArea::kPrivacyGuide):
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2PrivacyGuideProbability
+                   .Get();
+      case (TrustSafetySentimentService::FeatureArea::kControlGroup):
+        return base::RandDouble() <
+               features::kTrustSafetySentimentSurveyV2ControlGroupProbability
                    .Get();
       default:
         NOTREACHED();
@@ -327,9 +339,18 @@ TrustSafetySentimentService::TrustSafetySentimentService(Profile* profile)
           profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)) {
     observed_profiles_.AddObservation(primary_otr);
   }
+
+  if (base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2)) {
+    metrics::DesktopSessionDurationTracker::Get()->AddObserver(this);
+    performed_control_group_dice_roll_ = false;
+  }
 }
 
-TrustSafetySentimentService::~TrustSafetySentimentService() = default;
+TrustSafetySentimentService::~TrustSafetySentimentService() {
+  if (base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2)) {
+    metrics::DesktopSessionDurationTracker::Get()->RemoveObserver(this);
+  }
+}
 
 void TrustSafetySentimentService::OpenedNewTabPage() {
   // Explicit early exit for the common path, where the user has not performed
@@ -555,6 +576,17 @@ void TrustSafetySentimentService::OnProfileWillBeDestroyed(Profile* profile) {
     // Closing the incognito profile, which is the only OTR profie observed by
     // this class, is an ileligible action.
     PerformedIneligibleAction();
+  }
+}
+
+void TrustSafetySentimentService::OnSessionEnded(base::TimeDelta session_length,
+                                                 base::TimeTicks session_end) {
+  DCHECK(base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2));
+  // Check if the user is eligible for the control group.
+  if (!performed_control_group_dice_roll_ &&
+      session_length > GetMinSessionTime()) {
+    performed_control_group_dice_roll_ = true;
+    TriggerOccurred(FeatureArea::kControlGroup, {});
   }
 }
 

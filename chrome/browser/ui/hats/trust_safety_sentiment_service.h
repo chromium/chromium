@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -19,8 +20,10 @@
 
 // Service which receives events from Trust & Safety features and determines
 // whether or not to launch a HaTS survey on the NTP for the user.
-class TrustSafetySentimentService : public KeyedService,
-                                    public ProfileObserver {
+class TrustSafetySentimentService
+    : public KeyedService,
+      public ProfileObserver,
+      public metrics::DesktopSessionDurationTracker::Observer {
  public:
   explicit TrustSafetySentimentService(Profile* profile);
   ~TrustSafetySentimentService() override;
@@ -83,6 +86,10 @@ class TrustSafetySentimentService : public KeyedService,
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  // metrics::DesktopSessionDurationTracker::Observer
+  void OnSessionEnded(base::TimeDelta session_length,
+                      base::TimeTicks session_end) override;
+
   // The feature areas that the service delivers HaTS surveys for. Each feature
   // area is associated with a different Listnr survey, and has a different set
   // of Product Specific Data (PSD). kIneligible is an exception, and
@@ -108,7 +115,8 @@ class TrustSafetySentimentService : public KeyedService,
     kPasswordCheck = 11,
     kBrowsingData = 12,
     kPrivacyGuide = 13,
-    kMaxValue = kPrivacyGuide,
+    kControlGroup = 14,
+    kMaxValue = kControlGroup,
   };
 
   // Called when the user interacts with Privacy Sandbox 3, |feature_area|
@@ -141,6 +149,7 @@ class TrustSafetySentimentService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
                            V2_BrowsingData_NotInterested);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_PrivacyGuide);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_ControlGroup);
 
   // Struct representing a trigger (user action relevant to T&S) that previously
   // occurred, and is awaiting the appropriate eligibility steps before causing
@@ -213,6 +222,7 @@ class TrustSafetySentimentService : public KeyedService,
   std::unique_ptr<PageInfoState> page_info_state_;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
+  bool performed_control_group_dice_roll_;
   base::WeakPtrFactory<TrustSafetySentimentService> weak_ptr_factory_{this};
 };
 

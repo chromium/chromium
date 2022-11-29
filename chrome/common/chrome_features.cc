@@ -1246,12 +1246,20 @@ const base::FeatureParam<int> kTrustSafetySentimentSurveyV2NtpVisitsMinRange{
     &kTrustSafetySentimentSurveyV2, "ntp-visits-min-range", 2};
 const base::FeatureParam<int> kTrustSafetySentimentSurveyV2NtpVisitsMaxRange{
     &kTrustSafetySentimentSurveyV2, "ntp-visits-max-range", 4};
+// The minimum time that has to pass in the current session before a user can be
+// eligible to be considered for the baseline control group.
+const base::FeatureParam<base::TimeDelta>
+    kTrustSafetySentimentSurveyV2MinSessionTime{
+        &kTrustSafetySentimentSurveyV2, "min-session-time", base::Seconds(30)};
 // The feature area probabilities for each feature area considered as part of
 // the Trust & Safety sentiment survey.
 // TODO(crbug.com/1382134): Calculate initial probabilities and remove 0.0
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2BrowsingDataProbability{
         &kTrustSafetySentimentSurveyV2, "browsing-data-probability", 0.0};
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2ControlGroupProbability{
+        &kTrustSafetySentimentSurveyV2, "control-group-probability", 0.0};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2PasswordCheckProbability{
         &kTrustSafetySentimentSurveyV2, "password-check-probability", 0.0};
@@ -1269,6 +1277,9 @@ const base::FeatureParam<double>
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2BrowsingDataTriggerId{
         &kTrustSafetySentimentSurveyV2, "browsing-data-trigger-id", ""};
+const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2ControlGroupTriggerId{
+        &kTrustSafetySentimentSurveyV2, "control-group-trigger-id", ""};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2PasswordCheckTriggerId{
         &kTrustSafetySentimentSurveyV2, "password-check-trigger-id", ""};

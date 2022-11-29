@@ -46,6 +46,14 @@ class TrustSafetySentimentServiceTest : public testing::Test {
         .WillRepeatedly(testing::Return(true));
   }
 
+  void SetUp() override {
+    metrics::DesktopSessionDurationTracker::Initialize();
+  }
+
+  void TearDown() override {
+    metrics::DesktopSessionDurationTracker::CleanupForTesting();
+  }
+
  protected:
   struct FeatureParams {
     std::string privacy_settings_time = "20s";
@@ -123,13 +131,16 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string max_time_to_prompt = "60m";
     std::string ntp_visits_min_range = "2";
     std::string ntp_visits_max_range = "4";
+    std::string min_session_time = "30s";
     std::string trusted_surface_time = "5s";
     std::string browsing_data_probability = "0.4";
+    std::string control_group_probability = "0.4";
     std::string password_check_probability = "0.4";
     std::string safety_check_probability = "0.4";
     std::string trusted_surface_probability = "0.4";
     std::string privacy_guide_probability = "0.4";
     std::string browsing_data_trigger_id = "browsing-data-test";
+    std::string control_group_trigger_id = "control-group-test";
     std::string password_check_trigger_id = "password-check-test";
     std::string safety_check_trigger_id = "safety-check-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
@@ -144,13 +155,16 @@ class TrustSafetySentimentServiceTest : public testing::Test {
             {"max-time-to-prompt", params.max_time_to_prompt},
             {"ntp-visits-min-range", params.ntp_visits_min_range},
             {"ntp-visits-max-range", params.ntp_visits_max_range},
+            {"min-session-time", params.min_session_time},
             {"trusted-surface-time", params.trusted_surface_time},
             {"browsing-data-probability", params.browsing_data_probability},
+            {"control-group-probability", params.control_group_probability},
             {"password-check-probability", params.password_check_probability},
             {"safety-check-probability", params.safety_check_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
             {"privacy-guide-probability", params.privacy_guide_probability},
             {"browsing-data-trigger-id", params.browsing_data_trigger_id},
+            {"control-group-trigger-id", params.control_group_trigger_id},
             {"password-check-trigger-id", params.password_check_trigger_id},
             {"safety-check-trigger-id", params.safety_check_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
@@ -1006,4 +1020,52 @@ TEST_F(TrustSafetySentimentServiceTest, V2_PrivacyGuide) {
   service()->OpenedNewTabPage();
   CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacyGuide},
                   {TrustSafetySentimentService::FeatureArea::kPrivacyGuide});
+}
+
+TEST_F(TrustSafetySentimentServiceTest, V2_ControlGroup) {
+  // If a user is in the control group, they should be eligible to see a survey
+  // if they reached a certain threshold of session length, and only once.
+  FeatureParamsV2 params;
+  params.control_group_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  params.min_session_time = "30s";
+  SetupFeatureParametersV2(params);
+
+  // A survey should not be launched because the session threshold was not
+  // surpassed.
+  EXPECT_CALL(*mock_hats_service(), LaunchSurvey(_, _, _, _, _)).Times(0);
+  base::TimeTicks session_start = base::TimeTicks::Now();
+  service()->OnSessionStarted(session_start);
+  task_environment()->AdvanceClock(base::Seconds(10));
+  base::TimeTicks session_end = base::TimeTicks::Now();
+  service()->OnSessionEnded(session_end - session_start, session_end);
+  service()->OpenedNewTabPage();
+  CheckHistograms({}, {});
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // A survey should be launched because the session threshold was surpassed.
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2ControlGroup, _, _, _, _));
+  session_start = base::TimeTicks::Now();
+  service()->OnSessionStarted(session_start);
+  task_environment()->AdvanceClock(base::Seconds(40));
+  session_end = base::TimeTicks::Now();
+  service()->OnSessionEnded(session_end - session_start, session_end);
+  service()->OpenedNewTabPage();
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kControlGroup},
+                  {TrustSafetySentimentService::FeatureArea::kControlGroup});
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // A second valid trigger should not launch a survey because we have already
+  // performed one dice roll for this user.
+  EXPECT_CALL(*mock_hats_service(), LaunchSurvey(_, _, _, _, _)).Times(0);
+  session_start = base::TimeTicks::Now();
+  service()->OnSessionStarted(session_start);
+  task_environment()->AdvanceClock(base::Seconds(40));
+  session_end = base::TimeTicks::Now();
+  service()->OnSessionEnded(session_end - session_start, session_end);
+  service()->OpenedNewTabPage();
 }
