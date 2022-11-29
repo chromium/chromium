@@ -1378,8 +1378,7 @@ TEST_F(WebStateObserverTest, WebPageReloadNavigation) {
 }
 
 // Tests web page reload with user agent override.
-// TODO(crbug.com/851119): temporarily disable this failing test.
-TEST_F(WebStateObserverTest, DISABLED_ReloadWithUserAgentType) {
+TEST_F(WebStateObserverTest, ReloadWithUserAgentType) {
   const GURL url = test_server_->GetURL("/echo");
 
   // Perform new page navigation.
