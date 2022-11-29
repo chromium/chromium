@@ -6,6 +6,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
@@ -242,9 +243,8 @@ void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 std::string AccessCodeCastDialog::GetDialogArgs() const {
-  base::DictionaryValue args;
   std::string json;
-  base::JSONWriter::Write(args, &json);
+  base::JSONWriter::Write(base::Value::Dict(), &json);
   return json;
 }
 
