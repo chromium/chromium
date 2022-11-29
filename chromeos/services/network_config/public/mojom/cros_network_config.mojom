@@ -1255,6 +1255,11 @@ interface CrosNetworkConfig {
   // network with ID |network_guid|. Should only be called when the APN
   // Revamp feature flag is enabled.
   RemoveCustomApn(string network_guid, string apn_id);
+
+  // Finds the APN that matches |apn.id| in |custom_apn_list| for the network
+  // with ID |network_guid|. If found, replaces the content with |apn|.
+  // Should only be called when the APN Revamp feature flag is enabled.
+  ModifyCustomApn(string network_guid, ApnProperties apn);
 };
 
 interface CrosNetworkConfigObserver {
