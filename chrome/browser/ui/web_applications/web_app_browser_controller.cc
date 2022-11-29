@@ -167,12 +167,7 @@ bool WebAppBrowserController::AppUsesBorderlessMode() const {
 }
 
 bool WebAppBrowserController::IsIsolatedWebApp() const {
-  if (!web_contents())
-    return false;
-
-  return web_contents()->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
-         content::RenderFrameHost::WebExposedIsolationLevel::
-             kMaybeIsolatedApplication;
+  return registrar().IsIsolated(app_id());
 }
 
 gfx::Rect WebAppBrowserController::GetDefaultBounds() const {

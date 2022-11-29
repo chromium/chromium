@@ -295,6 +295,14 @@ const ash::SystemWebAppDelegate* AppBrowserController::system_app() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::u16string AppBrowserController::GetLaunchFlashText() const {
+  // Isolated Web Apps should show the app's name instead of the origin.
+  // App Short Name is considered trustworthy because manifest comes from signed
+  // web bundle.
+  // TODO:(crbug.com/b/1394199) Disable IWA launch flash text for OSs that
+  // already display name on title bar.
+  if (IsIsolatedWebApp()) {
+    return GetAppShortName();
+  }
   return GetFormattedUrlOrigin();
 }
 
