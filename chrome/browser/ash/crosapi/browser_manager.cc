@@ -47,6 +47,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_action.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
@@ -192,6 +193,72 @@ bool RotateLacrosLogs() {
   return false;
 }
 
+void PreloadFile(base::FilePath file_path) {
+  DLOG(WARNING) << "Preloading " << file_path;
+
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  DPCHECK(file.IsValid());
+  if (!file.IsValid()) {
+    PLOG(WARNING) << "Failed opening " << file_path << " while preloading";
+    return;
+  }
+
+  int64_t file_size = file.GetLength();
+  if (file_size < 0) {
+    PLOG(WARNING) << "Failed getting size of " << file_path
+                  << "while preloading";
+    return;
+  }
+
+  if (readahead(file.GetPlatformFile(), 0, file_size) < 0) {
+    PLOG(WARNING) << "Failed preloading " << file_path;
+    return;
+  }
+
+  DLOG(WARNING) << "Preloaded " << file_path;
+}
+
+void PreloadLacrosFiles(const base::FilePath& lacros_dir) {
+  // These files are the Lacros equivalent of Ash's files preloaded at boot by
+  // ureadahead.
+  static constexpr const char* kPreloadFiles[] = {
+      "WidevineCdm/manifest.json",
+      "chrome",
+      "chrome_100_percent.pak",
+      "chrome_200_percent.pak",
+      "chrome_crashpad_handler",
+      "icudtl.dat",
+      "icudtl.dat.hash",
+      "nacl_helper",
+      "resources.pak",
+      "snapshot_blob.bin",
+  };
+
+  // Preload common files.
+  for (const char* file_name : kPreloadFiles) {
+    base::FilePath file_path = lacros_dir.Append(base::FilePath(file_name));
+    PreloadFile(file_path);
+  }
+
+  // Preload localization pack.
+  std::string locale = g_browser_process->GetApplicationLocale();
+  base::FilePath locale_path =
+      lacros_dir.Append(base::StringPrintf("locales/%s.pak", locale.c_str()));
+  PreloadFile(locale_path);
+  base::FilePath locale_info_path = locale_path.AddExtension(".info");
+  PreloadFile(locale_info_path);
+
+  // Preload Widevine for the right architecture.
+#if defined(ARCH_CPU_ARM_FAMILY)
+  base::FilePath libwidevine_path = lacros_dir.Append(
+      "WidevineCdm/_platform_specific/cros_arm/libwidevinecdm.so");
+#else
+  base::FilePath libwidevine_path = lacros_dir.Append(
+      "WidevineCdm/_platform_specific/cros_x64/libwidevinecdm.so");
+#endif
+  PreloadFile(libwidevine_path);
+}
+
 ResourcesFileSharingMode ClearOrMoveSharedResourceFileInternal(
     bool clear_shared_resource_file,
     base::FilePath shared_resource_path) {
@@ -256,7 +323,8 @@ ResourcesFileSharingMode ClearOrMoveSharedResourceFile(
 // The returns struct is used by the main thread as parameters to launch Lacros.
 LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
     base::FilePath lacros_dir,
-    bool clear_shared_resource_file) {
+    bool clear_shared_resource_file,
+    bool launching_at_login_screen) {
   LaunchParamsFromBackground params;
 
   if (!RotateLacrosLogs()) {
@@ -313,6 +381,13 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
         params.lacros_additional_args.emplace_back(flag);
     }
   }
+
+  // When launching at login screen, we can take advantage of the time before
+  // the user inputs the password and logs in to preload Lacros-related files.
+  // This speeds up the perceived startup time, as they will be loaded anyway
+  // in the later stages of Lacros's lifetime.
+  if (launching_at_login_screen)
+    PreloadLacrosFiles(lacros_dir);
 
   return params;
 }
@@ -867,7 +942,8 @@ void BrowserManager::Start(bool launching_at_login_screen) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
-                     is_initial_lacros_launch_after_reboot_),
+                     is_initial_lacros_launch_after_reboot_,
+                     launching_at_login_screen),
       base::BindOnce(&BrowserManager::StartWithLogFile,
                      weak_factory_.GetWeakPtr()));
 
