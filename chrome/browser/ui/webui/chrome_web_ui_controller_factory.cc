@@ -986,10 +986,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == ash::kChromeUIMediaAppHost)
     return &NewComponentUI<ash::MediaAppUI, ChromeMediaAppUIDelegate>;
-  if (ash::features::IsFirmwareUpdaterAppEnabled()) {
-    if (url.host_piece() == ash::kChromeUIFirmwareUpdateAppHost)
-      return &NewWebUI<ash::FirmwareUpdateAppUI>;
-  }
   if (url.host_piece() == ash::multidevice::kChromeUIProximityAuthHost &&
       !profile->IsOffTheRecord()) {
     return &NewWebUI<ash::multidevice::ProximityAuthUI>;
