@@ -127,8 +127,7 @@ TEST_F(AppStreamLauncherViewTest, AddItems) {
                     ->children()
                     .size());
 
-  EXPECT_EQ(u"Fake App",
-            GetItemView(0)->get_label_for_test()->GetTooltipText());
+  EXPECT_EQ(u"Fake App", GetItemView(0)->GetLabelForTest()->GetTooltipText());
 }
 
 TEST_F(AppStreamLauncherViewTest, RemoveItem) {
@@ -151,8 +150,7 @@ TEST_F(AppStreamLauncherViewTest, RemoveItem) {
                     ->children()
                     .size());
 
-  EXPECT_EQ(u"Fake App",
-            GetItemView(0)->get_label_for_test()->GetTooltipText());
+  EXPECT_EQ(u"Fake App", GetItemView(0)->GetLabelForTest()->GetTooltipText());
 
   apps.clear();
   data_model->SetAppList(apps);
@@ -190,7 +188,7 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItem) {
   EXPECT_TRUE(GetItemView(0)->GetVisible());
 
   gfx::Point cursor_location =
-      GetItemView(0)->get_icon_for_test()->GetBoundsInScreen().CenterPoint();
+      GetItemView(0)->GetIconForTest()->GetBoundsInScreen().CenterPoint();
   generator.MoveMouseTo(cursor_location);
   generator.ClickLeftButton();
 

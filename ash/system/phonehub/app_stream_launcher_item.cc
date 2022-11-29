@@ -69,4 +69,11 @@ const char* AppStreamLauncherItem::GetClassName() const {
   return "AppStreamLauncherItem";
 }
 
+views::Label* AppStreamLauncherItem::GetLabelForTest() {
+  return label_;
+}
+PhoneHubRecentAppButton* AppStreamLauncherItem::GetIconForTest() {
+  return recent_app_button_;
+}
+
 }  // namespace ash
