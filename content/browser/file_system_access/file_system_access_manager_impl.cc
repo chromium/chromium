@@ -1556,14 +1556,19 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForPath(
             ? PermissionStatus::GRANTED
             : PermissionStatus::DENIED,
         path);
-    if (user_action ==
-        FileSystemAccessPermissionContext::UserAction::kLoadFromStorage) {
-      read_grant = write_grant;
-    } else {
-      // Grant read permission even without a permission_context_, as the picker
-      // itself is enough UI to assume user intent.
-      read_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
-          PermissionStatus::GRANTED, path);
+    switch (user_action) {
+      case FileSystemAccessPermissionContext::UserAction::kNone:
+      case FileSystemAccessPermissionContext::UserAction::kLoadFromStorage:
+        read_grant = write_grant;
+        break;
+      case FileSystemAccessPermissionContext::UserAction::kOpen:
+      case FileSystemAccessPermissionContext::UserAction::kSave:
+      case FileSystemAccessPermissionContext::UserAction::kDragAndDrop:
+        // Grant read permission even without a permission_context_, as the
+        // picker itself is enough UI to assume user intent.
+        read_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+            PermissionStatus::GRANTED, path);
+        break;
     }
   }
   return SharedHandleState(std::move(read_grant), std::move(write_grant));

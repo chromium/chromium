@@ -22,7 +22,7 @@ namespace features {
 // TODO(crbug.com/1381621): Remove this flag eventually.
 // When enabled, move() will result in a promise rejection when the specified
 // destination to move to exists.
-BASE_DECLARE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove);
 }  // namespace features
 
 namespace storage {
@@ -141,13 +141,22 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           callback);
-  void DidConfirmDestinationDoesNotExist(
+  // Only called if the move operation is not allowed to overwrite the target.
+  void ConfirmMoveWillNotOverwriteDestination(
+      const bool has_write_access,
       const storage::FileSystemURL& destination_url,
       std::vector<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
           locks,
       bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       base::File::Error result);
+  void DoPerformMoveOperation(
+      const storage::FileSystemURL& destination_url,
+      std::vector<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
+          locks,
+      bool has_transient_user_activation,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          callback);
 
   void DidMove(
       storage::FileSystemURL destination_url,
