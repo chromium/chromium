@@ -1361,13 +1361,14 @@ export class Output {
 
       if (eventBlock[rule.role][formatName]) {
         rule.navigation = formatName;
-        rule.output =
-            eventBlock[rule.role][formatName].speak ? 'speak' : undefined;
+        rule.output = eventBlock[rule.role][formatName].speak ?
+            outputTypes.OutputFormatType.SPEAK :
+            undefined;
         if (this.formatOptions_.braille) {
           buff = [];
           formatLog.bufferClear();
           if (eventBlock[rule.role][formatName].braille) {
-            rule.output = 'braille';
+            rule.output = outputTypes.OutputFormatType.BRAILLE;
           }
         }
 
@@ -1427,15 +1428,15 @@ export class Output {
     } else {
       rule.role = CustomRole.DEFAULT;
     }
-    rule.output = 'speak';
+    rule.output = outputTypes.OutputFormatType.SPEAK;
     if (this.formatOptions_.braille) {
       // Overwrite rule by braille rule if exists.
       if (node.role && (eventBlock[node.role] || {}).braille !== undefined) {
         rule.role = node.role;
-        rule.output = 'braille';
+        rule.output = outputTypes.OutputFormatType.BRAILLE;
       } else if ((eventBlock[parentRole] || {}).braille !== undefined) {
         rule.role = parentRole;
-        rule.output = 'braille';
+        rule.output = outputTypes.OutputFormatType.BRAILLE;
       }
     }
     formatLog.writeRule(rule.specifier);

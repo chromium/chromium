@@ -220,3 +220,9 @@ export const INPUT_TYPE_MESSAGE_IDS = {
  *     verbalized; can specify pitch, rate, language, etc.
  */
 export let OutputFormattingData;
+
+/** @enum {string} */
+export const OutputFormatType = {
+  BRAILLE: 'braille',
+  SPEAK: 'speak',
+};
