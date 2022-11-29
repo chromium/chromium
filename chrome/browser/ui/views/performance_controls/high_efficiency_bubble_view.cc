@@ -29,8 +29,6 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
                                       kHighEfficiencyDialogBodyElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
-                                      kHighEfficiencyDialogOkButton);
 
 // static
 views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
@@ -48,10 +46,8 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
       .SetDialogDestroyingCallback(
           base::BindOnce(&HighEfficiencyBubbleDelegate::OnDialogDestroy,
                          base::Unretained(bubble_delegate)))
-      .AddOkButton(base::DoNothing(),
-                   ui::DialogModelButton::Params()
-                       .SetLabel(l10n_util::GetStringUTF16(IDS_OK))
-                       .SetId(kHighEfficiencyDialogOkButton));
+      .AddOkButton(base::DoNothing(), ui::DialogModelButton::Params().SetLabel(
+                                          l10n_util::GetStringUTF16(IDS_OK)));
 
   TabDiscardTabHelper* const tab_helper = TabDiscardTabHelper::FromWebContents(
       browser->tab_strip_model()->GetActiveWebContents());
@@ -79,8 +75,7 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
                 base::BindRepeating(
                     &HighEfficiencyBubbleDelegate::OnSettingsClicked,
                     base::Unretained(bubble_delegate))))
-            .set_is_secondary(),
-        std::u16string(), kHighEfficiencyDialogBodyElementId);
+            .set_is_secondary());
   }
   auto dialog_model = dialog_model_builder.Build();
 
