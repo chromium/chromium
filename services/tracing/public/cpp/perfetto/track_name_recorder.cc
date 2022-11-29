@@ -85,7 +85,8 @@ namespace {
 void FillThreadTrack(const perfetto::ThreadTrack& track, const char* name) {
   using perfetto::protos::gen::ChromeThreadDescriptor;
 
-  int process_id = base::trace_event::TraceLog::GetInstance()->process_id();
+  int process_id = static_cast<int>(
+      base::trace_event::TraceLog::GetInstance()->process_id());
   auto desc = track.Serialize();
   desc.mutable_thread()->set_pid(process_id);
   desc.mutable_thread()->set_thread_name(name);

@@ -1102,7 +1102,8 @@ TEST_F(TraceEventDataSourceTest, ActiveProcessesMetadata) {
 TEST_F(TraceEventDataSourceTest, DISABLED_TimestampedTraceEvent) {
   StartTraceEventDataSource();
 
-  auto current_thread_tid = perfetto::ThreadTrack::Current().tid;
+  base::PlatformThreadId current_thread_tid =
+      perfetto::ThreadTrack::Current().tid;
 
   TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0(
       kCategoryGroup, "bar", 42, current_thread_tid,
@@ -1146,9 +1147,9 @@ TEST_F(TraceEventDataSourceTest, InstantTraceEventOnOtherThread) {
 
   INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMP(
       TRACE_EVENT_PHASE_INSTANT, kCategoryGroup, "bar",
-      static_cast<uint64_t>(trace_event_internal::kNoId),
-      /*thread_id=*/1, base::TimeTicks() + base::Microseconds(10),
-      /*/flags=*/TRACE_EVENT_SCOPE_THREAD);
+      trace_event_internal::kNoId, base::PlatformThreadId(1),
+      base::TimeTicks() + base::Microseconds(10),
+      /*flags=*/TRACE_EVENT_SCOPE_THREAD);
   size_t packet_index = ExpectStandardPreamble();
 
   // Thread track for the overridden tid.

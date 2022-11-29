@@ -33,15 +33,8 @@ namespace legacy {
 
 template <>
 perfetto::ThreadTrack ConvertThreadId(const ::base::PlatformThreadId& thread) {
-  return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
+  return perfetto::ThreadTrack::ForThread(thread);
 }
-
-#if BUILDFLAG(IS_WIN)
-template <>
-perfetto::ThreadTrack ConvertThreadId(const int& thread) {
-  return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace legacy
 

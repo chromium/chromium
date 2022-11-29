@@ -322,8 +322,7 @@ void OnAddLegacyTraceEvent(TraceEvent* trace_event,
     }
   }
   if (trace_event->thread_id() &&
-      trace_event->thread_id() !=
-          static_cast<int>(base::PlatformThread::CurrentId())) {
+      trace_event->thread_id() != base::PlatformThread::CurrentId()) {
     PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
         phase, category, trace_event->name(),
         perfetto::ThreadTrack::ForThread(trace_event->thread_id()), timestamp,
@@ -2092,7 +2091,7 @@ void TraceLog::OnSetProcessName(const std::string& process_name) {
     auto track = perfetto::ProcessTrack::Current();
     auto desc = track.Serialize();
     desc.mutable_process()->set_process_name(process_name);
-    desc.mutable_process()->set_pid(process_id_);
+    desc.mutable_process()->set_pid(static_cast<int>(process_id_));
     perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
   }
 #endif
