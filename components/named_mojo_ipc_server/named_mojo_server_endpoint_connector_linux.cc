@@ -6,7 +6,7 @@
 
 #include <sys/socket.h>
 
-#include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -77,11 +77,8 @@ void NamedMojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
     delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
     return;
   }
-  auto connection = std::make_unique<mojo::IsolatedConnection>();
-  auto message_pipe = connection->Connect(std::move(endpoint));
   delegate_.AsyncCall(&Delegate::OnServerEndpointConnected)
-      .WithArgs(std::move(connection), std::move(message_pipe),
-                unix_peer_identity.pid);
+      .WithArgs(std::move(endpoint), unix_peer_identity.pid);
 }
 
 // static

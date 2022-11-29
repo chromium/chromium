@@ -18,6 +18,7 @@
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_version.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace updater {
@@ -103,9 +104,11 @@ static bool IsTrustedIPCEndpoint(base::ProcessId /*caller_pid*/) {
 
 UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
                                      UpdaterScope scope)
-    : server_(GetActiveDutySocketPath(scope)->MaybeAsASCII(),
-              this,
-              base::BindRepeating(&IsTrustedIPCEndpoint)),
+    : server_(
+          GetActiveDutySocketPath(scope)->MaybeAsASCII(),
+          named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
+          this,
+          base::BindRepeating(&IsTrustedIPCEndpoint)),
       impl_(impl) {
   server_.set_disconnect_handler(base::BindRepeating(
       &UpdateServiceStub::OnClientDisconnected, base::Unretained(this)));
@@ -227,6 +230,7 @@ UpdateServiceInternalStub::UpdateServiceInternalStub(
     : server_(
           GetActiveDutyInternalSocketPath(scope, base::Version(kUpdaterVersion))
               ->MaybeAsASCII(),
+          named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
           this,
           base::BindRepeating(&IsTrustedIPCEndpoint)),
       impl_(impl) {

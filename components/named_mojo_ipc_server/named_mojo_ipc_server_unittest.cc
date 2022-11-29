@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,9 +59,14 @@ static const char kClientProcessHangAfterConnectSwitch[] =
     "named-mojo-ipc-server-test-hang-after-connect";
 static const char kClientProcessWaitUntilDisconnectedSwitch[] =
     "named-mojo-ipc-server-test-wait-until-disconnected";
+static const char kClientProcessUseIsolatedConnectionSwitch[] =
+    "named-mojo-ipc-server-test-use-isolated-connection";
 static constexpr int kInvalidEndpointExitCode = 42;
+static constexpr uint64_t kTestMessagePipeId = 0u;
 
-class NamedMojoIpcServerTest : public testing::Test, public test::mojom::Echo {
+class NamedMojoIpcServerTest
+    : public testing::TestWithParam</* is_isolated= */ bool>,
+      public test::mojom::Echo {
  public:
   NamedMojoIpcServerTest();
   ~NamedMojoIpcServerTest() override;
@@ -132,8 +138,10 @@ void NamedMojoIpcServerTest::TearDown() {
 
 void NamedMojoIpcServerTest::CreateIpcServer() {
   ipc_server_ = std::make_unique<NamedMojoIpcServer<test::mojom::Echo>>(
-      test_server_name_, this,
-      base::BindRepeating([](base::ProcessId) { return true; }));
+      test_server_name_,
+      GetParam() ? NamedMojoIpcServerBase::kUseIsolatedConnection
+                 : kTestMessagePipeId,
+      this, base::BindRepeating([](base::ProcessId) { return true; }));
   ipc_server_->set_on_server_endpoint_created_callback_for_testing(
       base::BindRepeating(&NamedMojoIpcServerTest::OnServerEndpointCreated,
                           base::Unretained(this)));
@@ -151,6 +159,9 @@ base::Process NamedMojoIpcServerTest::LaunchClientProcess(
                               test_server_name_);
   if (!extra_switch.empty()) {
     cmd_line.AppendSwitch(extra_switch);
+  }
+  if (GetParam()) {
+    cmd_line.AppendSwitch(kClientProcessUseIsolatedConnectionSwitch);
   }
   return base::SpawnMultiProcessTestChild(kEchoClientName, cmd_line,
                                           /* options= */ {});
@@ -192,14 +203,14 @@ void NamedMojoIpcServerTest::OnServerEndpointCreated() {
   on_server_endpoint_created_run_loop_->Quit();
 }
 
-TEST_F(NamedMojoIpcServerTest, SendEcho) {
+TEST_P(NamedMojoIpcServerTest, SendEcho) {
   base::Process child_process = LaunchClientProcess();
   base::ProcessId child_pid = child_process.Pid();
   EXPECT_EQ(0, WaitForProcessExit(child_process));
   EXPECT_EQ(child_pid, last_echo_string_peer_pid_);
 }
 
-TEST_F(NamedMojoIpcServerTest, DeleteNamedMojoServer_NoLingeringInvitations) {
+TEST_P(NamedMojoIpcServerTest, DeleteNamedMojoServer_NoLingeringInvitations) {
   ipc_server_.reset();
   base::RunLoop().RunUntilIdle();
   // For posix, the socket doesn't seem to be closed immediately after the
@@ -211,7 +222,7 @@ TEST_F(NamedMojoIpcServerTest, DeleteNamedMojoServer_NoLingeringInvitations) {
   EXPECT_EQ(kInvalidEndpointExitCode, WaitForProcessExit(child_process));
 }
 
-TEST_F(NamedMojoIpcServerTest, DisconnectHandler) {
+TEST_P(NamedMojoIpcServerTest, DisconnectHandler) {
   base::RunLoop disconnect_run_loop;
   base::MockCallback<base::RepeatingClosure> disconnect_handler;
   EXPECT_CALL(disconnect_handler, Run()).WillOnce([&]() {
@@ -226,7 +237,7 @@ TEST_F(NamedMojoIpcServerTest, DisconnectHandler) {
   disconnect_run_loop.Run();
 }
 
-TEST_F(NamedMojoIpcServerTest, DeleteNamedMojoServer_RemoteDisconnected) {
+TEST_P(NamedMojoIpcServerTest, DeleteNamedMojoServer_RemoteDisconnected) {
   base::RunLoop wait_for_echo_string_called_run_loop;
   on_echo_string_called_ = wait_for_echo_string_called_run_loop.QuitClosure();
   base::Process child_process =
@@ -237,7 +248,7 @@ TEST_F(NamedMojoIpcServerTest, DeleteNamedMojoServer_RemoteDisconnected) {
   WaitForProcessExit(child_process);
 }
 
-TEST_F(NamedMojoIpcServerTest, StopServer_RemoteDisconnected) {
+TEST_P(NamedMojoIpcServerTest, StopServer_RemoteDisconnected) {
   base::RunLoop wait_for_echo_string_called_run_loop;
   on_echo_string_called_ = wait_for_echo_string_called_run_loop.QuitClosure();
   base::Process child_process =
@@ -248,7 +259,7 @@ TEST_F(NamedMojoIpcServerTest, StopServer_RemoteDisconnected) {
   WaitForProcessExit(child_process);
 }
 
-TEST_F(NamedMojoIpcServerTest, CloseReceiver_RemoteDisconnected) {
+TEST_P(NamedMojoIpcServerTest, CloseReceiver_RemoteDisconnected) {
   base::RunLoop wait_for_echo_string_called_run_loop;
   on_echo_string_called_ = wait_for_echo_string_called_run_loop.QuitClosure();
   base::Process child_process =
@@ -261,13 +272,13 @@ TEST_F(NamedMojoIpcServerTest, CloseReceiver_RemoteDisconnected) {
   ASSERT_EQ(0u, ipc_server_->GetNumberOfActiveConnectionsForTesting());
 }
 
-TEST_F(NamedMojoIpcServerTest, CloseNonexistentReceiver_NoCrash) {
+TEST_P(NamedMojoIpcServerTest, CloseNonexistentReceiver_NoCrash) {
   ASSERT_EQ(0u, ipc_server_->GetNumberOfActiveConnectionsForTesting());
   ipc_server_->Close(1u);
   ASSERT_EQ(0u, ipc_server_->GetNumberOfActiveConnectionsForTesting());
 }
 
-TEST_F(NamedMojoIpcServerTest, RemoteProcessTerminated_ConnectionRemoved) {
+TEST_P(NamedMojoIpcServerTest, RemoteProcessTerminated_ConnectionRemoved) {
   base::RunLoop wait_for_echo_string_called_run_loop;
   on_echo_string_called_ = wait_for_echo_string_called_run_loop.QuitClosure();
   base::Process child_process =
@@ -282,7 +293,7 @@ TEST_F(NamedMojoIpcServerTest, RemoteProcessTerminated_ConnectionRemoved) {
   ASSERT_EQ(0u, ipc_server_->GetNumberOfActiveConnectionsForTesting());
 }
 
-TEST_F(NamedMojoIpcServerTest,
+TEST_P(NamedMojoIpcServerTest,
        RemoteTerminatedBeforeBound_NewServerEndpointCreated) {
   base::Process child_process =
       LaunchClientProcess(kClientProcessExitAfterConnectSwitch);
@@ -290,14 +301,14 @@ TEST_F(NamedMojoIpcServerTest,
   WaitForServerEndpointCreated();
 }
 
-TEST_F(NamedMojoIpcServerTest,
+TEST_P(NamedMojoIpcServerTest,
        RemoteConnectsAndHangs_NewServerEndpointCreated) {
   base::Process child_process =
       LaunchClientProcess(kClientProcessHangAfterConnectSwitch);
   WaitForServerEndpointCreated();
 }
 
-TEST_F(NamedMojoIpcServerTest, ParallelIpcs) {
+TEST_P(NamedMojoIpcServerTest, ParallelIpcs) {
   base::MockCallback<EchoStringHandler> mock_echo_string_handler;
   echo_string_handler_ = mock_echo_string_handler.Get();
   std::string first_input;
@@ -321,7 +332,7 @@ TEST_F(NamedMojoIpcServerTest, ParallelIpcs) {
   WaitForProcessExit(child_process_2);
 }
 
-TEST_F(NamedMojoIpcServerTest, IpcServerRestarted_NewIpcsCanBeMade) {
+TEST_P(NamedMojoIpcServerTest, IpcServerRestarted_NewIpcsCanBeMade) {
   base::Process child_process = LaunchClientProcess();
   WaitForProcessExit(child_process);
 
@@ -359,11 +370,19 @@ MULTIPROCESS_TEST_MAIN(EchoClient) {
     base::RunLoop().Run();
     return 0;
   }
-  std::unique_ptr<mojo::IsolatedConnection> connection =
-      std::make_unique<mojo::IsolatedConnection>();
+  std::unique_ptr<mojo::IsolatedConnection> connection;
+  mojo::ScopedMessagePipeHandle message_pipe;
+  if (cmd_line->HasSwitch(kClientProcessUseIsolatedConnectionSwitch)) {
+    connection = std::make_unique<mojo::IsolatedConnection>();
+    message_pipe = connection->Connect(std::move(endpoint));
+  } else {
+    auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
+    message_pipe = invitation.ExtractMessagePipe(kTestMessagePipeId);
+  }
+
   auto echo_remote =
       mojo::Remote<test::mojom::Echo>(mojo::PendingRemote<test::mojom::Echo>(
-          connection->Connect(std::move(endpoint)), /* version= */ 0));
+          std::move(message_pipe), /* version= */ 0));
   base::RunLoop wait_for_disconnect_run_loop;
   echo_remote.set_disconnect_handler(
       wait_for_disconnect_run_loop.QuitClosure());
@@ -384,6 +403,14 @@ MULTIPROCESS_TEST_MAIN(EchoClient) {
   }
   return 0;
 }
+
+INSTANTIATE_TEST_SUITE_P(/* test_prefix */,
+                         NamedMojoIpcServerTest,
+                         testing::Values(true, false),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "IsolatedConnection"
+                                             : "NonIsolatedConnection";
+                         });
 
 }  // namespace
 }  // namespace named_mojo_ipc_server

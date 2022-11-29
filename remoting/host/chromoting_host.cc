@@ -128,8 +128,9 @@ void ChromotingHost::StartChromotingHostServices() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   ipc_server_ = std::make_unique<
       named_mojo_ipc_server::NamedMojoIpcServer<mojom::ChromotingHostServices>>(
-      GetChromotingHostServicesServerName(), this,
-      base::BindRepeating(&IsTrustedMojoEndpoint));
+      GetChromotingHostServicesServerName(),
+      named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
+      this, base::BindRepeating(&IsTrustedMojoEndpoint));
   ipc_server_->StartServer();
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
 #else

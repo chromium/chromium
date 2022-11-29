@@ -7,7 +7,7 @@
 #include <string.h>
 #include <windows.h>
 
-#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -23,7 +23,6 @@
 #include "base/win/windows_types.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/isolated_connection.h"
 
 namespace named_mojo_ipc_server {
 
@@ -107,10 +106,8 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
     return;
   }
   ResetConnectionObjects();
-  auto connection = std::make_unique<mojo::IsolatedConnection>();
-  auto message_pipe = connection->Connect(std::move(endpoint));
   delegate_.AsyncCall(&Delegate::OnServerEndpointConnected)
-      .WithArgs(std::move(connection), std::move(message_pipe), peer_pid);
+      .WithArgs(std::move(endpoint), peer_pid);
 }
 
 void NamedMojoServerEndpointConnectorWin::OnError() {

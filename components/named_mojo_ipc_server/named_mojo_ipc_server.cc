@@ -4,6 +4,8 @@
 
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/bind.h"
@@ -12,13 +14,22 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/process/process.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "mojo/public/cpp/system/invitation.h"
+#include "mojo/public/cpp/system/isolated_connection.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/strings/stringprintf.h"
 #include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -64,12 +75,10 @@ NamedMojoIpcServerBase::DelegateProxy::DelegateProxy(
 NamedMojoIpcServerBase::DelegateProxy::~DelegateProxy() = default;
 
 void NamedMojoIpcServerBase::DelegateProxy::OnServerEndpointConnected(
-    std::unique_ptr<mojo::IsolatedConnection> connection,
-    mojo::ScopedMessagePipeHandle message_pipe,
+    mojo::PlatformChannelEndpoint endpoint,
     base::ProcessId peer_pid) {
   if (server_)
-    server_->OnServerEndpointConnected(std::move(connection),
-                                       std::move(message_pipe), peer_pid);
+    server_->OnServerEndpointConnected(std::move(endpoint), peer_pid);
 }
 
 void NamedMojoIpcServerBase::DelegateProxy::OnServerEndpointConnectionFailed() {
@@ -79,8 +88,10 @@ void NamedMojoIpcServerBase::DelegateProxy::OnServerEndpointConnectionFailed() {
 
 NamedMojoIpcServerBase::NamedMojoIpcServerBase(
     const mojo::NamedPlatformChannel::ServerName& server_name,
+    absl::optional<uint64_t> message_pipe_id,
     IsTrustedMojoEndpointCallback is_trusted_endpoint_callback)
     : server_name_(server_name),
+      message_pipe_id_(message_pipe_id),
       is_trusted_endpoint_callback_(std::move(is_trusted_endpoint_callback)) {
   io_sequence_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -103,7 +114,7 @@ void NamedMojoIpcServerBase::StartServer() {
           weak_factory_.GetWeakPtr()),
       io_sequence_);
   server_started_ = true;
-  SendInvitation();
+  CreateServerEndpoint();
 }
 
 void NamedMojoIpcServerBase::StopServer() {
@@ -126,7 +137,7 @@ void NamedMojoIpcServerBase::Close(mojo::ReceiverId id) {
   }
 }
 
-void NamedMojoIpcServerBase::SendInvitation() {
+void NamedMojoIpcServerBase::CreateServerEndpoint() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   io_sequence_->PostTaskAndReplyWithResult(
@@ -163,24 +174,62 @@ void NamedMojoIpcServerBase::OnServerEndpointCreated(
 }
 
 void NamedMojoIpcServerBase::OnServerEndpointConnected(
-    std::unique_ptr<mojo::IsolatedConnection> connection,
-    mojo::ScopedMessagePipeHandle message_pipe,
+    mojo::PlatformChannelEndpoint endpoint,
     base::ProcessId peer_pid) {
-  if (is_trusted_endpoint_callback_.Run(peer_pid)) {
-    auto receiver_id = TrackMessagePipe(std::move(message_pipe), peer_pid);
-    active_connections_[receiver_id] = std::move(connection);
-  } else {
-    LOG(ERROR) << "Process " << peer_pid
-               << " is not a trusted mojo endpoint. Connection refused.";
-  }
-
-  SendInvitation();
+  PassAndTrackMessagePipe(std::move(endpoint), peer_pid);
+  CreateServerEndpoint();
 }
 
 void NamedMojoIpcServerBase::OnServerEndpointConnectionFailed() {
   resend_invitation_on_error_timer_.Start(
       FROM_HERE, kResentInvitationOnErrorDelay, this,
-      &NamedMojoIpcServerBase::SendInvitation);
+      &NamedMojoIpcServerBase::CreateServerEndpoint);
+}
+
+void NamedMojoIpcServerBase::PassAndTrackMessagePipe(
+    mojo::PlatformChannelEndpoint endpoint,
+    base::ProcessId peer_pid) {
+  if (!is_trusted_endpoint_callback_.Run(peer_pid)) {
+    LOG(ERROR) << "Process " << peer_pid
+               << " is not a trusted mojo endpoint. Connection refused.";
+    return;
+  }
+
+  if (!message_pipe_id_.has_value()) {
+    // Create isolated connection.
+    auto connection = std::make_unique<mojo::IsolatedConnection>();
+    mojo::ScopedMessagePipeHandle message_pipe =
+        connection->Connect(std::move(endpoint));
+    mojo::ReceiverId receiver_id =
+        TrackMessagePipe(std::move(message_pipe), peer_pid);
+    active_connections_[receiver_id] = std::move(connection);
+    return;
+  }
+
+  // Create non-isolated connection.
+  mojo::OutgoingInvitation invitation;
+  mojo::ScopedMessagePipeHandle message_pipe =
+      invitation.AttachMessagePipe(*message_pipe_id_);
+#if BUILDFLAG(IS_WIN)
+  // Open process with minimum permissions since the client process might have
+  // restricted its access with DACL.
+  base::Process peer_process =
+      base::Process::OpenWithAccess(peer_pid, PROCESS_DUP_HANDLE);
+// Windows opens the process with a system call so we use PLOG to extract more
+// info. Other OSes (i.e. POSIX) don't do that.
+#define INVALID_PROCESS_LOG PLOG
+#else
+  base::Process peer_process = base::Process::Open(peer_pid);
+#define INVALID_PROCESS_LOG LOG
+#endif
+  if (!peer_process.IsValid()) {
+    INVALID_PROCESS_LOG(ERROR) << "Failed to open peer process";
+    return;
+  }
+#undef INVALID_PROCESS_LOG
+  mojo::OutgoingInvitation::Send(std::move(invitation), peer_process.Handle(),
+                                 std::move(endpoint));
+  TrackMessagePipe(std::move(message_pipe), peer_pid);
 }
 
 }  // namespace named_mojo_ipc_server
