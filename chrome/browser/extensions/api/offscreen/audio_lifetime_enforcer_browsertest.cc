@@ -17,6 +17,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/test_extension_dir.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -29,27 +30,45 @@ class AudioWaiter : public content::WebContentsObserver {
       : content::WebContentsObserver(contents) {}
 
   void WaitForAudible() {
+    DCHECK(!expected_state_);
+
     if (web_contents()->IsCurrentlyAudible())
       return;
+
     expected_state_ = true;
     run_loop_.Run();
   }
 
   void WaitForInaudible() {
+    DCHECK(!expected_state_);
+
     if (!web_contents()->IsCurrentlyAudible())
       return;
+
     expected_state_ = false;
     run_loop_.Run();
   }
 
  private:
   void OnAudioStateChanged(bool audible) override {
+    if (!expected_state_.has_value()) {
+      // We aren't waiting for an event yet, so don't quit the run loop.
+      // Otherwise, we'd quit it now, and it would immediately quit when we
+      // later try to wait for it in WaitFor(In)Audible().
+      return;
+    }
+
+    // Otherwise, the expected state should be equal to the new state (since
+    // there are only two possible states, and if it were already in the
+    // appropriate state, we wouldn't have waited).
     EXPECT_EQ(expected_state_, audible);
     run_loop_.QuitWhenIdle();
   }
 
   base::RunLoop run_loop_;
-  bool expected_state_ = false;
+
+  // The eventual desired state.
+  absl::optional<bool> expected_state_;
 };
 
 }  // namespace
@@ -104,9 +123,8 @@ class AudioLifetimeEnforcerBrowserTest : public ExtensionApiTest {
 
 // Tests that an offscreen document is considered active while playing audio and
 // notifies of inactivity when audio stops.
-// Flaky: https://crbug.com/1383286.
 IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
-                       DISABLED_DocumentActiveWhilePlayingAudio) {
+                       DocumentActiveWhilePlayingAudio) {
   scoped_refptr<const Extension> extension = LoadOffscreenDocumentExtension();
   ASSERT_TRUE(extension);
 
@@ -131,22 +149,22 @@ IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
   EXPECT_TRUE(audio_enforcer.IsActive());
   EXPECT_EQ(0, notify_inactive_calls);
 
-  // Load an audio tag and play it. We use the `timeupdate` event to track when
-  // playback has really started (`playing` is sometimes too early).
+  // Load an audio tag and play it.
   static constexpr char kPlayAudio[] =
       R"(const audioTag = document.createElement('audio');
          audioTag.src = '_test_resources/long_audio.ogg';
-         audioTag.addEventListener(
-             'timeupdate',
-             () => { window.domAutomationController.send('done'); },
-             {once: true});
          document.body.appendChild(audioTag);
-         audioTag.play();)";
+         audioTag.play();
+         window.domAutomationController.send('done');)";
 
-  std::string result;
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractString(contents, kPlayAudio, &result));
-  EXPECT_EQ("done", result);
+  {
+    AudioWaiter audio_waiter(contents);
+    std::string result;
+    EXPECT_TRUE(
+        content::ExecuteScriptAndExtractString(contents, kPlayAudio, &result));
+    EXPECT_EQ("done", result);
+    audio_waiter.WaitForAudible();
+  }
 
   // The document should be considered active.
   EXPECT_EQ(0, notify_inactive_calls);
@@ -163,13 +181,14 @@ IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
   auto timeout_override =
       AudioLifetimeEnforcer::SetTimeoutForTesting(base::Seconds(0));
 
-  // Unfortunately, there's not a good event to wait for that's guaranteed to
-  // fire after audio is detected as stopped in the browser. Just wait for the
-  // WebContents event.
-  AudioWaiter audio_waiter(contents);
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractString(contents, kStopAudio, &result));
-  audio_waiter.WaitForInaudible();
+  {
+    // Stop the audio.
+    std::string result;
+    AudioWaiter audio_waiter(contents);
+    EXPECT_TRUE(
+        content::ExecuteScriptAndExtractString(contents, kStopAudio, &result));
+    audio_waiter.WaitForInaudible();
+  }
 
   // The document should no longer be active.
   EXPECT_EQ(1, notify_inactive_calls);
