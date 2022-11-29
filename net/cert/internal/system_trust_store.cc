@@ -233,12 +233,8 @@ TrustStoreMac::TrustImplType ParamToTrustImplType(
   // These values are used in experiment configs, do not change or reuse the
   // numbers.
   switch (param) {
-    case 1:
-      return TrustStoreMac::TrustImplType::kDomainCache;
     case 2:
       return TrustStoreMac::TrustImplType::kSimple;
-    case 3:
-      return TrustStoreMac::TrustImplType::kLruCache;
     case 4:
       return TrustStoreMac::TrustImplType::kDomainCacheFullCerts;
     default:
@@ -268,26 +264,11 @@ TrustStoreMac::TrustImplType GetTrustStoreImplParam(
   return default_impl;
 }
 
-size_t GetTrustStoreCacheSize() {
-  if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed) &&
-      features::kChromeRootStoreSysCacheSize.Get() > 0) {
-    return features::kChromeRootStoreSysCacheSize.Get();
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kCertDualVerificationTrialFeature) &&
-      features::kCertDualVerificationTrialCacheSize.Get() > 0) {
-    return features::kCertDualVerificationTrialCacheSize.Get();
-  }
-  constexpr size_t kDefaultCacheSize = 512;
-  return kDefaultCacheSize;
-}
-
 TrustStoreMac* GetGlobalTrustStoreMacForCRS() {
   constexpr TrustStoreMac::TrustImplType kDefaultMacTrustImplForCRS =
       TrustStoreMac::TrustImplType::kDomainCacheFullCerts;
   static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
-      kSecPolicyAppleSSL, GetTrustStoreImplParam(kDefaultMacTrustImplForCRS),
-      GetTrustStoreCacheSize());
+      kSecPolicyAppleSSL, GetTrustStoreImplParam(kDefaultMacTrustImplForCRS));
   return static_trust_store_mac.get();
 }
 

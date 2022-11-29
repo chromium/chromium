@@ -234,8 +234,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 NET_EXPORT BASE_DECLARE_FEATURE(kCertDualVerificationTrialFeature);
 #if BUILDFLAG(IS_MAC)
 NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
-NET_EXPORT extern const base::FeatureParam<int>
-    kCertDualVerificationTrialCacheSize;
 #endif /* BUILDFLAG(IS_MAC) */
 #endif /* BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) */
 
@@ -244,7 +242,6 @@ NET_EXPORT extern const base::FeatureParam<int>
 NET_EXPORT BASE_DECLARE_FEATURE(kChromeRootStoreUsed);
 #if BUILDFLAG(IS_MAC)
 NET_EXPORT extern const base::FeatureParam<int> kChromeRootStoreSysImpl;
-NET_EXPORT extern const base::FeatureParam<int> kChromeRootStoreSysCacheSize;
 #endif /* BUILDFLAG(IS_MAC) */
 #endif /* BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) */
 

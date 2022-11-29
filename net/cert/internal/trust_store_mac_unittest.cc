@@ -38,8 +38,6 @@ namespace net {
 
 namespace {
 
-constexpr size_t kDefaultCacheSize = 512;
-
 // The PEM block header used for DER certificates
 const char kCertificateHeader[] = "CERTIFICATE";
 
@@ -106,12 +104,8 @@ class DebugData : public base::SupportsUserData {
 
 const char* TrustImplTypeToString(TrustStoreMac::TrustImplType t) {
   switch (t) {
-    case TrustStoreMac::TrustImplType::kDomainCache:
-      return "DomainCache";
     case TrustStoreMac::TrustImplType::kSimple:
       return "Simple";
-    case TrustStoreMac::TrustImplType::kLruCache:
-      return "LruCache";
     case TrustStoreMac::TrustImplType::kDomainCacheFullCerts:
       return "DomainCacheFullCerts";
     case TrustStoreMac::TrustImplType::kUnknown:
@@ -152,7 +146,7 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
 #pragma clang diagnostic pop
 
   const TrustStoreMac::TrustImplType trust_impl = GetParam();
-  TrustStoreMac trust_store(kSecPolicyAppleSSL, trust_impl, kDefaultCacheSize);
+  TrustStoreMac trust_store(kSecPolicyAppleSSL, trust_impl);
 
   scoped_refptr<ParsedCertificate> a_by_b, b_by_c, b_by_f, c_by_d, c_by_e,
       f_by_e, d_by_d, e_by_e;
@@ -257,8 +251,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
   const TrustStoreMac::TrustImplType trust_impl = GetParam();
 
   base::HistogramTester histogram_tester;
-  TrustStoreMac trust_store(kSecPolicyAppleX509Basic, trust_impl,
-                            kDefaultCacheSize);
+  TrustStoreMac trust_store(kSecPolicyAppleX509Basic, trust_impl);
 
   base::ScopedCFTypeRef<SecPolicyRef> sec_policy(SecPolicyCreateBasicX509());
   ASSERT_TRUE(sec_policy);
@@ -380,9 +373,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
 INSTANTIATE_TEST_SUITE_P(
     Impl,
     TrustStoreMacImplTest,
-    testing::Values(TrustStoreMac::TrustImplType::kDomainCache,
-                    TrustStoreMac::TrustImplType::kSimple,
-                    TrustStoreMac::TrustImplType::kLruCache,
+    testing::Values(TrustStoreMac::TrustImplType::kSimple,
                     TrustStoreMac::TrustImplType::kDomainCacheFullCerts),
     [](const testing::TestParamInfo<TrustStoreMacImplTest::ParamType>& info) {
       return TrustImplTypeToString(info.param);

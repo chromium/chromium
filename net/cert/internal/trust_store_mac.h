@@ -76,10 +76,10 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // NOTE: When updating this enum, also update ParamToTrustImplType in
   // system_trust_store.cc
   enum class TrustImplType {
+    // Values 1 and 3 were used for implementation strategies that have since
+    // been removed.
     kUnknown = 0,
-    kDomainCache = 1,
     kSimple = 2,
-    kLruCache = 3,
     kDomainCacheFullCerts = 4,
   };
 
@@ -111,9 +111,8 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // |policy_oid|. For list of possible policy values, see:
   // https://developer.apple.com/reference/security/1667150-certificate_key_and_trust_servic/1670151-standard_policies_for_specific_c?language=objc
   // |impl| selects which internal implementation is used for checking trust
-  // settings, and the interpretation of |cache_size| varies depending on
-  // |impl|.
-  TrustStoreMac(CFStringRef policy_oid, TrustImplType impl, size_t cache_size);
+  // settings.
+  TrustStoreMac(CFStringRef policy_oid, TrustImplType impl);
 
   TrustStoreMac(const TrustStoreMac&) = delete;
   TrustStoreMac& operator=(const TrustStoreMac&) = delete;
@@ -131,10 +130,8 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
 
  private:
   class TrustImpl;
-  class TrustImplDomainCache;
   class TrustImplDomainCacheFullCerts;
   class TrustImplNoCache;
-  class TrustImplLRUCache;
 
   // Finds certificates in the OS keychains whose Subject matches |name_data|.
   // The result is an array of CRYPTO_BUFFERs containing the DER certificate

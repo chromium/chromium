@@ -393,7 +393,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_APPLICATION |
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_RESULT;
   debug_info->mac_trust_impl =
-      cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kLruCache;
+      cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple;
 #endif
 #if BUILDFLAG(IS_WIN)
   debug_info->win_platform_debug_info =
@@ -471,7 +471,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
                 MAC_TRUST_SETTINGS_DICT_CONTAINS_RESULT,
             trial_info.mac_combined_trust_debug_info()[1]);
   EXPECT_TRUE(trial_info.has_mac_trust_impl());
-  EXPECT_EQ(chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_MRU_CACHE,
+  EXPECT_EQ(chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE,
             trial_info.mac_trust_impl());
 #else
   EXPECT_FALSE(trial_info.has_mac_platform_debug_info());
