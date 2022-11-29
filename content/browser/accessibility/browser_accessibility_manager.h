@@ -590,11 +590,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // flakiness. See NeverSuppressOrDelayEventsForTesting() for details.
   static bool never_suppress_or_delay_events_for_testing_;
 
-  const ui::AXEventGenerator& event_generator() const {
-    return event_generator_;
-  }
-  ui::AXEventGenerator& event_generator() { return event_generator_; }
-
   // A flag to ensure that accessibility fatal errors crash immediately.
   static bool is_fail_fast_mode_;
 
