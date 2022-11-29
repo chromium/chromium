@@ -170,7 +170,9 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
   [program_arguments addObjectsFromArray:@[
     base::SysUTF8ToNSString(updater_path.value()),
     MakeProgramArgument(kWakeAllSwitch),
-    MakeProgramArgument(kEnableLoggingSwitch)
+    MakeProgramArgument(kEnableLoggingSwitch),
+    MakeProgramArgumentWithValue(kLoggingModuleSwitch,
+                                 kLoggingModuleSwitchValue)
   ]];
   if (scope == UpdaterScope::kSystem)
     [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
