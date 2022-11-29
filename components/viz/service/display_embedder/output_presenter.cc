@@ -67,6 +67,8 @@ void OutputPresenter::Image::BeginWriteSkia(int sample_count) {
   DCHECK(!GetPresentCount());
   DCHECK(end_semaphores_.empty());
 
+  SetNotPurgeable();
+
   std::vector<GrBackendSemaphore> begin_semaphores;
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
 
@@ -125,6 +127,28 @@ void OutputPresenter::Image::PreGrContextSubmit() {
   if (auto end_state = scoped_skia_write_access_->TakeEndState()) {
     scoped_skia_write_access_->surface()->flush({}, end_state.get());
   }
+}
+
+bool OutputPresenter::Image::SetPurgeable() {
+  if (is_purgeable_)
+    return false;
+  is_purgeable_ = true;
+
+  // It is possible that `scoped_skia_write_access_` has been created
+  // (pre-emptively, but never used). In that case, remove the write access.
+  if (scoped_skia_write_access_) {
+    EndWriteSkia(/*force_flush=*/false);
+  }
+
+  deps_->GetSharedImageManager()->SetPurgeable(mailbox_, true);
+  return true;
+}
+
+void OutputPresenter::Image::SetNotPurgeable() {
+  if (!is_purgeable_)
+    return;
+  is_purgeable_ = false;
+  deps_->GetSharedImageManager()->SetPurgeable(mailbox_, false);
 }
 
 std::unique_ptr<OutputPresenter::Image> OutputPresenter::AllocateSingleImage(

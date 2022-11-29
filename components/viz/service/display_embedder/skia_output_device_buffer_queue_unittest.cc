@@ -15,7 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/service/display_embedder/output_presenter_gl.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
@@ -144,6 +146,9 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
   TestImageBackingFactory() = default;
   ~TestImageBackingFactory() override = default;
 
+  MOCK_METHOD1(OnSharedImageSetPurgeable, void(const gpu::Mailbox& mailbox));
+  MOCK_METHOD1(OnSharedImageSetNotPurgeable, void(const gpu::Mailbox& mailbox));
+
   // gpu::SharedImageBackingFactory implementation.
   std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
       const gpu::Mailbox& mailbox,
@@ -157,9 +162,11 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       bool is_thread_safe) override {
     size_t estimated_size =
         ResourceSizes::CheckedSizeInBytes<size_t>(size, format);
-    return std::make_unique<gpu::TestImageBacking>(
+    auto result = std::make_unique<gpu::TestImageBacking>(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
         estimated_size);
+    SetPurgeableCallbacks(result.get());
+    return result;
   }
   std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
       const gpu::Mailbox& mailbox,
@@ -170,9 +177,11 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       SkAlphaType alpha_type,
       uint32_t usage,
       base::span<const uint8_t> pixel_data) override {
-    return std::make_unique<gpu::TestImageBacking>(
+    auto result = std::make_unique<gpu::TestImageBacking>(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
         pixel_data.size());
+    SetPurgeableCallbacks(result.get());
+    return result;
   }
   std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
       const gpu::Mailbox& mailbox,
@@ -198,6 +207,19 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
                    base::span<const uint8_t> pixel_data) override {
     return true;
   }
+
+  void SetPurgeableCallbacks(gpu::TestImageBacking* backing) {
+    if (enable_purge_mocks_) {
+      backing->SetPurgeableCallbacks(
+          base::BindRepeating(
+              &TestImageBackingFactory::OnSharedImageSetPurgeable,
+              base::Unretained(this)),
+          base::BindRepeating(
+              &TestImageBackingFactory::OnSharedImageSetNotPurgeable,
+              base::Unretained(this)));
+    }
+  }
+  bool enable_purge_mocks_ = false;
 };
 
 class MockGLSurfaceAsync : public gl::GLSurfaceStub {
@@ -487,6 +509,16 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
   std::unique_ptr<SkiaOutputDeviceBufferQueue> output_device_;
+};
+
+class SkiaOutputDeviceBufferQueuePurgeableTest
+    : public SkiaOutputDeviceBufferQueueTest {
+ public:
+  SkiaOutputDeviceBufferQueuePurgeableTest() {
+    feature_list_.InitAndEnableFeature(features::kBufferQueueImageSetPurgeable);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 namespace {
@@ -914,6 +946,63 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ScheduleOverlaysNoPrimaryPlane) {
     EXPECT_THAT(pending_overlay_mailboxes(), testing::IsEmpty());
     EXPECT_THAT(committed_overlay_mailboxes(), testing::ElementsAre(mailbox));
 
+    PageFlipComplete();
+  }
+}
+
+TEST_F_GPU(SkiaOutputDeviceBufferQueuePurgeableTest, ToggleNoPrimaryPlane) {
+  test_backing_factory_.enable_purge_mocks_ = true;
+  if (output_device_->capabilities().renderer_allocates_images) {
+    GTEST_SKIP_(
+        "Tests behaviour not exercised when the renderer allocates the "
+        "images.");
+  }
+
+  FirstReshape();
+  constexpr size_t kBufferQueueSize = 3;
+
+  // Swap three frames, saving the mailboxes of the buffers.
+  EXPECT_CALL(test_backing_factory_, OnSharedImageSetPurgeable(_)).Times(0);
+  EXPECT_CALL(test_backing_factory_, OnSharedImageSetNotPurgeable(_)).Times(0);
+  std::vector<gpu::Mailbox> mailboxes;
+  for (size_t i = 0; i < kBufferQueueSize; ++i) {
+    PaintAndSchedulePrimaryPlane();
+    mailboxes.push_back(current_image()->mailbox());
+    SwapBuffers();
+    PageFlipComplete();
+  }
+  EXPECT_NE(mailboxes[0], mailboxes[1]);
+  EXPECT_NE(mailboxes[0], mailboxes[2]);
+
+  // Each swap with no primary plane will cause the plane to purged, until all
+  // are purged.
+  for (size_t i = 0; i < 2 * kBufferQueueSize; ++i) {
+    ScheduleNoPrimaryPlane();
+    SwapBuffers();
+    if (i < kBufferQueueSize) {
+      EXPECT_CALL(test_backing_factory_,
+                  OnSharedImageSetPurgeable(mailboxes[i]));
+    }
+    PageFlipComplete();
+  }
+
+  // The first swap will un-purge an image before paint.
+  {
+    EXPECT_CALL(test_backing_factory_,
+                OnSharedImageSetNotPurgeable(mailboxes[0]));
+    PaintAndSchedulePrimaryPlane();
+    SwapBuffers();
+    PageFlipComplete();
+  }
+  // The next swap will un-purge an image before paint, and then un-purge the
+  // final image in PageFlipComplete.
+  {
+    EXPECT_CALL(test_backing_factory_,
+                OnSharedImageSetNotPurgeable(mailboxes[1]));
+    PaintAndSchedulePrimaryPlane();
+    SwapBuffers();
+    EXPECT_CALL(test_backing_factory_,
+                OnSharedImageSetNotPurgeable(mailboxes[2]));
     PageFlipComplete();
   }
 }

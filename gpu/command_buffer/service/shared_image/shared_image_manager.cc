@@ -371,6 +371,16 @@ void SharedImageManager::OnRepresentationDestroyed(
   }
 }
 
+void SharedImageManager::SetPurgeable(const Mailbox& mailbox, bool purgeable) {
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::SetPurgeable: Non-existent mailbox.";
+    return;
+  }
+  (*found)->SetPurgeable(purgeable);
+}
+
 bool SharedImageManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {

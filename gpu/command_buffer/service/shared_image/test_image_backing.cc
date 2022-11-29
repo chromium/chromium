@@ -262,6 +262,16 @@ void TestImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   texture_->SetLevelClearedRect(texture_->target(), 0, cleared_rect);
 }
 
+void TestImageBacking::SetPurgeable(bool purgeable) {
+  if (purgeable) {
+    if (set_purgeable_callback_)
+      set_purgeable_callback_.Run(mailbox());
+  } else {
+    if (set_not_purgeable_callback_)
+      set_not_purgeable_callback_.Run(mailbox());
+  }
+}
+
 bool TestImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   upload_from_memory_called_ = true;
   return true;

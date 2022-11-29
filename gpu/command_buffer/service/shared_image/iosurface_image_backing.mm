@@ -551,6 +551,25 @@ std::unique_ptr<SkiaImageRepresentation> IOSurfaceImageBacking::ProduceSkia(
       tracker);
 }
 
+void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {
+  if (purgeable_ == purgeable)
+    return;
+  purgeable_ = purgeable;
+
+  if (purgeable) {
+    // It is in error to purge the surface while reading or writing to it.
+    DCHECK(!ongoing_write_access_);
+    DCHECK(!num_ongoing_read_accesses_);
+
+    SetClearedRect(gfx::Rect());
+  }
+
+  auto* gl_image_io_surface = static_cast<gl::GLImageIOSurface*>(image_.get());
+  uint32_t old_state;
+  IOSurfaceSetPurgeable(gl_image_io_surface->io_surface(), purgeable,
+                        &old_state);
+}
+
 void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   if (in_fence) {
     // TODO(dcastagna): Don't wait for the fence if the SharedImage is going
@@ -569,6 +588,8 @@ void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     IOSurfaceBackingEGLState* egl_state,
     bool readonly) {
+  // It is in error to read or write an IOSurface while it is purgeable.
+  DCHECK(!purgeable_);
   DCHECK(!ongoing_write_access_);
   if (readonly) {
     num_ongoing_read_accesses_++;

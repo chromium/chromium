@@ -98,6 +98,8 @@ class GPU_GLES2_EXPORT SharedImageManager
   void OnRepresentationDestroyed(const Mailbox& mailbox,
                                  SharedImageRepresentation* representation);
 
+  void SetPurgeable(const Mailbox& mailbox, bool purgeable);
+
   bool is_thread_safe() const { return !!lock_; }
 
   bool display_context_on_another_thread() const {

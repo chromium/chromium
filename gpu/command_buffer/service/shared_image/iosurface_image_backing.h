@@ -243,6 +243,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
+  void SetPurgeable(bool purgeable) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
 
   // IOSurfaceBackingEGLState::Client:
@@ -275,6 +276,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // This is the cleared rect used by ClearedRect and SetClearedRect when
   // |texture_| is nullptr.
   gfx::Rect cleared_rect_;
+
+  // Whether or not the surface is currently purgeable.
+  bool purgeable_ = false;
 
   // This map tracks all IOSurfaceBackingEGLState instances that exist.
   std::map<EGLDisplay, IOSurfaceBackingEGLState*> egl_state_map_;

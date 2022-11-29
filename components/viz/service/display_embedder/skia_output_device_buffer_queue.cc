@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
@@ -240,8 +241,10 @@ void SkiaOutputDeviceBufferQueue::PageFlipComplete(
     if (!displayed_image_->GetPresentCount()) {
       available_images_.push_back(displayed_image_);
       // Call BeginWriteSkia() for the next frame here to avoid some expensive
-      // operations on the critical code path.
-      if (!available_images_.front()->sk_surface()) {
+      // operations on the critical code path. Do this only if we wrote to an
+      // image this frame (if we did not, assume we will not for the next
+      // frame).
+      if (!available_images_.front()->sk_surface() && image) {
         // BeginWriteSkia() may alter GL's state.
         context_state_->set_need_context_state_reset(true);
         available_images_.front()->BeginWriteSkia(sample_count_);
@@ -251,6 +254,16 @@ void SkiaOutputDeviceBufferQueue::PageFlipComplete(
 
   displayed_image_ = image;
   swap_completion_callbacks_.pop_front();
+
+  // If there is no displayed image, then purge one available image.
+  if (base::FeatureList::IsEnabled(features::kBufferQueueImageSetPurgeable)) {
+    if (!displayed_image_) {
+      for (auto* image_to_discard : available_images_) {
+        if (image_to_discard->SetPurgeable())
+          break;
+      }
+    }
+  }
 }
 
 void SkiaOutputDeviceBufferQueue::FreeAllSurfaces() {
