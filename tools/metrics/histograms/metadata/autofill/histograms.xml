@@ -3450,8 +3450,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.SaveCardRequestExpirationDateReason"
     enum="AutofillSaveCardRequestExpirationDateReason"
-    expires_after="2023-01-31">
+    expires_after="2023-11-01">
   <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the reason expiration date was explicitly requested from the user
@@ -3461,9 +3462,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.SaveCreditCardPromptOffer{AutofillSaveCreditCardPromptDestination}"
-    enum="AutofillSaveCreditCardPromptOfferEnum" expires_after="2023-01-01">
+    enum="AutofillSaveCreditCardPromptOfferEnum" expires_after="2023-11-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which the Autofill save credit card prompt is
     shown or not. Logged when the flow is triggered and the prompt should be
@@ -3477,9 +3479,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.SaveCreditCardPromptResult{AutofillSaveCreditCardPromptDestination}"
-    enum="AutofillSaveCreditCardPromptResultEnum" expires_after="2023-01-01">
+    enum="AutofillSaveCreditCardPromptResultEnum" expires_after="2023-11-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which users accept or deny the Autofill save
     credit card prompt. Logged when users interacted with the prompt.
@@ -3636,9 +3639,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Snackbar.{SnackbarType}.ActionClicked"
-    enum="BooleanShown" expires_after="2022-12-01">
+    enum="BooleanShown" expires_after="2023-11-01">
   <owner>siashah@chromium.org</owner>
   <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Emits true when the action button on the autofill snackbar is clicked and
     does not emit any value otherwise.
@@ -3647,9 +3651,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Snackbar.{SnackbarType}.Shown" enum="BooleanShown"
-    expires_after="2022-12-01">
+    expires_after="2023-11-01">
   <owner>siashah@chromium.org</owner>
   <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Emits true when the autofill snackbar is displayed and does not emit any
     value otherwise.
