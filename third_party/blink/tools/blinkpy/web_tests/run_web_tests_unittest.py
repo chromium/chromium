@@ -1662,10 +1662,6 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             'layout-test-results/failures/unexpected/reftest-diff.png',
             'layout-test-results/retry_1/failures/unexpected/reftest-diff.png'
         ])
-        self.assertEqual(test_results['artifacts']['pretty_image_diff'], [
-            'layout-test-results/failures/unexpected/reftest-diffs.html',
-            'layout-test-results/retry_1/failures/unexpected/reftest-diffs.html'
-        ])
         self.assertEqual(test_results['artifacts']['reference_file_mismatch'], [
             'layout-test-results/failures/unexpected/reftest-expected.html',
             'layout-test-results/retry_1/failures/unexpected/reftest-expected.html'
@@ -1711,10 +1707,6 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             'layout-test-results/failures/unexpected/image-mismatch-diff.png',
             'layout-test-results/retry_1/failures/unexpected/image-mismatch-diff.png'
         ])
-        self.assertEqual(test_results['artifacts']['pretty_image_diff'], [
-            'layout-test-results/failures/unexpected/image-mismatch-diffs.html',
-            'layout-test-results/retry_1/failures/unexpected/image-mismatch-diffs.html'
-        ])
 
     def test_unexpected_no_image_generated(self):
         host = MockHost()
@@ -1734,7 +1726,6 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             'layout-test-results/retry_1/failures/unexpected/no-image-generated-expected.png'
         ])
         self.assertNotIn('image_diff', test_results['artifacts'])
-        self.assertNotIn('pretty_image_diff', test_results['artifacts'])
 
     def test_unexpected_no_image_baseline(self):
         host = MockHost()
@@ -1754,7 +1745,6 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             'layout-test-results/retry_1/failures/unexpected/no-image-baseline-actual.png'
         ])
         self.assertNotIn('image_diff', test_results['artifacts'])
-        self.assertNotIn('pretty_image_diff', test_results['artifacts'])
 
     def test_unexpected_audio_mismatch(self):
         host = MockHost()
@@ -2531,7 +2521,7 @@ class RebaselineTest(unittest.TestCase, StreamTestingMixin):
                                              host=host)
         written_files = host.filesystem.written_files
         self.assertEqual(details.exit_code, 1)
-        self.assertEqual(len(written_files.keys()), 11)
+        self.assertEqual(len(written_files.keys()), 10)
         self.assert_contains(
             log_stream,
             'Copying baseline to "platform/test-mac-mac10.10/failures/unexpected/text-image-checksum-expected.png"'
@@ -2745,7 +2735,7 @@ class RebaselineTest(unittest.TestCase, StreamTestingMixin):
                                              host=host)
         written_files = host.filesystem.written_files
         self.assertEqual(details.exit_code, 1)
-        self.assertEqual(len(written_files.keys()), 12)
+        self.assertEqual(len(written_files.keys()), 11)
         self.assert_contains(
             log_stream,
             'Copying baseline to "flag-specific/flag/failures/unexpected/text-image-checksum-expected.png"'

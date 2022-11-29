@@ -38,62 +38,11 @@ from blinkpy.common.unified_diff import unified_diff
 # TODO(rmhasan) Create a unit test for each Failure type and make
 # sure each artifact is written to the correct path
 
-# FIXME: old-run-webkit-tests shows the diff percentage as the text
-#   contents of the "diff" link.
-# FIXME: old-run-webkit-tests include a link to the test file.
-_image_diff_html_template = """<!DOCTYPE HTML>
-<html>
-<head>
-<title>%(title)s</title>
-<style>.label{font-weight:bold}</style>
-</head>
-<body>
-Difference between images: <a href="%(diff_filename)s">diff</a><br>
-<div class=imageText></div>
-<div class=imageContainer data-prefix="%(prefix)s">Loading...</div>
-<script>
-(function() {
-var preloadedImageCount = 0;
-function preloadComplete() {
-++preloadedImageCount;
-if (preloadedImageCount < 2)
-    return;
-toggleImages();
-setInterval(toggleImages, 2000)
-}
-
-function preloadImage(url) {
-image = new Image();
-image.addEventListener('load', preloadComplete);
-image.src = url;
-return image;
-}
-
-function toggleImages() {
-if (text.textContent == 'Expected Image') {
-    text.textContent = 'Actual Image';
-    container.replaceChild(actualImage, container.firstChild);
-} else {
-    text.textContent = 'Expected Image';
-    container.replaceChild(expectedImage, container.firstChild);
-}
-}
-
-var text = document.querySelector('.imageText');
-var container = document.querySelector('.imageContainer');
-var actualImage = preloadImage(container.getAttribute('data-prefix') + '-actual.png');
-var expectedImage = preloadImage(container.getAttribute('data-prefix') + '-expected.png');
-})();
-</script>
-</body>
-</html>"""
-
 # Filename pieces when writing failures to the test results directory.
 FILENAME_SUFFIX_ACTUAL = "-actual"
 FILENAME_SUFFIX_EXPECTED = "-expected"
 FILENAME_SUFFIX_CMD = "-command"
 FILENAME_SUFFIX_DIFF = "-diff"
-FILENAME_SUFFIX_DIFFS = "-diffs"
 FILENAME_SUFFIX_STDERR = "-stderr"
 FILENAME_SUFFIX_CRASH_LOG = "-crash-log"
 FILENAME_SUFFIX_SAMPLE = "-sample"
@@ -622,17 +571,6 @@ class FailureImageHashMismatch(FailureImage):
             diff = self.actual_driver_output.image_diff
             self._write_to_artifacts(typ_artifacts, 'image_diff',
                                      diff_filename, diff, force_overwrite)
-            diffs_html_filename = self.port.output_filename(
-                self.test_name, FILENAME_SUFFIX_DIFFS, '.html')
-            diffs_html = _image_diff_html_template % {
-                'title': self.test_name,
-                'diff_filename': diff_filename,
-                'prefix': self.port.output_filename(self.test_name, '', '')
-            }
-            self._write_to_artifacts(typ_artifacts, 'pretty_image_diff',
-                                     diffs_html_filename,
-                                     diffs_html.encode('utf8', 'replace'),
-                                     force_overwrite)
 
         super(FailureImageHashMismatch, self).create_artifacts(
             typ_artifacts, force_overwrite)
