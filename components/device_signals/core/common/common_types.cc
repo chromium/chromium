@@ -4,6 +4,8 @@
 
 #include "components/device_signals/core/common/common_types.h"
 
+#include "components/device_signals/core/common/signals_constants.h"
+
 namespace device_signals {
 
 ExecutableMetadata::ExecutableMetadata() = default;
@@ -47,6 +49,24 @@ bool GetFileSystemInfoOptions::operator==(
   return file_path == other.file_path &&
          compute_sha256 == other.compute_sha256 &&
          compute_executable_metadata == other.compute_executable_metadata;
+}
+
+absl::optional<base::Value> CrowdStrikeSignals::ToValue() const {
+  if (customer_id.empty() && agent_id.empty()) {
+    return absl::nullopt;
+  }
+
+  base::Value::Dict dict_value;
+
+  if (!customer_id.empty()) {
+    dict_value.Set(names::kCustomerId, customer_id);
+  }
+
+  if (!agent_id.empty()) {
+    dict_value.Set(names::kAgentId, agent_id);
+  }
+
+  return base::Value(std::move(dict_value));
 }
 
 }  // namespace device_signals

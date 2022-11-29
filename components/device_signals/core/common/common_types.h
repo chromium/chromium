@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device_signals {
@@ -83,6 +84,15 @@ struct GetFileSystemInfoOptions {
   bool compute_executable_metadata = false;
 
   bool operator==(const GetFileSystemInfoOptions& other) const;
+};
+
+struct CrowdStrikeSignals {
+  std::string customer_id;
+  std::string agent_id;
+
+  // Returns a Value with the non-empty values. Returns absl::nullopt if neither
+  // values are set.
+  absl::optional<base::Value> ToValue() const;
 };
 
 }  // namespace device_signals

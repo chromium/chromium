@@ -106,4 +106,8 @@ absl::optional<base::FilePath> GetProcessExePath(base::ProcessId pid) {
   return file_path;
 }
 
+absl::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
+  return absl::nullopt;
+}
+
 }  // namespace device_signals

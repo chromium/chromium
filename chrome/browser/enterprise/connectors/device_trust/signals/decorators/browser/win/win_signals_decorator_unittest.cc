@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -121,7 +122,7 @@ TEST_F(WinSignalsDecoratorTest, SuccessCSCustomerId) {
   auto* customer_id =
       cs_value_dict.FindString(device_signals::names::kCustomerId);
   ASSERT_TRUE(customer_id);
-  EXPECT_EQ(*customer_id, kFakeCSCustomerId);
+  EXPECT_EQ(*customer_id, base::ToLowerASCII(kFakeCSCustomerId));
 
   auto* agent_id = cs_value_dict.FindString(device_signals::names::kAgentId);
   EXPECT_FALSE(agent_id);
@@ -154,7 +155,7 @@ TEST_F(WinSignalsDecoratorTest, SuccessCSAgentId) {
 
   auto* agent_id = cs_value_dict.FindString(device_signals::names::kAgentId);
   ASSERT_TRUE(agent_id);
-  EXPECT_EQ(*agent_id, kFakeCSAgentId);
+  EXPECT_EQ(*agent_id, base::ToLowerASCII(kFakeCSAgentId));
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
 }
@@ -184,11 +185,11 @@ TEST_F(WinSignalsDecoratorTest, SuccessAllCS) {
   auto* customer_id =
       cs_value_dict.FindString(device_signals::names::kCustomerId);
   ASSERT_TRUE(customer_id);
-  EXPECT_EQ(*customer_id, kFakeCSCustomerId);
+  EXPECT_EQ(*customer_id, base::ToLowerASCII(kFakeCSCustomerId));
 
   auto* agent_id = cs_value_dict.FindString(device_signals::names::kAgentId);
   ASSERT_TRUE(agent_id);
-  EXPECT_EQ(*agent_id, kFakeCSAgentId);
+  EXPECT_EQ(*agent_id, base::ToLowerASCII(kFakeCSAgentId));
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
 }

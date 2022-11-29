@@ -14,6 +14,8 @@ class FilePath;
 
 namespace device_signals {
 
+struct CrowdStrikeSignals;
+
 // Extracts the common details for resolving a file path on different
 // platforms. Resolves environment variables and relative markers in
 // `file_path`, and returns the path via `resolved_file_path`. For
@@ -25,6 +27,9 @@ bool ResolvePath(const base::FilePath& file_path,
 // Returns the file path pointing to the executable file that spawned
 // the given process `pid`.
 absl::optional<base::FilePath> GetProcessExePath(base::ProcessId pid);
+
+// Returns details about an installed CrowdStrike agent, if any.
+absl::optional<CrowdStrikeSignals> GetCrowdStrikeSignals();
 
 }  // namespace device_signals
 
