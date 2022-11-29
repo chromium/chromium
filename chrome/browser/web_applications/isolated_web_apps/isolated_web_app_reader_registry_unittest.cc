@@ -230,7 +230,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
 TEST_F(IsolatedWebAppReaderRegistryTest,
        TestSingleRequestWithQueryAndFragment) {
   network::ResourceRequest resource_request;
-  resource_request.url = GURL(kUrl.spec() + "?bar=baz#foo");
+  resource_request.url = kUrl.Resolve("/?bar=baz#foo");
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,

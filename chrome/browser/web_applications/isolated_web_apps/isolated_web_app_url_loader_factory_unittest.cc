@@ -232,7 +232,7 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
   const std::string kDevWebBundleId =
       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac";
   const GURL kDevAppOriginUrl = GURL("isolated-app://" + kDevWebBundleId);
-  const GURL kDevAppStartUrl = GURL(kDevAppOriginUrl.spec() + "/ix.html");
+  const GURL kDevAppStartUrl = kDevAppOriginUrl.Resolve("/ix.html");
   const url::Origin kProxyOrigin =
       url::Origin::Create(GURL("https://proxy.example.com"));
 
@@ -664,10 +664,10 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
 
   base::FilePath CreateSignedBundleAndWriteToDisk() {
     web_package::WebBundleBuilder builder;
-    builder.AddExchange(kEd25519AppOriginUrl.spec(),
+    builder.AddExchange(kEd25519AppOriginUrl,
                         {{":status", "200"}, {"content-type", "text/html"}},
                         "Hello World");
-    builder.AddExchange(kEd25519AppOriginUrl.spec() + "/invalid-status-code",
+    builder.AddExchange(kEd25519AppOriginUrl.Resolve("/invalid-status-code"),
                         {{":status", "201"}, {"content-type", "text/html"}},
                         "Hello World");
 
@@ -719,7 +719,7 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
   CreateFactory();
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GURL(kEd25519AppOriginUrl.spec() + "/invalid-status-code");
+  request->url = kEd25519AppOriginUrl.Resolve("/invalid-status-code");
   EXPECT_THAT(CreateLoaderAndRun(std::move(request)),
               Eq(net::ERR_INVALID_WEB_BUNDLE));
   EXPECT_THAT(ResponseInfo(), IsNull());
@@ -730,7 +730,7 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
   CreateFactory();
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GURL(kEd25519AppOriginUrl.spec() + "/non-existing");
+  request->url = kEd25519AppOriginUrl.Resolve("/non-existing");
   EXPECT_EQ(CreateLoaderAndRun(std::move(request)), net::OK);
   ASSERT_THAT(ResponseInfo(), NotNull());
   EXPECT_THAT(ResponseInfo()->headers->response_code(),
@@ -762,7 +762,7 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
   CreateFactory();
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GURL(kEd25519AppOriginUrl.spec() + "/non-existing");
+  request->url = kEd25519AppOriginUrl.Resolve("/non-existing");
   EXPECT_THAT(CreateLoaderAndRun(std::move(request)), Eq(net::OK));
   ASSERT_THAT(ResponseInfo(), NotNull());
   EXPECT_THAT(ResponseInfo()->headers->response_code(),
