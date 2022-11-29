@@ -22,6 +22,7 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
@@ -165,14 +166,19 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             return;
         }
 
-        addPreferencesFromResource(R.xml.account_management_preferences);
-
         String fullName = mProfileDataCache.getProfileDataOrDefault(mSignedInAccountName)
                                   .getFullNameOrEmail();
         getActivity().setTitle(fullName);
 
-        configureSignOutSwitch();
-        configureChildAccountPreferences();
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS)) {
+            addPreferencesFromResource(R.xml.account_management_preferences);
+            configureSignOutSwitch();
+        } else {
+            addPreferencesFromResource(R.xml.account_management_preferences_legacy);
+            configureSignOutSwitch();
+            configureChildAccountPreferences();
+        }
 
         AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
     }
@@ -303,7 +309,10 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             }
         }
 
-        if (!mProfile.isChild()) {
+        if (!mProfile.isChild()
+                || ChromeFeatureList.isEnabled(
+                        ChromeFeatureList
+                                .ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS)) {
             accountsCategory.addPreference(createAddAccountPreference());
         }
     }
