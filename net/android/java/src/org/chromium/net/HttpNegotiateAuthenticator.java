@@ -189,7 +189,7 @@ public class HttpNegotiateAuthenticator {
                     }
 
                 };
-                appContext.registerReceiver(broadcastReceiver,
+                ContextUtils.registerProtectedBroadcastReceiver(appContext, broadcastReceiver,
                         new IntentFilter(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION));
             } else {
                 processResult(result, mRequestData);
