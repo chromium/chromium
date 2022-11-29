@@ -10,7 +10,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function rebootPageTest() {
+suite('rebootPageTest', function() {
   /** @type {?RebootPage} */
   let component = null;
 
@@ -48,4 +48,4 @@ export function rebootPageTest() {
     const basePage = component.shadowRoot.querySelector('base-page');
     assertTrue(!!basePage);
   });
-}
+});

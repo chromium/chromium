@@ -11,7 +11,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function criticalErrorPageTest() {
+suite('criticalErrorPageTest', function() {
   /**
    * ShimlessRma is needed to handle the 'disable-all-buttons' event used by the
    * shutdown buttons.
@@ -98,4 +98,4 @@ export function criticalErrorPageTest() {
     assertTrue(allButtonsDisabled);
     assertTrue(component.shadowRoot.querySelector('#rebootButton').disabled);
   });
-}
+});

@@ -7,9 +7,9 @@ import {fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels} from 'chrome:/
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_device_information_page.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 const fakeSerialNumber = 'serial# 0001';
 const fakeDramPartNumber = 'dram# 0123';
@@ -28,7 +28,7 @@ function suppressedComponentOnSelectedChange_(component) {
   component.onSelectedSkuChange_('ignored');
 }
 
-export function reimagingDeviceInformationPageTest() {
+suite('reimagingDeviceInformationPageTest', function() {
   /** @type {?ReimagingDeviceInformationPage} */
   let component = null;
 
@@ -357,4 +357,4 @@ export function reimagingDeviceInformationPageTest() {
   //
   // test: ReimagingDeviceInformationPageModifyRegionAndReset
   // test: ReimagingDeviceInformationPageModifySkuAndReset
-}
+});

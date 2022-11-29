@@ -7,14 +7,14 @@ import {fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingLandingPage} from 'chrome://shimless-rma/onboarding_landing_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {State} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-import {isVisible} from '../../test_util.js';
+import {isVisible} from '../test_util.js';
 
-
-export function onboardingLandingPageTest() {
+suite('onboardingLandingPageTest', function() {
   /** @type {?OnboardingLandingPage} */
   let component = null;
 
@@ -207,4 +207,4 @@ export function onboardingLandingPageTest() {
 
         assertTrue(getStartedButtonEventFired);
       });
-}
+});

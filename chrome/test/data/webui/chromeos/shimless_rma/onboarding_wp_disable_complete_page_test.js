@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingWpDisableCompletePage} from 'chrome://shimless-rma/onboarding_wp_disable_complete_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-
-
-export function onboardingWpDisableCompletePageTest() {
+suite('onboardingWpDisableCompletePageTest', function() {
   /** @type {?OnboardingWpDisableCompletePage} */
   let component = null;
 
@@ -95,4 +94,4 @@ export function onboardingWpDisableCompletePageTest() {
     assertEquals(1, callCounter);
     assertDeepEquals(expectedResult, savedResult);
   });
-}
+});

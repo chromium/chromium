@@ -8,7 +8,7 @@ import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOveral
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function fakeShimlessRmaServiceTestSuite() {
+suite('fakeShimlessRmaServiceTestSuite', function() {
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
@@ -924,4 +924,4 @@ export function fakeShimlessRmaServiceTestSuite() {
     return service.triggerFinalizationObserver(
         FinalizationStatus.kInProgress, 0.5, FinalizationError.kUnknown, 0);
   });
-}
+});

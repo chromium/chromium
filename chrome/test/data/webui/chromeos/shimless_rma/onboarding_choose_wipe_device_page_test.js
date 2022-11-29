@@ -11,7 +11,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function onboardingChooseWipeDevicePageTest() {
+suite('onboardingChooseWipeDevicePageTest', function() {
   /** @type {?OnboardingChooseWipeDevicePage} */
   let component = null;
 
@@ -89,4 +89,4 @@ export function onboardingChooseWipeDevicePageTest() {
     await resolver;
     assertFalse(shouldWipeDevice);
   });
-}
+});

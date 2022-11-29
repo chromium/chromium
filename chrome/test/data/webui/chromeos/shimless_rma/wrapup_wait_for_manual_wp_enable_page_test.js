@@ -11,7 +11,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function wrapupWaitForManualWpEnablePageTest() {
+suite('wrapupWaitForManualWpEnablePageTest', function() {
   /**
    * ShimlessRma is needed to handle the 'transition-state' used to signal write
    * write protect is enabled.
@@ -79,4 +79,4 @@ export function wrapupWaitForManualWpEnablePageTest() {
 
     assertEquals(1, callCount);
   });
-}
+});

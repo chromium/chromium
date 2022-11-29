@@ -12,7 +12,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function reimagingProvisioningPageTest() {
+suite('reimagingProvisioningPageTest', function() {
   /**
    * ShimlessRma is needed to handle the 'transition-state' event used
    * when handling calibration overall progress signals.
@@ -138,4 +138,4 @@ export function reimagingProvisioningPageTest() {
 
     component.removeEventListener('fatal-hardware-error', eventHandler);
   });
-}
+});

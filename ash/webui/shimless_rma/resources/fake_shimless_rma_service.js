@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '/file_path.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import './file_path.mojom-lite.js';
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';

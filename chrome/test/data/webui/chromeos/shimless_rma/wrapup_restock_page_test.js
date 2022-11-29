@@ -11,7 +11,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function wrapupRestockPageTest() {
+suite('wrapupRestockPageTest', function() {
   /**
    * ShimlessRma is needed to handle the 'transition-state' event used by
    * the shutdown button.
@@ -112,4 +112,4 @@ export function wrapupRestockPageTest() {
     assertTrue(continueButton.disabled);
     assertTrue(shutdownButton.disabled);
   });
-}
+});

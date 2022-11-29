@@ -13,7 +13,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function reimagingCalibrationRunPageTest() {
+suite('reimagingCalibrationRunPageTest', function() {
   /**
    * ShimlessRma is needed to handle the 'transition-state' event used
    * when handling calibration overall progress signals.
@@ -174,4 +174,4 @@ export function reimagingCalibrationRunPageTest() {
 
         assertEquals(1, continueCalibrationCalls);
       });
-}
+});

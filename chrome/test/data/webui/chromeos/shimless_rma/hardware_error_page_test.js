@@ -16,7 +16,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 /** @type {number} */
 const ERROR_CODE = 1004;
 
-export function hardwareErrorPageTest() {
+suite('hardwareErrorPageTest', function() {
   /**
    * ShimlessRma is needed to handle the 'disable-all-buttons' event used by the
    * shutdown button.
@@ -106,4 +106,4 @@ export function hardwareErrorPageTest() {
         loadTimeData.getStringF('hardwareErrorCode', ERROR_CODE),
         component.shadowRoot.querySelector('#errorCode').textContent.trim());
   });
-}
+});

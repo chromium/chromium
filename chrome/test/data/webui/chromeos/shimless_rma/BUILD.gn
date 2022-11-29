@@ -53,7 +53,6 @@ js_type_check("closure_compile") {
     # 492|     assert(source !== undefined, 'OncSource undefined');
 
     ":shimless_rma_app_test",
-    ":shimless_rma_unified_test",
     ":wrapup_finalize_page_test",
     ":wrapup_repair_complete_page_test",
     ":wrapup_restock_page_test",
@@ -307,11 +306,6 @@ js_library("repair_component_chip_test") {
     "$externs_path/mocha-2.5.js",
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
   ]
-}
-
-js_library("shimless_rma_unified_test") {
-  deps = []
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("wrapup_finalize_page_test") {
