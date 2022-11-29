@@ -1443,6 +1443,7 @@ _CONFIG = [
             'media::.+',
             'rtc::scoped_refptr',
             'webrtc::AudioDeviceModule',
+            'webrtc::AudioParameters',
             'webrtc::AudioSourceInterface',
             'webrtc::AudioTransport',
             'webrtc::kAdmMaxDeviceNameSize',

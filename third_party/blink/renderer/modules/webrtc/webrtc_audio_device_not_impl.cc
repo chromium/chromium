@@ -197,12 +197,12 @@ int32_t WebRtcAudioDeviceNotImpl::EnableBuiltInNS(bool enable) {
 
 #if BUILDFLAG(IS_IOS)
 int WebRtcAudioDeviceNotImpl::GetPlayoutAudioParameters(
-    AudioParameters* params) const {
+    webrtc::AudioParameters* params) const {
   return 0;
 }
 
 int WebRtcAudioDeviceNotImpl::GetRecordAudioParameters(
-    AudioParameters* params) const {
+    webrtc::AudioParameters* params) const {
   return 0;
 }
 #endif  // BUILDFLAG(IS_IOS)
