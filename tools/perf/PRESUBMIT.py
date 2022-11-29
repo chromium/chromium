@@ -16,7 +16,7 @@ USE_PYTHON3 = True
 
 
 def _CommonChecks(input_api, output_api, block_on_failure=False):
-  """Performs common checks, which includes running pylint.
+  """Performs common checks that vary between commit and upload.
 
     block_on_failure: For some failures, we would like to warn the
         user but still allow them to upload the change. However, we

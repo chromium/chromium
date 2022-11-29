@@ -81,9 +81,31 @@ def GetMissingArchivesInCloudStorage(archive_infos, wpr_sha_files):
         remote_path = cloud_storage.ReadHash(hash_path)
         cloud_storage_paths.add((bucket, remote_path, archive_path))
 
+  buckets = {}
+  # Create a dictionary of all of the buckets.
+  for (bucket, _, _) in cloud_storage_paths:
+    buckets[bucket] = {}
+  # Some buckets contain a modest (< 10,000) number of entries and can be
+  # processed more efficiently by listing the contents once rather than calling
+  # .Exists() for each file. Other buckets contain 600,000+ (chromium-telemetry)
+  # or far more files (chrome-telemetry) so .Exists() must be used for them.
+  fast_buckets = ['chrome-partner-telemetry']
+
+  # Iterate through all of the fast buckets getting a list of all files in those
+  # buckets.
+  for bucket in buckets:
+    if bucket in fast_buckets:
+      buckets[bucket] = set(cloud_storage.ListFiles(bucket))
+
   missing_archives = set()
   for (bucket, remote_path, archive_path) in cloud_storage_paths:
-    if not cloud_storage.Exists(bucket, remote_path):
+    found = False
+    if bucket in fast_buckets:
+      if '/' + remote_path in buckets[bucket]:
+        found = True
+    elif cloud_storage.Exists(bucket, remote_path):
+      found = True
+    if not found:
       missing_archives.add((archive_path, bucket))
   return missing_archives, missing_sha_files
 
