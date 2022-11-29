@@ -247,20 +247,37 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   bool ShouldReadIcons() override;
 
   // Reads icon image files from the local app_service icon directory on disk.
-  void ReadIcons(const std::string& app_id,
-                 int32_t size_hint_in_dip,
+  void ReadIcons(AppType app_type,
+                 const std::string& app_id,
+                 int32_t size_in_dip,
                  const IconKey& icon_key,
                  IconType icon_type,
                  LoadIconCallback callback) override;
 
-  void OnIconRead(LoadIconCallback callback, IconValuePtr iv);
+  // Invoked after reading icon image files from the local disk. If failed
+  // reading the icon data, calls 'icon_writer' to fetch the icon data.
+  void OnIconRead(AppType app_type,
+                  const std::string& app_id,
+                  int32_t size_in_dip,
+                  IconEffects icon_effects,
+                  IconType icon_type,
+                  LoadIconCallback callback,
+                  IconValuePtr iv);
+
+  // Invoked after writing icon image files to the local disk.
+  void OnIconInstalled(const std::string& app_id,
+                       int32_t size_in_dip,
+                       IconEffects icon_effects,
+                       IconType icon_type,
+                       LoadIconCallback callback,
+                       bool install_success);
 
   SubscriberCrosapi* crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
 
-  AppIconReader icon_reader;
-  AppIconWriter icon_writer;
+  AppIconReader icon_reader_;
+  AppIconWriter icon_writer_;
 
   bool arc_is_registered_ = false;
 

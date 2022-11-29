@@ -407,8 +407,9 @@ class AppServiceProxyBase : public KeyedService,
   virtual bool ShouldReadIcons();
 
   // Reads icon image files from the local app_service icon directory on disk.
-  virtual void ReadIcons(const std::string& app_id,
-                         int32_t size_hint_in_dip,
+  virtual void ReadIcons(AppType app_type,
+                         const std::string& app_id,
+                         int32_t size_in_dip,
                          const IconKey& icon_key,
                          IconType icon_type,
                          LoadIconCallback callback) {}

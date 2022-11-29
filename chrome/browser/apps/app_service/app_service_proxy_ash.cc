@@ -40,6 +40,7 @@
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user.h"
+#include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
@@ -55,7 +56,9 @@ policy::DlpFilesController* GetDlpFilesController() {
 }  // namespace
 
 AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
-    : AppServiceProxyBase(profile), icon_reader(profile), icon_writer(profile) {
+    : AppServiceProxyBase(profile),
+      icon_reader_(profile),
+      icon_writer_(profile) {
   if (web_app::IsWebAppsCrosapiEnabled()) {
     browser_app_instance_tracker_ =
         std::make_unique<apps::BrowserAppInstanceTracker>(profile_,
@@ -709,26 +712,66 @@ bool AppServiceProxyAsh::ShouldReadIcons() {
   return base::FeatureList::IsEnabled(kUnifiedAppServiceIconLoading);
 }
 
-void AppServiceProxyAsh::ReadIcons(const std::string& app_id,
-                                   int32_t size_hint_in_dip,
+void AppServiceProxyAsh::ReadIcons(AppType app_type,
+                                   const std::string& app_id,
+                                   int32_t size_in_dip,
                                    const IconKey& icon_key,
                                    IconType icon_type,
                                    LoadIconCallback callback) {
-  icon_reader.ReadIcons(
-      app_id, size_hint_in_dip, icon_key, icon_type,
+  icon_reader_.ReadIcons(
+      app_id, size_in_dip, icon_key, icon_type,
       base::BindOnce(&AppServiceProxyAsh::OnIconRead,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), app_type, app_id,
+                     size_in_dip,
+                     static_cast<IconEffects>(icon_key.icon_effects), icon_type,
+                     std::move(callback)));
 }
 
-void AppServiceProxyAsh::OnIconRead(LoadIconCallback callback,
+void AppServiceProxyAsh::OnIconRead(AppType app_type,
+                                    const std::string& app_id,
+                                    int32_t size_in_dip,
+                                    IconEffects icon_effects,
+                                    IconType icon_type,
+                                    LoadIconCallback callback,
                                     IconValuePtr iv) {
   if (!iv || (iv->uncompressed.isNull() && iv->compressed.empty())) {
-    // TODO(crbug.com/1380608): Call the publisher to fetch the icon.
-    std::move(callback).Run(std::make_unique<apps::IconValue>());
+    auto* publisher = GetPublisher(app_type);
+    if (!publisher) {
+      LOG(WARNING) << "No publisher for requested icon";
+      LoadIconFromResource(icon_type, size_in_dip, IDR_APP_DEFAULT_ICON,
+                           /*is_placeholder_icon=*/false, icon_effects,
+                           std::move(callback));
+      return;
+    }
+
+    icon_writer_.InstallIcon(
+        publisher, app_id, size_in_dip, icon_effects, icon_type,
+        base::BindOnce(&AppServiceProxyAsh::OnIconInstalled,
+                       weak_ptr_factory_.GetWeakPtr(), app_id, size_in_dip,
+                       icon_effects, icon_type, std::move(callback)));
     return;
   }
 
   std::move(callback).Run(std::move(iv));
+}
+
+void AppServiceProxyAsh::OnIconInstalled(const std::string& app_id,
+                                         int32_t size_in_dip,
+                                         IconEffects icon_effects,
+                                         IconType icon_type,
+                                         LoadIconCallback callback,
+                                         bool install_success) {
+  if (!install_success) {
+    LoadIconFromResource(icon_type, size_in_dip, IDR_APP_DEFAULT_ICON,
+                         /*is_placeholder_icon=*/false, icon_effects,
+                         std::move(callback));
+    return;
+  }
+
+  IconKey icon_key;
+  icon_key.icon_effects = icon_effects;
+  icon_reader_.ReadIcons(app_id, size_in_dip, icon_key, icon_type,
+                         std::move(callback));
 }
 
 }  // namespace apps

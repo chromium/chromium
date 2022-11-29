@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_reader.h"
 
+#include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
