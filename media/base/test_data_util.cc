@@ -5,6 +5,7 @@
 #include "media/base/test_data_util.h"
 
 #include <stdint.h>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
