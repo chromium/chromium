@@ -38,7 +38,7 @@ TAG_HEADER = """\
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x7340
 #         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
 #         arm
-#         google google-0xffff
+#         google google-0xffff google-0xc0de
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #               intel-0x3e92 intel-0x3e9b intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184

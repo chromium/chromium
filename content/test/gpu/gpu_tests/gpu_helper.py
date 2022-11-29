@@ -33,9 +33,15 @@ REMOTE_BROWSER_TYPES = [
     'cast-streaming-shell',
 ]
 
-TAG_REPLACEMENTS = {
+TAG_SUBSTRING_REPLACEMENTS = {
     # nvidia on desktop, nvidia-coproration on Android.
     'nvidia-corporation': 'nvidia',
+}
+
+ENTIRE_TAG_REPLACEMENTS = {
+    # Includes a Vulkan and LLVM version.
+    re.compile('google-vulkan.*swiftshader-device.*', re.IGNORECASE):
+    'google-vulkan',
 }
 
 VENDOR_AMD = 0x1002
@@ -235,12 +241,28 @@ def ReplaceTags(tags: List[str]) -> List[str]:
     tags: A list of strings containing expectation tags.
 
   Returns:
-    |tags| but potentially with some substrings replaced.
+    |tags| but potentially with some elements replaced.
   """
   replaced_tags = []
   for t in tags:
-    for original, replacement in TAG_REPLACEMENTS.items():
-      replaced_tags.append(t.replace(original, replacement))
+    continue_to_next_tag = False
+    for regex, replacement in ENTIRE_TAG_REPLACEMENTS.items():
+      if regex.match(t):
+        replaced_tags.append(replacement)
+        continue_to_next_tag = True
+        break
+    if continue_to_next_tag:
+      continue
+
+    for original, replacement in TAG_SUBSTRING_REPLACEMENTS.items():
+      if original in t:
+        replaced_tags.append(t.replace(original, replacement))
+        continue_to_next_tag = True
+        break
+    if continue_to_next_tag:
+      continue
+
+    replaced_tags.append(t)
   return replaced_tags
 
 

@@ -901,14 +901,7 @@ class GpuIntegrationTest(
         'vmware,-0x1050',  # ChromeOS VMs
         'mesa/x.org',  # ChromeOS VMs
         'mesa/x.org-0x1050',  # ChromeOS VMs
-        # Fuchsia VMs
-        ('google-angle-(vulkan-1.1.0(swiftshader-device-('
-         'llvm-7.0.1)-(0x0000c0de)))'),
-        ('google-angle-(vulkan-1.1.0(swiftshader-device-('
-         'llvm-10.0.0)-(0x0000c0de)))'),
-        ('google-vulkan-1.1.0-(swiftshader-device-('
-         'llvm-10.0.0)-(0x0000c0de))'),
-        'google-0xc0de',
+        'google-vulkan',  # SwiftShader/google-0xc0de
         'chromium-os',  # ChromeOS
         'cros-chrome',  # ChromeOS
         'web-engine-shell',  # Fuchsia
