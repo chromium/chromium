@@ -29,6 +29,7 @@
 
   @media (prefers-color-scheme: dark) {
     :host {
+      --paper-spinner-color: var(--google-blue-300);
       --upload-dialog-background: var(--google-grey-850);
       --upload-dialog-divider-line-border-top: 1px solid var(--google-grey-800);
       --upload-dialog-drag-drop-background: rgba(var(--google-grey-900-rgb), .68);
@@ -338,20 +339,20 @@
 </style>
 
 <div id="dialog" hidden$="{{isHidden_}}" tabindex="-1" lang="$i18n{language}"
-  role="dialog" aria-modal="true">
+    role="dialog" aria-modal="true">
   <ntp-lens-form id="lensForm" on-loading="handleFormLoading_"
-    on-error="handleFormError_">
+      on-error="handleFormError_">
   </ntp-lens-form>
   <div id="container">
     <cr-icon-button id="closeButton" class="icon-clear"
-      title="$i18n{lensSearchUploadDialogCloseButtonLabel}"
-      on-click="onCloseButtonClick_" on-keydown="onCloseButtonKeydown_">
+        title="$i18n{lensSearchUploadDialogCloseButtonLabel}"
+        on-click="onCloseButtonClick_" on-keydown="onCloseButtonKeydown_">
     </cr-icon-button>
     <div id="title">
       $i18n{lensSearchUploadDialogTitle}
     </div>
     <div id="dragDropArea" on-dragenter="onDragEnter_" on-dragover="onDragOver_"
-      on-dragleave="onDragLeave_" on-drop="onDrop_">
+        on-dragleave="onDragLeave_" on-drop="onDrop_">
       <!-- Error state -->
       <template is="dom-if" if="{{isError_}}">
         <div id="dragDropError">
@@ -367,7 +368,7 @@
           <div class="drag-drop-title">
             <span id="dragText">$i18n{lensSearchUploadDialogDragTitle}</span>
             <span tabindex="0" role="button" id="uploadText"
-              on-click="onUploadFileClick_" on-keydown="onUploadFileKeyDown_">
+                on-click="onUploadFileClick_" on-keydown="onUploadFileKeyDown_">
               $i18n{lensSearchUploadDialogUploadFileTitle}
             </span>
           </div>
@@ -380,11 +381,11 @@
           </div>
           <div id="inputContainer">
             <input id="inputBox" autocomplete="false" autocorrect="false"
-              placeholder="$i18n{lensSearchUploadDialogTextPlaceholder}"
-              text="text" value="{{uploadUrl_::input}}"
-              on-keydown="onUrlKeyDown_">
+                placeholder="$i18n{lensSearchUploadDialogTextPlaceholder}"
+                text="text" value="{{uploadUrl_::input}}"
+                on-keydown="onUrlKeyDown_">
             <div id="inputSubmit" tabindex="0" role="button"
-              on-click="onSubmitUrl_" on-keydown="onInputSubmitKeyDown_">
+                on-click="onSubmitUrl_" on-keydown="onInputSubmitKeyDown_">
               $i18n{lensSearchUploadDialogSearchButtonLabel}
             </div>
           </div>
@@ -419,8 +420,8 @@
             $i18n{lensSearchUploadDialogOfflineSubtitleText}
           </div>
           <cr-button id="offlineRetryButton" class="action-button"
-            on-click="onOfflineRetryButtonClick_"
-            on-keydown="onOfflineRetryButtonKeydown_">
+              on-click="onOfflineRetryButtonClick_"
+              on-keydown="onOfflineRetryButtonKeydown_">
             $i18n{lensSearchUploadDialogOfflineButtonLabel}
           </cr-button>
         </div>
