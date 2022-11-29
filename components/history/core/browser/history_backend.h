@@ -605,6 +605,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // instead. Returns the local VisitID of the updated visit, or 0 if no
   // matching visit was found.
   VisitID UpdateSyncedVisit(
+      const GURL& url,
+      const std::u16string& title,
+      bool hidden,
       const VisitRow& visit,
       const absl::optional<VisitContextAnnotations>& context_annotations,
       const absl::optional<VisitContentAnnotations>& content_annotations)

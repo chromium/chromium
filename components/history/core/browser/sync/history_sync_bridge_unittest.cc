@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/test_history_backend_for_sync.h"
 #include "components/sync/base/page_transition_conversion.h"
@@ -1018,6 +1019,34 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   EXPECT_EQ(history2.originator_referring_visit_id(), visit_row2.visit_id);
   EXPECT_TRUE(history2.redirect_chain_start_incomplete());
   EXPECT_FALSE(history2.redirect_chain_end_incomplete());
+}
+
+TEST_F(HistorySyncBridgeTest, DownloadsUpdatedEntity) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // A remote visit comes in.
+  sync_pb::HistorySpecifics remote_specifics =
+      CreateSpecifics(base::Time::Now() - base::Seconds(5), "remote_cache_guid",
+                      GURL("https://remote.com"));
+  ApplySyncChanges({remote_specifics});
+
+  // Make sure it has neither a URL title nor a visit duration.
+  ASSERT_EQ(backend()->GetURLs().size(), 1u);
+  ASSERT_TRUE(backend()->GetURLs()[0].title().empty());
+  ASSERT_EQ(backend()->GetVisits().size(), 1u);
+  ASSERT_EQ(backend()->GetVisits()[0].visit_duration, base::TimeDelta());
+
+  // The remote visit gets updated with a URL title and visit duration.
+  remote_specifics.mutable_redirect_entries(0)->set_title("Title");
+  remote_specifics.set_visit_duration_micros(1234);
+  ApplySyncChanges({remote_specifics});
+
+  // Make sure these changes arrived in the backend.
+  ASSERT_EQ(backend()->GetURLs().size(), 1u);
+  EXPECT_EQ(backend()->GetURLs()[0].title(), u"Title");
+  ASSERT_EQ(backend()->GetVisits().size(), 1u);
+  EXPECT_EQ(backend()->GetVisits()[0].visit_duration, base::Microseconds(1234));
 }
 
 TEST_F(HistorySyncBridgeTest, UntracksEntitiesAfterCommit) {

@@ -983,13 +983,14 @@ bool HistorySyncBridge::UpdateEntityInBackend(
   // TODO(crbug.com/1341636): Add an integration test to ensure that updates
   // don't break referrer/opener links.
   VisitID updated_visit_id = history_backend_->UpdateSyncedVisit(
-      final_visit_row, context_annotations, content_annotations);
+      GURL(specifics.redirect_entries(index).url()),
+      base::UTF8ToUTF16(specifics.redirect_entries(index).title()),
+      specifics.redirect_entries(index).hidden(), final_visit_row,
+      context_annotations, content_annotations);
   if (updated_visit_id == 0) {
     return false;
   }
 
-  // TODO(crbug.com/1393079): Handle updates to the URL-related fields
-  // (notably the title - other fields probably can't change).
   return true;
 }
 

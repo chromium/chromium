@@ -1519,6 +1519,9 @@ VisitID HistoryBackend::AddSyncedVisit(
 }
 
 VisitID HistoryBackend::UpdateSyncedVisit(
+    const GURL& url,
+    const std::u16string& title,
+    bool hidden,
     const VisitRow& visit,
     const absl::optional<VisitContextAnnotations>& context_annotations,
     const absl::optional<VisitContentAnnotations>& content_annotations) {
@@ -1549,6 +1552,18 @@ VisitID HistoryBackend::UpdateSyncedVisit(
   if (visit_id <= db_->GetDeleteForeignVisitsUntilId()) {
     return 0;
   }
+
+  // If we can't find the corresponding URLRow, or its actual URL doesn't match,
+  // something's wrong.
+  URLRow url_row;
+  if (!db_->GetURLRow(original_row.url_id, &url_row) || url_row.url() != url) {
+    return 0;
+  }
+
+  // Update the URLRow - its title may have changed.
+  url_row.set_title(title);
+  url_row.set_hidden(hidden);
+  db_->UpdateURLRow(url_row.id(), url_row);
 
   VisitRow updated_row = visit;
   // The fields `visit_id` and `url_id` aren't set in visits coming from sync,

@@ -45,6 +45,9 @@ class HistoryBackendForSync {
       const absl::optional<VisitContextAnnotations>& context_annotations,
       const absl::optional<VisitContentAnnotations>& content_annotations) = 0;
   virtual VisitID UpdateSyncedVisit(
+      const GURL& url,
+      const std::u16string& title,
+      bool hidden,
       const VisitRow& visit,
       const absl::optional<VisitContextAnnotations>& context_annotations,
       const absl::optional<VisitContentAnnotations>& content_annotations) = 0;

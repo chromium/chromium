@@ -209,9 +209,19 @@ VisitID TestHistoryBackendForSync::AddSyncedVisit(
 }
 
 VisitID TestHistoryBackendForSync::UpdateSyncedVisit(
+    const GURL& url,
+    const std::u16string& title,
+    bool hidden,
     const VisitRow& visit,
     const absl::optional<VisitContextAnnotations>& context_annotations,
     const absl::optional<VisitContentAnnotations>& content_annotations) {
+  for (URLRow& existing_url : urls_) {
+    if (existing_url.url() == url) {
+      existing_url.set_title(title);
+      existing_url.set_hidden(hidden);
+    }
+  }
+
   for (VisitRow& existing_visit : visits_) {
     if (existing_visit.originator_cache_guid == visit.originator_cache_guid &&
         existing_visit.originator_visit_id == visit.originator_visit_id) {

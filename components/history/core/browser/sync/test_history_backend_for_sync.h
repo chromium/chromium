@@ -58,6 +58,9 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
       const absl::optional<VisitContentAnnotations>& content_annotations)
       override;
   VisitID UpdateSyncedVisit(
+      const GURL& url,
+      const std::u16string& title,
+      bool hidden,
       const VisitRow& visit,
       const absl::optional<VisitContextAnnotations>& context_annotations,
       const absl::optional<VisitContentAnnotations>& content_annotations)
