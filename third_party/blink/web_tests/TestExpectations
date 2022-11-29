@@ -6011,7 +6011,6 @@ crbug.com/1173439 http/tests/devtools/service-workers/service-worker-manager.js 
 
 # Temporarily disabled to unblock https://crrev.com/c/2979697
 crbug.com/1222114 http/tests/devtools/console/console-dir.js [ Failure Pass ]
-crbug.com/1222114 http/tests/devtools/console/console-format.js [ Failure Pass ]
 
 crbug.com/1247844 external/wpt/css/css-contain/content-visibility/content-visibility-input-image.html [ Crash Failure Pass Timeout ]
 
