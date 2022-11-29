@@ -11,13 +11,9 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.privacy_sandbox.R;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 
@@ -27,7 +23,6 @@ import org.chromium.ui.widget.CheckableImageView;
 public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnClickListener {
     private static final int SPINNER_DURATION_MS = 1500;
 
-    private SettingsLauncher mSettingsLauncher;
     private View mContentView;
 
     private final CheckableImageView mExpandArrowView;
@@ -35,12 +30,11 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
     private LinearLayout mDropdownElement;
     private LinearLayout mProgressBarContainer;
     private LinearLayout mConsentViewContainer;
-    private boolean mDisableAnimationForTesting;
+    private boolean mAreAnimationsDisabled;
 
-    public PrivacySandboxDialogConsentEEAV4(
-            Context context, @NonNull SettingsLauncher settingsLauncher) {
+    public PrivacySandboxDialogConsentEEAV4(Context context, boolean disableAnimations) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
-        mSettingsLauncher = settingsLauncher;
+        mAreAnimationsDisabled = disableAnimations;
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea_v4, null);
         setContentView(mContentView);
@@ -128,11 +122,6 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
     }
 
     private long getSpinnerDuration() {
-        return mDisableAnimationForTesting ? 0 : SPINNER_DURATION_MS;
-    }
-
-    @VisibleForTesting
-    public void disableAnimationForTesting(boolean disable) {
-        mDisableAnimationForTesting = disable;
+        return mAreAnimationsDisabled ? 0 : SPINNER_DURATION_MS;
     }
 }

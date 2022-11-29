@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogConsentEEAV4;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
@@ -22,7 +23,7 @@ import java.lang.ref.WeakReference;
 public class PrivacySandboxDialogController {
     private static WeakReference<Dialog> sDialog;
     private static Boolean sShowNew;
-    private static Boolean sDisableAnimations;
+    private static boolean sDisableAnimations;
     // TODO(crbug.com/1330704): This variable and its usage can be removed when the PrivacySandbox
     // promo logic will be decoupled from the NewTabPage.
     private static boolean sNewNoticeShownInCurrentSession;
@@ -43,6 +44,12 @@ public class PrivacySandboxDialogController {
         switch (promptType) {
             case PromptType.NONE:
                 return false;
+            case PromptType.M1_CONSENT:
+                dialog = new PrivacySandboxDialogConsentEEAV4(
+                        context, /*disableAnimations=*/sDisableAnimations);
+                dialog.show();
+                sDialog = new WeakReference<>(dialog);
+                return true;
             case PromptType.NOTICE:
                 boolean newNotice = showNewNotice();
                 if (launchContext == PrivacySandboxDialogLaunchContext.NEW_TAB_PAGE && newNotice) {
@@ -50,7 +57,7 @@ public class PrivacySandboxDialogController {
                     if (bottomSheetController == null) return false;
                     new PrivacySandboxBottomSheetNotice(
                             context, bottomSheetController, settingsLauncher)
-                            .showNotice(/*animate = */ sDisableAnimations == null);
+                            .showNotice(/*animate=*/!sDisableAnimations);
                     sNewNoticeShownInCurrentSession = true;
                 } else if (launchContext == PrivacySandboxDialogLaunchContext.BROWSER_START
                         && !newNotice) {
