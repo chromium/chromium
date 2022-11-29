@@ -4970,9 +4970,6 @@ crbug.com/713094 [ Win ] fast/css/fontfaceset-check-platform-fonts.html [ Failur
 # Image decode failures due to document destruction.
 crbug.com/721435 external/wpt/html/semantics/embedded-content/the-img-element/decode/image-decode-iframe.html [ Crash Failure Pass Timeout ]
 
-# Test times out for unknown reasons on chromium-based browsers and Safari.
-crbug.com/1328330 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
-
 # Test times out for some reason on Chromium browsers
 crbug.com/1357623 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-zero-intersection-area.html [ Timeout ]
 
