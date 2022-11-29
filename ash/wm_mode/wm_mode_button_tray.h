@@ -8,10 +8,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 
-namespace ui {
-class Event;
-}
-
 namespace views {
 class ImageView;
 }
@@ -40,7 +36,6 @@ class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
   void ClickedOutsideBubble() override {}
-  bool PerformAction(const ui::Event& event) override;
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;

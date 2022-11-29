@@ -33,6 +33,9 @@ WmModeButtonTray::WmModeButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kWmMode),
       image_view_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
+  SetPressedCallback(base::BindRepeating(
+      [](const ui::Event& event) { WmModeController::Get()->Toggle(); }));
+
   image_view_->SetTooltipText(GetAccessibleNameForTray());
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
@@ -64,16 +67,6 @@ void WmModeButtonTray::UpdateAfterLoginStatusChange() {
 std::u16string WmModeButtonTray::GetAccessibleNameForTray() {
   // TODO(crbug.com/1366034): Localize once approved.
   return u"WM Mode";
-}
-
-bool WmModeButtonTray::PerformAction(const ui::Event& event) {
-  DCHECK(event.type() == ui::ET_MOUSE_RELEASED ||
-         event.type() == ui::ET_GESTURE_TAP ||
-         event.type() == ui::ET_KEY_PRESSED);
-
-  WmModeController::Get()->Toggle();
-
-  return true;
 }
 
 void WmModeButtonTray::OnSessionStateChanged(
