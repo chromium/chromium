@@ -1,0 +1,15 @@
+Tests that getTargetInfo works on a worker target.
+{
+    attached : true
+    browserContextId : <string>
+    canAccessOpener : false
+    targetId : <string>
+    title : http://127.0.0.1:8000/inspector-protocol/fetch/resources/worker.js
+    type : worker
+    url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/worker.js
+}
+{
+    code : -32000
+    message : Not allowed
+}
+

@@ -1086,10 +1086,12 @@ Response TargetHandler::SendMessageToTarget(const std::string& message,
 Response TargetHandler::GetTargetInfo(
     Maybe<std::string> maybe_target_id,
     std::unique_ptr<Target::TargetInfo>* target_info) {
-  if (access_mode_ == AccessMode::kAutoAttachOnly)
-    return Response::ServerError(kNotAllowedError);
   const std::string& target_id =
       maybe_target_id.isJust() ? maybe_target_id.fromJust() : owner_target_id_;
+  if (access_mode_ == AccessMode::kAutoAttachOnly &&
+      target_id != owner_target_id_) {
+    return Response::ServerError(kNotAllowedError);
+  }
   // TODO(dgozman): only allow reported hosts.
   scoped_refptr<DevToolsAgentHost> agent_host(
       DevToolsAgentHost::GetForId(target_id));
