@@ -2000,14 +2000,15 @@ const CSSValue* ContainerName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  if (style.ContainerName().empty())
+  if (!style.ContainerName())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
-  for (const AtomicString& ident : style.ContainerName())
-    list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(ident));
-
+  for (const Member<const ScopedCSSName>& name :
+       style.ContainerName()->GetNames()) {
+    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name.Get()));
+  }
   return list;
 }
 
