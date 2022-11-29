@@ -336,10 +336,7 @@ void CrostiniInstaller::OnDiskImageCreated(bool success,
     return;
   }
   if (result == CrostiniResult::CREATE_DISK_IMAGE_ALREADY_EXISTS) {
-    // TODO(b/245235783): Remove guard after the intent storing and starting off
-    // intents CL is in.
-    if (!ShouldConfigureDefaultContainer(profile_))
-      require_cleanup_ = false;
+    require_cleanup_ = false;
   }
   UpdateInstallingState(InstallerState::kStartTerminaVm);
 }
