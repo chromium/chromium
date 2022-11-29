@@ -14,11 +14,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "gpu/command_buffer/tests/gl_manager.h"
-#endif  // BUILDFLAG(IS_MAC)
-
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
@@ -132,18 +127,6 @@ class WebGPUMailboxTest
 
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_MAC)
-    // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
-    // This must be checked before WebGPUTest::Initialize otherwise context
-    // switched is locked and we cannot temporarily have this GLContext.
-    GLManager gl_manager;
-    gl_manager.Initialize(GLManager::Options());
-    std::string renderer(gl_manager.context()->GetGLRenderer());
-    if (renderer.find("Apple M1") != std::string::npos)
-      mac_m1_ = true;
-    gl_manager.Destroy();
-#endif
-
     SKIP_TEST_IF(!WebGPUSupported());
     SKIP_TEST_IF(!WebGPUSharedImageSupported());
     WebGPUTest::SetUp();
@@ -246,9 +229,6 @@ class WebGPUMailboxTest
     queue.Submit(1, &commands);
   }
 
-#if BUILDFLAG(IS_MAC)
-  bool mac_m1_ = false;
-#endif
   wgpu::Device device_;
 };
 
@@ -810,11 +790,6 @@ TEST_P(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
 // devices tried to create shared images with the same (id, generation) (which
 // is possible because they can be on different Dawn wires) they would conflict.
 TEST_P(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
-#if BUILDFLAG(IS_MAC)
-  // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
-  SKIP_TEST_IF(mac_m1_);
-#endif
-
   // Create a the shared images.
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox_a = sii->CreateSharedImage(

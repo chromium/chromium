@@ -26,11 +26,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "gpu/command_buffer/tests/gl_manager.h"
-#include "ui/gl/gl_context.h"
-#endif
-
 namespace gpu {
 
 namespace {
@@ -349,21 +344,7 @@ TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
   EXPECT_TRUE(called);
 }
 
-TEST_F(WebGPUTest, RequestDeviceWitUnsupportedFeature) {
-#if BUILDFLAG(IS_MAC)
-  // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
-  // This must be checked before WebGPUTest::Initialize otherwise context
-  // switched is locked and we cannot temporarily have this GLContext.
-  GLManager gl_manager;
-  gl_manager.Initialize(GLManager::Options());
-  std::string renderer(gl_manager.context()->GetGLRenderer());
-  if (renderer.find("Apple M1") != std::string::npos) {
-    gl_manager.Destroy();
-    GTEST_SKIP() << "Skipped due to crbug.com/1271926.";
-  }
-  gl_manager.Destroy();
-#endif
-
+TEST_F(WebGPUTest, RequestDeviceWithUnsupportedFeature) {
   Initialize(WebGPUTest::Options());
 
   // Create device with unsupported features, expect to fail to create and
