@@ -757,14 +757,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.FenceSupport" enum="BooleanAvailable" expires_after="M77">
-  <owner>reveman@chromium.org</owner>
-  <summary>
-    Whether GLFence support is available. Recorded each time a new context group
-    is initialized and extensions are detected.
-  </summary>
-</histogram>
-
 <histogram name="Gpu.GL.GetErrorDuration.GLImageEGL.BindTexImage"
     units="microseconds" expires_after="2022-03-31">
   <owner>berlu@chromium.org</owner>
@@ -1296,26 +1288,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.RenderableFormat.{FORMAT_TYPE}" enum="Boolean"
-    expires_after="2021-09-15">
-  <owner>zmo@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Whether or not a {FORMAT_TYPE} fbo is complete and renderable.
-  </summary>
-  <token key="FORMAT_TYPE">
-    <variant name="R11F_G11F_B10F.FLOAT" summary="R11F_G11F_B10F/FLOAT"/>
-    <variant name="R16F.FLOAT" summary="R16F/FLOAT"/>
-    <variant name="R32F.FLOAT" summary="R32F/FLOAT"/>
-    <variant name="RG16F.FLOAT" summary="RG16F/FLOAT"/>
-    <variant name="RG32F.FLOAT" summary="RG32F/FLOAT"/>
-    <variant name="RGB32F.FLOAT" summary="RGB32F/FLOAT"/>
-    <variant name="RGBA16F.FLOAT" summary="RGBA16F/FLOAT"/>
-    <variant name="RGBA16F.HALF_FLOAT" summary="RGBA16F/HALF_FLOAT"/>
-    <variant name="RGBA32F.FLOAT" summary="RGBA32F/FLOAT"/>
-  </token>
-</histogram>
-
 <histogram name="GPU.ReportOnlyModeStatusAtHang" enum="BooleanEnabled"
     expires_after="2023-04-23">
   <owner>spvw@chromium.org</owner>
@@ -1451,14 +1423,6 @@ chromium-metrics-reviews@google.com.
     information. It measures the time of SwapBuffers call. Only reported when
     there is single surface swap in the same vsync interval. Only reported for
     platforms supporting high resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="GPU.TextureRG" enum="BooleanAvailable" expires_after="M77">
-  <owner>reveman@chromium.org</owner>
-  <summary>
-    Whether RG texture support is available. Recorded each time a new context
-    group is initialized and extensions are detected.
   </summary>
 </histogram>
 
