@@ -4,8 +4,6 @@
 
 package org.chromium.base;
 
-import android.text.TextUtils;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.build.annotations.MainDex;
 
@@ -21,21 +19,13 @@ public class JNIUtils {
     private static ClassLoader sJniClassLoader;
 
     /**
-     * This returns a ClassLoader that is capable of loading Chromium Java code. Such a ClassLoader
-     * is needed for the few cases where the JNI mechanism is unable to automatically determine the
-     * appropriate ClassLoader instance.
+     * Returns a ClassLoader which can load Java classes from the specified split.
+     *
+     * @param splitName Name of the split, or empty string for the base split.
      */
-    private static ClassLoader getClassLoader() {
-        if (sJniClassLoader == null) {
-            return JNIUtils.class.getClassLoader();
-        }
-        return sJniClassLoader;
-    }
-
-    /** Returns a ClassLoader which can load Java classes from the specified split. */
     @CalledByNative
     private static ClassLoader getSplitClassLoader(String splitName) {
-        if (!TextUtils.isEmpty(splitName)) {
+        if (!splitName.isEmpty()) {
             boolean isInstalled = BundleUtils.isIsolatedSplitInstalled(splitName);
             Log.i(TAG, "Init JNI Classloader for %s. isInstalled=%b", splitName, isInstalled);
             if (isInstalled) {
@@ -45,11 +35,12 @@ public class JNIUtils {
                 // ClassLoader was patched to add the splits' dex file to it.
             }
         }
-        return getClassLoader();
+        return sJniClassLoader != null ? sJniClassLoader : JNIUtils.class.getClassLoader();
     }
 
     /**
      * Sets the ClassLoader to be used for loading Java classes from native.
+     *
      * @param classLoader the ClassLoader to use.
      */
     public static void setClassLoader(ClassLoader classLoader) {

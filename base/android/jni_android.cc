@@ -7,17 +7,12 @@
 #include <stddef.h>
 #include <sys/prctl.h>
 
-#include <map>
-
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
-#include "base/containers/flat_map.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
-#include "base/synchronization/lock.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
 
@@ -26,8 +21,7 @@ namespace android {
 namespace {
 
 JavaVM* g_jvm = nullptr;
-base::LazyInstance<ScopedJavaGlobalRef<jobject>>::Leaky g_class_loader =
-    LAZY_INSTANCE_INITIALIZER;
+jobject g_class_loader = nullptr;
 jmethodID g_class_loader_load_class_method_id = 0;
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
@@ -36,28 +30,6 @@ base::LazyInstance<base::ThreadLocalPointer<void>>::Leaky
 #endif
 
 bool g_fatal_exception_occurred = false;
-
-// Returns a ClassLoader instance which will be able to load classes from the
-// specified split.
-jobject GetCachedClassLoader(JNIEnv* env, const std::string& split_name) {
-  DCHECK(!split_name.empty());
-  static base::NoDestructor<base::Lock> lock;
-  static base::NoDestructor<
-      base::flat_map<std::string, ScopedJavaGlobalRef<jobject>>>
-      split_class_loader_map;
-
-  base::AutoLock guard(*lock);
-  auto it = split_class_loader_map->find(split_name);
-  if (it != split_class_loader_map->end()) {
-    return it->second.obj();
-  }
-
-  ScopedJavaGlobalRef<jobject> class_loader(
-      GetSplitClassLoader(env, split_name));
-  jobject class_loader_obj = class_loader.obj();
-  split_class_loader_map->insert({split_name, std::move(class_loader)});
-  return class_loader_obj;
-}
 
 ScopedJavaLocalRef<jclass> GetClassInternal(JNIEnv* env,
                                             const char* class_name,
@@ -154,10 +126,8 @@ bool IsVMInitialized() {
   return g_jvm != nullptr;
 }
 
-void InitReplacementClassLoader(JNIEnv* env,
-                                const JavaRef<jobject>& class_loader) {
-  DCHECK(g_class_loader.Get().is_null());
-  DCHECK(!class_loader.is_null());
+void InitGlobalClassLoader(JNIEnv* env) {
+  DCHECK(g_class_loader == nullptr);
 
   ScopedJavaLocalRef<jclass> class_loader_clazz =
       GetClass(env, "java/lang/ClassLoader");
@@ -168,26 +138,27 @@ void InitReplacementClassLoader(JNIEnv* env,
                        "(Ljava/lang/String;)Ljava/lang/Class;");
   CHECK(!ClearException(env));
 
-  DCHECK(env->IsInstanceOf(class_loader.obj(), class_loader_clazz.obj()));
-  g_class_loader.Get().Reset(class_loader);
+  // GetClassLoader() caches the reference, so we do not need to wrap it in a
+  // smart pointer as well.
+  g_class_loader = GetClassLoader(env);
 }
 
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
                                     const char* class_name,
-                                    const std::string& split_name) {
+                                    const char* split_name) {
   return GetClassInternal(env, class_name,
-                          GetCachedClassLoader(env, split_name));
+                          GetSplitClassLoader(env, split_name));
 }
 
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* class_name) {
-  return GetClassInternal(env, class_name, g_class_loader.Get().obj());
+  return GetClassInternal(env, class_name, g_class_loader);
 }
 
 // This is duplicated with LazyGetClass below because these are performance
 // sensitive.
 jclass LazyGetClass(JNIEnv* env,
                     const char* class_name,
-                    const std::string& split_name,
+                    const char* split_name,
                     std::atomic<jclass>* atomic_class_id) {
   const jclass value = atomic_class_id->load(std::memory_order_acquire);
   if (value)

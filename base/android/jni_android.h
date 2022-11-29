@@ -84,9 +84,7 @@ BASE_EXPORT bool IsVMInitialized();
 // is no Java code on the stack. The base ClassLoader doesn't know about any of
 // the application classes and will fail to lookup anything other than system
 // classes.
-BASE_EXPORT void InitReplacementClassLoader(
-    JNIEnv* env,
-    const JavaRef<jobject>& class_loader);
+void InitGlobalClassLoader(JNIEnv* env);
 
 // Finds the class named |class_name| and returns it.
 // Use this method instead of invoking directly the JNI FindClass method (to
@@ -95,7 +93,7 @@ BASE_EXPORT void InitReplacementClassLoader(
 // Use HasClass if you need to check whether the class exists.
 BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
                                                 const char* class_name,
-                                                const std::string& split_name);
+                                                const char* split_name);
 BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
                                                 const char* class_name);
 
@@ -107,7 +105,7 @@ BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
 // same |atomic_method_id|.
 BASE_EXPORT jclass LazyGetClass(JNIEnv* env,
                                 const char* class_name,
-                                const std::string& split_name,
+                                const char* split_name,
                                 std::atomic<jclass>* atomic_class_id);
 BASE_EXPORT jclass LazyGetClass(
     JNIEnv* env,
