@@ -23,6 +23,11 @@ tell application "{{ browser }}"
 
     open location "{{ idle_site }}"
 
+    {% if send_full_screen_key %}
+    delay 10
+    tell application "System Events" to keystroke "f"
+    {% endif %}
+
     delay {{ delay }}
 
     activate
