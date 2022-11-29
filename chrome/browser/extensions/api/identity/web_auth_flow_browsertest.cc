@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
   navigation_observer.WaitForNavigationFinished();
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     WebAuthFlowInBrowserTabParamBrowserTest,
     testing::Bool(),
@@ -306,14 +306,14 @@ IN_PROC_BROWSER_TEST_P(WebAuthFlowFencedFrameTest,
       embedded_test_server()->GetURL("/error"), net::Error::ERR_FAILED));
 }
 
-INSTANTIATE_TEST_CASE_P(,
-                        WebAuthFlowFencedFrameTest,
-                        testing::Bool(),
-                        [](const testing::TestParamInfo<
-                            WebAuthFlowFencedFrameTest::ParamType>& info) {
-                          return base::StrCat({info.param ? "With" : "Without",
-                                               "WebAuthFlowInBrowserTab"});
-                        });
+INSTANTIATE_TEST_SUITE_P(,
+                         WebAuthFlowFencedFrameTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<
+                             WebAuthFlowFencedFrameTest::ParamType>& info) {
+                           return base::StrCat({info.param ? "With" : "Without",
+                                                "WebAuthFlowInBrowserTab"});
+                         });
 
 class WebAuthFlowWithBrowserTabBrowserTest : public WebAuthFlowBrowserTest {
  public:
