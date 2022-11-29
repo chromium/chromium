@@ -29,8 +29,8 @@ import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {getSelectedValue} from '../../components/oobe_select.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
-import {WebViewHelper} from '../../components/web_view_helper.m.js';
-import {CLEAR_ANCHORS_CONTENT_SCRIPT, WebViewLoader} from '../../components/web_view_loader.m.js';
+import {ContentType, WebViewHelper} from '../../components/web_view_helper.js';
+import {CLEAR_ANCHORS_CONTENT_SCRIPT, WebViewLoader} from '../../components/web_view_loader.js';
 import {Oobe} from '../../cr_ui.js';
 
 
@@ -401,7 +401,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
       const TERMS_URL = 'chrome://terms/arc/privacy_policy';
       WebViewHelper.loadUrlContentToWebView(
           this.$.arcTosOverlayWebview, TERMS_URL,
-          WebViewHelper.ContentType.PDF);
+          ContentType.PDF);
     } else {
       const overlayWebview = this.$.arcTosOverlayWebview;
       if (this.isDemoModeSetup_()) {
@@ -615,7 +615,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
         const TERMS_URL = 'chrome://terms/arc/terms';
         const webView = this.$.arcTosView;
         WebViewHelper.loadUrlContentToWebView(
-            webView, TERMS_URL, WebViewHelper.ContentType.HTML);
+            webView, TERMS_URL, ContentType.HTML);
         return;
       }
       this.showError_();

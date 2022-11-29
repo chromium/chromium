@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 
 /**
  * @fileoverview web view loader.
  */
 
-/* #export */ const CLEAR_ANCHORS_CONTENT_SCRIPT = {
+export const CLEAR_ANCHORS_CONTENT_SCRIPT = {
   code: 'A=Array.from(document.getElementsByTagName("a"));' +
       'for(var i = 0; i < A.length; ++i) {' +
       '  const el = A[i];' +
@@ -65,7 +65,7 @@ const OobeWebViewLoadResult = {
 // When using WebViewLoader to load a new webview, add the webview id with the
 // first character capitalized to the variants of
 // `OOBE.WebViewLoader.FirstLoadResult` histogram.
-/* #export */ class WebViewLoader {
+export class WebViewLoader {
   /**
    * @suppress {missingProperties} as WebView type has no addContentScripts
    */

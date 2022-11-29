@@ -26,8 +26,8 @@ import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
-import {WebViewHelper} from '../../components/web_view_helper.m.js';
-import {WebViewLoader} from '../../components/web_view_loader.m.js';
+import {ContentType, WebViewHelper} from '../../components/web_view_helper.js';
+import {WebViewLoader} from '../../components/web_view_loader.js';
 
 
 // Enum that describes the current state of the Guest ToS screen
@@ -128,7 +128,7 @@ class GuestTos extends GuestTosScreenElementBase {
   loadEulaWebview_(webview, online_tos_url, clear_anchors) {
     const loadFailureCallback = () => {
       WebViewHelper.loadUrlContentToWebView(
-          webview, GUEST_TOS_EULA_TERMS_URL, WebViewHelper.ContentType.HTML);
+          webview, GUEST_TOS_EULA_TERMS_URL, ContentType.HTML);
     };
 
     const tosLoader = new WebViewLoader(

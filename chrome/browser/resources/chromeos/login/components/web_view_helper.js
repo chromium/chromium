@@ -2,14 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 
 /**
  * @fileoverview Web view helper.
  */
 
+/**
+ * Type of content to load into web view.
+ * @enum {string}
+ */
+ export const ContentType = {
+  /** UTF-8 encoded text/html content type. */
+  HTML: 'text/html',
+  /** Base64 encoded application/pdf content type. */
+  PDF: 'application/pdf',
+};
+
 /** Web view helper shared between OOBE screens. */
-/* #export */ class WebViewHelper {
+export class WebViewHelper {
   /**
    * Loads content of the given url into the given web view.
    * The content is loaded via XHR and is sent to web view via data url so that
@@ -17,7 +28,7 @@
    *
    * @param {!Object} webView is a WebView element to host the content.
    * @param {string} url URL to load the content from.
-   * @param {!WebViewHelper.ContentType} contentType type of the content to
+   * @param {!ContentType} contentType type of the content to
    *     load.
    */
   static loadUrlContentToWebView(webView, url, contentType) {
@@ -34,11 +45,11 @@
      */
     const setContents = function(data) {
       switch (contentType) {
-        case WebViewHelper.ContentType.HTML:
+        case ContentType.HTML:
           webView.src =
               'data:text/html;charset=utf-8,' + encodeURIComponent(data);
           break;
-        case WebViewHelper.ContentType.PDF:
+        case ContentType.PDF:
           webView.src = 'data:application/pdf;base64,' + data;
           break;
         default:
@@ -74,14 +85,3 @@
     }
   }
 }
-
-/**
- * Type of content to load into web view.
- * @enum {string}
- */
-WebViewHelper.ContentType = {
-  /** UTF-8 encoded text/html content type. */
-  HTML: 'text/html',
-  /** Base64 encoded application/pdf content type. */
-  PDF: 'application/pdf',
-};

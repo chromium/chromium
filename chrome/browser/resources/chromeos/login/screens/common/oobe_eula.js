@@ -22,7 +22,7 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {WebViewHelper} from '../../components/web_view_helper.m.js';
+import {ContentType, WebViewHelper} from '../../components/web_view_helper.js';
 import {Oobe} from '../../cr_ui.js';
 
 
@@ -454,7 +454,7 @@ class EulaScreen extends EulaScreenBase {
 
     var loadBundledEula = function() {
       WebViewHelper.loadUrlContentToWebView(
-          webview, EULA_TERMS_URL, WebViewHelper.ContentType.HTML);
+          webview, EULA_TERMS_URL, ContentType.HTML);
     };
 
     // Load online Eula with a timeout to fallback to the offline version.

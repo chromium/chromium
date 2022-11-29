@@ -30,8 +30,8 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 import {getSelectedTitle, getSelectedValue, SelectListType, setupSelect} from '../../components/oobe_select.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
-import {WebViewHelper} from '../../components/web_view_helper.m.js';
-import {CLEAR_ANCHORS_CONTENT_SCRIPT, WebViewLoader} from '../../components/web_view_loader.m.js';
+import {ContentType, WebViewHelper} from '../../components/web_view_helper.js';
+import {CLEAR_ANCHORS_CONTENT_SCRIPT, WebViewLoader} from '../../components/web_view_loader.js';
 import {Oobe} from '../../cr_ui.js';
 
 
@@ -383,7 +383,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   loadEulaWebview_(webview, online_tos_url, clear_anchors) {
     const loadFailureCallback = () => {
       WebViewHelper.loadUrlContentToWebView(
-          webview, GOOGLE_EULA_TERMS_URL, WebViewHelper.ContentType.HTML);
+          webview, GOOGLE_EULA_TERMS_URL, ContentType.HTML);
     };
 
     const tosLoader = new WebViewLoader(
@@ -443,7 +443,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     var loadFailureCallback = () => {
       if (this.isDemo_) {
         WebViewHelper.loadUrlContentToWebView(
-            webview, PRIVACY_POLICY_URL, WebViewHelper.ContentType.PDF);
+            webview, PRIVACY_POLICY_URL, ContentType.PDF);
       }
     };
 
