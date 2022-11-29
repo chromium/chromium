@@ -145,24 +145,12 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateAppListView() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetInteriorMargin(gfx::Insets::VH(kVerticalPaddingBetweenSections,
                                          kHorizontalInteriorMargin));
-  //.SetDefault(views::kMarginsKey, kVerticalPaddingBetweenSections);
 
   // All apps section.
   items_container_ =
       scroll_contents->AddChildView(std::make_unique<views::View>());
   items_container_->SetPaintToLayer();
   items_container_->layer()->SetFillsBoundsOpaquely(false);
-  auto* table_layout = items_container_->SetLayoutManager(
-      std::make_unique<views::TableLayout>());
-  for (int i = 0; i < kColumns; i++) {
-    table_layout->AddColumn(
-        views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch, 1.0,
-        views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  }
-  int n_apps = 107;
-  table_layout->AddRows(ceil((double)n_apps / kColumns),
-                        views::TableLayout::kFixedSize, kRowHeight);
-
   scroll_view->SetContents(std::move(scroll_contents));
 
   return scroll_view;
@@ -187,6 +175,16 @@ void AppStreamLauncherView::UpdateFromDataModel() {
   const std::vector<phonehub::Notification::AppMetadata>* apps_list =
       phone_hub_manager_->GetAppStreamLauncherDataModel()
           ->GetAppsListSortedByName();
+  auto* table_layout = items_container_->SetLayoutManager(
+      std::make_unique<views::TableLayout>());
+  for (int i = 0; i < kColumns; i++) {
+    table_layout->AddColumn(
+        views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch, 1.0,
+        views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  }
+  table_layout->AddRows(ceil((double)apps_list->size() / kColumns),
+                        views::TableLayout::kFixedSize, kRowHeight);
+
   for (auto& app : *apps_list) {
     items_container_->AddChildView(CreateItemView(app));
   }

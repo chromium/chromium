@@ -3,25 +3,38 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/app_stream_launcher_view.h"
+#include "ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
+#include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/app_stream_launcher_item.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget_utils.h"
 
 namespace ash {
 
-class AppStreamLauncherViewTest : public AshTestBase {
+class AppStreamLauncherViewTest : public views::ViewsTestBase {
  public:
   AppStreamLauncherViewTest() = default;
   ~AppStreamLauncherViewTest() override = default;
 
-  // AshTestBase:
+  // ViewsTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    views::ViewsTestBase::SetUp();
+    CreateWidget();
+    generator_ =
+        std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
 
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA},
@@ -29,30 +42,161 @@ class AppStreamLauncherViewTest : public AshTestBase {
 
     app_stream_launcher_view_ =
         std::make_unique<AppStreamLauncherView>(&fake_phone_hub_manager_);
+    widget_->SetContentsView(app_stream_launcher_view_.get());
+    widget_->Show();
+    widget_->LayoutRootViewIfNecessary();
   }
 
   // AshTestBase:
   void TearDown() override {
     app_stream_launcher_view_.reset();
-    AshTestBase::TearDown();
+    generator_.reset();
+    views::ViewsTestBase::TearDown();
   }
 
  protected:
+  views::Widget* widget() { return widget_; }
+  ui::test::EventGenerator* generator() { return generator_.get(); }
   AppStreamLauncherView* app_stream_launcher_view() {
     return app_stream_launcher_view_.get();
   }
+
+  AppStreamLauncherItem* GetItemView(int index) {
+    return static_cast<AppStreamLauncherItem*>(
+        app_stream_launcher_view()->items_container_for_test()->children().at(
+            index));
+  }
+
+  const gfx::Image CreateTestImage() {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(60, 60);
+    gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    image_skia.MakeThreadSafe();
+    return gfx::Image(image_skia);
+  }
+
+  void CreateWidget() {
+    DCHECK(!widget_);
+    widget_ = new views::Widget;
+    views::Widget::InitParams params =
+        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.bounds = gfx::Rect(0, 0, 600, 800);
+    widget_->Init(std::move(params));
+  }
+
   phonehub::FakePhoneHubManager* fake_phone_hub_manager() {
     return &fake_phone_hub_manager_;
   }
 
  private:
+  // This is required in order for the context to find color provider
+  AshColorProvider color_provider_;
   std::unique_ptr<AppStreamLauncherView> app_stream_launcher_view_;
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<views::Widget> widget_ = nullptr;
+  std::unique_ptr<ui::test::EventGenerator> generator_;
 };
 
 TEST_F(AppStreamLauncherViewTest, OpenView) {
   EXPECT_TRUE(app_stream_launcher_view()->GetVisible());
+}
+
+TEST_F(AppStreamLauncherViewTest, AddItems) {
+  const int64_t user_id = 1;
+  const char16_t app_visible_name[] = u"Fake App";
+  const char package_name[] = "com.fakeapp";
+
+  EXPECT_EQ(0U, app_stream_launcher_view()
+                    ->items_container_for_test()
+                    ->children()
+                    .size());
+
+  auto app1 = phonehub::Notification::AppMetadata(
+      app_visible_name, package_name, CreateTestImage(),
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+  std::vector<phonehub::Notification::AppMetadata> apps;
+  apps.push_back(app1);
+
+  phonehub::AppStreamLauncherDataModel* data_model =
+      fake_phone_hub_manager()->fake_app_stream_launcher_data_model();
+  data_model->SetAppList(apps);
+
+  EXPECT_EQ(1U, app_stream_launcher_view()
+                    ->items_container_for_test()
+                    ->children()
+                    .size());
+
+  EXPECT_EQ(u"Fake App",
+            GetItemView(0)->get_label_for_test()->GetTooltipText());
+}
+
+TEST_F(AppStreamLauncherViewTest, RemoveItem) {
+  const int64_t user_id = 1;
+  const char16_t app_visible_name[] = u"Fake App";
+  const char package_name[] = "com.fakeapp";
+
+  auto app1 = phonehub::Notification::AppMetadata(
+      app_visible_name, package_name, CreateTestImage(),
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+  std::vector<phonehub::Notification::AppMetadata> apps;
+  apps.push_back(app1);
+
+  phonehub::AppStreamLauncherDataModel* data_model =
+      fake_phone_hub_manager()->fake_app_stream_launcher_data_model();
+  data_model->SetAppList(apps);
+
+  EXPECT_EQ(1U, app_stream_launcher_view()
+                    ->items_container_for_test()
+                    ->children()
+                    .size());
+
+  EXPECT_EQ(u"Fake App",
+            GetItemView(0)->get_label_for_test()->GetTooltipText());
+
+  apps.clear();
+  data_model->SetAppList(apps);
+
+  EXPECT_EQ(0U, app_stream_launcher_view()
+                    ->items_container_for_test()
+                    ->children()
+                    .size());
+}
+
+TEST_F(AppStreamLauncherViewTest, ClickOnItem) {
+  const int64_t user_id = 1;
+  const char16_t app_visible_name[] = u"Fake App";
+  const char package_name[] = "com.fakeapp";
+
+  auto app1 = phonehub::Notification::AppMetadata(
+      app_visible_name, package_name, CreateTestImage(),
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+  std::vector<phonehub::Notification::AppMetadata> apps;
+  apps.push_back(app1);
+
+  phonehub::AppStreamLauncherDataModel* data_model =
+      fake_phone_hub_manager()->fake_app_stream_launcher_data_model();
+  data_model->SetAppList(apps);
+  widget()->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(1U, app_stream_launcher_view()
+                    ->items_container_for_test()
+                    ->children()
+                    .size());
+
+  ui::test::EventGenerator generator(
+      GetRootWindow(app_stream_launcher_view()->GetWidget()));
+
+  EXPECT_TRUE(GetItemView(0)->GetVisible());
+
+  gfx::Point cursor_location =
+      GetItemView(0)->get_icon_for_test()->GetBoundsInScreen().CenterPoint();
+  generator.MoveMouseTo(cursor_location);
+  generator.ClickLeftButton();
+
+  EXPECT_EQ(1U, fake_phone_hub_manager()
+                    ->fake_recent_apps_interaction_handler()
+                    ->HandledRecentAppsCount(package_name));
 }
 
 }  // namespace ash

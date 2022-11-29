@@ -46,9 +46,13 @@ class ASH_EXPORT AppStreamLauncherView
   // phonehub::AppStreamLauncherDataModel::Observer:
   void OnAppListChanged() override;
 
+  views::View* items_container_for_test() { return items_container_; }
+
  private:
   friend class AppStreamLauncherViewTest;
   FRIEND_TEST_ALL_PREFIXES(AppStreamLauncherViewTest, OpenView);
+  FRIEND_TEST_ALL_PREFIXES(AppStreamLauncherViewTest, AddItems);
+  FRIEND_TEST_ALL_PREFIXES(AppStreamLauncherViewTest, ClickOnItem);
 
   std::unique_ptr<views::View> CreateAppListView();
   std::unique_ptr<views::View> CreateItemView(

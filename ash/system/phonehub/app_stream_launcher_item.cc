@@ -50,6 +50,7 @@ AppStreamLauncherItem::AppStreamLauncherItem(
 
   label_ = AddChildView(
       std::make_unique<views::Label>(app_metadata.visible_app_name));
+  label_->SetTooltipText(app_metadata.visible_app_name);
   ConfigureLabel(label_, kEcheAppNameLabelLineHeight,
                  kEcheAppNameLabelFontSize);
 }
