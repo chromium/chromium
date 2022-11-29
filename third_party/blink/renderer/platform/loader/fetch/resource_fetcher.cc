@@ -1050,8 +1050,16 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   bool in_cached_resources_map = cached_resources_map_.Contains(
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()));
 
+  // https://linear.app/replay/issue/RUN-820
+  recordreplay::Assert("ResourceFetcher::RequestResource #6 %d %d",
+                       is_stale_revalidation, !!resource);
+
   if (!is_stale_revalidation && !resource) {
     resource = MatchPreload(params, resource_type);
+
+    // https://linear.app/replay/issue/RUN-820
+    recordreplay::Assert("ResourceFetcher::RequestResource #7 %d", !!resource);
+
     if (resource) {
       policy = RevalidationPolicy::kUse;
       // If |params| is for a blocking resource and a preloaded resource is
@@ -1060,10 +1068,16 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     } else if (IsMainThread()) {
       if (base::FeatureList::IsEnabled(features::kScopeMemoryCachePerContext) &&
           !in_cached_resources_map) {
+        // https://linear.app/replay/issue/RUN-820
+        recordreplay::Assert("ResourceFetcher::RequestResource #7.1");
+
         resource = nullptr;
       } else {
         resource = GetMemoryCache()->ResourceForURL(
             params.Url(), GetCacheIdentifier(params.Url()));
+
+        // https://linear.app/replay/issue/RUN-820
+        recordreplay::Assert("ResourceFetcher::RequestResource #7.2 %d", !!resource);
       }
       if (resource) {
         // https://linear.app/replay/issue/RUN-820
