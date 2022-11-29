@@ -918,29 +918,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="ChromeOS.FastPair.GattConnection"
-    enum="FastPairGattConnectionSteps" expires_after="2023-06-01">
-  <owner>jackshira@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records each sucessful step in the GATT Connection flow. These steps are: on
-    connection start, on connection ready, on key-based characteristic found, on
-    notifications enabled for the key-based pairing characteristic, and on
-    connection established.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.FastPair.SubsequentPairing"
-    enum="FastPairSubsequentSuccessFunnelEvent" expires_after="2023-06-01">
-  <owner>jackshira@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records each sucessful step in the Subsequent Pairing flow. These steps are:
-    on notification click, on initialization start, on pairing start, and on
-    completion of the entire pairing process.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.FeatureUsage.{FeatureName}" enum="FeatureUsageEvent"
     expires_after="2023-05-11">
   <owner>rsorokin@chromium.org</owner>

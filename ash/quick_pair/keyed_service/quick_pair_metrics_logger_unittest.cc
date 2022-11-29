@@ -46,8 +46,7 @@ constexpr char kFastPairEngagementFlowMetricInitial[] =
 constexpr char kFastPairEngagementFlowMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps."
     "SubsequentPairingProtocol";
-constexpr char kSubsequentSuccessFunnelMetric[] =
-    "ChromeOS.FastPair.SubsequentPairing";
+constexpr char kSubsequentSuccessFunnelMetric[] = "FastPair.SubsequentPairing";
 const char kFastPairRetroactiveEngagementFlowMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps";
 constexpr char kFastPairPairTimeMetricInitial[] =

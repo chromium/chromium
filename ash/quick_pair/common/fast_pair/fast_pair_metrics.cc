@@ -486,7 +486,6 @@ const char kFootprintsFetcherGetHttpResponseError[] =
     "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Get.HttpResponseError";
 const char kFastPairRepositoryCacheResult[] =
     "Bluetooth.ChromeOS.FastPair.FastPairRepository.Cache.Result";
-const char kFastPairGattConnectionStep[] = "ChromeOS.FastPair.GattConnection";
 const char kHandshakeResult[] = "Bluetooth.ChromeOS.FastPair.Handshake.Result";
 const char kFastPairHandshakeStepInitial[] =
     "Bluetooth.ChromeOS.FastPair.Handshake.Steps.InitialPairingProtocol";
@@ -533,8 +532,8 @@ const char kSavedDevicesTotalUxLoadTime[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.TotalUxLoadTime";
 const char kSavedDevicesCount[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.DeviceCount";
-constexpr char kSubsequentSuccessFunnelMetric[] =
-    "ChromeOS.FastPair.SubsequentPairing";
+constexpr char kFastPairGattConnectionStep[] = "FastPair.GattConnection";
+constexpr char kSubsequentSuccessFunnelMetric[] = "FastPair.SubsequentPairing";
 
 const std::string GetEngagementFlowInitialModelIdMetric(
     const ash::quick_pair::Device& device) {

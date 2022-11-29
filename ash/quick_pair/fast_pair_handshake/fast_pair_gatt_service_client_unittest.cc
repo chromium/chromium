@@ -56,7 +56,7 @@ const char kWriteAccountKeyCharacteristicGattError[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.GattErrorReason";
 const char kWriteAccountKeyTimeMetric[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime";
-const char kFastPairGattConnectionStep[] = "ChromeOS.FastPair.GattConnection";
+const char kFastPairGattConnectionStep[] = "FastPair.GattConnection";
 
 constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(15);
 
