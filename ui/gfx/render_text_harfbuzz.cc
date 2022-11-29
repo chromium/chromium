@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/i18n/base_i18n_switches.h"
@@ -2137,16 +2136,6 @@ void RenderTextHarfBuzz::ShapeRuns(
                            TRACE_STR_COPY(font_name.c_str()),
                            "primary_font_name", primary_font.GetFontName());
       RecordShapeRunsFallback(ShapeRunFallback::FALLBACKS);
-#if BUILDFLAG(IS_WIN)
-      // Resolving fallback fonts using the registry keys on windows will be
-      // deprecated and removed (see: http://crbug.com/995789). The crashes
-      // reported here should be fixed before deprecating the code.
-      static bool is_first_crash = true;
-      if (is_first_crash) {
-        is_first_crash = false;
-        base::debug::DumpWithoutCrashing();
-      }
-#endif
       return;
     }
   }
