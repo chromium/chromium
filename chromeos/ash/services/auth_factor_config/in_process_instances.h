@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_IN_PROCESS_INSTANCES_H_
 
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
+#include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 // This file contains functions to bind mojo clients for the auth factor config
@@ -26,6 +27,7 @@ mojom::AuthFactorConfigAsyncWaiter GetAuthFactorConfigForTesting();
 void BindToRecoveryFactorEditor(
     mojo::PendingReceiver<mojom::RecoveryFactorEditor> receiver);
 mojom::RecoveryFactorEditorAsyncWaiter GetRecoveryFactorEditorForTesting();
+mojom::RecoveryFactorEditor& GetRecoveryFactorEditor();
 
 }  // namespace ash::auth
 

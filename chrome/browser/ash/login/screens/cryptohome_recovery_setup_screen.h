@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -19,15 +20,23 @@ class CryptohomeRecoverySetupScreenView;
 class CryptohomeRecoverySetupScreen : public BaseScreen {
  public:
   using TView = CryptohomeRecoverySetupScreenView;
+  enum class Result { DONE, SKIPPED };
+  static std::string GetResultString(Result result);
+  using ScreenExitCallback = base::RepeatingCallback<void(Result)>;
 
   CryptohomeRecoverySetupScreen(
       base::WeakPtr<CryptohomeRecoverySetupScreenView> view,
-      const base::RepeatingClosure& exit_callback);
+      ScreenExitCallback exit_callback);
   ~CryptohomeRecoverySetupScreen() override;
 
   CryptohomeRecoverySetupScreen(const CryptohomeRecoverySetupScreen&) = delete;
   CryptohomeRecoverySetupScreen& operator=(
       const CryptohomeRecoverySetupScreen&) = delete;
+
+  ScreenExitCallback get_exit_callback_for_testing() { return exit_callback_; }
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
 
  protected:
   // BaseScreen:
@@ -37,8 +46,10 @@ class CryptohomeRecoverySetupScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
 
  private:
+  void ExitScreen(WizardContext& wizard_context, Result result);
+  void OnRecoveryConfigured(auth::RecoveryFactorEditor::ConfigureResult result);
   base::WeakPtr<CryptohomeRecoverySetupScreenView> view_ = nullptr;
-  base::RepeatingClosure exit_callback_;
+  ScreenExitCallback exit_callback_;
   base::WeakPtrFactory<CryptohomeRecoverySetupScreen> weak_ptr_factory_{this};
 };
 
