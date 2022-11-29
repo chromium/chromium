@@ -5,6 +5,7 @@
 #include "components/tracing/common/background_tracing_metrics_provider.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/metrics/content/gpu_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
@@ -58,6 +59,12 @@ void BackgroundTracingMetricsProvider::ProvideEmbedderMetrics(
     base::HistogramSnapshotManager* snapshot_manager,
     base::OnceCallback<void(bool)> done_callback) {
   SetTrace(log, std::move(serialized_trace));
+  // TODO(crbug/1052796): Remove the UMA timer code, which is currently used to
+  // determine if it is worth to finalize independent logs in the background
+  // by measuring the time it takes to execute the callback
+  // MetricsService::PrepareProviderMetricsLogDone().
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "UMA.IndependentLog.BackgroundTracingMetricsProvider.FinalizeTime");
   std::move(done_callback).Run(true);
 }
 

@@ -843,7 +843,20 @@ void FileMetricsProvider::ProvideIndependentMetricsCleanup(
   ScheduleSourcesCheck();
 
   // Execute the chained callback.
+  // TODO(crbug/1052796): Remove the UMA timer code, which is currently used to
+  // determine if it is worth to finalize independent logs in the background
+  // by measuring the time it takes to execute the callback
+  // MetricsService::PrepareProviderMetricsLogDone().
+  base::TimeTicks start_time = base::TimeTicks::Now();
   std::move(done_callback).Run(success);
+  if (success) {
+    // We don't use the SCOPED_UMA_HISTOGRAM_TIMER macro because we want to
+    // measure the time it takes to finalize an independent log, and that only
+    // happens when |success| is true.
+    base::UmaHistogramTimes(
+        "UMA.IndependentLog.FileMetricsProvider.FinalizeTime",
+        base::TimeTicks::Now() - start_time);
+  }
 }
 
 bool FileMetricsProvider::HasPreviousSessionData() {

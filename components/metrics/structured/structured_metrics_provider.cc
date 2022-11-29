@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
 #include "components/metrics/structured/enums.h"
@@ -346,6 +347,12 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
   // Independent events should not be associated with the client_id, so clear
   // it.
   uma_proto->clear_client_id();
+  // TODO(crbug/1052796): Remove the UMA timer code, which is currently used to
+  // determine if it is worth to finalize independent logs in the background
+  // by measuring the time it takes to execute the callback
+  // MetricsService::PrepareProviderMetricsLogDone().
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "UMA.IndependentLog.StructuredMetricsProvider.FinalizeTime");
   std::move(done_callback).Run(true);
 }
 
