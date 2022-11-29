@@ -102,7 +102,7 @@ AttestationFlowIntegrated::AttestationFlowIntegrated()
 // |AttestationFlow| because we don't use cryptohome client and server
 // proxy in |AttestationFlowIntegrated|.
 //
-// TOOD(b/158955123): Remove this transitional state along with the removal of
+// TOOD(b/232893759): Remove this transitional state along with the removal of
 // |AttestationFlow|.
 AttestationFlowIntegrated::AttestationFlowIntegrated(
     ::attestation::ACAType aca_type)

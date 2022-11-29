@@ -19,7 +19,7 @@ namespace attestation {
 // This constructor passes |nullptr|s to the base class because we don't use
 // server proxy in |AttestationFlowIntegrated|.
 //
-// TODO(b/158955123): Remove this transitional state along with the removal of
+// TODO(b/232893759): Remove this transitional state along with the removal of
 // |AttestationFlow|.
 FakeAttestationFlow::FakeAttestationFlow(const std::string& certificate)
     : AttestationFlow(/*server_proxy=*/nullptr), certificate_(certificate) {}
