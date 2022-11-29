@@ -39,7 +39,6 @@ source_set("ui") {
     "//ios/web/public/deprecated",
     "//ios/web/public/download",
     "//ios/web/public/js_messaging",
-    "//ios/web/public/permissions",
     "//ios/web/public/security",
     "//ios/web/public/webui",
     "//ios/web/security",
