@@ -16,12 +16,23 @@ const loadImage = size => {
     document.body.appendChild(zoom);
   }
 };
+const loadBackgroundImage = size => {
+  return event => {
+    const div = document.createElement("div");
+    const [width, height] = size.split("x");
+    div.style = `background-image: url(/images/green-${size}.png); width: ${width}; height: ${height}`;
+    document.body.appendChild(div);
+  }
+};
 
 // Turn off BFCache to see if it helps with BFCache bot flakes.
 window.addEventListener("unload", () => { console.log("Turn off BFCache"); });
 
-image.addEventListener("mouseover", loadImage("100x50"));
-span.addEventListener("mouseover", loadImage("256x256"));
+const registerMouseover = background => {
+  const func = background ? loadBackgroundImage : loadImage;
+  image.addEventListener("mouseover", func("100x50"));
+  span.addEventListener("mouseover", func("256x256"));
+}
 
 const dispatch_mouseover = () => {
   span.dispatchEvent(new Event("mouseover"))

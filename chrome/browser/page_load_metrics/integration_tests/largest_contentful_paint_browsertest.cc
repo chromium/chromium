@@ -339,7 +339,8 @@ IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
                    /*expected=*/true, /*entries=*/0);
 }
 
-class MouseoverLCPTest : public MetricIntegrationTest {
+class MouseoverLCPTest : public MetricIntegrationTest,
+                         public testing::WithParamInterface<bool> {
  public:
   void test_mouseover(const char* html_name,
                       blink::LargestContentfulPaintType flag_set,
@@ -358,6 +359,11 @@ class MouseoverLCPTest : public MetricIntegrationTest {
     waiter->AddMinimumCompleteResourcesExpectation(2);
     Start();
     Load(html_name);
+    std::string background = GetParam() ? "true" : "false";
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     "registerMouseover(" + background + ")")
+                  .error,
+              "");
     EXPECT_EQ(
         EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test(1)").error, "");
 
@@ -421,7 +427,9 @@ class MouseoverLCPTest : public MetricIntegrationTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+INSTANTIATE_TEST_SUITE_P(All, MouseoverLCPTest, ::testing::Values(false, true));
+
+IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverLCPImage) {
   test_mouseover("/mouseover.html",
                  blink::LargestContentfulPaintType::kAfterMouseover,
@@ -432,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*expected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverLCPImageReplace) {
   test_mouseover("/mouseover.html?replace",
                  blink::LargestContentfulPaintType::kAfterMouseover,
@@ -443,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*expected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverBody) {
   test_mouseover("/mouseover.html",
                  blink::LargestContentfulPaintType::kAfterMouseover,
@@ -454,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*expected=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
   test_mouseover("/mouseover.html?dispatch",
                  blink::LargestContentfulPaintType::kAfterMouseover,

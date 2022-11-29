@@ -161,7 +161,7 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
 
   return image_paint_timing_detector.RecordImage(
       *object, image.Size(), *cached_image, current_paint_chunk_properties,
-      &style_image, image_border);
+      &style_image, image_border, style_image.IsLoadedAfterMouseover());
 }
 
 // static
@@ -181,9 +181,14 @@ bool PaintTimingDetector::NotifyImagePaint(
   if (!image_paint_timing_detector.IsRecordingLargestImagePaint())
     return false;
 
+  Node* image_node = object.GetNode();
+  HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
+  bool is_loaded_after_mouseover =
+      element && element->IsChangedShortlyAfterMouseover();
+
   return image_paint_timing_detector.RecordImage(
       object, intrinsic_size, media_timing, current_paint_chunk_properties,
-      nullptr, image_border);
+      nullptr, image_border, is_loaded_after_mouseover);
 }
 
 void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
@@ -295,10 +300,7 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
   lcp_details_.largest_contentful_paint_type_ =
       blink::LargestContentfulPaintType::kNone;
   if (image_record) {
-    Node* image_node = DOMNodeIds::NodeForId(image_record->node_id);
-    HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
-    if (element && !image_node->IsInShadowTree() &&
-        element->IsChangedShortlyAfterMouseover()) {
+    if (image_record->is_loaded_after_mouseover) {
       lcp_details_.largest_contentful_paint_type_ |=
           blink::LargestContentfulPaintType::kAfterMouseover;
     }

@@ -295,7 +295,8 @@ bool ImagePaintTimingDetector::RecordImage(
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const StyleFetchedImage* style_image,
-    const gfx::Rect& image_border) {
+    const gfx::Rect& image_border,
+    const bool is_loaded_after_mouseover) {
   Node* node = object.GetNode();
 
   if (!node)
@@ -321,7 +322,8 @@ bool ImagePaintTimingDetector::RecordImage(
           image_border, mapped_visual_rect, intrinsic_size,
           current_paint_chunk_properties, object, media_timing);
       records_manager_.MaybeUpdateLargestIgnoredImage(
-          record_id, rect_size, image_border, mapped_visual_rect);
+          record_id, rect_size, image_border, mapped_visual_rect,
+          is_loaded_after_mouseover);
     }
     return false;
   }
@@ -365,7 +367,8 @@ bool ImagePaintTimingDetector::RecordImage(
                    : 0.0;
 
   bool added_pending = records_manager_.RecordFirstPaintAndReturnIsPending(
-      record_id, rect_size, image_border, mapped_visual_rect, bpp);
+      record_id, rect_size, image_border, mapped_visual_rect, bpp,
+      is_loaded_after_mouseover);
   if (!added_pending)
     return false;
 
@@ -524,12 +527,13 @@ void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
     const RecordId& record_id,
     const uint64_t& visual_size,
     const gfx::Rect& frame_visual_rect,
-    const gfx::RectF& root_visual_rect) {
+    const gfx::RectF& root_visual_rect,
+    bool is_loaded_after_mouseover) {
   if (visual_size && (!largest_ignored_image_ ||
                       visual_size > largest_ignored_image_->recorded_size)) {
-    largest_ignored_image_ =
-        CreateImageRecord(*record_id.first, record_id.second, visual_size,
-                          frame_visual_rect, root_visual_rect);
+    largest_ignored_image_ = CreateImageRecord(
+        *record_id.first, record_id.second, visual_size, frame_visual_rect,
+        root_visual_rect, is_loaded_after_mouseover);
     largest_ignored_image_->load_time = base::TimeTicks::Now();
   }
 }
@@ -539,7 +543,8 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
     const uint64_t& visual_size,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect,
-    double bpp) {
+    double bpp,
+    bool is_loaded_after_mouseover) {
   // Don't process the image yet if it is invisible, as it may later become
   // visible, and potentially eligible to be an LCP candidate.
   if (visual_size == 0u) {
@@ -557,9 +562,9 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
     return false;
   }
 
-  std::unique_ptr<ImageRecord> record =
-      CreateImageRecord(*record_id.first, record_id.second, visual_size,
-                        frame_visual_rect, root_visual_rect);
+  std::unique_ptr<ImageRecord> record = CreateImageRecord(
+      *record_id.first, record_id.second, visual_size, frame_visual_rect,
+      root_visual_rect, is_loaded_after_mouseover);
   size_ordered_set_.insert(record->AsWeakPtr());
   pending_images_.insert(record_id, std::move(record));
   return true;
@@ -570,12 +575,14 @@ std::unique_ptr<ImageRecord> ImageRecordsManager::CreateImageRecord(
     const MediaTiming* media_timing,
     const uint64_t& visual_size,
     const gfx::Rect& frame_visual_rect,
-    const gfx::RectF& root_visual_rect) {
+    const gfx::RectF& root_visual_rect,
+    bool is_loaded_after_mouseover) {
   DCHECK_GT(visual_size, 0u);
   Node* node = object.GetNode();
   DOMNodeId node_id = DOMNodeIds::IdForNode(node);
   std::unique_ptr<ImageRecord> record = std::make_unique<ImageRecord>(
-      node_id, media_timing, visual_size, frame_visual_rect, root_visual_rect);
+      node_id, media_timing, visual_size, frame_visual_rect, root_visual_rect,
+      is_loaded_after_mouseover);
   return record;
 }
 

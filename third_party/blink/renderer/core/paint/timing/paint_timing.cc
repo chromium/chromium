@@ -102,6 +102,12 @@ PaintTiming& PaintTiming::From(Document& document) {
   return *timing;
 }
 
+// static
+const PaintTiming* PaintTiming::From(const Document& document) {
+  PaintTiming* timing = Supplement<Document>::From<PaintTiming>(document);
+  return timing;
+}
+
 void PaintTiming::MarkFirstPaint() {
   // Test that |first_paint_| is non-zero here, as well as in setFirstPaint, so
   // we avoid invoking monotonicallyIncreasingTime() on every call to
@@ -458,7 +464,7 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
                                                                      index));
 }
 
-bool PaintTiming::IsLCPMouseoverDispatchedRecently() {
+bool PaintTiming::IsLCPMouseoverDispatchedRecently() const {
   static constexpr base::TimeDelta kRecencyDelta = base::Milliseconds(500);
   return (
       !lcp_mouse_over_dispatch_time_.is_null() &&

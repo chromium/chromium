@@ -47,6 +47,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   virtual ~PaintTiming() = default;
 
   static PaintTiming& From(Document&);
+  static const PaintTiming* From(const Document&);
 
   // Mark*() methods record the time for the given paint event and queue a
   // presentation promise to record the |first_*_presentation_| timestamp. These
@@ -177,7 +178,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   // Indicates whether a mouseover event was recently dispatched over an
   // HTMLImageElement LCP element.
-  bool IsLCPMouseoverDispatchedRecently();
+  bool IsLCPMouseoverDispatchedRecently() const;
   void SetLCPMouseoverDispatched();
 
   void Trace(Visitor*) const override;
