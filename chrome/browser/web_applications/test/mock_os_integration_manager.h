@@ -120,7 +120,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               UpdateShortcuts,
               (const AppId& app_id,
                base::StringPiece old_name,
-               ResultCallback callback),
+               base::OnceClosure callback),
               (override));
 
   // Utility methods:

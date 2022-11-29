@@ -65,11 +65,10 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   return false;
 }
 
-Result UpdatePlatformShortcuts(const base::FilePath& web_app_path,
-                               const std::u16string& old_app_title,
-                               const ShortcutInfo& shortcut_info) {
+void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
+                             const std::u16string& old_app_title,
+                             const ShortcutInfo& shortcut_info) {
   NOTIMPLEMENTED();
-  return Result::kOk;
 }
 
 void DeletePlatformShortcuts(const base::FilePath& web_app_path,

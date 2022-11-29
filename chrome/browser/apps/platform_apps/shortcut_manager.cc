@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/functional/callback_helpers.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -92,7 +91,7 @@ void AppShortcutManager::OnExtensionWillBeInstalled(
   // shortcut in the applications menu (e.g., Start Menu).
   if (is_update) {
     web_app::UpdateAllShortcuts(base::UTF8ToUTF16(old_name), profile_,
-                                extension, base::DoNothing());
+                                extension, base::OnceClosure());
   } else {
     CreateShortcutsForApp(profile_, extension);
   }

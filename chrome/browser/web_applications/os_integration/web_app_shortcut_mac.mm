@@ -4,7 +4,6 @@
 
 #import "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "base/logging.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
@@ -1555,9 +1554,9 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   }
 }
 
-Result UpdatePlatformShortcuts(const base::FilePath& app_data_path,
-                               const std::u16string& old_app_title,
-                               const ShortcutInfo& shortcut_info) {
+void UpdatePlatformShortcuts(const base::FilePath& app_data_path,
+                             const std::u16string& old_app_title,
+                             const ShortcutInfo& shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
@@ -1566,7 +1565,7 @@ Result UpdatePlatformShortcuts(const base::FilePath& app_data_path,
   scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
       web_app::GetShortcutOverrideForTesting();
   if (AppShimLaunchDisabled())
-    return Result::kOk;
+    return;
 
   WebAppShortcutCreator shortcut_creator(app_data_path, &shortcut_info);
   std::vector<base::FilePath> updated_shim_paths;
@@ -1575,10 +1574,7 @@ Result UpdatePlatformShortcuts(const base::FilePath& app_data_path,
   // relying on asynchronous creation at installation.
   if (g_app_shims_allow_update_and_launch_in_tests)
     create_if_needed = true;
-  return (
-      shortcut_creator.UpdateShortcuts(create_if_needed, &updated_shim_paths)
-          ? Result::kOk
-          : Result::kError);
+  shortcut_creator.UpdateShortcuts(create_if_needed, &updated_shim_paths);
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {

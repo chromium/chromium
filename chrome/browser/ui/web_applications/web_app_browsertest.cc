@@ -16,7 +16,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -62,7 +61,6 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -1669,63 +1667,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentLastBrowserTab) {
 
   ASSERT_TRUE(IsBrowserOpen(browser()));
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-}
-
-using WebAppBrowserTest_UpdateShortcuts = WebAppBrowserTest;
-
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_UpdateShortcuts, UpdateShortcut) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
-      shortcut_override =
-          ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
-
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
-
-  WebAppProvider* provider = WebAppProvider::GetForTest(profile());
-
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode>
-      install_future;
-  provider->scheduler().FetchManifestAndInstall(
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
-      base::BindOnce(test::TestAcceptDialogCallback),
-      install_future.GetCallback(),
-      /*use_fallback=*/false);
-
-  const AppId& app_id = install_future.Get<0>();
-  EXPECT_EQ(provider->registrar().GetAppShortName(app_id),
-            GetInstallableAppName());
-
-  {
-    ScopedRegistryUpdate update(&provider->sync_bridge());
-    update->UpdateApp(app_id)->SetName("test_app_2");
-  }
-
-  base::HistogramTester tester;
-  base::test::TestFuture<Result> result;
-  provider->os_integration_manager().UpdateShortcuts(
-      app_id, "Manifest test app", result.GetCallback());
-  ASSERT_TRUE(result.Wait());
-  EXPECT_THAT(result.Get(), testing::Eq(Result::kOk));
-
-  bool can_create_shortcuts = provider->os_integration_manager()
-                                  .shortcut_manager_for_testing()
-                                  .CanCreateShortcuts();
-  if (can_create_shortcuts) {
-    EXPECT_THAT(tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
-                BucketsAre(base::Bucket(true, 1)));
-  } else {
-    EXPECT_THAT(tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
-                testing::IsEmpty());
-  }
-
-  base::test::TestFuture<std::unique_ptr<ShortcutInfo>> shortcut_future;
-  provider->os_integration_manager().GetShortcutInfoForApp(
-      app_id, shortcut_future.GetCallback());
-  auto shortcut_info = shortcut_future.Take();
-  EXPECT_NE(shortcut_info, nullptr);
-  EXPECT_EQ(shortcut_info->title, u"test_app_2");
 }
 
 // Tests that reparenting a display: browser app tab results in a minimal-ui

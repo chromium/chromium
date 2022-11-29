@@ -286,20 +286,19 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id);
 // platform specific implementation of the UpdateAllShortcuts function, and
 // is executed on the FILE thread. On Windows, this also updates shortcuts in
 // the pinned taskbar directories.
-// Returns true if update was performed successfully and false otherwise
-Result UpdatePlatformShortcuts(const base::FilePath& shortcut_data_path,
-                               const std::u16string& old_app_title,
-                               const ShortcutInfo& shortcut_info);
+void UpdatePlatformShortcuts(const base::FilePath& shortcut_data_path,
+                             const std::u16string& old_app_title,
+                             const ShortcutInfo& shortcut_info);
 
 // Run an IO task on a worker thread. Ownership of |shortcut_info| transfers
 // to a closure that deletes it on the UI thread when the task is complete.
 // Tasks posted here run with BEST_EFFORT priority and block shutdown.
 void PostShortcutIOTask(base::OnceCallback<void(const ShortcutInfo&)> task,
                         std::unique_ptr<ShortcutInfo> shortcut_info);
-void PostShortcutIOTaskAndReplyWithResult(
-    base::OnceCallback<Result(const ShortcutInfo&)> task,
+void PostShortcutIOTaskAndReply(
+    base::OnceCallback<void(const ShortcutInfo&)> task,
     std::unique_ptr<ShortcutInfo> shortcut_info,
-    ResultCallback reply);
+    base::OnceClosure reply);
 
 // The task runner for running shortcut tasks. On Windows this will be a task
 // runner that permits access to COM libraries. Shortcut tasks typically deal

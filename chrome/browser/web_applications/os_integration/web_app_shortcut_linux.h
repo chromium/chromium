@@ -74,7 +74,7 @@ ShortcutLocations GetExistingShortcutLocations(
     const base::FilePath& profile_path,
     const std::string& extension_id);
 
-bool UpdateDesktopShortcuts(base::Environment* env,
+void UpdateDesktopShortcuts(base::Environment* env,
                             const ShortcutInfo& shortcut_info);
 
 // Delete any desktop shortcuts on desktop or in the application menu that have
