@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram.h"
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -561,8 +561,6 @@ ProcessesTerminateFunction::TerminateIfAllowed(base::ProcessHandle handle) {
 
   const bool did_terminate =
       process.Terminate(content::RESULT_CODE_KILLED, true /* wait */);
-  if (did_terminate)
-    UMA_HISTOGRAM_COUNTS_1M("ChildProcess.KilledByExtensionAPI", 1);
 
   return ArgumentList(
       api::processes::Terminate::Results::Create(did_terminate));
