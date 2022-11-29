@@ -432,10 +432,6 @@ ExtensionService::ExtensionService(Profile* profile,
   SetCurrentDeveloperMode(
       util::GetBrowserContextId(profile),
       profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode));
-
-  // How long is the path to the Extensions directory?
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ExtensionRootPathLength",
-                              install_directory_.value().length(), 1, 500, 100);
 }
 
 PendingExtensionManager* ExtensionService::pending_extension_manager() {
@@ -561,10 +557,6 @@ void ExtensionService::MaybeFinishShutdownDelayed() {
     }
   }
   MaybeFinishDelayedInstallations();
-  std::unique_ptr<ExtensionPrefs::ExtensionsInfo> delayed_info2(
-      extension_prefs_->GetAllDelayedInstallInfo());
-  UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateOnLoad",
-                           delayed_info2->size() - delayed_info->size());
 }
 
 scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
@@ -1299,7 +1291,6 @@ void ExtensionService::CheckForExternalUpdates() {
 
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::CheckForExternalUpdates");
-  SCOPED_UMA_HISTOGRAM_TIMER("Extensions.CheckForExternalUpdatesTime");
 
   // Note that this installation is intentionally silent (since it didn't
   // go through the front-end).  Extensions that are registered in this
@@ -1705,10 +1696,6 @@ void ExtensionService::OnExtensionInstalled(
     UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource",
                               extension->location());
     RecordPermissionMessagesHistogram(extension, "Install");
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Extensions.UpdateType", extension->GetType(),
-                              100);
-    UMA_HISTOGRAM_ENUMERATION("Extensions.UpdateSource", extension->location());
   }
 
   const Extension::State initial_state =

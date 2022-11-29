@@ -5996,7 +5996,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Enabled" label="Sideload Wipeout Active."/>
   <affected-histogram name="Extensions.ExternalExtensionEvent"/>
   <affected-histogram name="Extensions.InstallSource"/>
-  <affected-histogram name="Extensions.UpdateSource"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Signin_Actions" separator=".">

@@ -338,15 +338,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.CheckForExternalUpdatesTime" units="ms"
-    expires_after="M77">
-  <owner>rkaplow@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during
-    ExtensionService::CheckForExternalUpdates.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ChromeExtensionsClientInitTime2"
     units="microseconds" expires_after="2019-12-01">
   <owner>dbertoni@chromium.org</owner>
