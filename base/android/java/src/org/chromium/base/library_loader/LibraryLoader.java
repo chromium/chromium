@@ -417,7 +417,7 @@ public class LibraryLoader {
     @VisibleForTesting
     protected LibraryLoader() {
         if (DEBUG) {
-            logLinkersUsed();
+            logLinkerUsed();
         }
         if (BuildConfig.ENABLE_ASSERTS) {
             NativeLibraryLoadedStatus.setProvider(new NativeLibraryLoadedStatusProvider() {
@@ -479,10 +479,10 @@ public class LibraryLoader {
     public void setLinkerImplementation(boolean useChromiumLinker) {
         assert !mInitialized;
         mUseChromiumLinker = useChromiumLinker;
-        if (DEBUG) logLinkersUsed();
+        if (DEBUG) logLinkerUsed();
     }
 
-    private void logLinkersUsed() {
+    private void logLinkerUsed() {
         Log.i(TAG, "Configuration: useChromiumLinker() = %b", useChromiumLinker());
     }
 
@@ -506,7 +506,7 @@ public class LibraryLoader {
      * @return the Linker implementation instance.
      */
     private Linker getLinker() {
-        // This is only called if LibraryLoader.useChromiumLinker() returns true.
+        assert useChromiumLinker();
         synchronized (mLock) {
             if (mLinker == null) mLinker = new Linker();
             return mLinker;
@@ -545,7 +545,7 @@ public class LibraryLoader {
      */
     public void ensureMainDexInitialized() {
         synchronized (mLock) {
-            if (DEBUG) logLinkersUsed();
+            if (DEBUG) logLinkerUsed();
             loadMainDexAlreadyLocked(
                     ContextUtils.getApplicationContext().getApplicationInfo(), false);
             initializeAlreadyLocked();
@@ -933,7 +933,7 @@ public class LibraryLoader {
     public static void setEnvForNative() {
         // The setenv API was added in L. On older versions of Android, we should still see ubsan
         // reports, but they will not have stack traces.
-        if (BuildConfig.IS_UBSAN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (BuildConfig.IS_UBSAN) {
             try {
                 // This value is duplicated in build/android/pylib/constants/__init__.py.
                 Os.setenv("UBSAN_OPTIONS",
