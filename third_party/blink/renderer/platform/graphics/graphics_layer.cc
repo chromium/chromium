@@ -318,7 +318,7 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                           PaintBenchmarkMode benchmark_mode,
                           const IntRect* interest_rect) {
   // https://linear.app/replay/issue/RUN-758
-  recordreplay::Assert("GraphicsLayer::Paint Start");
+  recordreplay::Assert("GraphicsLayer::Paint Start %zu", (size_t)GetKey());
 
   repainted_ = false;
 
@@ -367,7 +367,11 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                 previous_interest_rect_ == new_interest_rect;
 
   // https://linear.app/replay/issue/RUN-758
-  recordreplay::Assert("GraphicsLayer::Paint #5 %d", cached);
+  recordreplay::Assert("GraphicsLayer::Paint #5 %d %d %d %d %d", cached,
+                       !paint_controller.ShouldForcePaintForBenchmark(),
+                       !client_.NeedsRepaint(*this),
+                       paint_controller.ClientCacheIsValid(*this),
+                       previous_interest_rect_ == new_interest_rect);
 
   if (!cached) {
     GraphicsContext context(paint_controller);
