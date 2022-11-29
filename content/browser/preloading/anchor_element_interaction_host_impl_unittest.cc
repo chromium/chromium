@@ -14,8 +14,21 @@ namespace content {
 
 namespace {
 
-class PreloadingObserverImpl : public PreloadingDeciderObserverForTesting {
+class ScopedPreloadingDeciderObserver
+    : public PreloadingDeciderObserverForTesting {
  public:
+  explicit ScopedPreloadingDeciderObserver(RenderFrameHostImpl* rfh)
+      : rfh_(rfh) {
+    auto* preloading_decider =
+        PreloadingDecider::GetOrCreateForCurrentDocument(rfh_);
+    old_observer_ = preloading_decider->SetObserverForTesting(this);
+  }
+  ~ScopedPreloadingDeciderObserver() override {
+    auto* preloading_decider =
+        PreloadingDecider::GetOrCreateForCurrentDocument(rfh_);
+    EXPECT_EQ(this, preloading_decider->SetObserverForTesting(old_observer_));
+  }
+
   void UpdateSpeculationCandidates(
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
       override {}
@@ -24,6 +37,10 @@ class PreloadingObserverImpl : public PreloadingDeciderObserverForTesting {
 
   absl::optional<GURL> on_pointer_down_url_;
   absl::optional<GURL> on_pointer_hover_url_;
+
+ private:
+  raw_ptr<RenderFrameHostImpl> rfh_;
+  raw_ptr<PreloadingDeciderObserverForTesting> old_observer_;
 };
 
 class AnchorElementInteractionHostImplTest : public RenderViewHostTestHarness {
@@ -37,17 +54,9 @@ class AnchorElementInteractionHostImplTest : public RenderViewHostTestHarness {
     web_contents_ = TestWebContents::Create(
         browser_context_.get(),
         SiteInstanceImpl::Create(browser_context_.get()));
-    auto* preloading_decider =
-        PreloadingDecider::GetOrCreateForCurrentDocument(GetRenderFrameHost());
-    auto observer = std::make_unique<PreloadingObserverImpl>();
-    observer_ = observer.get();
-    preloading_decider->SetObserverForTesting(std::move(observer));
   }
 
   void TearDown() override {
-    auto* preloading_decider =
-        PreloadingDecider::GetOrCreateForCurrentDocument(GetRenderFrameHost());
-    preloading_decider->ResetObserverForTesting();
     web_contents_.reset();
     browser_context_.reset();
     RenderViewHostTestHarness::TearDown();
@@ -57,12 +66,9 @@ class AnchorElementInteractionHostImplTest : public RenderViewHostTestHarness {
     return web_contents_->GetPrimaryMainFrame();
   }
 
-  PreloadingObserverImpl* GetObserver() { return observer_; }
-
  private:
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
-  raw_ptr<PreloadingObserverImpl> observer_;
 };
 
 TEST_F(AnchorElementInteractionHostImplTest, OnPointerEvents) {
@@ -72,21 +78,22 @@ TEST_F(AnchorElementInteractionHostImplTest, OnPointerEvents) {
   AnchorElementInteractionHostImpl::Create(render_frame_host,
                                            remote.BindNewPipeAndPassReceiver());
 
-  GetObserver()->on_pointer_down_url_.reset();
-  GetObserver()->on_pointer_hover_url_.reset();
+  ScopedPreloadingDeciderObserver observer(render_frame_host);
+  observer.on_pointer_down_url_.reset();
+  observer.on_pointer_hover_url_.reset();
   const auto pointer_down_url = GURL("www.example.com/page1.html");
   remote->OnPointerDown(pointer_down_url);
   remote.FlushForTesting();
-  EXPECT_EQ(pointer_down_url, GetObserver()->on_pointer_down_url_);
-  EXPECT_FALSE(GetObserver()->on_pointer_hover_url_.has_value());
+  EXPECT_EQ(pointer_down_url, observer.on_pointer_down_url_);
+  EXPECT_FALSE(observer.on_pointer_hover_url_.has_value());
 
-  GetObserver()->on_pointer_down_url_.reset();
-  GetObserver()->on_pointer_hover_url_.reset();
+  observer.on_pointer_down_url_.reset();
+  observer.on_pointer_hover_url_.reset();
   const auto pointer_hover_url = GURL("www.example.com/page2.html");
   remote->OnPointerHover(pointer_hover_url);
   remote.FlushForTesting();
-  EXPECT_FALSE(GetObserver()->on_pointer_down_url_.has_value());
-  EXPECT_EQ(pointer_hover_url, GetObserver()->on_pointer_hover_url_);
+  EXPECT_FALSE(observer.on_pointer_down_url_.has_value());
+  EXPECT_EQ(pointer_hover_url, observer.on_pointer_hover_url_);
 }
 
 }  // namespace

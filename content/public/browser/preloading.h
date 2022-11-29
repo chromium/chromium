@@ -59,6 +59,12 @@ enum class PreloadingPredictor {
   // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
   // logging.
 
+  // Preloading is triggered by OnPointerDown event heuristics.
+  kUrlPointerDownOnAnchor = 1,
+
+  // Preloading is triggered by OnPointerHover event heuristics.
+  kUrlPointerHoverOnAnchor = 2,
+
   // This constant is used to define the value from which features can add more
   // enums beyond this value both inside and outside content. We mask it by 50
   // and 100 to avoid usage of the same numbers for logging.

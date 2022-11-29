@@ -31,20 +31,6 @@ class PrerenderWebContentsDelegate : public WebContentsDelegate {
   }
 };
 
-class PreloadingObserverImpl : public PreloadingDeciderObserverForTesting {
- public:
-  void UpdateSpeculationCandidates(
-      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
-      override {
-    for (const auto& candidate : candidates) {
-      candidates_.push_back(candidate.Clone());
-    }
-  }
-  void OnPointerDown(const GURL& url) override {}
-  void OnPointerHover(const GURL& url) override {}
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates_;
-};
-
 class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
  public:
   SpeculationHostImplTest() {
@@ -64,18 +50,9 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
         SiteInstanceImpl::Create(browser_context_.get()));
     web_contents_->SetDelegate(&web_contents_delegate_);
     web_contents_->NavigateAndCommit(GURL("https://example.com"));
-
-    auto* preloading_decider =
-        PreloadingDecider::GetOrCreateForCurrentDocument(GetRenderFrameHost());
-    auto observer = std::make_unique<PreloadingObserverImpl>();
-    observer_ = observer.get();
-    preloading_decider->SetObserverForTesting(std::move(observer));
   }
 
   void TearDown() override {
-    auto* preloading_decider =
-        PreloadingDecider::GetOrCreateForCurrentDocument(GetRenderFrameHost());
-    preloading_decider->ResetObserverForTesting();
     web_contents_.reset();
     browser_context_.reset();
     RenderViewHostImplTestHarness::TearDown();
@@ -106,20 +83,50 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
     return candidate;
   }
 
-  PreloadingObserverImpl* GetObserver() { return observer_; }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   PrerenderWebContentsDelegate web_contents_delegate_;
-  raw_ptr<PreloadingObserverImpl> observer_;
+};
+
+class ScopedPreloadingDeciderObserver
+    : public PreloadingDeciderObserverForTesting {
+ public:
+  explicit ScopedPreloadingDeciderObserver(RenderFrameHostImpl* rfh)
+      : rfh_(rfh) {
+    auto* preloading_decider =
+        PreloadingDecider::GetOrCreateForCurrentDocument(rfh_);
+    old_observer_ = preloading_decider->SetObserverForTesting(this);
+  }
+  ~ScopedPreloadingDeciderObserver() override {
+    auto* preloading_decider =
+        PreloadingDecider::GetOrCreateForCurrentDocument(rfh_);
+    EXPECT_EQ(this, preloading_decider->SetObserverForTesting(old_observer_));
+  }
+
+  void UpdateSpeculationCandidates(
+      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
+      override {
+    for (const auto& candidate : candidates) {
+      candidates_.push_back(candidate.Clone());
+    }
+  }
+  void OnPointerDown(const GURL& url) override {}
+  void OnPointerHover(const GURL& url) override {}
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates_;
+
+ private:
+  raw_ptr<RenderFrameHostImpl> rfh_;
+  raw_ptr<PreloadingDeciderObserverForTesting> old_observer_;
 };
 
 // Tests that SpeculationHostImpl dispatches the candidates to
 // PreloadingDecider.
 TEST_F(SpeculationHostImplTest, StartPrerender) {
+  ScopedPreloadingDeciderObserver observer(GetRenderFrameHost());
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   mojo::Remote<blink::mojom::SpeculationHost> remote;
   SpeculationHostImpl::Bind(render_frame_host,
@@ -131,8 +138,8 @@ TEST_F(SpeculationHostImplTest, StartPrerender) {
 
   remote->UpdateSpeculationCandidates(std::move(candidates));
   remote.FlushForTesting();
-  EXPECT_EQ(1u, GetObserver()->candidates_.size());
-  EXPECT_EQ(kPrerenderingUrl, GetObserver()->candidates_[0]->url);
+  EXPECT_EQ(1u, observer.candidates_.size());
+  EXPECT_EQ(kPrerenderingUrl, observer.candidates_[0]->url);
 }
 
 // Tests that SpeculationHostImpl crashes the renderer process if it receives

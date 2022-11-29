@@ -7,22 +7,17 @@
 
 #include <vector>
 
-#include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
-#include "content/public/browser/speculation_host_delegate.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
+
 class RenderFrameHost;
-class PrerenderHostRegistry;
-class Page;
 
 // Receiver for speculation rules from the web platform. See
 // third_party/blink/renderer/core/speculation_rules/README.md
 class CONTENT_EXPORT SpeculationHostImpl final
-    : public content::DocumentService<blink::mojom::SpeculationHost>,
-      public SpeculationHostDevToolsObserver {
+    : public content::DocumentService<blink::mojom::SpeculationHost> {
  public:
   // Creates and binds an instance of this per-frame.
   static void Bind(
@@ -34,22 +29,6 @@ class CONTENT_EXPORT SpeculationHostImpl final
   SpeculationHostImpl(SpeculationHostImpl&&) = delete;
   SpeculationHostImpl& operator=(SpeculationHostImpl&&) = delete;
 
-  // SpeculationHostDevToolsObserver implementation:
-  void OnStartSinglePrefetch(const std::string& request_id,
-                             const network::ResourceRequest& request) override;
-  void OnPrefetchResponseReceived(
-      const GURL& url,
-      const std::string& request_id,
-      const network::mojom::URLResponseHead& response) override;
-  void OnPrefetchRequestComplete(
-      const std::string& request_id,
-      const network::URLLoaderCompletionStatus& status) override;
-  void OnPrefetchBodyDataReceived(const std::string& request_id,
-                                  const std::string& body,
-                                  bool is_base64_encoded) override;
-  mojo::PendingRemote<network::mojom::DevToolsObserver>
-  MakeSelfOwnedNetworkServiceDevToolsObserver() override;
-
  private:
   SpeculationHostImpl(
       RenderFrameHost& frame_host,
@@ -58,10 +37,6 @@ class CONTENT_EXPORT SpeculationHostImpl final
 
   void UpdateSpeculationCandidates(
       std::vector<blink::mojom::SpeculationCandidatePtr> candidates) override;
-
-  std::unique_ptr<SpeculationHostDelegate> delegate_;
-
-  base::WeakPtrFactory<SpeculationHostImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

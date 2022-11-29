@@ -2590,6 +2590,10 @@
       name: "SpeculationRulesFetchFromHeader"
     },
     {
+      name: "SpeculationRulesPointerDownHeuristics",
+      base_feature: "SpeculationRulesPointerDownHeuristics"
+    },
+    {
       name: "SpeculationRulesPointerHoverHeuristics",
       base_feature: "SpeculationRulesPointerHoverHeuristics"
     },
