@@ -322,7 +322,6 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testControllerShowsBottomSheet() {
         PrivacySandboxDialogController.setShowNewNoticeForTesting(true);
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.NOTICE);
