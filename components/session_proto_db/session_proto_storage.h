@@ -19,7 +19,11 @@ class SessionProtoStorage {
  public:
   using KeyAndValue = std::pair<std::string, T>;
 
-  // Callback which is used when content is acquired.
+  // Callback which is used when content is acquired. Users are recommended to
+  // check the bool value which indicates whether the operation has succeeded,
+  // because when the operation fails, the callback could be posted to the
+  // thread pool to execute instead of the original thread, which might lead to
+  // use-after-free.
   using LoadCallback = base::OnceCallback<void(bool, std::vector<KeyAndValue>)>;
 
   // Used for confirming an operation was completed successfully (e.g.
