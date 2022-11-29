@@ -11689,14 +11689,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // early post-crash CommitPending() call.
   committed_speculative_rfh_before_navigation_commit_ = false;
 
-  // TODO(arthursonzogni): Updating this flag for same-document, bfcache, or
-  // prerender navigation doesn't seem right. This should likely be executed in
-  // DidCommitNewDocument().
-  if (IsBackForwardCacheEnabled() || blink::features::IsPrerender2Enabled()) {
-    // Store the Commit params so they can be reused if the page is ever
-    // restored from the BackForwardCache.
-    last_commit_params_ = std::move(params);
-  }
+  // Store the Commit params so they can be reused if the page is ever
+  // restored from the BackForwardCache or a Prerender2 page is activated.
+  last_commit_params_ = std::move(params);
 
   return true;
 }
