@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -74,6 +75,7 @@ public class PowerBookmarkTagChipListRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1394244")
     public void testTagList() throws IOException {
         PowerBookmarkMeta.Builder meta = PowerBookmarkMeta.newBuilder();
         PowerBookmarkMeta.Tag.Builder tag = PowerBookmarkMeta.Tag.newBuilder();
