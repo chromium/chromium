@@ -8164,3 +8164,5 @@ crbug.com/1385379 http/tests/devtools/elements/styles-4/styles-invalid-color-val
 # Sheriff 2022-11-29
 crbug.com/1394361 http/tests/inspector-protocol/tracing/interactions.js [ Failure Pass ]
 
+# Sheriff 2022-11-29
+crbug.com/1394524 external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-form-state-restore.tentative.html [ Failure Pass ]
