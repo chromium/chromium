@@ -25,7 +25,6 @@ enum class WKNavigationState;
 }  // namespace web
 
 @class CRWContextMenuItem;
-@class CRWJSInjectionReceiver;
 @protocol CRWScrollableContent;
 @protocol CRWSwipeRecognizerProvider;
 @class CRWWebViewContentView;
@@ -88,9 +87,6 @@ class WebStateImpl;
 // A Boolean value indicating whether horizontal swipe gestures will trigger
 // back-forward list navigations.
 @property(nonatomic) BOOL allowsBackForwardNavigationGestures;
-
-@property(strong, nonatomic, readonly)
-    CRWJSInjectionReceiver* jsInjectionReceiver;
 
 // Whether the WebController should attempt to keep the render process alive.
 @property(nonatomic, assign, getter=shouldKeepRenderProcessAlive)
@@ -260,8 +256,6 @@ class WebStateImpl;
 
 // Handles a navigation did replace state message for the current webpage.
 - (void)handleNavigationDidReplaceStateMessage:(base::Value*)message;
-
-#pragma mark CRWJSInjectionEvaluator
 
 // Do not use these executeJavaScript functions directly, prefer
 // WebFrame::CallJavaScriptFunction if possible, otherwise use

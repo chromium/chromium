@@ -68,7 +68,6 @@ class FakeWebState : public WebState {
       const override;
   SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() override;
   CRWSessionStorage* BuildSessionStorage() override;
-  CRWJSInjectionReceiver* GetJSInjectionReceiver() const override;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
   NSString* GetStableIdentifier() const override;

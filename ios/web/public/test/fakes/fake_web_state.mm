@@ -207,10 +207,6 @@ void FakeWebState::SetWebViewProxy(CRWWebViewProxyType web_view_proxy) {
   web_view_proxy_ = web_view_proxy;
 }
 
-CRWJSInjectionReceiver* FakeWebState::GetJSInjectionReceiver() const {
-  return nullptr;
-}
-
 void FakeWebState::LoadData(NSData* data,
                             NSString* mime_type,
                             const GURL& url) {

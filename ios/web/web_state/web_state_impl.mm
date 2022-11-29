@@ -472,23 +472,10 @@ CRWSessionStorage* WebStateImpl::BuildSessionStorage() {
                         : saved_->GetSessionStorage();
 }
 
-CRWJSInjectionReceiver* WebStateImpl::GetJSInjectionReceiver() const {
-  return LIKELY(pimpl_) ? pimpl_->GetJSInjectionReceiver() : nullptr;
-}
-
 void WebStateImpl::LoadData(NSData* data,
                             NSString* mime_type,
                             const GURL& url) {
   RealizedState()->LoadData(data, mime_type, url);
-}
-
-void WebStateImpl::ExecuteJavaScript(const std::u16string& javascript) {
-  RealizedState()->ExecuteJavaScript(javascript);
-}
-
-void WebStateImpl::ExecuteJavaScript(const std::u16string& javascript,
-                                     JavaScriptResultCallback callback) {
-  RealizedState()->ExecuteJavaScript(javascript, std::move(callback));
 }
 
 void WebStateImpl::ExecuteUserJavaScript(NSString* javascript) {

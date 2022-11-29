@@ -507,7 +507,8 @@ void WebStateImpl::RealizedWebState::RetrieveExistingFrames() {
   // This call must be sent to the webstate directly, because the result of this
   // call will create the WebFrames. (Thus, the WebFrames do not yet exist and
   // can not be used to call JavaScript.)
-  ExecuteJavaScript(u"__gCrWeb.message.getExistingFrames();");
+  [web_controller_ executeJavaScript:@"__gCrWeb.message.getExistingFrames();"
+                   completionHandler:nil];
 }
 
 void WebStateImpl::RealizedWebState::RemoveAllWebFrames() {
@@ -625,32 +626,10 @@ CRWSessionStorage* WebStateImpl::RealizedWebState::BuildSessionStorage() {
                                              *certificate_policy_cache_);
 }
 
-CRWJSInjectionReceiver* WebStateImpl::RealizedWebState::GetJSInjectionReceiver()
-    const {
-  return [web_controller_ jsInjectionReceiver];
-}
-
 void WebStateImpl::RealizedWebState::LoadData(NSData* data,
                                               NSString* mime_type,
                                               const GURL& url) {
   [web_controller_ loadData:data MIMEType:mime_type forURL:url];
-}
-
-void WebStateImpl::RealizedWebState::ExecuteJavaScript(
-    const std::u16string& javascript) {
-  [web_controller_ executeJavaScript:base::SysUTF16ToNSString(javascript)
-                   completionHandler:nil];
-}
-
-void WebStateImpl::RealizedWebState::ExecuteJavaScript(
-    const std::u16string& javascript,
-    JavaScriptResultCallback callback) {
-  __block JavaScriptResultCallback stack_callback = std::move(callback);
-  [web_controller_
-      executeJavaScript:base::SysUTF16ToNSString(javascript)
-      completionHandler:^(id value, NSError* error) {
-        std::move(stack_callback).Run(ValueResultFromWKResult(value).get());
-      }];
 }
 
 void WebStateImpl::RealizedWebState::ExecuteUserJavaScript(

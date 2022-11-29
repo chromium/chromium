@@ -119,7 +119,6 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
-    "//ios/web/web_state/js",
     "//testing/gtest",
   ]
 }

@@ -31,7 +31,6 @@
 
 class GURL;
 
-@class CRWJSInjectionReceiver;
 @class CRWSessionStorage;
 @protocol CRWScrollableContent;
 @protocol CRWWebViewDownload;
@@ -304,9 +303,6 @@ class WebState : public base::SupportsUserData {
   // Creates a serializable representation of the session. The returned value
   // is autoreleased.
   virtual CRWSessionStorage* BuildSessionStorage() = 0;
-
-  // Gets the CRWJSInjectionReceiver associated with this WebState.
-  virtual CRWJSInjectionReceiver* GetJSInjectionReceiver() const = 0;
 
   // Loads `data` of type `mime_type` and replaces last committed URL with the
   // given `url`.

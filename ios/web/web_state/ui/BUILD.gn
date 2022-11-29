@@ -48,7 +48,6 @@ source_set("ui") {
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state:web_view_internal_creation_util",
-    "//ios/web/web_state/js",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//ios/web/web_view:util",
     "//ios/web/webui:webui",
@@ -158,7 +157,6 @@ source_set("wk_web_view_configuration_provider") {
     "//ios/web/js_messaging:java_script_feature_util",
     "//ios/web/navigation:session_restore_feature",
     "//ios/web/public",
-    "//ios/web/web_state/js",
     "//ios/web/webui",
   ]
 

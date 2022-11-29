@@ -43,8 +43,6 @@
 #import "ios/web/navigation/wk_back_forward_list_item_holder.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
-#import "ios/web/public/deprecated/crw_js_injection_evaluator.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/crw_context_menu_item.h"
@@ -95,7 +93,6 @@ using web::wk_navigation_util::IsWKInternalUrl;
 
 @interface CRWWebController () <CRWWKNavigationHandlerDelegate,
                                 CRWInputViewProvider,
-                                CRWJSInjectionEvaluator,
                                 CRWSSLStatusUpdaterDataSource,
                                 CRWSSLStatusUpdaterDelegate,
                                 CRWWebControllerContainerViewDelegate,
@@ -220,8 +217,6 @@ using web::wk_navigation_util::IsWKInternalUrl;
 // Script manager for setting the windowID.
 @property(nonatomic, strong) CRWJSWindowIDManager* windowIDJSManager;
 
-@property(strong, nonatomic) CRWJSInjectionReceiver* jsInjectionReceiver;
-
 // Returns the current URL of the web view, and sets `trustLevel` accordingly
 // based on the confidence in the verification.
 - (GURL)webURLWithTrustLevel:(web::URLVerificationTrustLevel*)trustLevel;
@@ -286,8 +281,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     DCHECK(_webStateImpl);
     // Content area is lazily instantiated.
     _defaultURL = GURL(url::kAboutBlankURL);
-    _jsInjectionReceiver =
-        [[CRWJSInjectionReceiver alloc] initWithEvaluator:self];
     _requestController = [[CRWWebRequestController alloc] init];
     _requestController.delegate = self;
     _webViewProxy = [[CRWWebViewProxyImpl alloc] initWithWebController:self];
