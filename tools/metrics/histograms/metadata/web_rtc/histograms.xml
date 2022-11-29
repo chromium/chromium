@@ -1259,13 +1259,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ConnectionState"
-    enum="IceConnectionStates" expires_after="2022-08-21">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
+    enum="IceConnectionStates" expires_after="2023-11-01">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counters of ICE Connection states. These values are logged when the
     PeerConnection gets into that state for the first time or after the ICE
     restart.
+
+    Warning: This histogram was expired from 2022-08-21 to 2022-10-29. Data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1380,11 +1383,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.IPv4Interfaces" units="units"
-    expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
+    expires_after="2023-11-01">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Number of IPv4 network interfaces discovered in a PeerConnection Session.
+
+    Warning: This histogram was expired from M81 to M110 Canary (2022-10-29).
+    Data may be missing.
   </summary>
 </histogram>
 
@@ -1400,11 +1406,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.IPv6Interfaces" units="units"
-    expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
+    expires_after="2023-11-01">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Number of IPv6 network interfaces discovered in a PeerConnection Session.
+
+    Warning: This histogram was expired from M81 to M110 Canary (2022-10-29).
+    Data may be missing.
   </summary>
 </histogram>
 
