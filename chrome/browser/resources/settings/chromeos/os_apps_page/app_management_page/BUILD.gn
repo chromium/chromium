@@ -26,7 +26,6 @@ js_type_check("closure_compile_module") {
     ":pwa_detail_view",
     ":reducers",
     ":resize_lock_item",
-    ":shared_style",
     ":shared_vars",
     ":store",
     ":store_client",
@@ -203,10 +202,6 @@ js_library("resize_lock_item") {
   ]
 }
 
-js_library("shared_style") {
-  deps = []
-}
-
 js_library("shared_vars") {
   deps = []
 }
@@ -284,7 +279,6 @@ html_to_js("web_components") {
     "pin_to_shelf_item.js",
     "pwa_detail_view.js",
     "resize_lock_item.js",
-    "shared_style.js",
     "shared_vars.js",
     "supported_links_overlapping_apps_dialog.js",
     "supported_links_dialog.js",

@@ -5,7 +5,7 @@
 import '../pin_to_shelf_item.js';
 import 'chrome://resources/cr_components/app_management/icons.html.js';
 import 'chrome://resources/cr_components/app_management/permission_item.js';
-import '../shared_style.js';
+import '../app_management_cros_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 

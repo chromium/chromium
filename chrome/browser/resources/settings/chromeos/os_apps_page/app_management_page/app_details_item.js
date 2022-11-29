@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
+import './app_management_cros_shared_style.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';

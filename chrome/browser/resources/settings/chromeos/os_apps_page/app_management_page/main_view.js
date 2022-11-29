@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './app_item.js';
-import './shared_style.js';
+import './app_management_cros_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 

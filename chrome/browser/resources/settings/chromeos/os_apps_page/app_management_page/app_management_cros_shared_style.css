@@ -1,0 +1,14 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_components/app_management/app_management_shared_style.css.js
+ * #import=chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js
+ * #include=cr-shared-style app-management-shared-style cros-color-overrides
+ * #css_wrapper_metadata_end */
+
+.card-container {
+  background-color: var(--cros-bg-color);
+}

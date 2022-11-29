@@ -181,6 +181,7 @@ foreach(f, html_files) {
 
 # Files that are passed as input to css_to_wrapper().
 css_files = [
+  "chromeos/os_apps_page/app_management_page/app_management_cros_shared_style.css",
   "chromeos/os_languages_page/shared_style.css",
   "chromeos/os_languages_page/shared_vars.css",
   "chromeos/os_printing_page/cups_printer_shared.css",
@@ -375,7 +376,6 @@ generated_web_component_files = [
   "chromeos/os_apps_page/app_management_page/pin_to_shelf_item.js",
   "chromeos/os_apps_page/app_management_page/pwa_detail_view.js",
   "chromeos/os_apps_page/app_management_page/resize_lock_item.js",
-  "chromeos/os_apps_page/app_management_page/shared_style.js",
   "chromeos/os_apps_page/app_management_page/shared_vars.js",
   "chromeos/os_apps_page/app_management_page/supported_links_dialog.js",
   "chromeos/os_apps_page/app_management_page/supported_links_item.js",
