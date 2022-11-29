@@ -51,6 +51,7 @@
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/color_palette.h"
@@ -764,6 +765,12 @@ class SelectFileDialogExtensionPolicyTest
                  const base::FilePath&,
                  base::OnceCallback<void(bool)>),
                 (override));
+    MOCK_METHOD(void,
+                FilterDisallowedUploads,
+                (std::vector<ui::SelectedFileInfo>,
+                 const DlpFileDestination&,
+                 base::OnceCallback<void(std::vector<ui::SelectedFileInfo>)>),
+                (override));
   };
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
@@ -850,6 +857,105 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadBlock) {
                   policy::DlpFilesController::DlpFileDestination(url),
                   test_file, base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(false));
+
+  // Click the "Save" button.
+  CloseDialog(DIALOG_BTN_OK, owning_window);
+
+  // Listener should have been informed of the cancellation.
+  ASSERT_FALSE(listener_->file_selected());
+  ASSERT_TRUE(listener_->canceled());
+  ASSERT_EQ(this, listener_->params());
+}
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadAllow) {
+  SetupRulesManager();
+
+  gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
+  ASSERT_NE(nullptr, owning_window);
+
+  // Create an empty file to provide the file to open.
+  const base::FilePath test_file =
+      downloads_dir_.AppendASCII("file_manager_test.html");
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    FILE* fp = base::OpenFile(test_file, "w");
+    ASSERT_TRUE(fp != nullptr);
+    ASSERT_TRUE(base::CloseFile(fp));
+  }
+  base::FilePath test_file_virtual_path;
+  ASSERT_TRUE(storage::ExternalMountPoints::GetSystemInstance()->GetVirtualPath(
+      test_file, &test_file_virtual_path));
+
+  const std::string url = "https://example.com/";
+  const GURL caller = GURL(url);
+
+  // Open the file dialog, providing a path to the file to open so the dialog
+  // will automatically select it.  Ensure the "Open" button is enabled by
+  // waiting for notification from chrome.test.sendMessage().
+  ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                     test_file, owning_window, "dialog-ready",
+                                     &caller));
+
+  std::vector<ui::SelectedFileInfo> selected_files;
+  auto selected_file = ui::SelectedFileInfo(test_file, test_file);
+  selected_file.virtual_path = test_file_virtual_path;
+  selected_files.push_back(std::move(selected_file));
+  EXPECT_CALL(
+      *mock_files_controller_.get(),
+      FilterDisallowedUploads(
+          selected_files, policy::DlpFilesController::DlpFileDestination(url),
+          base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<2>(selected_files));
+
+  // Click the "Save" button.
+  CloseDialog(DIALOG_BTN_OK, owning_window);
+
+  // Listener should have been informed of the selection.
+  ASSERT_TRUE(listener_->file_selected());
+  ASSERT_FALSE(listener_->canceled());
+  ASSERT_EQ(this, listener_->params());
+}
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadBlock) {
+  SetupRulesManager();
+
+  gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
+  ASSERT_NE(nullptr, owning_window);
+
+  // Create an empty file to provide the file to open.
+  const base::FilePath test_file =
+      downloads_dir_.AppendASCII("file_manager_test.html");
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    FILE* fp = base::OpenFile(test_file, "w");
+    ASSERT_TRUE(fp != nullptr);
+    ASSERT_TRUE(base::CloseFile(fp));
+  }
+  base::FilePath test_file_virtual_path;
+  ASSERT_TRUE(storage::ExternalMountPoints::GetSystemInstance()->GetVirtualPath(
+      test_file, &test_file_virtual_path));
+
+  const std::string url = "https://example.com/";
+  const GURL caller = GURL(url);
+
+  // Open the file dialog, providing a path to the file to open so the dialog
+  // will automatically select it.  Ensure the "Open" button is enabled by
+  // waiting for notification from chrome.test.sendMessage().
+  ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                     test_file, owning_window, "dialog-ready",
+                                     &caller));
+
+  std::vector<ui::SelectedFileInfo> selected_files;
+  auto selected_file = ui::SelectedFileInfo(test_file, test_file);
+  selected_file.virtual_path = test_file_virtual_path;
+  selected_files.push_back(std::move(selected_file));
+  EXPECT_CALL(*mock_files_controller_.get(),
+              FilterDisallowedUploads(
+                  std::move(selected_files),
+                  policy::DlpFilesController::DlpFileDestination(url),
+                  base::test::IsNotNullCallback()))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(std::vector<ui::SelectedFileInfo>()));
 
   // Click the "Save" button.
   CloseDialog(DIALOG_BTN_OK, owning_window);

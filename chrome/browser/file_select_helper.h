@@ -221,11 +221,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void ConvertToFileChooserFileInfoList(
       const std::vector<ui::SelectedFileInfo>& files);
 
-  // Checks to see if any file is restricted to be transferred according to the
-  // rules of the DataLeakPrevention policy.
-  void CheckIfPolicyAllowed(
-      std::vector<blink::mojom::FileChooserFileInfoPtr> list);
-
   // Checks to see if scans are required for the specified files.
   void PerformContentAnalysisIfNeeded(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list);

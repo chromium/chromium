@@ -54,7 +54,6 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/recursive_operation_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/widget/widget.h"
@@ -156,6 +155,25 @@ DlpRulesManager::Component MapProtoToPolicyComponent(
     case ::dlp::DlpComponent::UNKOWN_COMPONENT:
     case ::dlp::DlpComponent::SYSTEM:
       return DlpRulesManager::Component::kUnknownComponent;
+  }
+}
+
+// Maps |component| to ::dlp::DlpComponent.
+::dlp::DlpComponent MapPolicyComponentToProto(
+    DlpRulesManager::Component component) {
+  switch (component) {
+    case DlpRulesManager::Component::kUnknownComponent:
+      return ::dlp::DlpComponent::UNKOWN_COMPONENT;
+    case DlpRulesManager::Component::kArc:
+      return ::dlp::DlpComponent::ARC;
+    case DlpRulesManager::Component::kCrostini:
+      return ::dlp::DlpComponent::CROSTINI;
+    case DlpRulesManager::Component::kPluginVm:
+      return ::dlp::DlpComponent::PLUGIN_VM;
+    case DlpRulesManager::Component::kUsb:
+      return ::dlp::DlpComponent::USB;
+    case DlpRulesManager::Component::kDrive:
+      return ::dlp::DlpComponent::GOOGLE_DRIVE;
   }
 }
 
@@ -523,8 +541,8 @@ void DlpFilesController::GetDlpMetadata(
 }
 
 void DlpFilesController::FilterDisallowedUploads(
-    std::vector<blink::mojom::FileChooserFileInfoPtr> uploaded_files,
-    const GURL& destination,
+    std::vector<ui::SelectedFileInfo> uploaded_files,
+    const DlpFileDestination& destination,
     FilterDisallowedUploadsCallback result_callback) {
   if (uploaded_files.empty()) {
     std::move(result_callback).Run(std::move(uploaded_files));
@@ -536,18 +554,24 @@ void DlpFilesController::FilterDisallowedUploads(
     return;
   }
 
+  // TODO(b/260313148): Handle the case if the uploads are folders not only
+  // files.
+
   ::dlp::CheckFilesTransferRequest request;
   for (const auto& file : uploaded_files) {
-    if (file && file->is_native_file())
-      request.add_files_paths(file->get_native_file()->file_path.value());
+    auto file_path = file.local_path.empty() ? file.file_path.value()
+                                             : file.local_path.value();
+    request.add_files_paths(file_path);
   }
-  if (request.files_paths().empty()) {
-    std::move(result_callback).Run(std::move(uploaded_files));
-    return;
+  if (destination.component.has_value()) {
+    request.set_destination_component(
+        MapPolicyComponentToProto(destination.component.value()));
+  } else {
+    DCHECK(destination.url_or_path.has_value());
+    request.set_destination_url(destination.url_or_path.value());
   }
-
-  request.set_destination_url(destination.spec());
   request.set_file_action(::dlp::FileAction::UPLOAD);
+
   auto return_uploads_callback = base::BindOnce(
       &DlpFilesController::ReturnAllowedUploads, weak_ptr_factory_.GetWeakPtr(),
       std::move(uploaded_files), std::move(result_callback));
@@ -890,14 +914,13 @@ void DlpFilesController::ReturnDisallowedTransfers(
 }
 
 void DlpFilesController::ReturnAllowedUploads(
-    std::vector<blink::mojom::FileChooserFileInfoPtr> uploaded_files,
+    std::vector<ui::SelectedFileInfo> uploaded_files,
     FilterDisallowedUploadsCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
-    std::move(result_callback)
-        .Run(std::vector<blink::mojom::FileChooserFileInfoPtr>());
+    std::move(result_callback).Run(std::vector<ui::SelectedFileInfo>());
     return;
   }
   std::set<std::string> restricted_files(response.files_paths().begin(),
@@ -910,13 +933,13 @@ void DlpFilesController::ReturnAllowedUploads(
             IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE,
             restricted_files.size()));
   }
-  std::vector<blink::mojom::FileChooserFileInfoPtr> filtered_files;
+
+  std::vector<ui::SelectedFileInfo> filtered_files;
   for (auto& file : uploaded_files) {
-    if (file && file->is_native_file() &&
-        base::Contains(restricted_files,
-                       file->get_native_file()->file_path.value())) {
+    auto file_path = file.local_path.empty() ? file.file_path.value()
+                                             : file.local_path.value();
+    if (base::Contains(restricted_files, file_path))
       continue;
-    }
     filtered_files.push_back(std::move(file));
   }
   std::move(result_callback).Run(std::move(filtered_files));

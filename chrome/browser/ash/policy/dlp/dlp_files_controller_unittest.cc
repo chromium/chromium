@@ -68,10 +68,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 
-using blink::mojom::FileChooserFileInfo;
-using blink::mojom::FileChooserFileInfoPtr;
 using blink::mojom::FileSystemFileInfo;
 using blink::mojom::NativeFileInfo;
 using storage::FileSystemURL;
@@ -582,61 +579,21 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
 
-  std::vector<FileChooserFileInfoPtr> uploaded_files;
+  std::vector<ui::SelectedFileInfo> uploaded_files;
 
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
 
-  base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
+  base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
 
   ASSERT_TRUE(files_controller_);
-  files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
-                                             GURL("https://example.com"),
-                                             future.GetCallback());
+  files_controller_->FilterDisallowedUploads(
+      std::move(uploaded_files),
+      DlpFilesController::DlpFileDestination("https://example.com"),
+      future.GetCallback());
 
-  std::vector<FileChooserFileInfoPtr> filtered_uploads;
+  std::vector<ui::SelectedFileInfo> filtered_uploads;
 
   ASSERT_EQ(0u, future.Get().size());
-  EXPECT_EQ(filtered_uploads, future.Take());
-  EXPECT_FALSE(
-      display_service_tester.GetNotification(kUploadBlockedNotificationId));
-}
-
-TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_NonNativeFiles) {
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
-
-  std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
-                     kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
-                     kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
-                     kExampleUrl3)};
-  std::vector<FileSystemURL> files_urls;
-  AddFilesToDlpClient(std::move(files), files_urls);
-
-  std::vector<FileChooserFileInfoPtr> uploaded_files;
-  uploaded_files.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-  uploaded_files.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-  uploaded_files.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-
-  base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
-  ASSERT_TRUE(files_controller_);
-  files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
-                                             GURL("https://example.com"),
-                                             future.GetCallback());
-
-  std::vector<FileChooserFileInfoPtr> filtered_uploads;
-  filtered_uploads.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-  filtered_uploads.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-  filtered_uploads.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-
-  ASSERT_EQ(3u, future.Get().size());
   EXPECT_EQ(filtered_uploads, future.Take());
   EXPECT_FALSE(
       display_service_tester.GetNotification(kUploadBlockedNotificationId));
@@ -655,17 +612,10 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
 
-  std::vector<FileChooserFileInfoPtr> uploaded_files;
-  uploaded_files.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
-      NativeFileInfo::New(files_urls[0].path(), std::u16string())));
-  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
-      NativeFileInfo::New(files_urls[1].path(), std::u16string())));
-  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
-      NativeFileInfo::New(files_urls[2].path(), std::u16string())));
-  uploaded_files.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  std::vector<ui::SelectedFileInfo> uploaded_files;
+  uploaded_files.emplace_back(files_urls[0].path(), files_urls[0].path());
+  uploaded_files.emplace_back(files_urls[1].path(), files_urls[1].path());
+  uploaded_files.emplace_back(files_urls[2].path(), files_urls[2].path());
 
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
   check_files_transfer_response.add_files_paths(files_urls[0].path().value());
@@ -674,21 +624,17 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
+  base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
-                                             GURL("https://example.com"),
-                                             future.GetCallback());
+  files_controller_->FilterDisallowedUploads(
+      std::move(uploaded_files),
+      DlpFilesController::DlpFileDestination("https://example.com"),
+      future.GetCallback());
 
-  std::vector<FileChooserFileInfoPtr> filtered_uploads;
-  filtered_uploads.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-  filtered_uploads.push_back(FileChooserFileInfo::NewNativeFile(
-      NativeFileInfo::New(files_urls[1].path(), std::u16string())));
-  filtered_uploads.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  std::vector<ui::SelectedFileInfo> filtered_uploads;
+  filtered_uploads.emplace_back(files_urls[1].path(), files_urls[1].path());
 
-  ASSERT_EQ(3u, future.Get().size());
+  ASSERT_EQ(1u, future.Get().size());
   EXPECT_EQ(filtered_uploads, future.Take());
   EXPECT_TRUE(
       display_service_tester.GetNotification(kUploadBlockedNotificationId));
@@ -707,17 +653,10 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
 
-  std::vector<FileChooserFileInfoPtr> uploaded_files;
-  uploaded_files.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
-      NativeFileInfo::New(files_urls[0].path(), std::u16string())));
-  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
-      NativeFileInfo::New(files_urls[1].path(), std::u16string())));
-  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
-      NativeFileInfo::New(files_urls[2].path(), std::u16string())));
-  uploaded_files.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  std::vector<ui::SelectedFileInfo> uploaded_files;
+  uploaded_files.emplace_back(files_urls[0].path(), files_urls[0].path());
+  uploaded_files.emplace_back(files_urls[1].path(), files_urls[1].path());
+  uploaded_files.emplace_back(files_urls[2].path(), files_urls[2].path());
 
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
   check_files_transfer_response.add_files_paths(files_urls[0].path().value());
@@ -727,11 +666,12 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
+  base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
-                                             GURL("https://example.com"),
-                                             future.GetCallback());
+  files_controller_->FilterDisallowedUploads(
+      std::move(uploaded_files),
+      DlpFilesController::DlpFileDestination("https://example.com"),
+      future.GetCallback());
 
   ASSERT_EQ(0u, future.Get().size());
   EXPECT_FALSE(

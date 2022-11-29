@@ -129,8 +129,10 @@ class DlpFilesControllerBrowserTest : public InProcessBrowserTest {
   std::vector<base::FilePath> file_paths_;
 };
 
+// TODO(b/260314212): Re-enable this test if possible to start
+// SelectFileDialogExtension or keep it just to check the caller is passed.
 IN_PROC_BROWSER_TEST_F(DlpFilesControllerBrowserTest,
-                       FilesUploadRestrictedFile) {
+                       DISABLED_FilesUploadRestrictedFile) {
   ui::FakeSelectFileDialog::Factory* select_file_dialog_factory =
       ui::FakeSelectFileDialog::RegisterFactory();
 

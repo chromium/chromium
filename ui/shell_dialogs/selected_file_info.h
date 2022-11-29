@@ -54,6 +54,8 @@ struct SHELL_DIALOGS_EXPORT SelectedFileInfo {
 
   SelectedFileInfo& operator=(const SelectedFileInfo& other);
   SelectedFileInfo& operator=(SelectedFileInfo&& other);
+
+  bool operator==(const SelectedFileInfo& other) const;
 };
 
 // Converts a list of FilePaths to a list of ui::SelectedFileInfo.

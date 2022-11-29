@@ -575,8 +575,19 @@ void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
             },
             weak_factory_.GetWeakPtr(), std::move(selection_files)));
     return;
+  } else if (files_controller) {
+    files_controller->FilterDisallowedUploads(
+        std::move(selection_files), dialog_caller.value(),
+        base::BindOnce(
+            [](base::WeakPtr<SelectFileDialogExtension> weak_ptr,
+               std::vector<ui::SelectedFileInfo> allowed_files) {
+              if (allowed_files.empty())
+                weak_ptr->selection_type_ = SelectionType::CANCEL;
+              weak_ptr->NotifyListener(std::move(allowed_files));
+            },
+            weak_factory_.GetWeakPtr()));
+    return;
   }
-  // TODO(crbug.com/1384498): Handle this case.
   NotifyListener(std::move(selection_files));
 }
 

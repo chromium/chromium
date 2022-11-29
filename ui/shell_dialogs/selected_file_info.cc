@@ -25,6 +25,12 @@ SelectedFileInfo& SelectedFileInfo::operator=(const SelectedFileInfo& other) =
 SelectedFileInfo& SelectedFileInfo::operator=(SelectedFileInfo&& other) =
     default;
 
+bool SelectedFileInfo::operator==(const SelectedFileInfo& other) const {
+  return file_path == other.file_path && local_path == other.local_path &&
+         display_name == other.display_name && url == other.url &&
+         virtual_path == other.virtual_path;
+}
+
 // Converts a list of FilePaths to a list of ui::SelectedFileInfo.
 std::vector<SelectedFileInfo> FilePathListToSelectedFileInfoList(
     const std::vector<base::FilePath>& paths) {
