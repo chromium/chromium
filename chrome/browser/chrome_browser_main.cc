@@ -1031,7 +1031,15 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   // properly. See issue 37766.
   // (Note that the callback mask here is empty. I don't want to register for
   // any callbacks, I just want to initialize the mechanism.)
+
+  // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+  // Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+  // warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   SecKeychainAddCallback(&KeychainCallback, 0, nullptr);
+#pragma clang diagnostic pop
+
 #endif  // BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
