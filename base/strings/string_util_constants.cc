@@ -49,6 +49,8 @@ const char16_t kWhitespaceNoCrLfUTF16[] = {WHITESPACE_UNICODE_NO_CR_LF, 0};
 const char kWhitespaceASCII[] = {WHITESPACE_ASCII, 0};
 const char16_t kWhitespaceASCIIAs16[] = {WHITESPACE_ASCII, 0};
 
+const char kInfraAsciiWhitespace[] = {0x09, 0x0A, 0x0C, 0x0D, 0x20, 0};
+
 const char kUtf8ByteOrderMark[] = "\xEF\xBB\xBF";
 
 }  // namespace base

@@ -30,7 +30,23 @@ BASE_EXPORT void Base64Encode(StringPiece input, std::string* output);
 // Decodes the base64 input string.  Returns true if successful and false
 // otherwise. The output string is only modified if successful. The decoding can
 // be done in-place.
-BASE_EXPORT bool Base64Decode(StringPiece input, std::string* output);
+enum class Base64DecodePolicy {
+  // Input should match the output format of Base64Encode. i.e.
+  // - Input length should be divisible by 4
+  // - Maximum of 2 padding characters
+  // - No non-base64 characters.
+  kStrict,
+
+  // Matches https://infra.spec.whatwg.org/#forgiving-base64-decode.
+  // - Removes all ascii whitespace
+  // - Maximum of 2 padding characters
+  // - Allows input length not divisible by 4 if no padding chars are added.
+  kForgiving,
+};
+BASE_EXPORT bool Base64Decode(
+    StringPiece input,
+    std::string* output,
+    Base64DecodePolicy policy = Base64DecodePolicy::kStrict);
 
 // Decodes the base64 input string. Returns `absl::nullopt` if unsuccessful.
 BASE_EXPORT absl::optional<std::vector<uint8_t>> Base64Decode(

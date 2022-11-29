@@ -142,22 +142,8 @@ bool DataURL::Parse(const GURL& url,
           return false;
       } else {
         std::string unescaped_body = base::UnescapeBinaryURLComponent(raw_body);
-
-        // Strip spaces, which aren't allowed in Base64 encoding.
-        base::EraseIf(unescaped_body, IsBase64Whitespace);
-
-        size_t length = unescaped_body.length();
-        size_t padding_needed = 4 - (length % 4);
-        // If the input wasn't padded, then we pad it as necessary until we have
-        // a length that is a multiple of 4 as required by our decoder. We don't
-        // correct if the input was incorrectly padded. If |padding_needed| ==
-        // 3, then the input isn't well formed and decoding will fail with or
-        // without padding.
-        if ((padding_needed == 1 || padding_needed == 2) &&
-            unescaped_body[length - 1] != '=') {
-          unescaped_body.resize(length + padding_needed, '=');
-        }
-        if (!base::Base64Decode(unescaped_body, data))
+        if (!base::Base64Decode(unescaped_body, data,
+                                base::Base64DecodePolicy::kForgiving))
           return false;
       }
     } else {
