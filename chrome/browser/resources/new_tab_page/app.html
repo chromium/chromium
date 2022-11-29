@@ -3,14 +3,14 @@
     --ntp-theme-text-shadow: none;
     --ntp-one-google-bar-height: 56px;
     --ntp-search-box-width: 337px;
+    --ntp-menu-shadow:
+        var(--color-new-tab-page-menu-inner-shadow) 0 1px 2px 0,
+        var(--color-new-tab-page-menu-outer-shadow) 0 2px 6px 2px;
     --ntp-module-width: var(--ntp-search-box-width);
     --ntp-module-layout-width: var(--ntp-search-box-width);
     --ntp-module-border-radius: 5px;
     --ntp-protected-icon-background-color: transparent;
     --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
-    --ntp-module-menu-shadow:
-        var(--color-new-tab-page-menu-inner-shadow) 0 1px 2px 0,
-        var(--color-new-tab-page-menu-outer-shadow) 0 2px 6px 2px;
   }
 
   @media (min-width: 560px) {
@@ -106,8 +106,10 @@
   }
 
   cr-most-visited {
+    --cr-menu-shadow: var(--ntp-menu-shadow);
     --most-visited-focus-shadow: var(--ntp-focus-shadow);
-    --most-visited-text-color: var(--color-new-tab-page-most-visited-foreground);
+    --most-visited-text-color:
+        var(--color-new-tab-page-most-visited-foreground);
     --most-visited-text-shadow: var(--ntp-theme-text-shadow);
   }
 
