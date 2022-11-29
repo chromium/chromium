@@ -96,14 +96,15 @@ class AppShimController : public chrome::mojom::AppShim {
     // Has sent OnShimConnected to the browser process, waiting for the
     // response.
     kHasSentOnShimConnected,
-    // Has received the OnShimConnected response from the browser, initializaton
-    // is now complete.
+    // Has received the OnShimConnected response from the browser,
+    // initialization is now complete.
     kHasReceivedOnShimConnectedResponse,
   };
 
   // Init step 1 after OnAppFinishedLaunching. Find a running instance of Chrome
-  // to connect to, or launch Chrome if none is found.
-  void FindOrLaunchChrome();
+  // to connect to, or launch Chrome if none is found. Returns true if a
+  // running instance was found and polling for readiness is possible.
+  bool FindOrLaunchChrome();
 
   // Init step 2: Poll for the mach server exposed by Chrome's AppShimListener
   // to be initialized. Once it has, proceed to SendBootstrapOnShimConnected.
@@ -208,7 +209,7 @@ class AppShimController : public chrome::mojom::AppShim {
   // The items in the profile menu.
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;
 
-  // The items in the appliation dock menu.
+  // The items in the application dock menu.
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items_;
 
   NSInteger attention_request_id_ = 0;
