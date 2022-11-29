@@ -162,7 +162,7 @@ TextFragmentsManagerImpl::ProcessTextFragments(
 
   // Log metrics and cache Referrer for UKM logging.
   shared_highlighting::LogTextFragmentSelectorCount(
-      parsed_fragments.GetListDeprecated().size());
+      parsed_fragments.GetList().size());
   shared_highlighting::LogTextFragmentLinkOpenSource(referrer.url);
   latest_source_id_ = ukm::ConvertToSourceId(context->GetNavigationId(),
                                              ukm::SourceIdType::NAVIGATION_ID);

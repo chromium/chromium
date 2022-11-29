@@ -141,7 +141,7 @@ base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value args) {
 
   int flags = MOJO_WRITE_MESSAGE_FLAG_NONE;
 
-  const auto& handles_list_storage = handles_list->GetListDeprecated();
+  const auto& handles_list_storage = handles_list->GetList();
   std::vector<MojoHandle> handles(handles_list_storage.size());
   for (size_t i = 0; i < handles_list_storage.size(); i++) {
     int one_handle = handles_list_storage[i].GetInt();

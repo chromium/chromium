@@ -103,7 +103,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWKResult) {
 
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(test_array));
   ASSERT_TRUE(value->is_list());
-  base::Value::ConstListView list = value->GetListDeprecated();
+  const base::Value::List& list = value->GetList();
 
   size_t list_size = 3;
   ASSERT_EQ(list_size, list.size());
@@ -171,22 +171,22 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   // Check that parsing the array stopped at a depth of
   // `kMaximumParsingRecursionDepth`.
   std::unique_ptr<base::Value> value = web::ValueResultFromWKResult(test_array);
-  absl::optional<base::Value::ConstListView> current_list;
-  absl::optional<base::Value::ConstListView> inner_list;
+  base::Value::List* current_list = nullptr;
+  base::Value::List* inner_list = nullptr;
 
   ASSERT_TRUE(value->is_list());
-  current_list = value->GetListDeprecated();
+  current_list = &value->GetList();
 
   for (int current_depth = 0; current_depth <= kMaximumParsingRecursionDepth;
        current_depth++) {
-    ASSERT_TRUE(current_list.has_value());
+    ASSERT_TRUE(current_list);
 
-    inner_list = absl::nullopt;
-    if (!current_list.value().empty() && current_list.value()[0].is_list())
-      inner_list = current_list.value()[0].GetListDeprecated();
+    inner_list = nullptr;
+    if (!current_list->empty())
+      inner_list = (*current_list)[0].GetIfList();
     current_list = inner_list;
   }
-  EXPECT_FALSE(current_list.has_value());
+  EXPECT_FALSE(current_list);
 }
 
 // Tests that ExecuteJavaScript returns an error if there is no web view.
