@@ -271,7 +271,8 @@ base::Value::List AttributionInteropParser::ParseEventLevelReports(
               base::Value::Dict& value_dict = value.GetDict();
               MoveValue(value_dict, "report", result, "payload");
               MoveValue(value_dict, "report_url", result);
-              MoveValue(value_dict, "report_time", result);
+              MoveValue(value_dict, "intended_report_time", result,
+                        "report_time");
 
               if (has_error())
                 return;
@@ -302,7 +303,8 @@ base::Value::List AttributionInteropParser::ParseAggregatableReports(
 
               base::Value::Dict& value_dict = value.GetDict();
               MoveValue(value_dict, "report_url", result);
-              MoveValue(value_dict, "report_time", result);
+              MoveValue(value_dict, "intended_report_time", result,
+                        "report_time");
 
               static constexpr char kKeyTestInfo[] = "test_info";
               base::Value* test_info;

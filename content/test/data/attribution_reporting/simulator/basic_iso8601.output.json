@@ -8,6 +8,7 @@
          "source_type": "navigation",
          "trigger_data": "7"
       },
+      "intended_report_time": "2022-01-28T23:19:33.123Z",
       "report_time": "2022-01-28T23:19:33.123Z",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {

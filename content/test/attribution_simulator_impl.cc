@@ -158,18 +158,12 @@ struct AttributionReportJsonConverter {
     value.Set("report", std::move(report_body));
     value.Set("report_url", report.ReportURL(is_debug_report).spec());
 
-    const char* time_key = replaced_by ? "replacement_time" : "report_time";
+    value.Set("intended_report_time",
+              FormatTime(is_debug_report ? report.attribution_info().time
+                                         : report.report_time()));
 
-    base::TimeDelta time_delta = base::Time::Now() - time_origin;
-    switch (report_time_format) {
-      case AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch:
-        value.Set(time_key, base::NumberToString(time_delta.InMilliseconds()));
-        break;
-      case AttributionReportTimeFormat::kISO8601:
-        value.Set(time_key,
-                  base::TimeToISO8601(base::Time::UnixEpoch() + time_delta));
-        break;
-    }
+    value.Set(replaced_by ? "replacement_time" : "report_time",
+              FormatTime(base::Time::Now()));
 
     base::Value::Dict test_info;
     if (absl::holds_alternative<AttributionReport::EventLevelData>(
@@ -199,6 +193,17 @@ struct AttributionReportJsonConverter {
     }
 
     return value;
+  }
+
+  std::string FormatTime(base::Time time) const {
+    base::TimeDelta time_delta = time - time_origin;
+
+    switch (report_time_format) {
+      case AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch:
+        return base::NumberToString(time_delta.InMilliseconds());
+      case AttributionReportTimeFormat::kISO8601:
+        return base::TimeToISO8601(base::Time::UnixEpoch() + time_delta);
+    }
   }
 
   const bool remove_report_ids;

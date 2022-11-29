@@ -135,6 +135,7 @@ TEST(AttributionInteropParserTest, ValidInput) {
 TEST(AttributionInteropParserTest, ValidOutput) {
   constexpr char kInputJson[] = R"json({
       "event_level_reports": [{
+        "intended_report_time": "1643235573120",
         "report_time": "1643235573123",
         "report_url": "https://r.example/path",
         "report": {
@@ -146,6 +147,7 @@ TEST(AttributionInteropParserTest, ValidOutput) {
         }
       }],
       "aggregatable_reports": [{
+        "intended_report_time": "1643235573120",
         "report_time": "1643235573123",
         "report_url": "https://r.example/path",
         "report": {
@@ -162,7 +164,7 @@ TEST(AttributionInteropParserTest, ValidOutput) {
 
   constexpr char kOutputJson[] = R"json({
       "event_level_results": [{
-        "report_time": "1643235573123",
+        "report_time": "1643235573120",
         "report_url": "https://r.example/path",
         "payload": {
           "attribution_destination": "https://d.test",
@@ -173,7 +175,7 @@ TEST(AttributionInteropParserTest, ValidOutput) {
         }
       }],
       "aggregatable_results": [{
-        "report_time": "1643235573123",
+        "report_time": "1643235573120",
         "report_url": "https://r.example/path",
         "payload": {
           "attribution_destination": "https://d.test",
@@ -769,7 +771,7 @@ const ParseErrorTestCase kParseOutputErrorTestCases[] = {
         })json",
     },
     {
-        R"(["event_level_reports"][0]["report_time"]: must be present)",
+        R"(["event_level_reports"][0]["intended_report_time"]: must be present)",
         R"json({
           "event_level_reports": [{}]
         })json",
@@ -793,7 +795,7 @@ const ParseErrorTestCase kParseOutputErrorTestCases[] = {
         })json",
     },
     {
-        R"(["aggregatable_reports"][0]["report_time"]: must be present)",
+        R"(["aggregatable_reports"][0]["intended_report_time"]: must be present)",
         R"json({
           "aggregatable_reports": [{}]
         })json",
