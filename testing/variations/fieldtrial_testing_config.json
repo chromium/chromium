@@ -7664,13 +7664,10 @@
             ],
             "experiments": [
                 {
-                    "name": "2KB_input_stream_20220929",
+                    "name": "Group1_20221128",
                     "params": {
-                        "max_input_stream_bytes_available_unknown": "2048"
-                    },
-                    "enable_features": [
-                        "OptimizeNetworkBuffers2"
-                    ]
+                        "min_input_stream_available_value_to_ignore": "2"
+                    }
                 }
             ]
         }
