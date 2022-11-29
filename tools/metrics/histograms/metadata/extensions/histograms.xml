@@ -1007,28 +1007,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.DisabledUIUserResponse2"
-    enum="ExtensionDisabledUIUserResponse" expires_after="M77">
-  <owner>catmullings@chromium.org</owner>
-  <summary>
-    User response to the dialog shown when an extension is disabled due to an
-    update requiring more permissions. A count is recorded when the user takes
-    an action on the dialog (re-enable or remove the extension) or ignores the
-    dialog.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.DisabledUIUserResponseRemoteInstall2"
-    enum="ExtensionDisabledUIUserResponse" expires_after="M77">
-  <owner>catmullings@chromium.org</owner>
-  <summary>
-    User response to the dialog shown when an extension is disabled due to it
-    having been installed remotely. A count is recorded when the user takes an
-    action on the dialog (re-enable or remove the extension) or ignores the
-    dialog.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.DisableReason" enum="ExtensionDisableReason"
     expires_after="2022-08-28">
   <owner>rdevlin.cronin@chromium.org</owner>
