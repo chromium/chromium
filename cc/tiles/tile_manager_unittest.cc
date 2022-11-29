@@ -13,9 +13,11 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "cc/base/features.h"
 #include "cc/layers/recording_source.h"
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_source.h"
@@ -375,6 +377,151 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueue) {
   }
   EXPECT_EQ(expected_required_for_draw_tiles, required_for_draw_tiles);
   EXPECT_NE(new_content_tiles, required_for_draw_tiles);
+}
+
+TEST_F(TileManagerTilePriorityQueueTest,
+       RasterTilePriorityQueueAll_GetNextQueues) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kRasterTilePriorityQueue);
+
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
+  gfx::Size layer_bounds(1000, 1000);
+  SetupDefaultTrees(layer_bounds);
+
+  // Create a pending child layer.
+  scoped_refptr<FakeRasterSource> pending_raster_source =
+      FakeRasterSource::CreateFilled(layer_bounds);
+  auto* pending_child = AddLayer<FakePictureLayerImpl>(
+      host_impl()->pending_tree(), pending_raster_source);
+  pending_child->SetDrawsContent(true);
+  CopyProperties(pending_layer(), pending_child);
+
+  // Set a small viewport, so we have soon and eventually tiles.
+  host_impl()->active_tree()->SetDeviceViewportRect(
+      gfx::Rect(100, 100, 200, 200));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
+  UpdateDrawProperties(host_impl()->active_tree());
+  UpdateDrawProperties(host_impl()->pending_tree());
+  host_impl()->SetRequiresHighResToDraw();
+
+  // (1) SMOOTHNESS_TAKES_PRIORITY
+  {
+    std::unique_ptr<RasterTilePriorityQueue> queue(
+        host_impl()->BuildRasterQueue(SMOOTHNESS_TAKES_PRIORITY,
+                                      RasterTilePriorityQueue::Type::ALL));
+    EXPECT_FALSE(queue->IsEmpty());
+
+    TilePriority::PriorityBin last_bin = TilePriority::NOW;
+    WhichTree las_tree = WhichTree::ACTIVE_TREE;
+    float last_distance = 0.f;
+    while (!queue->IsEmpty()) {
+      PrioritizedTile prioritized_tile = queue->Top();
+      WhichTree tree = prioritized_tile.source_tiling()->tree();
+      TilePriority::PriorityBin priority_bin =
+          prioritized_tile.priority().priority_bin;
+      float distance_to_visible =
+          prioritized_tile.priority().distance_to_visible;
+
+      // Higher priority bin should come before lower priority bin regardless
+      // of the tree.
+      EXPECT_LE(last_bin, priority_bin);
+
+      // If SMOOTHNESS_TAKES_PRIORITY, ACTIVE_TREE comes before PENDING_TREE for
+      // NOW bin. The rest bins use the IsHigherPriorityThan condition.
+      if (priority_bin == TilePriority::NOW) {
+        EXPECT_LE(las_tree, tree);
+      } else {
+        // Reset the distance if it's in a different bin.
+        if (last_bin != priority_bin)
+          last_distance = 0;
+        if (las_tree != tree)
+          EXPECT_LE(last_distance, distance_to_visible);
+      }
+
+      last_bin = priority_bin;
+      las_tree = tree;
+      last_distance = distance_to_visible;
+      queue->Pop();
+    }
+  }
+
+  // (2) NEW_CONTENT_TAKES_PRIORITY
+  {
+    std::unique_ptr<RasterTilePriorityQueue> queue(
+        host_impl()->BuildRasterQueue(NEW_CONTENT_TAKES_PRIORITY,
+                                      RasterTilePriorityQueue::Type::ALL));
+    EXPECT_FALSE(queue->IsEmpty());
+
+    TilePriority::PriorityBin last_bin = TilePriority::NOW;
+    WhichTree las_tree = WhichTree::PENDING_TREE;
+    float last_distance = 0.f;
+    while (!queue->IsEmpty()) {
+      PrioritizedTile prioritized_tile = queue->Top();
+      WhichTree tree = prioritized_tile.source_tiling()->tree();
+      TilePriority::PriorityBin priority_bin =
+          prioritized_tile.priority().priority_bin;
+      float distance_to_visible =
+          prioritized_tile.priority().distance_to_visible;
+
+      // Higher priority bin should come before lower priority bin regardless
+      // of the tree.
+      EXPECT_LE(last_bin, priority_bin);
+
+      // If SMOOTHNESS_TAKES_PRIORITY, PENDING_TREE comes before ACTIVE_TREE for
+      // NOW bin. The rest bins use the IsHigherPriorityThan condition.
+      if (priority_bin == TilePriority::NOW) {
+        EXPECT_GE(las_tree, tree);
+      } else {
+        // Reset the distance if it's in a different bin.
+        if (last_bin != priority_bin)
+          last_distance = 0;
+        if (las_tree != tree)
+          EXPECT_LE(last_distance, distance_to_visible);
+      }
+
+      last_bin = priority_bin;
+      las_tree = tree;
+      last_distance = distance_to_visible;
+      queue->Pop();
+    }
+  }
+
+  // (3) SAME_PRIORITY_FOR_BOTH_TREES
+  {
+    std::unique_ptr<RasterTilePriorityQueue> queue(
+        host_impl()->BuildRasterQueue(SAME_PRIORITY_FOR_BOTH_TREES,
+                                      RasterTilePriorityQueue::Type::ALL));
+    EXPECT_FALSE(queue->IsEmpty());
+
+    TilePriority::PriorityBin last_bin = TilePriority::NOW;
+    WhichTree las_tree = WhichTree::PENDING_TREE;
+    float last_distance = 0.f;
+    while (!queue->IsEmpty()) {
+      PrioritizedTile prioritized_tile = queue->Top();
+      WhichTree tree = prioritized_tile.source_tiling()->tree();
+      TilePriority::PriorityBin priority_bin =
+          prioritized_tile.priority().priority_bin;
+      float distance_to_visible =
+          prioritized_tile.priority().distance_to_visible;
+
+      // Higher priority bin should come before lower priority bin regardless
+      // of the tree.
+      EXPECT_LE(last_bin, priority_bin);
+
+      // Reset the distance if it's in a different bin.
+      if (last_bin != priority_bin)
+        last_distance = 0;
+
+      // Use the IsHigherPriorityThan() condition.
+      if (las_tree != tree)
+        EXPECT_LE(last_distance, distance_to_visible);
+
+      last_bin = priority_bin;
+      las_tree = tree;
+      last_distance = distance_to_visible;
+      queue->Pop();
+    }
+  }
 }
 
 TEST_F(TileManagerTilePriorityQueueTest,
