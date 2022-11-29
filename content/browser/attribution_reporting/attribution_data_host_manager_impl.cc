@@ -90,7 +90,7 @@ enum class NavigationDataHostStatus {
 };
 
 void RecordNavigationDataHostStatus(NavigationDataHostStatus event) {
-  base::UmaHistogramEnumeration("Conversions.NavigationDataHostStatus", event);
+  base::UmaHistogramEnumeration("Conversions.NavigationDataHostStatus2", event);
 }
 
 const base::FeatureParam<base::TimeDelta> kTriggerDelay{

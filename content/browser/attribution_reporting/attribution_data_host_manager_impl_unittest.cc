@@ -883,8 +883,8 @@ TEST_F(AttributionDataHostManagerImplTest,
                                    base::Milliseconds(1), 1);
 
   // kRegistered = 0, kProcessed = 3.
-  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus", 0, 1);
-  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus", 3, 1);
+  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus2", 0, 1);
+  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus2", 3, 1);
 
   // kSuccess = 0, kContextError = 2
   histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 2);
@@ -1380,8 +1380,8 @@ TEST_F(AttributionDataHostManagerImplTest,
                                    base::Milliseconds(1), 2);
 
   // kRegistered = 0, kNavigationFailed = 2.
-  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus", 0, 1);
-  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus", 2, 1);
+  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus2", 0, 1);
+  histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus2", 2, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -1620,7 +1620,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationDataHostNotRegistered) {
       AttributionNavigationType::kAnchor);
 
   // kNotFound = 1.
-  histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus2", 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -1720,7 +1720,8 @@ TEST_F(AttributionDataHostManagerImplTest,
         AttributionInputEvent(), AttributionNavigationType::kAnchor));
 
     // kRegistered = 0.
-    histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus", 0, 1);
+    histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus2", 0,
+                                  1);
   }
 
   const auto destination_origin =

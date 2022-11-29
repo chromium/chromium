@@ -250,16 +250,8 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (!data_host_manager)
     return;
 
-  const url::Origin& destination_origin =
-      navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin();
-
-  if (SuitableOrigin::IsSuitable(destination_origin)) {
-    data_host_manager->NotifyNavigationForDataHost(
-        impression.attribution_src_token, source_origin, impression.nav_type);
-  } else {
-    data_host_manager->NotifyNavigationFailure(
-        impression.attribution_src_token);
-  }
+  data_host_manager->NotifyNavigationForDataHost(
+      impression.attribution_src_token, source_origin, impression.nav_type);
 }
 
 void AttributionHost::MaybeNotifyFailedSourceNavigation(
