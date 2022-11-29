@@ -1021,6 +1021,7 @@ void CameraDeviceDelegate::ConfigureStreams(
       CAMERA3_STREAM_CONFIGURATION_NORMAL_MODE;
   if (device_api_version_ >= cros::mojom::CAMERA_DEVICE_API_VERSION_3_5) {
     stream_config->session_parameters = cros::mojom::CameraMetadata::New();
+    ConfigureSessionParameters(&stream_config->session_parameters);
   }
   device_ops_->ConfigureStreams(
       std::move(stream_config),
@@ -1208,36 +1209,16 @@ void CameraDeviceDelegate::OnConstructedDefaultPreviewRequestSettings(
   device_context_->SetState(CameraDeviceContext::State::kCapturing);
   camera_3a_controller_->SetAutoFocusModeForStillCapture();
 
-  auto camera_app_device =
-      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
-          device_descriptor_.device_id);
-  auto specified_fps_range =
-      camera_app_device ? camera_app_device->GetFpsRange() : absl::nullopt;
-  if (specified_fps_range) {
-    SetFpsRangeInMetadata(&settings, specified_fps_range->GetMin(),
-                          specified_fps_range->GetMax());
-  } else {
-    // Assumes the frame_rate will be the same for all |chrome_capture_params|.
-    int32_t requested_frame_rate =
-        std::round(chrome_capture_params_[ClientType::kPreviewClient]
-                       .requested_format.frame_rate);
-    bool prefer_constant_frame_rate =
-        base::FeatureList::IsEnabled(
-            chromeos::features::kPreferConstantFrameRate) ||
-        (camera_app_device && camera_app_device->GetCaptureIntent() ==
-                                  cros::mojom::CaptureIntent::VIDEO_RECORD);
-    auto [target_min, target_max] = GetTargetFrameRateRange(
-        static_metadata_, requested_frame_rate, prefer_constant_frame_rate);
-    if (target_min == 0 || target_max == 0) {
-      device_context_->SetErrorState(
-          media::VideoCaptureError::
-              kCrosHalV3DeviceDelegateFailedToGetDefaultRequestSettings,
-          FROM_HERE, "Failed to get valid frame rate range");
-      return;
-    }
-
-    SetFpsRangeInMetadata(&settings, target_min, target_max);
+  auto [target_min, target_max] = GetFrameRateRange();
+  if (target_min == 0 || target_max == 0) {
+    device_context_->SetErrorState(
+        media::VideoCaptureError::
+            kCrosHalV3DeviceDelegateFailedToGetDefaultRequestSettings,
+        FROM_HERE, "Failed to get valid frame rate range");
+    return;
   }
+  SetFpsRangeInMetadata(&settings, target_min, target_max);
+
   while (!on_reconfigured_callbacks_.empty()) {
     std::move(on_reconfigured_callbacks_.front()).Run();
     on_reconfigured_callbacks_.pop();
@@ -1783,6 +1764,57 @@ void CameraDeviceDelegate::DoGetPhotoState(
   }
 
   std::move(callback).Run(std::move(photo_state));
+}
+
+std::pair<int32_t, int32_t> CameraDeviceDelegate::GetFrameRateRange() {
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_descriptor_.device_id);
+  auto specified_fps_range =
+      camera_app_device ? camera_app_device->GetFpsRange() : absl::nullopt;
+  if (specified_fps_range) {
+    return std::make_pair(specified_fps_range->GetMin(),
+                          specified_fps_range->GetMax());
+  }
+  // Assumes the frame_rate will be the same for all |chrome_capture_params|.
+  int32_t requested_frame_rate =
+      std::round(chrome_capture_params_[ClientType::kPreviewClient]
+                     .requested_format.frame_rate);
+  bool prefer_constant_frame_rate =
+      base::FeatureList::IsEnabled(
+          chromeos::features::kPreferConstantFrameRate) ||
+      (camera_app_device && camera_app_device->GetCaptureIntent() ==
+                                cros::mojom::CaptureIntent::VIDEO_RECORD);
+  return GetTargetFrameRateRange(static_metadata_, requested_frame_rate,
+                                 prefer_constant_frame_rate);
+}
+
+void CameraDeviceDelegate::ConfigureSessionParameters(
+    cros::mojom::CameraMetadataPtr* session_parameters) {
+  auto session_keys = GetMetadataEntryAsSpan<int32_t>(
+      static_metadata_,
+      cros::mojom::CameraMetadataTag::ANDROID_REQUEST_AVAILABLE_SESSION_KEYS);
+  for (auto tag_value : session_keys) {
+    auto metadata_tag = static_cast<cros::mojom::CameraMetadataTag>(tag_value);
+    switch (metadata_tag) {
+      case cros::mojom::CameraMetadataTag::
+          ANDROID_CONTROL_AE_TARGET_FPS_RANGE: {
+        VLOG(1) << "Setting " << metadata_tag << " in session_parameters.";
+        auto [fps_min, fps_max] = GetFrameRateRange();
+        if (fps_min == 0 || fps_max == 0) {
+          LOG(WARNING) << "Failed to get valid fps range, did not set "
+                       << metadata_tag << " in session_parameters.";
+          break;
+        }
+        SetFpsRangeInMetadata(session_parameters, fps_min, fps_max);
+        break;
+      }
+      default: {
+        VLOG(1) << "Did not set " << metadata_tag << " in session_parameters.";
+        break;
+      }
+    }
+  }
 }
 
 }  // namespace media

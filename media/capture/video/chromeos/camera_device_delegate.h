@@ -243,6 +243,16 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   void DoGetPhotoState(VideoCaptureDevice::GetPhotoStateCallback callback);
 
+  // Gets the target frame rate range as std::pair<min, max>.
+  // Returns 0 for min or max or both fps when fps range is not valid,
+  // caller should handle that accordingly.
+  std::pair<int32_t, int32_t> GetFrameRateRange();
+
+  // Configures the session_parameters with initial values for the keys
+  // found in ANDROID_REQUEST_AVAILABLE_SESSION_KEYS.
+  void ConfigureSessionParameters(
+      cros::mojom::CameraMetadataPtr* session_parameters);
+
   const VideoCaptureDeviceDescriptor device_descriptor_;
 
   // Current configured resolution of BLOB stream.
