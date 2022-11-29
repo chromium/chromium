@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -198,22 +199,24 @@ void WaylandToplevelWindow::SetTitle(const std::u16string& title) {
   }
 }
 
-void WaylandToplevelWindow::ToggleFullscreen() {
+void WaylandToplevelWindow::SetFullscreen(bool fullscreen,
+                                          int64_t target_display_id) {
   // TODO(msisov, tonikitoo): add multiscreen support. As the documentation says
   // if xdg_toplevel_set_fullscreen() is not provided with wl_output, it's up
   // to the compositor to choose which display will be used to map this surface.
 
+  // TODO(crbug.com/1034783) Support `target_display_id` on this platform.
+  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
+
   // We must track the previous state to correctly say our state as long as it
   // can be the maximized instead of normal one.
   PlatformWindowState new_state = PlatformWindowState::kUnknown;
-  if (state_ == PlatformWindowState::kFullScreen) {
-    if (previous_state_ == PlatformWindowState::kMaximized)
-      new_state = previous_state_;
-    else
-      new_state = PlatformWindowState::kNormal;
-  } else {
+  if (fullscreen) {
     new_state = PlatformWindowState::kFullScreen;
-  }
+  } else if (previous_state_ == PlatformWindowState::kMaximized)
+    new_state = previous_state_;
+  else
+    new_state = PlatformWindowState::kNormal;
 
   SetWindowState(new_state);
 }

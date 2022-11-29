@@ -78,7 +78,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   void SetCapture() override {}
   void ReleaseCapture() override {}
   bool HasCapture() const override { return false; }
-  void ToggleFullscreen() override {}
+  void SetFullscreen(bool fullscreen, int64_t target_display_id) override {}
   void Maximize() override {}
   void Minimize() override {}
   void Restore() override {}

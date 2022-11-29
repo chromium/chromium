@@ -132,7 +132,7 @@ bool WinWindow::HasCapture() const {
   return ::GetCapture() == hwnd();
 }
 
-void WinWindow::ToggleFullscreen() {}
+void WinWindow::SetFullscreen(bool fullscreen, int64_t target_display_id) {}
 
 void WinWindow::Maximize() {}
 

@@ -423,7 +423,7 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   gfx::Rect initial_bounds = window->GetBoundsInPixels();
   {
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", true);
-    window->ToggleFullscreen();
+    window->SetFullscreen(true, display::kInvalidDisplayId);
     waiter.Wait();
   }
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
@@ -464,7 +464,7 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
 
   // Calling Widget::SetFullscreen(false) should clear the widget's fullscreen
   // state and clean things up.
-  window->ToggleFullscreen();
+  window->SetFullscreen(false, display::kInvalidDisplayId);
   EXPECT_NE(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
   delegate.WaitForBoundsChange({false});
   EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());

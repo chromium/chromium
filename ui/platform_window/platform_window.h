@@ -71,7 +71,13 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   virtual void ReleaseCapture() = 0;
   virtual bool HasCapture() const = 0;
 
-  virtual void ToggleFullscreen() = 0;
+  // Enters or exits fullscreen when `fullscreen` is true or false respectively.
+  // This operation may have no effect if the window is already in the specified
+  // state. `target_display_id` indicates the display where the window should be
+  // shown fullscreen when entering into fullscreen; display::kInvalidDisplayId
+  // indicates that no display was specified, so the current display may be
+  // used.
+  virtual void SetFullscreen(bool fullscreen, int64_t target_display_id) = 0;
   virtual void Maximize() = 0;
   virtual void Minimize() = 0;
   virtual void Restore() = 0;

@@ -114,7 +114,7 @@ bool DrmWindowHost::HasCapture() const {
   return widget_ == window_manager_->event_grabber();
 }
 
-void DrmWindowHost::ToggleFullscreen() {}
+void DrmWindowHost::SetFullscreen(bool fullscreen, int64_t target_display_id) {}
 
 void DrmWindowHost::Maximize() {}
 

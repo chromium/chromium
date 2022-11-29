@@ -371,7 +371,7 @@ bool WaylandWindow::HasCapture() const {
          this;
 }
 
-void WaylandWindow::ToggleFullscreen() {}
+void WaylandWindow::SetFullscreen(bool fullscreen, int64_t target_display_id) {}
 
 void WaylandWindow::Maximize() {}
 

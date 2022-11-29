@@ -282,7 +282,7 @@ class FakeX11ExtensionDelegateForSize : public X11ExtensionDelegate {
 };
 
 // Verifies X11Window sets fullscreen bounds in pixels when going to fullscreen.
-TEST_F(X11WindowOzoneTest, ToggleFullscreen) {
+TEST_F(X11WindowOzoneTest, SetFullscreen) {
   constexpr gfx::Rect screen_bounds_in_px(640, 480, 1280, 720);
   test_screen_.SetScaleAndBoundsForPrimaryDisplay(2, screen_bounds_in_px);
 
@@ -296,7 +296,7 @@ TEST_F(X11WindowOzoneTest, ToggleFullscreen) {
       delegate,
       OnBoundsChanged(testing::Eq(PlatformWindowDelegate::BoundsChange{true})));
 
-  window->ToggleFullscreen();
+  window->SetFullscreen(true, display::kInvalidDisplayId);
 }
 
 }  // namespace ui

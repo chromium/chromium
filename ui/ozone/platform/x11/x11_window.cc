@@ -606,9 +606,9 @@ bool X11Window::HasCapture() const {
   return X11WindowManager::GetInstance()->located_events_grabber() == this;
 }
 
-void X11Window::ToggleFullscreen() {
-  // Check if we need to fullscreen the window or not.
-  bool fullscreen = state_ != PlatformWindowState::kFullScreen;
+void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
+  // TODO(crbug.com/1034783) Support `target_display_id` on this platform.
+  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
   if (fullscreen)
     CancelResize();
 

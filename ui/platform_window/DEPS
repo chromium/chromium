@@ -1,5 +1,6 @@
 include_rules = [
   "+third_party/skia/include",
   "+ui/base",
+  "+ui/display",
   "+ui/gfx",
 ]

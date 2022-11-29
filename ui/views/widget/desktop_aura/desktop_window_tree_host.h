@@ -169,6 +169,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   // the window should be shown fullscreen; display::kInvalidDisplayId indicates
   // that no display was specified, so the current display may be used.
   virtual void SetFullscreen(bool fullscreen, int64_t target_display_id) = 0;
+  // Returns true if the window is in fullscreen on any display.
   virtual bool IsFullscreen() const = 0;
 
   virtual void SetOpacity(float opacity) = 0;

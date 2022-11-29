@@ -27,6 +27,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
@@ -702,14 +703,8 @@ void DesktopWindowTreeHostPlatform::FrameTypeChanged() {
 
 void DesktopWindowTreeHostPlatform::SetFullscreen(bool fullscreen,
                                                   int64_t target_display_id) {
-  // TODO(crbug.com/1034783) Support `target_display_id` on this platform.
-  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
-
-  if (IsFullscreen() == fullscreen)
-    return;
-
   auto weak_ptr = GetWeakPtr();
-  platform_window()->ToggleFullscreen();
+  platform_window()->SetFullscreen(fullscreen, target_display_id);
   if (!weak_ptr)
     return;
 

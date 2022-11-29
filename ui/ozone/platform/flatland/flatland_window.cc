@@ -21,6 +21,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/cursor/platform_cursor.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -219,9 +220,10 @@ bool FlatlandWindow::HasCapture() const {
   return has_capture_;
 }
 
-void FlatlandWindow::ToggleFullscreen() {
+void FlatlandWindow::SetFullscreen(bool fullscreen, int64_t target_display_id) {
   NOTIMPLEMENTED_LOG_ONCE();
-  is_fullscreen_ = !is_fullscreen_;
+  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
+  is_fullscreen_ = fullscreen;
 }
 
 void FlatlandWindow::Maximize() {
