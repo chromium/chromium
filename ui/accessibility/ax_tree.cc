@@ -2023,11 +2023,15 @@ void AXTree::UpdateReverseRelations(AXNode* node, const AXNodeData& new_data) {
       // Remove old_string -> id from the map, and clear map keys if
       // their values are now empty.
       AXTreeID old_ax_tree_id = AXTreeID::FromString(old_string);
-      if (child_tree_id_reverse_map_.find(old_ax_tree_id) !=
-          child_tree_id_reverse_map_.end()) {
-        child_tree_id_reverse_map_[old_ax_tree_id].erase(id);
-        if (child_tree_id_reverse_map_[old_ax_tree_id].empty())
-          child_tree_id_reverse_map_.erase(old_ax_tree_id);
+      const auto& iter = child_tree_id_reverse_map_.find(old_ax_tree_id);
+      // TODO(accessibility) How can there be more than one child tree owner id
+      // for a given tree id? Should we be using DCHECKs to assert that?
+      if (iter != child_tree_id_reverse_map_.end()) {
+        std::set<AXNodeID>& node_ids_for_tree_id = iter->second;
+        node_ids_for_tree_id.erase(id);
+        // Remove entry from map if there are no ids left.
+        if (node_ids_for_tree_id.empty())
+          child_tree_id_reverse_map_.erase(iter);
       }
 
       // Add new_string -> id to the map, unless new_id is zero indicating that
