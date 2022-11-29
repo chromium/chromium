@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/known_exposed_properties.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -143,7 +144,14 @@ CSSPropertyID CssPropertyInfo(const ExecutionContext* execution_context,
       ParseCSSPropertyID(execution_context, name);
   if (unresolved_property == CSSPropertyID::kVariable)
     unresolved_property = CSSPropertyID::kInvalid;
-  map.insert(name, unresolved_property);
+  // Only cache known-exposed properties (i.e. properties without any
+  // associated runtime flag). This is because the web-exposure of properties
+  // that are not known-exposed can change dynamically, for example when
+  // different ExecutionContexts are provided with different origin trial
+  // settings.
+  if (kKnownExposedProperties.Has(unresolved_property)) {
+    map.insert(name, unresolved_property);
+  }
   DCHECK(!IsValidCSSPropertyID(unresolved_property) ||
          CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
              .IsWebExposed(execution_context));
