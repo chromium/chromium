@@ -207,4 +207,10 @@ TEST(AudioParameters, ChannelLayoutConfig_Guess) {
   EXPECT_EQ(2, channel_layout_config.channels());
 }
 
+TEST(AudioParameters, ChannelLayoutConfig_GuessUnsupported) {
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Guess(100);
+  EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED, channel_layout_config.channel_layout());
+  EXPECT_EQ(0, channel_layout_config.channels());
+}
+
 }  // namespace media

@@ -26,7 +26,8 @@ int ComputeChannelCount(ChannelLayout channel_layout, int channels) {
   }
   const int calculated_channel_count =
       ChannelLayoutToChannelCount(channel_layout);
-  DCHECK_EQ(calculated_channel_count, channels);
+  DCHECK(channel_layout == CHANNEL_LAYOUT_UNSUPPORTED ||
+         calculated_channel_count == channels);
   return calculated_channel_count;
 }
 

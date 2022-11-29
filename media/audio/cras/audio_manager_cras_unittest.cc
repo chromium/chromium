@@ -121,6 +121,23 @@ TEST_F(AudioManagerCrasTest, MaxChannel) {
   EXPECT_EQ(params.channels(), 6);
 }
 
+TEST_F(AudioManagerCrasTest, UnsupportedMaxChannelsDefaultsToStereo) {
+  std::unique_ptr<MockCrasUtil> util = std::make_unique<MockCrasUtil>();
+  std::vector<CrasDevice> devices;
+  CrasDevice dev;
+  dev.type = DeviceType::kOutput;
+  dev.id = 123;
+  dev.max_supported_channels = 100;
+  devices.emplace_back(dev);
+  EXPECT_CALL(*util, CrasGetDefaultOutputBufferSize());
+  EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kOutput))
+      .WillRepeatedly(testing::Return(devices));
+  audio_manager_->SetCrasUtil(std::move(util));
+  auto params = audio_manager_->GetPreferredOutputStreamParameters(
+      "123", AudioParameters());
+  EXPECT_EQ(params.channel_layout(), ChannelLayout::CHANNEL_LAYOUT_STEREO);
+}
+
 const CrasDevice kInternalSpeaker(DeviceType::kOutput,
                                   0,
                                   0,
