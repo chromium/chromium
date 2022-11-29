@@ -1,8 +1,11 @@
-# WebLayer public API
+# WebEngine public API
 
-This directory contains the public API for WebLayer. WebLayer provides both a
-C++ and Java API. Note that while WebLayer's implementation builds on top of
+This directory contains the public API for WebEngine. WebEngine provides both a
+C++ and Java API. Note that while WebEngine's implementation builds on top of
 //content, its public API does *not* expose the Content API.
+
+Note: The WebEngine API is still under development and should not be depended
+upon directly. It will become available through an Android Jetpack Library.
 
 ## Java API
 
@@ -17,9 +20,7 @@ The public API should follow the Android API guidelines
 differences between the C++ and Java code. For example, NewTabDelegate in C++
 vs NewTabCallback in Java.
 
-WebLayer currently supports version skew of three versions.
-
-One of the design constraints of WebLayer's Java implementation is that we do
+One of the design constraints of WebEngine's Java implementation is that we do
 not want embedders to ship their own copy of "//content". Instead, the
 implementation is loaded from the WebView APK (not the Chrome APK, because the
 WebView APK is available on more devices). This constraint results in the Java
@@ -33,11 +34,16 @@ implementation over AIDL.
 
 This code should not have any dependencies on any other code in the chrome repo.
 
+The embedders can use the API surface defined in the `org.chromium.webengine`
+package. It spins up an Android Service running the code in the
+`org.chromium.weblayer` package. The Service is responsible for loading the
+implementation from the WebView APK.
+
 ### Java AIDL
 
-This is best thought of as WebLayer's ABI (for Java).
+This is best thought of as WebEngine's ABI (for Java).
 
-The client library loads the WebLayer implementation from WebView APK and uses
+The client library loads the WebEngine implementation from WebView APK and uses
 AIDL for the IPC. The aidl interfaces are defined in
 "//weblayer/browser/java/org/chromium/weblayer_private/interfaces". AIDL is used
 to enable the implementation to be loaded using a different ClassLoader than
