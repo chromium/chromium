@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -485,11 +486,16 @@ bool PasswordGenerationAgent::FocusedNodeHasChanged(
     return true;
   }
 
-  // Assume that if the password field has less than
-  // |kMaximumCharsForGenerationOffer| characters then the user is not finished
+  // Assume that if the password field has less than or equal to
+  // `kMaximumCharsForGenerationOffer` characters, then the user is not finished
   // typing their password and display the password suggestion.
+  // With `kPasswordStrengthIndicator` enabled the decision to display the
+  // suggestion needs to be calculated in the browser process based on the
+  // strength of the typed password.
   if (!element.IsReadOnly() && element.IsEnabled() &&
-      element.Value().length() <= kMaximumCharsForGenerationOffer) {
+      (element.Value().length() <= kMaximumCharsForGenerationOffer ||
+       base::FeatureList::IsEnabled(
+           password_manager::features::kPasswordStrengthIndicator))) {
     MaybeOfferAutomaticGeneration();
     return true;
   }
@@ -533,7 +539,9 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
   }
 
   if (!current_generation_item_->password_is_generated_ &&
-      element.Value().length() > kMaximumCharsForGenerationOffer) {
+      element.Value().length() > kMaximumCharsForGenerationOffer &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordStrengthIndicator)) {
     // User has rejected the feature and has started typing a password.
     GenerationRejectedByTyping();
   } else {
