@@ -19,7 +19,7 @@ items:
 - caption: Allow the user to decide
   value: null
 owners:
-- josiahk@google.com
+- katie@chromium.org
 - file://ui/accessibility/OWNERS
 schema:
   type: boolean
