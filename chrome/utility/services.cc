@@ -257,8 +257,6 @@ auto RunMirroringService(
 auto RunPasswordStrengthCalculator(
     mojo::PendingReceiver<password_manager::mojom::PasswordStrengthCalculator>
         receiver) {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordStrengthIndicator));
   return std::make_unique<password_manager::PasswordStrengthCalculatorImpl>(
       std::move(receiver));
 }
@@ -449,10 +447,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #if !BUILDFLAG(IS_ANDROID)
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordStrengthIndicator)) {
-    services.Add(RunPasswordStrengthCalculator);
-  }
+  services.Add(RunPasswordStrengthCalculator);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
