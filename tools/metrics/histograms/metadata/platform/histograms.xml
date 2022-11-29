@@ -1048,6 +1048,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.ClientEnqueueResult"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2023-11-30">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>xuhong@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when missive clientlib calls ReportQueue::Enqueue to post an event
+    to ERP. It counts occurrences of the call returning success or each possible
+    error Status.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.CpuUsage" units="%"
     expires_after="2023-05-03">
   <owner>xuhong@chromium.org</owner>
