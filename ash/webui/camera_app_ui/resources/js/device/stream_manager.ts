@@ -221,7 +221,9 @@ export class StreamManager {
       isRealDeviceChange = true;
     }
     if (isRealDeviceChange) {
-      this.realListeners.map((l) => l(realDevices));
+      for (const listener of this.realListeners) {
+        listener(realDevices);
+      }
     }
     this.realDevices = realDevices;
   }
