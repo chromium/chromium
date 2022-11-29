@@ -17,6 +17,15 @@ struct AppInfo {
   url.mojom.Url icon_url;
 };
 
+struct ClickEvent {
+  // TODO(crbug.com/1350406): Use enum class to represent button event.
+  double button;
+  bool alt_key;
+  bool ctrl_key;
+  bool meta_key;
+  bool shift_key;
+};
+
 interface PageHandlerFactory {
   CreatePageHandler(pending_remote<Page> page,
                     pending_receiver<PageHandler> handler);
@@ -31,6 +40,11 @@ interface PageHandler {
   ShowAppSettings(string app_id);
   // Create shortcut link for app.
   CreateAppShortcut(string app_id) => ();
+  // Launch app for specific `app_id`.
+  // `source` is the launch source used for metrics reporting,
+  // see `AppLaunchBucket` in extension_constants.h for more detail.
+  // `click_event` is used for determining launch container for apps.
+  LaunchApp(string app_id, int32 source, ClickEvent? click_event);
 };
 
 // The `Page` interface is used for sending mojom action messsage
@@ -41,4 +55,6 @@ interface Page {
   AddApp(AppInfo app_info);
   // Inform frontend that an app is uninstalled.
   RemoveApp(AppInfo app_info);
+  // Inform frontend that an extension app is enabled.
+  EnableExtensionApp(string extension_app_id);
 };

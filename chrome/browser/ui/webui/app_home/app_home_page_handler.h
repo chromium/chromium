@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -16,6 +17,8 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class ExtensionEnableFlow;
 
 namespace content {
 class WebUI;
@@ -37,7 +40,8 @@ class AppHomePageHandler
     : public app_home::mojom::PageHandler,
       public web_app::WebAppInstallManagerObserver,
       public extensions::ExtensionRegistryObserver,
-      public extensions::ExtensionUninstallDialog::Delegate {
+      public extensions::ExtensionUninstallDialog::Delegate,
+      public ExtensionEnableFlowDelegate {
  public:
   AppHomePageHandler(
       content::WebUI*,
@@ -68,6 +72,9 @@ class AppHomePageHandler
   void ShowAppSettings(const std::string& app_id) override;
   void CreateAppShortcut(const std::string& app_id,
                          CreateAppShortcutCallback callback) override;
+  void LaunchApp(const std::string& app_id,
+                 int source,
+                 app_home::mojom::ClickEventPtr click_event) override;
 
  private:
   Browser* GetCurrentBrowser();
@@ -76,8 +83,11 @@ class AppHomePageHandler
   // needed.
   extensions::ExtensionUninstallDialog* CreateExtensionUninstallDialog();
 
-  // Reset some instance flags we use to track the currently uninstalling app.
-  void CleanupAfterUninstall();
+  // Prompts the user to re-enable the extension app for |extension_app_id|.
+  void PromptToEnableExtensionApp(const std::string& extension_app_id);
+
+  // Reset some instance flags we use to track the currently prompting app.
+  void ResetExtensionDialogState();
 
   // ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
@@ -88,6 +98,10 @@ class AppHomePageHandler
   void CreateWebAppShortcut(const std::string& app_id, base::OnceClosure done);
   void CreateExtensionAppShortcut(const extensions::Extension* extension,
                                   base::OnceClosure done);
+  // ExtensionEnableFlowDelegate:
+  void ExtensionEnableFlowFinished() override;
+  void ExtensionEnableFlowAborted(bool user_initiated) override;
+
   void UninstallWebApp(const std::string& web_app_id);
   void UninstallExtensionApp(const extensions::Extension* extension);
   void FillWebAppInfoList(std::vector<app_home::mojom::AppInfoPtr>* result);
@@ -120,7 +134,10 @@ class AppHomePageHandler
   std::unique_ptr<extensions::ExtensionUninstallDialog>
       extension_uninstall_dialog_;
 
-  bool uninstall_dialog_prompting_ = false;
+  bool extension_dialog_prompting_ = false;
+
+  // Used to show confirmation UI for enabling extensions.
+  std::unique_ptr<ExtensionEnableFlow> extension_enable_flow_;
 
   // Used for passing callbacks.
   base::WeakPtrFactory<AppHomePageHandler> weak_ptr_factory_{this};

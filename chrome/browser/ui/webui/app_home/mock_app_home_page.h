@@ -21,6 +21,7 @@ class MockAppHomePage : public app_home::mojom::Page {
 
   MOCK_METHOD1(AddApp, void(app_home::mojom::AppInfoPtr));
   MOCK_METHOD1(RemoveApp, void(app_home::mojom::AppInfoPtr));
+  MOCK_METHOD1(EnableExtensionApp, void(const std::string&));
   mojo::Receiver<app_home::mojom::Page> receiver_{this};
 };
 

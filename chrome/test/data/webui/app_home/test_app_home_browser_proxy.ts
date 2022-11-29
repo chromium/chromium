@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppInfo, PageCallbackRouter, PageHandlerInterface} from 'chrome://apps/app_home.mojom-webui.js';
+import {AppInfo, ClickEvent, PageCallbackRouter, PageHandlerInterface} from 'chrome://apps/app_home.mojom-webui.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
 
 interface AppList {
@@ -27,6 +27,8 @@ export class FakePageHandler implements PageHandlerInterface {
   createAppShortcut(_appId: string) {
     return Promise.resolve();
   }
+
+  launchApp(_appId: string, _source: number, _clickEvent: ClickEvent) {}
 }
 
 export class TestAppHomeBrowserProxy implements BrowserProxy {
@@ -41,4 +43,5 @@ export class TestAppHomeBrowserProxy implements BrowserProxy {
   }
 
   registerAppRemoveEvent(_callback: Function) {}
+  registerAppEnableEvent(_callback: Function) {}
 }
