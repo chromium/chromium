@@ -245,48 +245,12 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
   if (!GetWidget())
     return;
 
-  const bool toggled_on =
-      toggled_ && (GetEnabled() ||
-                   button_behavior_ ==
-                       DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
-  if (!IsFloatingIconButton(type_) || toggled_on) {
+  if (!IsFloatingIconButton(type_) || IsToggledOn()) {
     const gfx::Rect rect(GetContentsBounds());
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
 
-    const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
-    auto* color_provider = GetColorProvider();
-
-    // The background color IDs set by clients takes precedence over the
-    // background colors. If neither is set, use the default color IDs.
-    SkColor normal_background_color;
-    if (background_color_id_) {
-      normal_background_color =
-          color_provider->GetColor(background_color_id_.value());
-    } else {
-      normal_background_color =
-          background_color_.value_or(color_provider->GetColor(
-              is_jellyroll_enabled
-                  ? cros_tokens::kCrosSysSystemOnBase
-                  : static_cast<ui::ColorId>(
-                        kColorAshControlBackgroundColorInactive)));
-    }
-
-    SkColor toggled_background_color;
-    if (background_toggled_color_id_) {
-      toggled_background_color =
-          color_provider->GetColor(background_toggled_color_id_.value());
-    } else {
-      toggled_background_color =
-          background_toggled_color_.value_or(color_provider->GetColor(
-              is_jellyroll_enabled
-                  ? cros_tokens::kCrosSysSystemPrimaryContainer
-                  : static_cast<ui::ColorId>(
-                        kColorAshControlBackgroundColorActive)));
-    }
-
-    SkColor color =
-        toggled_on ? toggled_background_color : normal_background_color;
+    SkColor color = GetBackgroundColor();
 
     // If the button is disabled, apply opacity filter to the color.
     if (!GetEnabled())
@@ -391,6 +355,47 @@ void IconButton::UpdateVectorIcon() {
       views::Button::STATE_DISABLED,
       gfx::CreateVectorIcon(*icon_, icon_size,
                             ColorUtil::GetDisabledColor(normal_icon_color)));
+}
+
+SkColor IconButton::GetBackgroundColor() const {
+  const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
+  auto* color_provider = GetColorProvider();
+
+  // The background color IDs set by clients takes precedence over the
+  // background colors. If neither is set, use the default color IDs.
+  SkColor normal_background_color;
+  if (background_color_id_) {
+    normal_background_color =
+        color_provider->GetColor(background_color_id_.value());
+  } else {
+    normal_background_color =
+        background_color_.value_or(color_provider->GetColor(
+            is_jellyroll_enabled
+                ? cros_tokens::kCrosSysSystemOnBase
+                : static_cast<ui::ColorId>(
+                      kColorAshControlBackgroundColorInactive)));
+  }
+
+  SkColor toggled_background_color;
+  if (background_toggled_color_id_) {
+    toggled_background_color =
+        color_provider->GetColor(background_toggled_color_id_.value());
+  } else {
+    toggled_background_color =
+        background_toggled_color_.value_or(color_provider->GetColor(
+            is_jellyroll_enabled ? cros_tokens::kCrosSysSystemPrimaryContainer
+                                 : static_cast<ui::ColorId>(
+                                       kColorAshControlBackgroundColorActive)));
+  }
+
+  return IsToggledOn() ? toggled_background_color : normal_background_color;
+}
+
+bool IconButton::IsToggledOn() const {
+  return toggled_ &&
+         (GetEnabled() ||
+          button_behavior_ ==
+              DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
 }
 
 BEGIN_METADATA(IconButton, views::ImageButton)

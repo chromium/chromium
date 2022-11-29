@@ -8,9 +8,16 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+
+namespace gfx {
+class Canvas;
+struct VectorIcon;
+}  // namespace gfx
 
 namespace ui {
 class Event;
@@ -28,9 +35,37 @@ class Shelf;
 class TrayBubbleView;
 class TrayBubbleWrapper;
 
+// A toggle icon button in the VC tray, which is used for toggling camera,
+// microphone, and screen sharing.
+class VideoConferenceTrayButton : public IconButton {
+ public:
+  VideoConferenceTrayButton(PressedCallback callback,
+                            const gfx::VectorIcon* icon,
+                            const int accessible_name_id);
+
+  VideoConferenceTrayButton(const VideoConferenceTrayButton&) = delete;
+  VideoConferenceTrayButton& operator=(const VideoConferenceTrayButton&) =
+      delete;
+
+  ~VideoConferenceTrayButton() override;
+
+  bool show_privacy_indicator() const { return show_privacy_indicator_; }
+
+  // Sets the state of showing the privacy indicator in the button.
+  void SetShowPrivacyIndicator(bool show);
+
+  // IconButton:
+  void PaintButtonContents(gfx::Canvas* canvas) override;
+
+ private:
+  bool show_privacy_indicator_ = false;
+};
+
 // This class represents the VC Controls tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
-class ASH_EXPORT VideoConferenceTray : public TrayBackgroundView {
+class ASH_EXPORT VideoConferenceTray
+    : public TrayBackgroundView,
+      public VideoConferenceTrayController::Observer {
  public:
   METADATA_HEADER(VideoConferenceTray);
 
@@ -38,6 +73,9 @@ class ASH_EXPORT VideoConferenceTray : public TrayBackgroundView {
   VideoConferenceTray(const VideoConferenceTray&) = delete;
   VideoConferenceTray& operator=(const VideoConferenceTray&) = delete;
   ~VideoConferenceTray() override;
+
+  VideoConferenceTrayButton* audio_icon() { return audio_icon_; }
+  VideoConferenceTrayButton* camera_icon() { return camera_icon_; }
 
   // TrayBackgroundView:
   void CloseBubble() override;
@@ -52,7 +90,9 @@ class ASH_EXPORT VideoConferenceTray : public TrayBackgroundView {
   void OnThemeChanged() override;
   void UpdateAfterLoginStatusChange() override;
 
-  IconButton* camera_icon() { return camera_icon_; }
+  // VideoConferenceTrayController::Observer:
+  void OnCameraCapturingStateChange(bool is_capturing) override;
+  void OnMicrophoneCapturingStateChange(bool is_capturing) override;
 
  private:
   friend class VideoConferenceTrayTest;
@@ -67,9 +107,9 @@ class ASH_EXPORT VideoConferenceTray : public TrayBackgroundView {
   void OnScreenShareButtonClicked(const ui::Event& event);
 
   // Owned by the views hierarchy.
-  IconButton* audio_icon_ = nullptr;
-  IconButton* camera_icon_ = nullptr;
-  IconButton* screen_share_icon_ = nullptr;
+  VideoConferenceTrayButton* audio_icon_ = nullptr;
+  VideoConferenceTrayButton* camera_icon_ = nullptr;
+  VideoConferenceTrayButton* screen_share_icon_ = nullptr;
   views::ImageView* expand_indicator_ = nullptr;
 
   // The bubble that appears after clicking the tray button.

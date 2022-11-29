@@ -22,33 +22,73 @@
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
 
-// A toggle icon button in the VC tray, which is used for toggling camera,
-// microphone, and screen sharing.
-class VideoConferenceTrayButton : public IconButton {
- public:
-  VideoConferenceTrayButton(PressedCallback callback,
-                            const gfx::VectorIcon* icon,
-                            const int accessible_name_id)
-      : IconButton(std::move(callback),
-                   IconButton::Type::kMedium,
-                   icon,
-                   accessible_name_id,
-                   /*is_togglable=*/true,
-                   /*has_border=*/true) {}
-  VideoConferenceTrayButton(const VideoConferenceTrayButton&) = delete;
-  VideoConferenceTrayButton& operator=(const VideoConferenceTrayButton&) =
-      delete;
-  ~VideoConferenceTrayButton() override = default;
+namespace {
 
- private:
-  void ToggleButton() { SetToggled(!toggled()); }
-};
+constexpr float kPrivacyIndicatorRadius = 4;
+constexpr float kIndicatorBorderWidth = 1;
+
+}  // namespace
+
+VideoConferenceTrayButton::VideoConferenceTrayButton(
+    PressedCallback callback,
+    const gfx::VectorIcon* icon,
+    const int accessible_name_id)
+    : IconButton(std::move(callback),
+                 IconButton::Type::kMedium,
+                 icon,
+                 accessible_name_id,
+                 /*is_togglable=*/true,
+                 /*has_border=*/true) {}
+
+VideoConferenceTrayButton::~VideoConferenceTrayButton() = default;
+
+void VideoConferenceTrayButton::SetShowPrivacyIndicator(bool show) {
+  if (show_privacy_indicator_ == show)
+    return;
+
+  show_privacy_indicator_ = show;
+  SchedulePaint();
+}
+
+void VideoConferenceTrayButton::PaintButtonContents(gfx::Canvas* canvas) {
+  IconButton::PaintButtonContents(canvas);
+
+  if (!show_privacy_indicator_)
+    return;
+
+  const gfx::RectF bounds(GetContentsBounds());
+  auto image = GetImageToPaint();
+  auto indicator_origin_x = (bounds.width() - image.width()) / 2 +
+                            image.width() - kPrivacyIndicatorRadius;
+  auto indicator_origin_y = (bounds.height() - image.height()) / 2 +
+                            image.height() - kPrivacyIndicatorRadius;
+
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setAntiAlias(true);
+
+  // Draw the outer border of the green dot.
+  flags.setColor(GetBackgroundColor());
+  canvas->DrawCircle(
+      gfx::PointF(indicator_origin_x - kIndicatorBorderWidth / 2,
+                  indicator_origin_y - kIndicatorBorderWidth / 2),
+      kPrivacyIndicatorRadius + kIndicatorBorderWidth, flags);
+
+  // Draw the green dot privacy indicator.
+  flags.setColor(
+      GetColorProvider()->GetColor(ui::kColorAshPrivacyIndicatorsBackground));
+  canvas->DrawCircle(gfx::PointF(indicator_origin_x, indicator_origin_y),
+                     kPrivacyIndicatorRadius, flags);
+}
 
 VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
@@ -73,9 +113,13 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
           IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE));
   expand_indicator_ =
       tray_container()->AddChildView(std::make_unique<views::ImageView>());
+
+  VideoConferenceTrayController::Get()->AddObserver(this);
 }
 
-VideoConferenceTray::~VideoConferenceTray() = default;
+VideoConferenceTray::~VideoConferenceTray() {
+  VideoConferenceTrayController::Get()->RemoveObserver(this);
+}
 
 void VideoConferenceTray::ShowBubble() {
   TrayBubbleView::InitParams init_params;
@@ -148,6 +192,14 @@ void VideoConferenceTray::OnThemeChanged() {
 
 void VideoConferenceTray::UpdateAfterLoginStatusChange() {
   SetVisiblePreferred(true);
+}
+
+void VideoConferenceTray::OnCameraCapturingStateChange(bool is_capturing) {
+  camera_icon_->SetShowPrivacyIndicator(/*show=*/is_capturing);
+}
+
+void VideoConferenceTray::OnMicrophoneCapturingStateChange(bool is_capturing) {
+  audio_icon_->SetShowPrivacyIndicator(/*show=*/is_capturing);
 }
 
 void VideoConferenceTray::UpdateExpandIndicator() {

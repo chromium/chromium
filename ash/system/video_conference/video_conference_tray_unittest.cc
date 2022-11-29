@@ -41,17 +41,17 @@ class VideoConferenceTrayTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVcControlsUi);
 
-    AshTestBase::SetUp();
-
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // ash unit tests).
     controller_ = std::make_unique<FakeVideoConferenceTrayController>();
+
+    AshTestBase::SetUp();
   }
 
   void TearDown() override {
-    controller_.reset();
     AshTestBase::TearDown();
+    controller_.reset();
   }
 
   VideoConferenceTray* video_conference_tray() {
@@ -162,6 +162,32 @@ TEST_F(VideoConferenceTrayTest, ToggleCameraButton) {
   LeftClickOn(camera_icon);
   EXPECT_FALSE(controller()->camera_soft_muted());
   EXPECT_FALSE(camera_icon->toggled());
+}
+
+TEST_F(VideoConferenceTrayTest, PrivacyIndicator) {
+  auto* camera_icon = video_conference_tray()->camera_icon();
+  auto* audio_icon = video_conference_tray()->audio_icon();
+
+  // Privacy indicator should be shown when camera is actively capturing video.
+  EXPECT_FALSE(camera_icon->show_privacy_indicator());
+  VideoConferenceMediaState state;
+  state.is_capturing_camera = true;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_TRUE(camera_icon->show_privacy_indicator());
+
+  // Privacy indicator should be shown when microphone is actively capturing
+  // audio.
+  EXPECT_FALSE(audio_icon->show_privacy_indicator());
+  state.is_capturing_microphone = true;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_TRUE(audio_icon->show_privacy_indicator());
+
+  // Should not show indicator when not capture.
+  state.is_capturing_camera = false;
+  state.is_capturing_microphone = false;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_FALSE(camera_icon->show_privacy_indicator());
+  EXPECT_FALSE(audio_icon->show_privacy_indicator());
 }
 
 }  // namespace ash

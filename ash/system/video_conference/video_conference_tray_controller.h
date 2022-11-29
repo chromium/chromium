@@ -6,6 +6,8 @@
 #define ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/video_conference/video_conference_media_state.h"
+#include "base/observer_list_types.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace ash {
@@ -18,6 +20,17 @@ namespace ash {
 class ASH_EXPORT VideoConferenceTrayController
     : public media::CameraPrivacySwitchObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    // Called when the state of camera capturing is changed.
+    virtual void OnCameraCapturingStateChange(bool is_capturing) = 0;
+
+    // Called when the state of microphone capturing is changed.
+    virtual void OnMicrophoneCapturingStateChange(bool is_capturing) = 0;
+  };
+
   VideoConferenceTrayController();
 
   VideoConferenceTrayController(const VideoConferenceTrayController&) = delete;
@@ -29,12 +42,27 @@ class ASH_EXPORT VideoConferenceTrayController
   // Returns the singleton instance.
   static VideoConferenceTrayController* Get();
 
+  // Observer functions.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Set the state for camera software mute. Virtual for testing/mocking.
   virtual void SetCameraSoftwareMuted(bool mute_camera) = 0;
+
+  // Updates the tray UI with the given `VideoConferenceMediaState`.
+  void UpdateWithMediaState(VideoConferenceMediaState state);
 
   // media::CameraPrivacySwitchObserver:
   void OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
+
+ private:
+  // This keeps track the current VC media state. The state is being updated by
+  // `UpdateWithMediaState()`, calling from `VideoConferenceManagerAsh`.
+  VideoConferenceMediaState state_;
+
+  // Registered observers.
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace ash
