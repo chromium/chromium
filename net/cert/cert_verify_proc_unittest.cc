@@ -4290,6 +4290,16 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotCaIntermediate) {
   EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
 }
 
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsIsCaLeaf) {
+  chain_[0]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
 TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsPathlen0Root) {
   chain_[3]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/0);
 
