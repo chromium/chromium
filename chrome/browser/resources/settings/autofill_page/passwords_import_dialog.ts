@@ -336,6 +336,9 @@ export class PasswordsImportDialogElement extends
         return this.i18n('importPasswordsConflictDevice');
       case chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_ACCOUNT:
         return this.i18n('importPasswordsConflictAccount', this.accountEmail);
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_NOTE:
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_CONCATENATED_NOTE:
+        return this.i18n('importPasswordsLongNote');
       case chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR:
       default:
         assertNotReached();

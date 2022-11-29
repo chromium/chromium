@@ -12,6 +12,8 @@ namespace password_manager {
 
 struct ImportEntry {
   // Matches api::passwords_private::ImportEntryStatus.
+  // Needs to be kept in sync with PasswordManagerImportEntryStatus in
+  // tools/metrics/histograms/enums.xml
   enum Status {
     // Should not be used.
     NONE = 0,
@@ -35,7 +37,11 @@ struct ImportEntry {
     CONFLICT_PROFILE = 9,
     // Credential is already stored in account store.
     CONFLICT_ACCOUNT = 10,
-    kMaxValue = CONFLICT_ACCOUNT
+    // Note is too long.
+    LONG_NOTE = 11,
+    // Concatenation of imported and local notes is too long.
+    LONG_CONCATENATED_NOTE = 12,
+    kMaxValue = LONG_CONCATENATED_NOTE
   };
 
   // The status of parsing for individual row that represents a credential

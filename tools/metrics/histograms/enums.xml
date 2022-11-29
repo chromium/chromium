@@ -78023,6 +78023,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="Long username"/>
   <int value="9" label="Conflict profile"/>
   <int value="10" label="Conflict account"/>
+  <int value="11" label="Long note"/>
+  <int value="12" label="Long concatenated note"/>
 </enum>
 
 <enum name="PasswordManagerImportResultsStatus">

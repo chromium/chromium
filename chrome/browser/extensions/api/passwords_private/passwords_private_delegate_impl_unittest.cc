@@ -1068,6 +1068,17 @@ TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
           static_cast<int>(
               password_manager::ImportEntry::Status::CONFLICT_ACCOUNT),
       "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_LONG_NOTE) ==
+          static_cast<int>(password_manager::ImportEntry::Status::LONG_NOTE),
+      "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_LONG_CONCATENATED_NOTE) ==
+          static_cast<int>(
+              password_manager::ImportEntry::Status::LONG_CONCATENATED_NOTE),
+      "");
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {

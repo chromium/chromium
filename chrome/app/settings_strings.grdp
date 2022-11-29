@@ -892,6 +892,9 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_PASSWORD" desc="An error message for a row that wasn't imported, because the provided password exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
     Password is more than 1000 characters
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_NOTE" desc="An error message for a row that wasn't imported, because the provided note exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    Note is more than 1000 characters
+  </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICT_ACCOUNT" desc="An error message for a row that wasn't imported, because the provided credential is already stored in their Google Password Manager. It is shown on the dialog for importing passwords if some passwords weren't imported.">
     A password for this account is already saved to your Google Password Manager (<ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>)
   </message>
