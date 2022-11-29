@@ -398,7 +398,7 @@ button {
 }
 
 /* Form controls don't go vertical. */
-input, textarea, select, button, meter {
+input, textarea, select, button {
     writing-mode: horizontal-tb !important;
 }
 
@@ -998,8 +998,8 @@ meter {
     appearance: auto;
     box-sizing: border-box;
     display: inline-block;
-    height: 1em;
-    width: 5em;
+    block-size: 1em;
+    inline-size: 5em;
     vertical-align: -0.2em;
     -webkit-user-modify: read-only !important;
 }
@@ -1009,8 +1009,8 @@ meter::-webkit-meter-inner-element {
     box-sizing: inherit;
     display: none;
     -webkit-user-modify: read-only !important;
-    height: 100%;
-    width: 100%;
+    block-size: 100%;
+    inline-size: 100%;
 }
 
 meter::-webkit-meter-inner-element:-internal-shadow-host-has-appearance {
@@ -1024,8 +1024,8 @@ meter::-internal-fallback:-internal-shadow-host-has-appearance {
 }
 
 meter::-webkit-meter-bar {
-    height: 100%;
-    width: 100%;
+    block-size: 100%;
+    inline-size: 100%;
     -webkit-user-modify: read-only !important;
     background: -internal-light-dark(#efefef, #3B3B3B);
     border: thin solid -internal-light-dark(rgba(118, 118, 118, 0.3), #858585);
@@ -1039,21 +1039,21 @@ meter::-webkit-meter-bar {
 }
 
 meter::-webkit-meter-optimum-value {
-    height: 100%;
+    block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
     background: -internal-light-dark(#107c10, #74b374)
 }
 
 meter::-webkit-meter-suboptimum-value {
-    height: 100%;
+    block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
     background: -internal-light-dark(#ffb900, #f2c812)
 }
 
 meter::-webkit-meter-even-less-good-value {
-    height: 100%;
+    block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
     background: -internal-light-dark(#d83b01, #e98f6d)
@@ -1073,22 +1073,22 @@ progress {
 progress::-webkit-progress-inner-element {
     box-sizing: inherit;
     -webkit-user-modify: read-only;
-    height: 100%;
-    width: 100%;
+    block-size: 100%;
+    inline-size: 100%;
 }
 
 progress::-webkit-progress-bar {
     background-color: gray;
-    height: 100%;
-    width: 100%;
+    block-size: 100%;
+    inline-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
 }
 
 progress::-webkit-progress-value {
     background-color: green;
-    height: 100%;
-    width: 50%; /* should be removed later */
+    block-size: 100%;
+    inline-size: 50%; /* should be removed later */
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
 }
