@@ -630,6 +630,9 @@ class CookieTreeQuotaNode : public CookieTreeNode {
   DetailedInfo GetDetailedInfo() const override {
     return DetailedInfo().InitQuota(&*quota_info_);
   }
+  int64_t InclusiveSize() const override {
+    return quota_info_->temporary_usage + quota_info_->syncable_usage;
+  }
 
  private:
   // |quota_info_| is expected to remain valid as long as the

@@ -5,6 +5,7 @@
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 
 #include <memory>
+#include <numeric>
 #include <string>
 #include <utility>
 
@@ -1685,5 +1686,20 @@ TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
   EXPECT_TRUE(callback.Run(GURL("https://youtube.com")));
 }
 #endif
+
+TEST_F(CookiesTreeModelTest, InclusiveSize) {
+  std::unique_ptr<CookiesTreeModel> cookies_model(
+      CreateCookiesTreeModelWithInitialSample());
+
+  // The root node doesn't have a concept of inclusive size, and so we must look
+  // at the host nodes.
+  auto& host_nodes = cookies_model->GetRoot()->children();
+  uint64_t total =
+      std::accumulate(host_nodes.cbegin(), host_nodes.cend(), int64_t{0},
+                      [](int64_t total, const auto& child) {
+                        return total + child->InclusiveSize();
+                      });
+  EXPECT_EQ(51u, total);
+}
 
 }  // namespace
