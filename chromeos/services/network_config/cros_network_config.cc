@@ -3671,6 +3671,8 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
   if (!network || network->profile_path().empty()) {
     NET_LOG(ERROR) << "RemoveCustomApn: Called with unconfigured network: "
                    << network_guid << ".";
+    ash::CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
+        /*success=*/false, /*apn_types=*/{});
     return;
   }
 
@@ -3683,17 +3685,28 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
   if (!current_apns || current_apns->empty()) {
     NET_LOG(ERROR) << "RemoveCustomApn: Called for network: " << network_guid
                    << " that does not have any user APNs.";
+    ash::CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
+        /*success=*/false, /*apn_types=*/{});
     return;
   }
 
   base::Value::List new_apns = current_apns->Clone();
-  if (!new_apns.EraseIf([&apn_id](const base::Value& item) {
+  std::vector<mojom::ApnType> removed_apn_apn_types;
+  if (!new_apns.EraseIf([&apn_id,
+                         &removed_apn_apn_types](const base::Value& item) {
         const std::string* item_id =
             item.GetDict().FindString(::onc::cellular_apn::kId);
-        return item_id && apn_id == *item_id;
+        if (item_id && apn_id == *item_id) {
+          removed_apn_apn_types = OncApnTypesToMojo(
+              GetRequiredStringList(&item, ::onc::cellular_apn::kApnTypes));
+          return true;
+        }
+        return false;
       })) {
     NET_LOG(ERROR) << "RemoveCustomApn: Called for network: " << network_guid
                    << " that does have an user APNs with id: " << apn_id << '.';
+    ash::CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
+        /*success=*/false, std::move(removed_apn_apn_types));
     return;
   }
   NET_LOG(USER) << "RemoveCustomApn: Setting user APNs for: " << network_guid
@@ -3704,16 +3717,18 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
       network_guid, *network,
       UserApnListToOnc(network_guid, std::move(new_apns)),
       base::BindOnce(
-          [](const std::string& guid, bool success,
-             const std::string& message) {
+          [](const std::string& guid, std::vector<mojom::ApnType> apn_types,
+             bool success, const std::string& message) {
             if (!success) {
               NET_LOG(ERROR)
                   << "RemoveCustomApn: Failed to update the user APN "
                      "list in Shill for network: "
                   << guid << ": [" << message << ']';
             }
+            ash::CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
+                success, std::move(apn_types));
           },
-          network_guid));
+          network_guid, std::move(removed_apn_apn_types)));
 }
 
 void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,

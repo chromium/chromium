@@ -59,15 +59,15 @@ CellularNetworkMetricsLogger::~CellularNetworkMetricsLogger() = default;
 void CellularNetworkMetricsLogger::LogCreateCustomApnResult(
     bool success,
     chromeos::network_config::mojom::ApnPropertiesPtr apn) {
-  base::UmaHistogramBoolean(kCustomApnCreatedResultHistogram, success);
+  base::UmaHistogramBoolean(kCreateCustomApnResultHistogram, success);
 
   // Only emit APN property metrics if the APN was successfully added.
   if (!success)
     return;
 
-  base::UmaHistogramEnumeration(kCustomApnCreatedAuthenticationTypeHistogram,
+  base::UmaHistogramEnumeration(kCreateCustomApnAuthenticationTypeHistogram,
                                 apn->authentication_type);
-  base::UmaHistogramEnumeration(kCustomApnCreatedIpTypeHistogram, apn->ip_type);
+  base::UmaHistogramEnumeration(kCreateCustomApnIpTypeHistogram, apn->ip_type);
 
   absl::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types =
       GetApnTypes(apn->apn_types);
@@ -76,8 +76,29 @@ void CellularNetworkMetricsLogger::LogCreateCustomApnResult(
                    << "doesn't have any APN types.";
     return;
   }
-  base::UmaHistogramEnumeration(kCustomApnCreatedApnTypesHistogram,
+  base::UmaHistogramEnumeration(kCreateCustomApnApnTypesHistogram,
                                 apn_types.value());
+}
+
+// static
+void CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
+    bool success,
+    std::vector<chromeos::network_config::mojom::ApnType> apn_types) {
+  base::UmaHistogramBoolean(kRemoveCustomApnResultHistogram, success);
+
+  // Only emit APN property metrics if the APN was successfully removed.
+  if (!success)
+    return;
+
+  absl::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types_enum =
+      GetApnTypes(apn_types);
+  if (!apn_types_enum.has_value()) {
+    NET_LOG(DEBUG) << "RemoveCustomApn.ApnTypes not logged for APN because it "
+                   << "doesn't have any APN types.";
+    return;
+  }
+  base::UmaHistogramEnumeration(kRemoveCustomApnApnTypesHistogram,
+                                apn_types_enum.value());
 }
 
 void CellularNetworkMetricsLogger::OnConnectionResult(

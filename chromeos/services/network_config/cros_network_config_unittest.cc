@@ -907,20 +907,20 @@ class CrosNetworkConfigTest : public testing::Test {
   void AssertCreateCustomApnResultBucketCount(size_t num_success,
                                               size_t num_failure) {
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kCustomApnCreatedResultHistogram,
+        ash::CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram,
         true, num_success);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kCustomApnCreatedResultHistogram,
+        ash::CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram,
         false, num_failure);
     histogram_tester_.ExpectTotalCount(
         ash::CellularNetworkMetricsLogger::
-            kCustomApnCreatedAuthenticationTypeHistogram,
+            kCreateCustomApnAuthenticationTypeHistogram,
         num_success);
     histogram_tester_.ExpectTotalCount(
-        ash::CellularNetworkMetricsLogger::kCustomApnCreatedIpTypeHistogram,
+        ash::CellularNetworkMetricsLogger::kCreateCustomApnIpTypeHistogram,
         num_success);
     histogram_tester_.ExpectTotalCount(
-        ash::CellularNetworkMetricsLogger::kCustomApnCreatedApnTypesHistogram,
+        ash::CellularNetworkMetricsLogger::kCreateCustomApnApnTypesHistogram,
         num_success);
   }
 
@@ -933,13 +933,33 @@ class CrosNetworkConfigTest : public testing::Test {
       size_t apn_types_count) {
     histogram_tester_.ExpectBucketCount(
         ash::CellularNetworkMetricsLogger::
-            kCustomApnCreatedAuthenticationTypeHistogram,
+            kCreateCustomApnAuthenticationTypeHistogram,
         auth_type, auth_type_count);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kCustomApnCreatedIpTypeHistogram,
+        ash::CellularNetworkMetricsLogger::kCreateCustomApnIpTypeHistogram,
         ip_type, ip_type_count);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kCustomApnCreatedApnTypesHistogram,
+        ash::CellularNetworkMetricsLogger::kCreateCustomApnApnTypesHistogram,
+        apn_types, apn_types_count);
+  }
+
+  void AssertRemoveCustomApnResultBucketCount(size_t num_success,
+                                              size_t num_failure) {
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kRemoveCustomApnResultHistogram,
+        true, num_success);
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kRemoveCustomApnResultHistogram,
+        false, num_failure);
+    histogram_tester_.ExpectTotalCount(
+        ash::CellularNetworkMetricsLogger::kRemoveCustomApnApnTypesHistogram,
+        num_success);
+  }
+
+  void AssertRemoveCustomApnPropertiesBucketCount(ApnTypes apn_types,
+                                                  size_t apn_types_count) {
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kRemoveCustomApnApnTypesHistogram,
         apn_types, apn_types_count);
   }
 
@@ -1892,6 +1912,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
   EXPECT_EQ(expected_network_config_calls,
             network_config_observer.GetOnConfigurationModifiedCallCount());
   ASSERT_FALSE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+  AssertRemoveCustomApnResultBucketCount(/*num_success=*/0, /*num_failure=*/1);
 
   TestApnData test_apn1;
   test_apn1.access_point_name = kCellularTestApn1;
@@ -1899,10 +1920,8 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
   test_apn1.username = kCellularTestApnUsername1;
   test_apn1.password = kCellularTestApnPassword1;
   test_apn1.attach = kCellularTestApnAttach1;
-  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
-                              mojom::ApnType::kAttach};
-  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
-                             ::onc::cellular_apn::kApnTypeAttach};
+  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
 
   TestApnData test_apn2;
   test_apn2.access_point_name = kCellularTestApn2;
@@ -1925,16 +1944,16 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
               network_config_observer.GetOnConfigurationModifiedCallCount());
   }
 
-  // Verify that RemoveCustomApn deletes the first custom APN
+  // Verify that RemoveCustomApn deletes the second custom APN
   const base::Value::List* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_TRUE(custom_apns);
   ASSERT_EQ(2u, custom_apns->size());
-  const std::string* first_apn_id =
+  const std::string* second_apn_id =
       custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
-  ASSERT_TRUE(first_apn_id);
+  ASSERT_TRUE(second_apn_id);
 
-  id_to_delete = std::string(*first_apn_id);
+  id_to_delete = std::string(*second_apn_id);
   RemoveCustomApn(kCellularGuid, id_to_delete);
   EXPECT_EQ(++expected_network_config_calls,
             network_config_observer.GetOnConfigurationModifiedCallCount());
@@ -1946,6 +1965,9 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
                                               network_config_observer));
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
+  AssertRemoveCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/1);
+  AssertRemoveCustomApnPropertiesBucketCount(ApnTypes::kDefaultAndAttach,
+                                             /*apn_types_count=*/1);
 
   // Try to remove an ID not found in the list, API should do nothing
   RemoveCustomApn(kCellularGuid, id_to_delete);
@@ -1959,12 +1981,13 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
                                               network_config_observer));
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
+  AssertRemoveCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/2);
 
-  // Remove the last test APN
+  // Remove the first test APN
   custom_apns = network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_TRUE(custom_apns);
   ASSERT_EQ(1u, custom_apns->size());
-  first_apn_id =
+  const std::string* first_apn_id =
       custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
   ASSERT_TRUE(first_apn_id);
   id_to_delete = std::string(*first_apn_id);
@@ -1979,6 +2002,9 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
                                               network_config_observer));
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
+  AssertRemoveCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/2);
+  AssertRemoveCustomApnPropertiesBucketCount(ApnTypes::kDefault,
+                                             /*apn_types_count=*/1);
 
   // Try to delete an APN when the custom APN list is empty, it should do
   // nothing
@@ -1993,7 +2019,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
                                               network_config_observer));
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/0);
+  AssertRemoveCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/3);
 }
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {

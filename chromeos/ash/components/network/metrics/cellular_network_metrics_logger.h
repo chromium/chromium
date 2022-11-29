@@ -29,14 +29,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
     kMaxValue = kDefaultAndAttach
   };
 
-  static constexpr char kCustomApnCreatedResultHistogram[] =
+  static constexpr char kCreateCustomApnResultHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.Result";
-  static constexpr char kCustomApnCreatedAuthenticationTypeHistogram[] =
+  static constexpr char kCreateCustomApnAuthenticationTypeHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.AuthenticationType";
-  static constexpr char kCustomApnCreatedIpTypeHistogram[] =
+  static constexpr char kCreateCustomApnIpTypeHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.IpType";
-  static constexpr char kCustomApnCreatedApnTypesHistogram[] =
+  static constexpr char kCreateCustomApnApnTypesHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.ApnTypes";
+  static constexpr char kRemoveCustomApnResultHistogram[] =
+      "Network.Ash.Cellular.Apn.RemoveCustomApn.Result";
+  static constexpr char kRemoveCustomApnApnTypesHistogram[] =
+      "Network.Ash.Cellular.Apn.RemoveCustomApn.ApnTypes";
 
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,
@@ -47,10 +51,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       delete;
   ~CellularNetworkMetricsLogger() override;
 
-  // Logs result from attempting to create a custom APN.
+  // Logs results from attempting operations related to custom APNs.
   static void LogCreateCustomApnResult(
       bool success,
       chromeos::network_config::mojom::ApnPropertiesPtr apn);
+  static void LogRemoveCustomApnResult(
+      bool success,
+      std::vector<chromeos::network_config::mojom::ApnType> apn_types);
 
  private:
   // ConnectionInfoMetricsLogger::Observer:
