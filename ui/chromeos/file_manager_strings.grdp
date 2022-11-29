@@ -381,8 +381,8 @@
   <message name="IDS_FILE_BROWSER_TASK_OPEN_GSLIDES" desc="Title of the action to open a Google Slides document.">
     Google Slides
   </message>
-  <message name="IDS_FILE_BROWSER_TASK_OPEN_OFFICE" desc="Title of the action to open an office document in the Office app">
-    Office
+  <message name="IDS_FILE_BROWSER_TASK_OPEN_MICROSOFT_365" desc="Title of the action to open an office document in the Microsoft 365 app">
+    Microsoft 365
   </message>
   <message name="IDS_FILE_BROWSER_TASK_LISTEN" desc="Title of the action to play an audio file.">
     Listen

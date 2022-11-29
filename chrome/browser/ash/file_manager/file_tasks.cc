@@ -1008,7 +1008,7 @@ bool GetUserFallbackChoice(
   } else if (parsed_action_id == kActionIdWebDriveOfficePowerPoint) {
     task_title_id = IDS_FILE_BROWSER_TASK_OPEN_GSLIDES;
   } else if (parsed_action_id == kActionIdOpenInOffice) {
-    task_title_id = IDS_FILE_BROWSER_TASK_OPEN_OFFICE;
+    task_title_id = IDS_FILE_BROWSER_TASK_OPEN_MICROSOFT_365;
   } else {
     LOG(ERROR) << "Could not find a task with the given action_id";
     return false;

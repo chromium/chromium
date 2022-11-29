@@ -353,7 +353,7 @@ export class FileTasks {
         } else if (parsedActionId === 'open-in-office') {
           task.iconUrl =
               toFilesAppURL('foreground/images/files/ui/ms365.svg').toString();
-          task.title = str('TASK_OPEN_OFFICE');
+          task.title = str('TASK_OPEN_MICROSOFT_365');
         } else if (parsedActionId === 'install-linux-package') {
           task.iconType = 'crostini';
           task.title = str('TASK_INSTALL_LINUX_PACKAGE');
