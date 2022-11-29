@@ -253,6 +253,16 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
       self_writing_direction, is_y_axis);
   LayoutUnit value;
   switch (anchor_value) {
+    case AnchorValue::kCenter: {
+      const LayoutUnit start = is_y_axis
+                                   ? anchor.Y() - offset_to_padding_box.top
+                                   : anchor.X() - offset_to_padding_box.left;
+      const LayoutUnit end = is_y_axis
+                                 ? anchor.Bottom() - offset_to_padding_box.top
+                                 : anchor.Right() - offset_to_padding_box.left;
+      value = start + LayoutUnit::FromFloatRound((end - start) * 0.5);
+      break;
+    }
     case AnchorValue::kLeft:
       if (is_y_axis)
         return absl::nullopt;  // Wrong axis.
@@ -305,10 +315,6 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     case AnchorValue::kSelfEnd:
       // These logical values should have been converted to corresponding
       // physical values in `PhysicalAnchorValueFromLogical`.
-      NOTREACHED();
-      return absl::nullopt;
-    case AnchorValue::kCenter:
-      // TODO(crbug.com/1382524): Not implemented yet.
       NOTREACHED();
       return absl::nullopt;
   }
