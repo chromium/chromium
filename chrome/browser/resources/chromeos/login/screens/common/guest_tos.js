@@ -20,7 +20,7 @@ import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
 import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
