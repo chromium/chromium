@@ -14,7 +14,6 @@ assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
 group("polymer3_elements") {
   public_deps = [
     ":hw_data_collection_module",
-    ":smart_privacy_protection_module",
     ":sync_consent_module",
   ]
 }
@@ -67,7 +66,7 @@ js_type_check("closure_compile_local") {
     ":recommend_apps",
     ":saml_confirm_password",
     ":signin_fatal_error",
-    ":smart_privacy_protection.m",
+    ":smart_privacy_protection",
     ":sync_consent.m",
     ":theme_selection",
     ":tpm_error",
@@ -574,8 +573,8 @@ js_library("signin_fatal_error") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("smart_privacy_protection.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/smart_privacy_protection.m.js" ]
+js_library("smart_privacy_protection") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/smart_privacy_protection.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -584,7 +583,7 @@ js_library("smart_privacy_protection.m") {
     "../../components/dialogs:oobe_adaptive_dialog",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":smart_privacy_protection_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("sync_consent.m") {
@@ -683,15 +682,6 @@ polymer_modulizer("hw_data_collection") {
   migrated_imports = oobe_migrated_imports
 }
 
-polymer_modulizer("smart_privacy_protection") {
-  js_file = "smart_privacy_protection.js"
-  html_file = "smart_privacy_protection.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("sync_consent") {
   js_file = "sync_consent.js"
   html_file = "sync_consent.html"
@@ -733,6 +723,7 @@ html_to_js("web_components") {
     "recommend_apps.js",
     "saml_confirm_password.js",
     "signin_fatal_error.js",
+    "smart_privacy_protection.js",
     "theme_selection.js",
     "tpm_error.js",
     "user_creation.js",

@@ -6,7 +6,21 @@
  * @fileoverview Polymer element for smart privacy protection screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
+
 
 /**
  * @constructor
@@ -14,9 +28,9 @@
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const SmartPrivacyProtectionScreenElementBase = Polymer.mixinBehaviors(
+const SmartPrivacyProtectionScreenElementBase = mixinBehaviors(
     [OobeDialogHostBehavior, OobeI18nBehavior, LoginScreenBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @polymer
@@ -27,7 +41,9 @@ class SmartPrivacyProtectionScreen extends
     return 'smart-privacy-protection-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
