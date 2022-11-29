@@ -1245,7 +1245,6 @@ crbug.com/626703 wpt_internal/webxr/xrSession_framesThrottled.https.html [ Timeo
 crbug.com/626703 wpt_internal/webxr/xrWebGLLayer_dirty_framebuffer.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-multicol/relative-child-overflowing-container.html [ Failure ]
 crbug.com/626703 external/wpt/html/user-activation/consumption-crossorigin.sub.tentative.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/dom/events/scrolling/scrollend-event-handler-content-attributes.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/active-lock.html [ Timeout ]
 crbug.com/626703 external/wpt/css/selectors/media/media-loading-state.html [ Timeout ]
 crbug.com/626703 external/wpt/css/selectors/media/media-playback-state.html [ Timeout ]
