@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogConsentEEAV4;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeEEAV4;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeROWV4;
+import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -389,5 +390,36 @@ public final class PrivacySandboxDialogTest {
         // Decline the consent and verify it worked correctly.
         onView(withId(R.id.no_button)).perform(click());
         onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testControllerShowsEEANotice() throws IOException {
+        // TODO(b/254408752): Verify actions are correctly recorded.
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
+        launchDialog();
+        // Verify that the EEA notice is shown
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        // Ack the notice and verify it worked correctly.
+        onView(withId(R.id.ack_button)).perform(click());
+        onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
+
+        launchDialog();
+        // Click on the expanding section and verify it worked correctly.
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+
+        onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).perform(scrollTo());
+        onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(matches(isDisplayed()));
+        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(doesNotExist());
+
+        // Click on the settings button and verify it worked correctly.
+        onView(withId(R.id.settings_button)).perform(click());
+        onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
+        Mockito.verify(mSettingsLauncher)
+                .launchSettingsActivity(any(Context.class),
+                        eq(PrivacySandboxSettingsFragmentV4.class), any(Bundle.class));
     }
 }
