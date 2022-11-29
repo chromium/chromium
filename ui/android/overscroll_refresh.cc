@@ -4,6 +4,8 @@
 
 #include "ui/android/overscroll_refresh.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "cc/input/overscroll_behavior.h"
