@@ -38,11 +38,10 @@ class CORE_EXPORT ScriptPromiseResultTracker
       size_t n_buckets = 50)
       : metric_name_prefix_(std::move(metric_name_prefix)),
         start_time_(base::TimeTicks::Now()),
-        timeout_interval_(timeout_interval),
         min_latency_bucket_(min_latency_bucket),
         max_latency_bucket_(max_latency_bucket),
         n_buckets_(n_buckets) {
-    CHECK(!metric_name_prefix_.empty());
+    DCHECK(!metric_name_prefix_.empty());
     resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     if (timeout_interval.is_positive()) {
       ExecutionContext::From(script_state)
@@ -100,12 +99,11 @@ class CORE_EXPORT ScriptPromiseResultTracker
 
  private:
   Member<ScriptPromiseResolver> resolver_;
-  std::string metric_name_prefix_;
-  base::TimeTicks start_time_;
-  base::TimeDelta timeout_interval_;
-  base::TimeDelta min_latency_bucket_;
-  base::TimeDelta max_latency_bucket_;
-  size_t n_buckets_;
+  const std::string metric_name_prefix_;
+  const base::TimeTicks start_time_;
+  const base::TimeDelta min_latency_bucket_;
+  const base::TimeDelta max_latency_bucket_;
+  const size_t n_buckets_;
   bool is_latency_recorded_ = false;
   bool is_result_recorded_ = false;
 };
