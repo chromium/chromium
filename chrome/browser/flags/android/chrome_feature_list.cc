@@ -781,7 +781,7 @@ BASE_FEATURE(kHandleMediaIntents,
 
 BASE_FEATURE(kHideNonDisplayableAccountEmail,
              "HideNonDisplayableAccountEmail",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImmersiveUiMode,
              "ImmersiveUiMode",
