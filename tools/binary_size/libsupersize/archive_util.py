@@ -75,3 +75,66 @@ def NormalizePaths(raw_symbols, gen_dir_regex=None):
     if symbol.source_path:
       symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
           symbol.source_path, gen_dir_pattern)
+
+
+def _ComputeAncestorPath(path_list, symbol_count):
+  """Returns the common ancestor of the given paths."""
+  if not path_list:
+    return ''
+
+  prefix = os.path.commonprefix(path_list)
+  # Check if all paths were the same.
+  if prefix == path_list[0]:
+    return prefix
+
+  # Put in buckets to cut down on the number of unique paths.
+  if symbol_count >= 100:
+    symbol_count_str = '100+'
+  elif symbol_count >= 50:
+    symbol_count_str = '50-99'
+  elif symbol_count >= 20:
+    symbol_count_str = '20-49'
+  elif symbol_count >= 10:
+    symbol_count_str = '10-19'
+  else:
+    symbol_count_str = str(symbol_count)
+
+  # Put the path count as a subdirectory so that grouping by path will show
+  # "{shared}" as a bucket, and the symbol counts as leafs.
+  if not prefix:
+    return os.path.join('{shared}', symbol_count_str)
+  return os.path.join(os.path.dirname(prefix), '{shared}', symbol_count_str)
+
+
+def CompactLargeAliasesIntoSharedSymbols(raw_symbols, max_count):
+  """Converts symbols with large number of aliases into single symbols.
+
+  The merged symbol's path fields are changed to common-ancestor paths in
+  the form: common/dir/{shared}/$SYMBOL_COUNT
+
+  Assumes aliases differ only by path (not by name).
+  """
+  num_raw_symbols = len(raw_symbols)
+  num_shared_symbols = 0
+  src_cursor = 0
+  dst_cursor = 0
+  while src_cursor < num_raw_symbols:
+    symbol = raw_symbols[src_cursor]
+    raw_symbols[dst_cursor] = symbol
+    dst_cursor += 1
+    aliases = symbol.aliases
+    if aliases and len(aliases) > max_count:
+      symbol.source_path = _ComputeAncestorPath(
+          [s.source_path for s in aliases if s.source_path], len(aliases))
+      symbol.object_path = _ComputeAncestorPath(
+          [s.object_path for s in aliases if s.object_path], len(aliases))
+      symbol.generated_source = all(s.generated_source for s in aliases)
+      symbol.aliases = None
+      num_shared_symbols += 1
+      src_cursor += len(aliases)
+    else:
+      src_cursor += 1
+  raw_symbols[dst_cursor:] = []
+  num_removed = src_cursor - dst_cursor
+  logging.debug('Converted %d aliases into %d shared-path symbols', num_removed,
+                num_shared_symbols)

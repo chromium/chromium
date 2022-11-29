@@ -129,13 +129,13 @@ def _NormalizeNames(raw_symbols):
           or symbol.IsOther()):
       symbol.template_name = full_name
       symbol.name = full_name
-    elif symbol.IsDex():
-      symbol.full_name, symbol.template_name, symbol.name = (
-          function_signature.ParseJava(full_name))
-    elif symbol.IsStringLiteral():
+    elif symbol.IsStringLiteral():  # Handles native and DEX strings.
       symbol.full_name = full_name
       symbol.template_name = full_name
       symbol.name = full_name
+    elif symbol.IsDex():
+      symbol.full_name, symbol.template_name, symbol.name = (
+          function_signature.ParseJava(full_name))
     elif symbol.IsNative():
       # Remove [clone] suffix, and set flag accordingly.
       # Search from left-to-right, as multiple [clone]s can exist.
