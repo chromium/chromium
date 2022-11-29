@@ -202,14 +202,6 @@ source_set("wayland") {
     "//ui/wm/public",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash",
-      "//ash/public/cpp",
-      "//chromeos/ui/base",
-    ]
-  }
-
   if (use_xkbcommon) {
     deps += [ "//ui/events/keycodes:xkb" ]
   }
