@@ -48,5 +48,24 @@ attribution_reporting_promise_test(async t => {
   assert_equals(reports[0].trigger_data, '3');
   assert_equals(reports[1].trigger_data, '4');
   assert_equals(reports[2].trigger_data, '5');
+
+  const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
+  await registerAttributionSrc(t, {
+    trigger: {
+      event_trigger_data: [{
+        trigger_data: '7'
+      }],
+      debug_reporting: true,
+    },
+    cookie,
+  });
+
+  const payload = await pollVerboseDebugReports();
+  assert_equals(payload.reports.length, 1);
+  const debugReport = JSON.parse(payload.reports[0].body);
+  assert_equals(debugReport.length, 1);
+  assert_equals(debugReport[0].type, 'trigger-event-excessive-reports');
+  assert_own_property(debugReport[0], 'body');
+  assert_equals(debugReport[0].body.trigger_data, '7');
 }, 'Navigation sources can be attributed 3 times.');
 </script>
