@@ -19,11 +19,4 @@ void AddResources(content::WebUIDataSource* html_source);
 }  // namespace network_diagnostics
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace network_diagnostics {
-using ::ash::network_diagnostics::AddResources;
-}  // namespace network_diagnostics
-}  // namespace chromeos
-
 #endif  // ASH_WEBUI_NETWORK_UI_NETWORK_DIAGNOSTICS_RESOURCE_PROVIDER_H_

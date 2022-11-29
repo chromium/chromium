@@ -5,13 +5,16 @@
 #ifndef ASH_WEBUI_HELP_APP_UI_HELP_APP_MANAGER_H_
 #define ASH_WEBUI_HELP_APP_UI_HELP_APP_MANAGER_H_
 
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #include <memory>
 
 namespace ash {
+
+namespace local_search_service {
+class LocalSearchServiceProxy;
+}
+
 namespace help_app {
 
 class SearchHandler;

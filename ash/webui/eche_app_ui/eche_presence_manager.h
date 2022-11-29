@@ -13,8 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 
 namespace ash {
 
@@ -24,6 +22,10 @@ class DeviceSyncClient;
 
 namespace multidevice_setup {
 class MultiDeviceSetupClient;
+}
+
+namespace secure_channel {
+class PresenceMonitorClient;
 }
 
 namespace eche_app {

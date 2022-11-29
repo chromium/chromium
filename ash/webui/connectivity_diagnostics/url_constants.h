@@ -12,9 +12,4 @@ extern const char kChromeUIConnectivityDiagnosticsUrl[];
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::kChromeUIConnectivityDiagnosticsUrl;
-}
-
 #endif  // ASH_WEBUI_CONNECTIVITY_DIAGNOSTICS_URL_CONSTANTS_H_

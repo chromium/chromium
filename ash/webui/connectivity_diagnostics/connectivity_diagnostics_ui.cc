@@ -133,8 +133,8 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
   source->AddLocalizedString("closeBtn", IDS_CONNECTIVITY_DIAGNOSTICS_CLOSE);
   source->AddLocalizedString("sendFeedbackBtn",
                              IDS_CONNECTIVITY_DIAGNOSTICS_SEND_FEEDBACK);
-  chromeos::network_diagnostics::AddResources(source);
-  chromeos::network_health::AddResources(source);
+  network_diagnostics::AddResources(source);
+  network_health::AddResources(source);
 }
 
 ConnectivityDiagnosticsUI::~ConnectivityDiagnosticsUI() = default;

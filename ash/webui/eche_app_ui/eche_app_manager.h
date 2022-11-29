@@ -14,10 +14,6 @@
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -34,6 +30,11 @@ class DeviceSyncClient;
 namespace multidevice_setup {
 class MultiDeviceSetupClient;
 }
+
+namespace secure_channel {
+class ConnectionManager;
+class SecureChannelClient;
+}  // namespace secure_channel
 
 namespace eche_app {
 
