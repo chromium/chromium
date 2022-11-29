@@ -223,7 +223,8 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
   }
   if (MatchSelector(context, result) != kSelectorMatches)
     return false;
-  if (RuntimeEnabledFeatures::CSSScopeEnabled() &&
+  if (context.style_scope != nullptr &&
+      RuntimeEnabledFeatures::CSSScopeEnabled() &&
       !CheckInStyleScope(context, result)) {
     return false;
   }
@@ -2139,10 +2140,6 @@ bool SelectorChecker::MatchesWithScope(Element& element,
 
 bool SelectorChecker::CheckInStyleScope(const SelectorCheckingContext& context,
                                         MatchResult& result) const {
-  const StyleScope* style_scope = context.style_scope;
-  if (!style_scope)
-    return true;
-
   SelectorCheckingContext local_context(context);
 
   // TODO(crbug.com/1280240): We can probably skip this if the main selector
