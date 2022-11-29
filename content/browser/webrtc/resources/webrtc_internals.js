@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 
 import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
 import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
@@ -183,7 +183,10 @@ function createStatsSelectionOptionElements() {
     legacyStatsElement.style.display =
         currentGetStatsMethod === OPTION_GETSTATS_LEGACY ? 'block' : 'none';
     Object.keys(peerConnectionDataStore).forEach(id => {
-      const peerConnectionElement = $(id);
+      // Disable getElementById restriction here, since |id| is not always
+      // a valid selector.
+      // eslint-disable-next-line no-restricted-properties
+      const peerConnectionElement = document.getElementById(id);
       statsTable.clearStatsLists(peerConnectionElement);
       removeStatsReportGraphs(peerConnectionElement);
       peerConnectionDataStore[id].resetStats();
@@ -306,7 +309,10 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
  *     connection.
  */
 function removePeerConnection(data) {
-  const element = $(getPeerConnectionId(data));
+  // Disable getElementById restriction here, since |getPeerConnectionId| does
+  // not return valid selectors.
+  // eslint-disable-next-line no-restricted-properties
+  const element = document.getElementById(getPeerConnectionId(data));
   if (element) {
     delete peerConnectionDataStore[element.id];
     tabView.removeTab(element.id);
@@ -328,7 +334,10 @@ function addPeerConnection(data) {
   peerConnectionDataStore[id].initialize(
       data.pid, data.url, data.rtcConfiguration, data.constraints);
 
-  let peerConnectionElement = $(id);
+  // Disable getElementById restriction here, since |id| is not always
+  // a valid selector.
+  // eslint-disable-next-line no-restricted-properties
+  let peerConnectionElement = document.getElementById(id);
   if (!peerConnectionElement) {
     const details = `[ rid: ${data.rid}, lid: ${data.lid}, pid: ${data.pid} ]`;
     peerConnectionElement = tabView.addTab(id, data.url + " " + details);
@@ -402,7 +411,11 @@ function addPeerConnection(data) {
  * @param {!PeerConnectionUpdateEntry} data The peer connection update data.
  */
 function updatePeerConnection(data) {
-  const peerConnectionElement = $(getPeerConnectionId(data));
+  // Disable getElementById restriction here, since |getPeerConnectionId| does
+  // not return valid selectors.
+  const peerConnectionElement =
+  // eslint-disable-next-line no-restricted-properties
+      document.getElementById(getPeerConnectionId(data));
   addPeerConnectionUpdate(peerConnectionElement, data);
 }
 
@@ -442,7 +455,13 @@ function addStandardStats(data) {
   if (currentGetStatsMethod != OPTION_GETSTATS_STANDARD) {
     return;  // Obsolete!
   }
-  const peerConnectionElement = $(getPeerConnectionId(data));
+
+  // Disable getElementById restriction here, since |getPeerConnectionId| does
+  // not return valid selectors.
+  // eslint-disable-next-line no-restricted-properties
+  const peerConnectionElement =
+      // eslint-disable-next-line no-restricted-properties
+      document.getElementById(getPeerConnectionId(data));
   if (!peerConnectionElement) {
     return;
   }
@@ -498,7 +517,10 @@ function addStandardStats(data) {
 
     // Mark active local-candidate, remote candidate and candidate pair
     // bold in the table.
+    // Disable getElementById restriction here, since |peerConnectionElement|
+    // doesn't always have a valid selector ID.
     const statsContainer =
+      // eslint-disable-next-line no-restricted-properties
         document.getElementById(peerConnectionElement.id + '-table-container');
     const activeConnectionClass = 'stats-table-active-connection';
     statsContainer.childNodes.forEach(node => {
@@ -554,7 +576,11 @@ function addLegacyStats(data) {
   if (currentGetStatsMethod != OPTION_GETSTATS_LEGACY) {
     return;  // Obsolete!
   }
-  const peerConnectionElement = $(getPeerConnectionId(data));
+  // Disable getElementById restriction here, since |getPeerConnectionId| does
+  // not return valid selectors.
+  const peerConnectionElement =
+      // eslint-disable-next-line no-restricted-properties
+      document.getElementById(getPeerConnectionId(data));
   if (!peerConnectionElement) {
     return;
   }

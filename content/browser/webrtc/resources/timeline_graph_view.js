@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
-
 // Maximum number of labels placed vertically along the sides of the graph.
 const MAX_VERTICAL_LABELS = 6;
 
@@ -33,8 +31,12 @@ export class TimelineGraphView {
   constructor(divId, canvasId) {
     this.scrollbar_ = {position_: 0, range_: 0};
 
-    this.graphDiv_ = $(divId);
-    this.canvas_ = $(canvasId);
+    // Disable getElementById restriction here, since |divId| and |canvasId| are
+    // not always valid selectors.
+    // eslint-disable-next-line no-restricted-properties
+    this.graphDiv_ = document.getElementById(divId);
+    // eslint-disable-next-line no-restricted-properties
+    this.canvas_ = document.getElementById(canvasId);
 
     // Set the range and scale of the graph.  Times are in milliseconds since
     // the Unix epoch.

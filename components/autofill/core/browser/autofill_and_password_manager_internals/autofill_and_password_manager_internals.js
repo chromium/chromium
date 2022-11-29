@@ -4,10 +4,11 @@
 
 // <if expr="is_ios">
 import 'chrome://resources/js/ios/web_ui.js';
+
 // </if>
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 
 // By default this page only records metrics for a given period of time in order
 // to not waste too much memory. This constant defines the default period until

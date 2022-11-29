@@ -7,8 +7,9 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import './strings.m.js';
+
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 
 let isRecording = false;
 let keyPressState = 0;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 
 import {GetSsrcFromReport, SsrcInfoManager} from './ssrc_info_manager.js';
 import {generateStatsLabel, isDeprecatedStats} from './stats_helper.js';
@@ -51,7 +51,10 @@ export class StatsTable {
 
   clearStatsLists(peerConnectionElement) {
     const containerId = peerConnectionElement.id + '-table-container';
-    const container = $(containerId);
+    // Disable getElementById restriction here, since |containerId| is not
+    // always a valid selector.
+    // eslint-disable-next-line no-restricted-properties
+    const container = document.getElementById(containerId);
     if (container) {
       peerConnectionElement.removeChild(container);
       this.ensureStatsTableContainer_(peerConnectionElement);
@@ -68,7 +71,10 @@ export class StatsTable {
    */
   ensureStatsTableContainer_(peerConnectionElement) {
     const containerId = peerConnectionElement.id + '-table-container';
-    let container = $(containerId);
+    // Disable getElementById restriction here, since |containerId| is not
+    // always a valid selector.
+    // eslint-disable-next-line no-restricted-properties
+    let container = document.getElementById(containerId);
     if (!container) {
       container = document.createElement('div');
       container.id = containerId;
@@ -103,7 +109,10 @@ export class StatsTable {
    */
   ensureStatsTable_(peerConnectionElement, report) {
     const tableId = peerConnectionElement.id + '-table-' + report.id;
-    let table = $(tableId);
+    // Disable getElementById restriction here, since |tableId| is not
+    // always a valid selector.
+    // eslint-disable-next-line no-restricted-properties
+    let table = document.getElementById(tableId);
     if (!table) {
       const container = this.ensureStatsTableContainer_(peerConnectionElement);
       const details = document.createElement('details');
@@ -166,7 +175,10 @@ export class StatsTable {
    */
   updateStatsTableRow_(statsTable, rowName, value) {
     const trId = statsTable.id + '-' + rowName;
-    let trElement = $(trId);
+    // Disable getElementById restriction here, since |trId| is not always
+    // a valid selector.
+    // eslint-disable-next-line no-restricted-properties
+    let trElement = document.getElementById(trId);
     const activeConnectionClass = 'stats-table-active-connection';
     if (!trElement) {
       trElement = document.createElement('tr');

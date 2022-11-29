@@ -7,8 +7,9 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import 'chrome://resources/js/jstemplate_compiled.js';
+
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 
 const initialize = function() {
   $('submit-update').addEventListener('click', function(event) {

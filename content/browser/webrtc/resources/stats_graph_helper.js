@@ -11,7 +11,7 @@
 // Each group has an expand/collapse button and is collapsed initially.
 //
 
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 
 import {TimelineDataSeries} from './data_series.js';
 import {peerConnectionDataStore} from './dump_creator.js';
@@ -404,7 +404,10 @@ function getSsrcReportType(report) {
 function ensureStatsGraphTopContainer(peerConnectionElement, report) {
   const containerId = peerConnectionElement.id + '-' + report.type + '-' +
       report.id + '-graph-container';
-  let container = $(containerId);
+  // Disable getElementById restriction here, since |containerId| is not always
+  // a valid selector.
+  // eslint-disable-next-line no-restricted-properties
+  let container = document.getElementById(containerId);
   if (!container) {
     container = document.createElement('details');
     container.id = containerId;
@@ -451,8 +454,12 @@ function createStatsGraphView(peerConnectionElement, report, statsName) {
   canvasDiv.querySelector('canvas').id = canvasId;
   container.appendChild(canvasDiv);
   if (statsName === 'bweCompound') {
+    // Disable getElementById restriction here, since |divId| is not always
+    // a valid selector.
+    // eslint-disable-next-line no-restricted-properties
+    const div = document.getElementById(divId);
     container.insertBefore(
-        createBweCompoundLegend(peerConnectionElement, report.id), $(divId));
+        createBweCompoundLegend(peerConnectionElement, report.id), div);
   }
   return new TimelineGraphView(divId, canvasId);
 }
