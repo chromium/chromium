@@ -37,8 +37,6 @@ constexpr base::TimeDelta kChipAnimationDuration = base::Seconds(12);
 // The delay before the IPH should be potentially shown. This should be less
 // than kChipAnimationDuration but longer than kIconLabelAnimationDurationMs.
 constexpr base::TimeDelta kIPHDelayDuration = base::Seconds(1);
-// The number of times a user should see the expanded chip.
-constexpr int kChipAnimationCount = 3;
 
 // We want this to show up before the chip finishes animating.
 static_assert(kIPHDelayDuration < kChipAnimationDuration);
