@@ -5,7 +5,6 @@
 #include <cryptohi.h>
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 #include <string>
 
@@ -14,9 +13,9 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_tags.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
@@ -274,10 +273,8 @@ class EnterprisePlatformKeysTest
   }
 
   void AddScreenplayTag() {
-    static base::NoDestructor<std::map<std::string, std::string>> tag;
-    tag->insert(std::pair<std::string, std::string>(
-        "feature_id", "screenplay-f9cdeb9c-d567-4d70-a2dc-9ee4203175e6"));
-    RecordPropertyFromMap(*tag);
+    base::AddTagToTestResult("feature_id",
+                             "screenplay-f9cdeb9c-d567-4d70-a2dc-9ee4203175e6");
   }
 
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
@@ -438,10 +435,8 @@ class EnterprisePlatformKeysLoginScreenTest
   }
 
   void AddScreenplayTag() {
-    static base::NoDestructor<std::map<std::string, std::string>> tag;
-    tag->insert(std::pair<std::string, std::string>(
-        "feature_id", "screenplay-f9cdeb9c-d567-4d70-a2dc-9ee4203175e6"));
-    RecordPropertyFromMap(*tag);
+    base::AddTagToTestResult("feature_id",
+                             "screenplay-f9cdeb9c-d567-4d70-a2dc-9ee4203175e6");
   }
 
  private:
