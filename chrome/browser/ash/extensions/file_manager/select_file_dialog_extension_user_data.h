@@ -10,6 +10,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace content {
 class WebContents;
@@ -25,16 +26,21 @@ class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
   ~SelectFileDialogExtensionUserData() override;
 
   // Attaches the SelectFileDialogExtension's user data to its `web_contents`,
-  // that consists of the unique `routing_id` and optionally the
+  // that consists of the unique `routing_id`, dialog type, and optionally the
   // `dialog_caller`.
   static void SetDialogDataForWebContents(
       content::WebContents* web_contents,
       const std::string& routing_id,
+      ui::SelectFileDialog::Type type,
       absl::optional<policy::DlpFilesController::DlpFileDestination>
           dialog_caller);
   // Returns the SelectFileDialogExtension's routing id attached to
   // `web_contents`, if it can be found.
   static std::string GetRoutingIdForWebContents(
+      content::WebContents* web_contents);
+  // Returns the SelectFileDialogExtension's dialog type attached to
+  // `web_contents`, if it can be found.
+  static ui::SelectFileDialog::Type GetDialogTypeForWebContents(
       content::WebContents* web_contents);
   // Returns the SelectFileDialogExtension's caller attached to `web_contents`,
   // if it can be found.
@@ -44,10 +50,13 @@ class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
  private:
   SelectFileDialogExtensionUserData(
       const std::string& routing_id,
+      ui::SelectFileDialog::Type type,
       absl::optional<policy::DlpFilesController::DlpFileDestination>
           dialog_caller);
 
   const std::string& routing_id() const { return routing_id_; }
+
+  ui::SelectFileDialog::Type type() const { return type_; }
 
   absl::optional<policy::DlpFilesController::DlpFileDestination> dialog_caller()
       const {
@@ -55,6 +64,7 @@ class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
   }
 
   std::string routing_id_;
+  ui::SelectFileDialog::Type type_;
   absl::optional<policy::DlpFilesController::DlpFileDestination> dialog_caller_;
 };
 

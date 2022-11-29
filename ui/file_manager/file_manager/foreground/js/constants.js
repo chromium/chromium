@@ -82,6 +82,7 @@ constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
 constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
   'isDlpRestricted',
   'sourceUrl',
+  'isRestrictedForDestination',
 ];
 
 /**

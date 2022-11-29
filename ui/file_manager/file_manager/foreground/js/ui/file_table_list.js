@@ -371,7 +371,8 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
   // Overriding the default role 'list' to 'listbox' for better
   // accessibility on ChromeOS.
   li.setAttribute('role', 'option');
-  li.toggleAttribute('disabled', filelist.isDlpBlocked_(entry, volumeManager));
+  li.toggleAttribute(
+      'disabled', filelist.isDlpBlocked(entry, metadataModel, volumeManager));
 
   Object.defineProperty(li, 'selected', {
     /**
@@ -396,27 +397,35 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
 };
 
 /**
- * Returns true if `entry` is blocked by DLP.
+ * Returns whether `entry` is blocked by DLP.
+ *
+ * Relies on the fact that volumeManager.isDisabled() can only be true for dirs
+ * in file-saveas dialogs, while metadata.isRestrictedForDestination can only be
+ * true for files in other types of select dialogs.
  * @param {Entry|FilesAppEntry} entry The entry.
- * @param {!VolumeManager} volumeManager Used to retrieve VolumeInfo.
- * @return {boolean}
+ * @param {!MetadataModel} metadataModel Used to retrieve
+ *     isRestrictedForDestination value.
+ * @param {!VolumeManager} volumeManager Used to retrieve VolumeInfo and check
+ *     if it's disabled.
+ * @return {boolean} If `entry` is DLP blocked.
  */
-filelist.isDlpBlocked_ = (entry, volumeManager) => {
-  if (!entry.isDirectory) {
-    // TODO(b/259183224): Add proper checks; files are blocked if their source
-    // is not allowed to be opened by the files app dialog caller.
+filelist.isDlpBlocked = (entry, metadataModel, volumeManager) => {
+  if (!util.isDlpEnabled()) {
     return false;
   }
-  // The entry is a directory, which can only be blocked if it's a
-  // disabled volume/DLP component.
   // TODO(b/259184588): Properly handle case when VolumeInfo is not
   // available. E.g. for Crostini we might not have VolumeInfo before it's
   // mounted.
   const volumeInfo = volumeManager.getVolumeInfo(assert(entry));
-  if (!volumeInfo) {
-    return false;
+  if (volumeInfo && volumeManager.isDisabled(volumeInfo.volumeType)) {
+    return true;
   }
-  return volumeManager.isDisabled(volumeInfo.volumeType);
+  const metadata =
+      metadataModel.getCache([entry], ['isRestrictedForDestination'])[0];
+  if (metadata && !!metadata.isRestrictedForDestination) {
+    return true;
+  }
+  return false;
 };
 
 /**

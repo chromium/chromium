@@ -733,15 +733,20 @@ export class FileGrid extends Grid {
         this.querySelectorAll('.img-container'));
     for (let i = 0; i < boxes.length; i++) {
       const box = boxes[i];
-      const listItem = this.getListItemAncestor(box);
+      let listItem = this.getListItemAncestor(box);
       const entry = listItem && this.dataModel.item(listItem.listIndex);
       if (!entry || urls.indexOf(entry.toURL()) === -1) {
         continue;
       }
 
-      this.decorateThumbnailBox_(assert(listItem), entry);
-      this.updateSharedStatus_(assert(listItem), entry);
-      this.updateInlineSyncStatus_(assert(listItem), entry);
+      listItem = /** @type {!FileGrid.Item} */ (listItem);
+      this.decorateThumbnailBox_(listItem, entry);
+      this.updateSharedStatus_(listItem, entry);
+      this.updateInlineSyncStatus_(listItem, entry);
+      listItem.toggleAttribute(
+          'disabled',
+          filelist.isDlpBlocked(
+              entry, assert(this.metadataModel_), assert(this.volumeManager_)));
     }
     this.updateGroupHeading_();
   }

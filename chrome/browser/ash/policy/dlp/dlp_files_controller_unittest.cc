@@ -752,19 +752,122 @@ TEST_F(DlpFilesControllerTest, GetDlpMetadata) {
   std::vector<storage::FileSystemURL> files_to_check(
       {files_urls[0], files_urls[1], files_urls[2]});
   std::vector<DlpFilesController::DlpFileMetadata> dlp_metadata(
-      {DlpFilesController::DlpFileMetadata(kExampleUrl1, true),
-       DlpFilesController::DlpFileMetadata(kExampleUrl2, false),
-       DlpFilesController::DlpFileMetadata(kExampleUrl3, true)});
+      {DlpFilesController::DlpFileMetadata(
+           kExampleUrl1, /*is_dlp_restricted=*/true,
+           /*is_restricted_for_destination=*/false),
+       DlpFilesController::DlpFileMetadata(
+           kExampleUrl2, /*is_dlp_restricted=*/false,
+           /*is_restricted_for_destination=*/false),
+       DlpFilesController::DlpFileMetadata(
+           kExampleUrl3, /*is_dlp_restricted=*/true,
+           /*is_restricted_for_destination=*/false)});
 
   EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
       .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
       .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
+  // If destination is not passed, neither of these should be called.
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination).Times(0);
+  EXPECT_CALL(*rules_manager_, IsRestrictedComponent).Times(0);
 
   base::test::TestFuture<std::vector<DlpFilesController::DlpFileMetadata>>
       future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDlpMetadata(files_to_check, future.GetCallback());
+  files_controller_->GetDlpMetadata(files_to_check, absl::nullopt,
+                                    future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(dlp_metadata, future.Take());
+}
+
+TEST_F(DlpFilesControllerTest, GetDlpMetadata_WithComponent) {
+  std::vector<FileDaemonInfo> files{
+      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+                     kExampleUrl1),
+      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+                     kExampleUrl2),
+      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+                     kExampleUrl3)};
+  std::vector<FileSystemURL> files_urls;
+  AddFilesToDlpClient(std::move(files), files_urls);
+
+  std::vector<storage::FileSystemURL> files_to_check(
+      {files_urls[0], files_urls[1], files_urls[2]});
+  std::vector<DlpFilesController::DlpFileMetadata> dlp_metadata(
+      {DlpFilesController::DlpFileMetadata(
+           kExampleUrl1, /*is_dlp_restricted=*/true,
+           /*is_restricted_for_destination=*/true),
+       DlpFilesController::DlpFileMetadata(
+           kExampleUrl2, /*is_dlp_restricted=*/false,
+           /*is_restricted_for_destination=*/false),
+       DlpFilesController::DlpFileMetadata(
+           kExampleUrl3, /*is_dlp_restricted=*/true,
+           /*is_restricted_for_destination=*/false)});
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  // If destination is passed as component, the restriction should be checked if
+  // there are files with any "block" restriction.
+  EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination).Times(0);
+
+  base::test::TestFuture<std::vector<DlpFilesController::DlpFileMetadata>>
+      future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->GetDlpMetadata(
+      files_to_check,
+      DlpFilesController::DlpFileDestination(DlpRulesManager::Component::kUsb),
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(dlp_metadata, future.Take());
+}
+
+TEST_F(DlpFilesControllerTest, GetDlpMetadata_WithDestination) {
+  std::vector<FileDaemonInfo> files{
+      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+                     kExampleUrl1),
+      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+                     kExampleUrl2),
+      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+                     kExampleUrl3)};
+  std::vector<FileSystemURL> files_urls;
+  AddFilesToDlpClient(std::move(files), files_urls);
+
+  std::vector<storage::FileSystemURL> files_to_check(
+      {files_urls[0], files_urls[1], files_urls[2]});
+  std::vector<DlpFilesController::DlpFileMetadata> dlp_metadata(
+      {DlpFilesController::DlpFileMetadata(
+           kExampleUrl1, /*is_dlp_restricted=*/true,
+           /*is_restricted_for_destination=*/true),
+       DlpFilesController::DlpFileMetadata(
+           kExampleUrl2, /*is_dlp_restricted=*/false,
+           /*is_restricted_for_destination=*/false),
+       DlpFilesController::DlpFileMetadata(
+           kExampleUrl3, /*is_dlp_restricted=*/true,
+           /*is_restricted_for_destination=*/false)});
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  // If destination is passed as url, the restriction should be checked if there
+  // are files with any "block" restriction.
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*rules_manager_, IsRestrictedComponent).Times(0);
+
+  base::test::TestFuture<std::vector<DlpFilesController::DlpFileMetadata>>
+      future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->GetDlpMetadata(
+      files_to_check, DlpFilesController::DlpFileDestination(kExampleUrl1),
+      future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(dlp_metadata, future.Take());
 }
@@ -779,14 +882,17 @@ TEST_F(DlpFilesControllerTest, GetDlpMetadata_FileNotAvailable) {
 
   std::vector<storage::FileSystemURL> files_to_check({file_url});
   std::vector<DlpFilesController::DlpFileMetadata> dlp_metadata(
-      {DlpFilesController::DlpFileMetadata("", false)});
+      {DlpFilesController::DlpFileMetadata(
+          /*source_url=*/"", /*is_dlp_restricted=*/false,
+          /*is_restricted_for_destination=*/false)});
 
   EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule).Times(0);
 
   base::test::TestFuture<std::vector<DlpFilesController::DlpFileMetadata>>
       future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDlpMetadata(files_to_check, future.GetCallback());
+  files_controller_->GetDlpMetadata(files_to_check, absl::nullopt,
+                                    future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(dlp_metadata, future.Take());
 }

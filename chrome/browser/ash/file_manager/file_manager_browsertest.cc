@@ -1283,7 +1283,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("transferShowDlpToast").EnableDlp(),
                       TestCase("dlpShowManagedIcon").EnableDlp(),
                       TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
-                      TestCase("saveAsDlpRestrictedDirectory").EnableDlp()));
+                      TestCase("saveAsDlpRestrictedDirectory").EnableDlp(),
+                      TestCase("openDlpRestrictedFile").EnableDlp()));
 // TODO(crbug.com/1394305): Re-enable this test
 // TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp()));
 

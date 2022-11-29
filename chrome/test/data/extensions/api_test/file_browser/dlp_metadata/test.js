@@ -114,7 +114,12 @@ chrome.test.getConfig(config => {
           chrome.fileManagerPrivate.getDlpMetadata(
               [file], chrome.test.callbackPass(dlpMetadata => {
                 chrome.test.assertEq(
-                    [{isDlpRestricted: false, sourceUrl: ''}], dlpMetadata);
+                    [{
+                      isDlpRestricted: false,
+                      isRestrictedForDestination: false,
+                      sourceUrl: ''
+                    }],
+                    dlpMetadata);
               }))
         },
         async function getDlpMetadata_EmptyList() {
@@ -173,13 +178,19 @@ chrome.test.getConfig(config => {
                     [
                       {
                         isDlpRestricted: true,
+                        isRestrictedForDestination: false,
                         sourceUrl: 'https://example1.com'
                       },
                       {
                         isDlpRestricted: false,
+                        isRestrictedForDestination: false,
                         sourceUrl: 'https://example2.com'
                       },
-                      {isDlpRestricted: false, sourceUrl: ''}
+                      {
+                        isDlpRestricted: false,
+                        isRestrictedForDestination: false,
+                        sourceUrl: ''
+                      }
                     ],
                     dlpMetadata);
               }))

@@ -752,6 +752,7 @@ chrome.fileManagerPrivate.ProgressStatus;
  * @typedef {{
  *   sourceUrl: string,
  *   isDlpRestricted: boolean,
+ *   isRestrictedForDestination: boolean,
  * }}
  */
 chrome.fileManagerPrivate.DlpMetadata;

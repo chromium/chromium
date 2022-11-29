@@ -100,6 +100,7 @@
 #include "third_party/cros_system_api/constants/cryptohome.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
@@ -984,8 +985,24 @@ FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
 
   policy::DlpFilesController* files_controller =
       rules_manager->GetDlpFilesController();
+
+  absl::optional<policy::DlpFilesController::DlpFileDestination> destination;
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    LOG(WARNING) << "Failed to locate WebContents";
+    return RespondNow(Error("Failed to locate WebContents"));
+  }
+  ui::SelectFileDialog::Type type =
+      SelectFileDialogExtensionUserData::GetDialogTypeForWebContents(
+          web_contents);
+  if (type != ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE) {
+    destination =
+        SelectFileDialogExtensionUserData::GetDialogCallerForWebContents(
+            web_contents);
+  }
+
   files_controller->GetDlpMetadata(
-      source_urls_,
+      source_urls_, destination,
       base::BindOnce(
           &FileManagerPrivateInternalGetDlpMetadataFunction::OnGetDlpMetadata,
           this));
@@ -1002,6 +1019,7 @@ void FileManagerPrivateInternalGetDlpMetadataFunction::OnGetDlpMetadata(
     DlpMetadata metadata;
     metadata.is_dlp_restricted = md.is_dlp_restricted;
     metadata.source_url = md.source_url;
+    metadata.is_restricted_for_destination = md.is_restricted_for_destination;
     converted_list.emplace_back(std::move(metadata));
   }
   Respond(ArgumentList(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
+import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -221,4 +221,43 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
       undefined,
       await openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'android_files', [ENTRIES.hello], blockedCloser));
+};
+
+/**
+ * Tests the open file dialogs properly show DLP blocked files. If a file cannot
+ * be opened by the caller of the dialog, it should be marked as disabled in the
+ * details list.
+ */
+testcase.openDlpRestrictedFile = async () => {
+  // Setup the restrictions.
+  await sendTestMessage({name: 'setIsRestrictedByAnyRuleBlocked'});
+  await sendTestMessage({name: 'setIsRestrictedDestinationRestriction'});
+
+  // Add entries to Downloads.
+  await addEntries(['local'], [ENTRIES.hello]);
+
+  const cancelButton = '.button-panel button.cancel';
+
+  const closer = async (dialog) => {
+    // Wait for the file list to appear.
+    await remoteCall.waitForElement(dialog, '#file-list');
+    await remoteCall.waitForFiles(
+        dialog, TestEntryInfo.getExpectedRows([ENTRIES.hello]));
+    // Wait for the DLP managed icon to be shown - this means that metadata has
+    // been fetched and we can check the disabled status as well.
+    await remoteCall.waitForElementsCount(
+        dialog, ['#file-list .dlp-managed-icon'], 1);
+    await remoteCall.waitForElementsCount(
+        dialog, ['#file-list .file[disabled]'], 1);
+
+    // Click the close button to dismiss the dialog.
+    await remoteCall.waitForElement(dialog, cancelButton);
+    const event = [cancelButton, 'click'];
+    await remoteCall.callRemoteTestUtil('fakeEvent', dialog, event);
+  };
+
+  chrome.test.assertEq(
+      undefined,
+      await openAndWaitForClosingDialog(
+          {type: 'openFile'}, 'downloads', [ENTRIES.hello], closer));
 };

@@ -60,11 +60,14 @@ class DlpFilesController {
   // or not and the source URL, if it exists.
   struct DlpFileMetadata {
     DlpFileMetadata() = delete;
-    DlpFileMetadata(const std::string& source_url, bool is_dlp_restricted);
+    DlpFileMetadata(const std::string& source_url,
+                    bool is_dlp_restricted,
+                    bool is_restricted_for_destination);
 
     friend bool operator==(const DlpFileMetadata& a, const DlpFileMetadata& b) {
       return a.is_dlp_restricted == b.is_dlp_restricted &&
-             a.source_url == b.source_url;
+             a.source_url == b.source_url &&
+             a.is_restricted_for_destination == b.is_restricted_for_destination;
     }
     friend bool operator!=(const DlpFileMetadata& a, const DlpFileMetadata& b) {
       return !(a == b);
@@ -74,6 +77,8 @@ class DlpFilesController {
     std::string source_url;
     // Whether the file is under any DLP rule or not.
     bool is_dlp_restricted;
+    // Whether the file is restricted by DLP for a specific destination.
+    bool is_restricted_for_destination;
   };
 
   // DlpFileRestrictionDetails keeps aggregated information about DLP rules
@@ -176,8 +181,10 @@ class DlpFilesController {
       GetDisallowedTransfersCallback result_callback);
 
   // Retrieves metadata for each entry in |files| and returns it as a list in
-  // |result_callback|.
+  // |result_callback|. If |destination| is passed, marks the files that are not
+  // allowed to be uploaded to that particular destination.
   void GetDlpMetadata(const std::vector<storage::FileSystemURL>& files,
+                      absl::optional<DlpFileDestination> destination,
                       GetDlpMetadataCallback result_callback);
 
   // Filters files disallowed to be uploaded to `destination`.
@@ -257,6 +264,7 @@ class DlpFilesController {
       dlp::CheckFilesTransferResponse response);
 
   void ReturnDlpMetadata(std::vector<absl::optional<ino64_t>> inodes,
+                         absl::optional<DlpFileDestination> destination,
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);
 

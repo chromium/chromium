@@ -1030,6 +1030,10 @@ dictionary DlpMetadata {
 
   // True if there is any DLP policy on the file, false otherwise.
   boolean isDlpRestricted;
+
+  // True if the file cannot be accessed by a specific destination,
+  // which is passed when collecting the metadata.
+  boolean isRestrictedForDestination;
 };
 
 dictionary DlpRestrictionDetails {

@@ -230,6 +230,15 @@ export class MetadataItem {
     this.sourceUrl;
 
     /**
+     * Only applicable in file picker dialogs.
+     * Whether the entry is blocked by DataLeakPrevention policy from being
+     * uploaded to/opened by a specific destination, defined by the caller of
+     * the dialog.
+     * @type {boolean|undefined}
+     */
+    this.isRestrictedForDestination;
+
+    /**
      * Status indicating the current syncing behaviour for this item.
      * @type {string|undefined}
      */

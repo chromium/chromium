@@ -54,6 +54,8 @@ export class DlpMetadataProvider extends MetadataProvider {
         if (!util.isFakeEntry(requests[i].entry)) {
           item.isDlpRestricted = dlpMetadataList[j].isDlpRestricted;
           item.sourceUrl = dlpMetadataList[j].sourceUrl;
+          item.isRestrictedForDestination =
+              dlpMetadataList[j].isRestrictedForDestination;
           j++;
         }
         results.push(item);
@@ -70,4 +72,5 @@ export class DlpMetadataProvider extends MetadataProvider {
 DlpMetadataProvider.PROPERTY_NAMES = [
   'isDlpRestricted',
   'sourceUrl',
+  'isRestrictedForDestination',
 ];

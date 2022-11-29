@@ -1000,6 +1000,11 @@ export class FileTable extends Table {
                   'syncStatus',
                 ])[0],
             util.isTeamDriveRoot(entry));
+        listItem.toggleAttribute(
+            'disabled',
+            filelist.isDlpBlocked(
+                entry, assert(this.metadataModel_),
+                assert(this.volumeManager_)));
       });
     }
   }

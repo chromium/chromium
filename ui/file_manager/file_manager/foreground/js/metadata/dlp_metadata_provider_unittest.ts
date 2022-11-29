@@ -36,6 +36,7 @@ export function setUp() {
           {
             isDlpRestricted: true,
             sourceUrl: 'https://example.com',
+            isRestrictedForDestination: false,
           },
         ]);
       },
@@ -68,17 +69,19 @@ export async function testDlpMetadataProviderIgnoresFakeEntries(
   const results = await provider.get([
     new MetadataRequest(
         fakeEntry as unknown as FileSystemEntry,
-        ['sourceUrl', 'isDlpRestricted']),
+        ['sourceUrl', 'isDlpRestricted', 'isRestrictedForDestination']),
     new MetadataRequest(
         realEntry as unknown as FileSystemEntry,
-        ['sourceUrl', 'isDlpRestricted']),
+        ['sourceUrl', 'isDlpRestricted', 'isRestrictedForDestination']),
   ]);
 
   assertEquals(2, results.length);
   assertEquals(results[0].isDlpRestricted, undefined);
   assertEquals(results[0].sourceUrl, undefined);
+  assertEquals(results[0].isRestrictedForDestination, undefined);
   assertEquals(results[1].isDlpRestricted, true);
   assertEquals(results[1].sourceUrl, 'https://example.com');
+  assertEquals(results[1].isRestrictedForDestination, false);
 
   done();
 }

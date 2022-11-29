@@ -296,7 +296,7 @@ void SelectFileDialogExtension::OnSystemDialogShown(
     const std::string& id) {
   system_files_app_web_contents_ = web_contents;
   SelectFileDialogExtensionUserData::SetDialogDataForWebContents(
-      web_contents, id, owner_.dialog_caller);
+      web_contents, id, type_, owner_.dialog_caller);
 }
 
 void SelectFileDialogExtension::OnSystemDialogWillClose() {
