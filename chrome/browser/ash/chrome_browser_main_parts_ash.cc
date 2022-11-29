@@ -516,14 +516,8 @@ class DBusServices {
     NetworkHandler::Initialize();
 
     chromeos::sensors::SensorHalDispatcher::Initialize();
-
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kAshUseCrOSMojoServiceManager) ||
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            ::switches::kBrowserTest)) {
-      chromeos::sensors::SensorHalDispatcher::GetInstance()
-          ->TryToEstablishMojoChannelByServiceManager();
-    }
+    chromeos::sensors::SensorHalDispatcher::GetInstance()
+        ->TryToEstablishMojoChannelByServiceManager();
 
     DeviceSettingsService::Get()->SetSessionManager(
         SessionManagerClient::Get(),
@@ -637,16 +631,12 @@ ChromeBrowserMainPartsAsh::~ChromeBrowserMainPartsAsh() {
 int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (command_line->HasSwitch(switches::kAshUseCrOSMojoServiceManager) ||
-      command_line->HasSwitch(::switches::kBrowserTest)) {
-    // Initialize mojo service manager. Note that this depends on the
-    // |mojo_ipc_support_| in |content::BrowserMainLoop| to be created.
-    // This should be initialized before sending any mojo invitations. Thus,
-    // those dbus service which send mojo invitation should be initialized
-    // after.
-    mojo_service_manager_closer_ =
-        mojo_service_manager::CreateConnectionAndPassCloser();
-  }
+  // Initialize mojo service manager. Note that this depends on the
+  // |mojo_ipc_support_| in |content::BrowserMainLoop| to be created. This
+  // should be initialized before sending any mojo invitations. Thus, those dbus
+  // service which send mojo invitation should be initialized after.
+  mojo_service_manager_closer_ =
+      mojo_service_manager::CreateConnectionAndPassCloser();
 
   if (command_line->HasSwitch(switches::kGuestSession)) {
     // Disable sync and extensions if we're in "browse without sign-in" mode.

@@ -262,10 +262,6 @@ const char kAshUiMode[] = "force-tablet-mode";
 const char kAshUiModeClamshell[] = "clamshell";
 const char kAshUiModeTablet[] = "touch_view";
 
-// Makes ash use ChromeOS mojo service manager as the mojo broker.
-const char kAshUseCrOSMojoServiceManager[] =
-    "ash-use-cros-mojo-service-manager";
-
 // (Most) Chrome OS hardware reports ACPI power button releases correctly.
 // Standard hardware reports releases immediately after presses.  If set, we
 // lock the screen or shutdown the system immediately in response to a press
