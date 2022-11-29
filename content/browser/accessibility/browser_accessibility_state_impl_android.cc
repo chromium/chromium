@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -213,25 +214,25 @@ enum {
 // These macros are used by RecordAccessibilityServiceStatsHistogram(), below.
 #define EVENT_TYPE_HISTOGRAM(event_type_mask, event_type, histogram) \
   if (event_type_mask & ACCESSIBILITYEVENT_TYPE_##event_type)        \
-  UMA_HISTOGRAM_ENUMERATION(histogram, UMA_EVENT_##event_type,       \
-                            UMA_ACCESSIBILITYSERVICEINFO_MAX)
-#define FLAGS_HISTOGRAM(flags_mask, flag, histogram)     \
-  if (flags_mask & ACCESSIBILITYSERVICEINFO_FLAG_##flag) \
-  UMA_HISTOGRAM_ENUMERATION(histogram, UMA_FLAG_##flag,  \
-                            UMA_ACCESSIBILITYSERVICEINFO_MAX)
+  base::UmaHistogramEnumeration(histogram, UMA_EVENT_##event_type,   \
+                                UMA_ACCESSIBILITYSERVICEINFO_MAX)
+#define FLAGS_HISTOGRAM(flags_mask, flag, histogram)        \
+  if (flags_mask & ACCESSIBILITYSERVICEINFO_FLAG_##flag)    \
+  base::UmaHistogramEnumeration(histogram, UMA_FLAG_##flag, \
+                                UMA_ACCESSIBILITYSERVICEINFO_MAX)
 #define FEEDBACK_TYPE_HISTOGRAM(feedback_type_mask, feedback_type, histogram) \
   if (feedback_type_mask & ACCESSIBILITYSERVICEINFO_FEEDBACK_##feedback_type) \
-  UMA_HISTOGRAM_ENUMERATION(histogram, UMA_FEEDBACK_##feedback_type,          \
-                            UMA_ACCESSIBILITYSERVICEINFO_MAX)
-#define CAPABILITY_TYPE_HISTOGRAM(capability_type_mask, capability_type, \
-                                  histogram)                             \
-  if (capability_type_mask &                                             \
-      ACCESSIBILITYSERVICEINFO_CAPABILITY_##capability_type)             \
-  UMA_HISTOGRAM_ENUMERATION(histogram, UMA_CAPABILITY_##capability_type, \
-                            UMA_ACCESSIBILITYSERVICEINFO_MAX)
-#define SERVICE_TYPE_HISTOGRAM(service_type, histogram) \
-  UMA_HISTOGRAM_ENUMERATION(histogram, service_type,    \
-                            UMA_ACCESSIBILITYSERVICEINFO_MAX);
+  base::UmaHistogramEnumeration(histogram, UMA_FEEDBACK_##feedback_type,      \
+                                UMA_ACCESSIBILITYSERVICEINFO_MAX)
+#define CAPABILITY_TYPE_HISTOGRAM(capability_type_mask, capability_type,     \
+                                  histogram)                                 \
+  if (capability_type_mask &                                                 \
+      ACCESSIBILITYSERVICEINFO_CAPABILITY_##capability_type)                 \
+  base::UmaHistogramEnumeration(histogram, UMA_CAPABILITY_##capability_type, \
+                                UMA_ACCESSIBILITYSERVICEINFO_MAX)
+#define SERVICE_TYPE_HISTOGRAM(service_type, histogram)  \
+  base::UmaHistogramEnumeration(histogram, service_type, \
+                                UMA_ACCESSIBILITYSERVICEINFO_MAX);
 
 // This macro simplifies the recording of the aggregate accessibility
 // information in the CollectAccessibilityServiceStats() method, below.
