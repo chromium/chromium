@@ -6,10 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_TIMELINE_H_
 
 #include "base/check_op.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -46,10 +49,13 @@ class CORE_EXPORT StyleTimeline {
   };
 
   explicit StyleTimeline(CSSValueID keyword) : data_(keyword) {}
-  explicit StyleTimeline(const AtomicString& name) : data_(name) {}
+  explicit StyleTimeline(const ScopedCSSName* name) : data_(name) {}
   explicit StyleTimeline(const ScrollData& scroll_data) : data_(scroll_data) {}
 
   bool operator==(const StyleTimeline& other) const {
+    if (IsName() && other.IsName()) {
+      return base::ValuesEquivalent(&GetName(), &other.GetName());
+    }
     return data_ == other.data_;
   }
   bool operator!=(const StyleTimeline& other) const {
@@ -57,15 +63,19 @@ class CORE_EXPORT StyleTimeline {
   }
 
   bool IsKeyword() const { return absl::holds_alternative<CSSValueID>(data_); }
-  bool IsName() const { return absl::holds_alternative<AtomicString>(data_); }
+  bool IsName() const {
+    return absl::holds_alternative<Persistent<const ScopedCSSName>>(data_);
+  }
   bool IsScroll() const { return absl::holds_alternative<ScrollData>(data_); }
 
   const CSSValueID& GetKeyword() const { return absl::get<CSSValueID>(data_); }
-  const AtomicString& GetName() const { return absl::get<AtomicString>(data_); }
+  const ScopedCSSName& GetName() const {
+    return *absl::get<Persistent<const ScopedCSSName>>(data_);
+  }
   const ScrollData& GetScroll() const { return absl::get<ScrollData>(data_); }
 
  private:
-  absl::variant<CSSValueID, AtomicString, ScrollData> data_;
+  absl::variant<CSSValueID, Persistent<const ScopedCSSName>, ScrollData> data_;
 };
 
 }  // namespace blink

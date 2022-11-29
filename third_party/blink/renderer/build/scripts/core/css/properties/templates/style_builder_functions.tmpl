@@ -63,6 +63,22 @@ state.GetFontBuilder().{{property.setter}}
   {%- endif %}
 {% endmacro %}
 
+{% macro add_tree_scope(property, value, tree_scope) %}
+  {%- if property.tree_scoped_value %}
+ScopedCSSValue({{value}}, {{tree_scope}})
+  {%- else %}
+{{value}}
+  {%- endif %}
+{% endmacro %}
+
+{% macro remove_tree_scope(property, value) %}
+  {%- if property.tree_scoped_value %}
+{{value}}.GetCSSValue()
+  {%- else %}
+{{value}}
+  {%- endif %}
+{% endmacro %}
+
 {% macro style_builder_functions(property) %}
   {% if not property.style_builder_template %}
     {% call(property) apply_initial(property) %}
@@ -225,8 +241,10 @@ state.GetFontBuilder().{{property.setter}}
     {% call(property) apply_value(property) %}
   CSS{{animation}}Data& data = state.StyleBuilder().Access{{animation}}s();
   data.{{vector}}.clear();
-  for (auto& listValue : To<CSSValueList>(value))
-    data.{{vector}}.push_back(CSSToStyleMap::MapAnimation{{attribute}}(*listValue));
+  for (const CSSValue* list_value : To<CSSValueList>({{remove_tree_scope(property, 'value')}})) {
+    const auto& item = {{add_tree_scope(property, '*list_value', 'value.GetTreeScope()')}};
+    data.{{vector}}.push_back(CSSToStyleMap::MapAnimation{{attribute}}(item));
+  }
     {% endcall %}
   {% elif property.style_builder_template in ['background_layer', 'mask_layer'] %}
     {% set layer_type = 'Background' if property.style_builder_template == 'background_layer' else 'Mask' %}

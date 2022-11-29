@@ -39,6 +39,7 @@ class CSSValue;
 class StyleResolverState;
 class NinePieceImage;
 class BorderImageLengthBox;
+class ScopedCSSValue;
 
 class CSSToStyleMap {
   STATIC_ONLY(CSSToStyleMap);
@@ -74,7 +75,7 @@ class CSSToStyleMap {
   static Timing::FillMode MapAnimationFillMode(const CSSValue&);
   static double MapAnimationIterationCount(const CSSValue&);
   static AtomicString MapAnimationName(const CSSValue&);
-  static StyleTimeline MapAnimationTimeline(const CSSValue&);
+  static StyleTimeline MapAnimationTimeline(const ScopedCSSValue&);
   static EAnimPlayState MapAnimationPlayState(const CSSValue&);
   static CSSTransitionData::TransitionProperty MapAnimationProperty(
       const CSSValue&);

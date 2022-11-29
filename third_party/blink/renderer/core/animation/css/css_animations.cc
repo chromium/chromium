@@ -693,8 +693,10 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
     return nullptr;
   }
   if (style_timeline.IsName()) {
-    return FindPreviousSiblingAncestorTimeline(style_timeline.GetName(),
-                                               element, &update);
+    const ScopedCSSName& scoped_name = style_timeline.GetName();
+    // TODO(crbug.com/1382876): Handle TreeScope.
+    return FindPreviousSiblingAncestorTimeline(scoped_name.GetName(), element,
+                                               &update);
   }
   DCHECK(style_timeline.IsScroll());
   return ComputeScrollFunctionTimeline(element, style_timeline.GetScroll());

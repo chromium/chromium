@@ -2036,7 +2036,8 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
     return CSSIdentifierValue::Create(timeline.GetKeyword());
   }
   if (timeline.IsName()) {
-    const AtomicString& name = timeline.GetName();
+    const ScopedCSSName& scoped_name = timeline.GetName();
+    const AtomicString& name = scoped_name.GetName();
     // Serialize as <string> if the value is not a valid <custom-ident>.
     if (css_parsing_utils::IsCSSWideKeyword(name) ||
         EqualIgnoringASCIICase(name, "auto") ||

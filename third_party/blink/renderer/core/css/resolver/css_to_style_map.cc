@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/style/border_image_length_box.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -386,7 +387,9 @@ AtomicString CSSToStyleMap::MapAnimationName(const CSSValue& value) {
   return CSSAnimationData::InitialName();
 }
 
-StyleTimeline CSSToStyleMap::MapAnimationTimeline(const CSSValue& value) {
+StyleTimeline CSSToStyleMap::MapAnimationTimeline(
+    const ScopedCSSValue& scoped_value) {
+  const CSSValue& value = scoped_value.GetCSSValue();
   if (value.IsInitialValue())
     return CSSAnimationData::InitialTimeline();
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
@@ -395,10 +398,12 @@ StyleTimeline CSSToStyleMap::MapAnimationTimeline(const CSSValue& value) {
     return StyleTimeline(ident->GetValueID());
   }
   if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
-    return StyleTimeline(custom_ident->Value());
+    return StyleTimeline(MakeGarbageCollected<ScopedCSSName>(
+        custom_ident->Value(), scoped_value.GetTreeScope()));
   }
   if (auto* string_value = DynamicTo<CSSStringValue>(value)) {
-    return StyleTimeline(AtomicString(string_value->Value()));
+    return StyleTimeline(MakeGarbageCollected<ScopedCSSName>(
+        AtomicString(string_value->Value()), scoped_value.GetTreeScope()));
   }
   const auto& scroll_value = To<cssvalue::CSSScrollValue>(value);
   const auto* axis_value = DynamicTo<CSSIdentifierValue>(scroll_value.Axis());
