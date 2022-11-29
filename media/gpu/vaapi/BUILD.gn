@@ -408,9 +408,11 @@ executable("decode_test") {
     ]
   }
 
+
   deps = [
     ":libva_stubs",
     "//base",
+    "//build/config/linux/libdrm",
     "//media",
     "//media:test_support",
     "//media/gpu:common",

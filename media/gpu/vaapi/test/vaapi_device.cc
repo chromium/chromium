@@ -6,21 +6,47 @@
 
 #include <fcntl.h>
 #include <va/va_drm.h>
+#include <xf86drm.h>
 
+#include "base/files/file.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "media/gpu/vaapi/test/macros.h"
 
 namespace media {
 namespace vaapi_test {
 
+base::File FindDrmNode() {
+  constexpr char kRenderNodeFilePattern[] = "/dev/dri/renderD%d";
+  // This loop ends on either the first card that does not exist or the first
+  // render node that is not vgem.
+  for (int i = 128;; i++) {
+    base::FilePath dev_path(FILE_PATH_LITERAL(
+        base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
+    base::File drm_file =
+        base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WRITE);
+    if (!drm_file.IsValid())
+      return drm_file;
+    // Skip the virtual graphics memory manager device.
+    drmVersionPtr version = drmGetVersion(drm_file.GetPlatformFile());
+    if (!version)
+      continue;
+    std::string version_name(
+        version->name,
+        base::checked_cast<std::string::size_type>(version->name_len));
+    drmFreeVersion(version);
+    if (base::EqualsCaseInsensitiveASCII(version_name, "vgem"))
+      continue;
+    return drm_file;
+  }
+}
+
 VaapiDevice::VaapiDevice() : display_(nullptr) {
-  constexpr char kDriRenderNode0Path[] = "/dev/dri/renderD128";
-  display_file_ = base::File(
-      base::FilePath::FromUTF8Unsafe(kDriRenderNode0Path),
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
-  LOG_ASSERT(display_file_.IsValid())
-      << "Failed to open " << kDriRenderNode0Path;
+  display_file_ = FindDrmNode();
+  LOG_ASSERT(display_file_.IsValid()) << "Failed to determine DRM render node";
 
   display_ = vaGetDisplayDRM(display_file_.GetPlatformFile());
   LOG_ASSERT(display_ != nullptr) << "vaGetDisplayDRM failed";
