@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
