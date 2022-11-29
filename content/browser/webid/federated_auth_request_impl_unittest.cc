@@ -2209,10 +2209,15 @@ class IdpNetworkRequestManagerClientMetadataTaskRunner
   void FetchClientMetadata(const GURL& client_metadata_endpoint_url,
                            const std::string& client_id,
                            FetchClientMetadataCallback callback) override {
+    // Make copies because running the task might destroy
+    // FederatedAuthRequestImpl and invalidate the references.
+    GURL client_metadata_endpoint_url_copy = client_metadata_endpoint_url;
+    std::string client_id_copy = client_id;
+
     if (client_metadata_task_)
       std::move(client_metadata_task_).Run();
     TestIdpNetworkRequestManager::FetchClientMetadata(
-        client_metadata_endpoint_url, client_id, std::move(callback));
+        client_metadata_endpoint_url_copy, client_id_copy, std::move(callback));
   }
 
  private:

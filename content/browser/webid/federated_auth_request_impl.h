@@ -76,14 +76,17 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnRejectRequest();
 
   struct IdentityProviderInfo {
-    IdentityProviderInfo();
+    IdentityProviderInfo(blink::mojom::IdentityProvider,
+                         FederatedManifestRequester::Endpoints,
+                         IdentityProviderMetadata);
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
 
     blink::mojom::IdentityProvider provider;
     FederatedManifestRequester::Endpoints endpoints;
+    IdentityProviderMetadata metadata;
     bool has_failing_idp_signin_status{false};
-    absl::optional<IdentityProviderMetadata> metadata;
+    absl::optional<IdentityProviderData> data;
   };
 
  private:
@@ -100,14 +103,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void OnAllManifestsFetched(
       std::unique_ptr<FederatedManifestRequester> manifest_requester,
+      base::flat_map<GURL, blink::mojom::IdentityProvider> providers,
       std::vector<FederatedManifestRequester::FetchResult> fetch_results);
   void OnClientMetadataResponseReceived(
-      const IdentityProviderInfo& idp_info,
+      std::unique_ptr<IdentityProviderInfo> idp_info,
       const IdpNetworkRequestManager::AccountList& accounts,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata client_metadata);
   void MaybeShowAccountsDialog(
-      const IdentityProviderInfo& idp_info,
+      std::unique_ptr<IdentityProviderInfo> idp_info,
       const IdpNetworkRequestManager::AccountList& accounts,
       const IdpNetworkRequestManager::ClientMetadata& client_metadata);
 
@@ -119,7 +123,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       absl::optional<content::FedCmRequestIdTokenStatus> token_status);
 
   void OnAccountsResponseReceived(
-      const IdentityProviderInfo& idp_info,
+      std::unique_ptr<IdentityProviderInfo> idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::AccountList accounts);
   void OnAccountSelected(const GURL& idp_config_url,
@@ -198,7 +202,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   bool prefer_auto_sign_in_;
 
-  base::flat_map<GURL, IdentityProviderInfo> idp_info_;
+  // Populated in OnAllManifestsFetched().
+  base::flat_map<GURL, GURL> metrics_endpoints_;
+
+  // Populated by MaybeShowAccountsDialog().
+  base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;
@@ -229,8 +237,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // List of config URLs of IDPs in the same order as the providers specified in
   // the navigator.credentials.get call.
   std::vector<GURL> idp_order_;
-  // Map of processed IDPs' data keyed by IDP config URL to display on the UI.
-  base::flat_map<GURL, IdentityProviderData> idp_data_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };
