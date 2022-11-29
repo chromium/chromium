@@ -37,7 +37,9 @@ class MockInput : public MixingGraph::Input {
   MOCK_METHOD(void, SetVolume, (double));
   MOCK_METHOD(void, Start, (media::AudioOutputStream::AudioSourceCallback*));
   MOCK_METHOD(void, Stop, ());
-  MOCK_METHOD(double, ProvideInput, (media::AudioBus*, uint32_t));
+  MOCK_METHOD(double,
+              ProvideInput,
+              (media::AudioBus*, uint32_t, const media::AudioGlitchInfo&));
 
   media::AudioParameters params;
 };

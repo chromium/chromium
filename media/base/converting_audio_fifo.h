@@ -50,7 +50,9 @@ class MEDIA_EXPORT ConvertingAudioFifo final
   friend class ConvertingAudioFifoTest;
 
   // AudioConverter::InputCallback implementation.
-  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
+  double ProvideInput(AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override;
 
   // Consumes frames from |inputs_|, converts them to match
   // |output_params_| fills |dest|.

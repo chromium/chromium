@@ -103,8 +103,10 @@ class MockMixingGraphInput : public MixingGraph::Input {
   MOCK_METHOD1(Start,
                void(AudioOutputStream::AudioSourceCallback* source_callback));
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD2(ProvideInput,
-               double(media::AudioBus* audio_bus, uint32_t frames_delayed));
+  MOCK_METHOD3(ProvideInput,
+               double(media::AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const media::AudioGlitchInfo& glitch_info));
 
  private:
   double volume_ = 0;
@@ -124,8 +126,10 @@ class FakeMixingGraphInput : public MixingGraph::Input {
   }
   void Stop() final { mock_input_->Stop(); }
 
-  MOCK_METHOD2(ProvideInput,
-               double(media::AudioBus* audio_bus, uint32_t frames_delayed));
+  MOCK_METHOD3(ProvideInput,
+               double(media::AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const media::AudioGlitchInfo& glitch_info));
 
  private:
   const media::AudioParameters params_;

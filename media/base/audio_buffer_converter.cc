@@ -92,7 +92,8 @@ void AudioBufferConverter::ResetTimestampState() {
 }
 
 double AudioBufferConverter::ProvideInput(AudioBus* audio_bus,
-                                          uint32_t frames_delayed) {
+                                          uint32_t frames_delayed,
+                                          const AudioGlitchInfo& glitch_info) {
   DCHECK(is_flushing_ || input_frames_ >= audio_bus->frames());
 
   int requested_frames_left = audio_bus->frames();

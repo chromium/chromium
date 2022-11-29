@@ -64,7 +64,9 @@ class OnMoreDataConverter
 
  private:
   // AudioConverter::InputCallback implementation.
-  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
+  double ProvideInput(AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override;
 
   // Source callback.
   raw_ptr<AudioOutputStream::AudioSourceCallback> source_callback_;
@@ -479,7 +481,8 @@ int OnMoreDataConverter::OnMoreData(base::TimeDelta delay,
 }
 
 double OnMoreDataConverter::ProvideInput(AudioBus* dest,
-                                         uint32_t frames_delayed) {
+                                         uint32_t frames_delayed,
+                                         const AudioGlitchInfo& glitch_info) {
   base::TimeDelta new_delay =
       current_delay_ + AudioTimestampHelper::FramesToTime(
                            frames_delayed, input_samples_per_second_);

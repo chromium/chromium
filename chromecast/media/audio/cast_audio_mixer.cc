@@ -72,7 +72,8 @@ class CastAudioMixer::MixerProxyStream
    private:
     // ::media::AudioConverter::InputCallback implementation
     double ProvideInput(::media::AudioBus* audio_bus,
-                        uint32_t frames_delayed) override {
+                        uint32_t frames_delayed,
+                        const ::media::AudioGlitchInfo& glitch_info) override {
       DCHECK_CALLED_ON_VALID_THREAD(backend_thread_checker_);
       resampler_->ConvertWithDelay(frames_delayed, audio_bus);
       // Volume multiplier has already been applied by |resampler_|.
@@ -160,7 +161,8 @@ class CastAudioMixer::MixerProxyStream
 
   // ::media::AudioConverter::InputCallback implementation
   double ProvideInput(::media::AudioBus* audio_bus,
-                      uint32_t frames_delayed) override {
+                      uint32_t frames_delayed,
+                      const ::media::AudioGlitchInfo& glitch_info) override {
     // Called on backend thread. Member variables accessed from both backend
     // and audio thread must be thread-safe.
     DCHECK(source_callback_);

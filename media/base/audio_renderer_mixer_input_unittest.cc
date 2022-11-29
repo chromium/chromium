@@ -76,7 +76,7 @@ class AudioRendererMixerInputTest : public testing::Test,
   }
 
   double ProvideInput() {
-    return mixer_input_->ProvideInput(audio_bus_.get(), 0);
+    return mixer_input_->ProvideInput(audio_bus_.get(), 0, {});
   }
 
   scoped_refptr<AudioRendererSink> GetSink(

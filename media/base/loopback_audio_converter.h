@@ -38,7 +38,9 @@ class MEDIA_EXPORT LoopbackAudioConverter
   bool empty() { return audio_converter_.empty(); }
 
  private:
-  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
+  double ProvideInput(AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override;
 
   AudioConverter audio_converter_;
 };

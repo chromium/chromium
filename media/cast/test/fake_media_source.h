@@ -121,7 +121,8 @@ class FakeMediaSource final : public media::AudioConverter::InputCallback {
 
   // media::AudioConverter::InputCallback implementation.
   double ProvideInput(media::AudioBus* output_bus,
-                      uint32_t frames_delayed) final;
+                      uint32_t frames_delayed,
+                      const media::AudioGlitchInfo& glitch_info) final;
 
   AVStream* av_audio_stream();
   AVStream* av_video_stream();

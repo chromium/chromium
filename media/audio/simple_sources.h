@@ -106,7 +106,9 @@ class MEDIA_EXPORT FileSource : public AudioOutputStream::AudioSourceCallback,
   bool looping_;
 
   // Provides audio data from wav_audio_handler_ into the file audio converter.
-  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
+  double ProvideInput(AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override;
 
   // Loads the wav file on the first OnMoreData invocation.
   void LoadWavFile(const base::FilePath& path_to_wav_file);

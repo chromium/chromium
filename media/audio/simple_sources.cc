@@ -238,7 +238,8 @@ void FileSource::Rewind() {
 }
 
 double FileSource::ProvideInput(AudioBus* audio_bus_into_converter,
-                                uint32_t frames_delayed) {
+                                uint32_t frames_delayed,
+                                const AudioGlitchInfo& glitch_info) {
   // Unfilled frames will be zeroed by CopyTo.
   size_t bytes_written;
   wav_audio_handler_->CopyTo(audio_bus_into_converter, wav_file_read_pos_,

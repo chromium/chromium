@@ -32,6 +32,7 @@
 
 using media::AudioBus;
 using media::AudioConverter;
+using media::AudioGlitchInfo;
 using media::AudioParameters;
 using media::ChannelLayout;
 
@@ -60,7 +61,9 @@ class SpeechRecognizerImpl::OnDataConverter
 
  private:
   // media::AudioConverter::InputCallback implementation.
-  double ProvideInput(AudioBus* dest, uint32_t frames_delayed) override;
+  double ProvideInput(AudioBus* dest,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override;
 
   // Handles resampling, buffering, and channel mixing between input and output
   // parameters.
@@ -164,7 +167,8 @@ scoped_refptr<AudioChunk> SpeechRecognizerImpl::OnDataConverter::Convert(
 
 double SpeechRecognizerImpl::OnDataConverter::ProvideInput(
     AudioBus* dest,
-    uint32_t frames_delayed) {
+    uint32_t frames_delayed,
+    const AudioGlitchInfo& glitch_info) {
   // Read from the input bus to feed the converter.
   input_bus_->CopyTo(dest);
   // Indicate that the recorded audio has in fact been used by the converter.

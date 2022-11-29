@@ -82,8 +82,10 @@ AudioTrackOpusEncoder::~AudioTrackOpusEncoder() {
   DestroyExistingOpusEncoder();
 }
 
-double AudioTrackOpusEncoder::ProvideInput(media::AudioBus* audio_bus,
-                                           uint32_t frames_delayed) {
+double AudioTrackOpusEncoder::ProvideInput(
+    media::AudioBus* audio_bus,
+    uint32_t frames_delayed,
+    const media::AudioGlitchInfo& glitch_info) {
   fifo_->Consume(audio_bus, 0, audio_bus->frames());
   return 1.0;
 }

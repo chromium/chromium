@@ -89,7 +89,9 @@ class MEDIA_EXPORT AudioRendererMixerInput
   absl::optional<OutputDeviceInfo> device_info_;
 
   // AudioConverter::InputCallback implementation.
-  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
+  double ProvideInput(AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override;
 
   void OnDeviceInfoReceived(OutputDeviceInfoCB info_cb,
                             OutputDeviceInfo device_info);

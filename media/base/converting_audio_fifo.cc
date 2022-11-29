@@ -75,7 +75,8 @@ void ConvertingAudioFifo::Flush() {
 }
 
 double ConvertingAudioFifo::ProvideInput(AudioBus* audio_bus,
-                                         uint32_t frames_delayed) {
+                                         uint32_t frames_delayed,
+                                         const AudioGlitchInfo& glitch_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int frames_needed = audio_bus->frames();

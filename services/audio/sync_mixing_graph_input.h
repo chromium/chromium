@@ -32,7 +32,8 @@ class SyncMixingGraphInput final : public MixingGraph::Input {
 
   // media::AudioConverter::InputCallback.
   double ProvideInput(media::AudioBus* audio_bus,
-                      uint32_t frames_delayed) final;
+                      uint32_t frames_delayed,
+                      const media::AudioGlitchInfo& glitch_info) final;
 
   const media::AudioParameters& GetParams() const final;
 

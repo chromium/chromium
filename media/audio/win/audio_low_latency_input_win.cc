@@ -1657,8 +1657,10 @@ void WASAPIAudioInputStream::MaybeReportFormatRelatedInitError(
       FormatRelatedInitError::kCount);
 }
 
-double WASAPIAudioInputStream::ProvideInput(AudioBus* audio_bus,
-                                            uint32_t frames_delayed) {
+double WASAPIAudioInputStream::ProvideInput(
+    AudioBus* audio_bus,
+    uint32_t frames_delayed,
+    const AudioGlitchInfo& glitch_info) {
   fifo_->Consume()->CopyTo(audio_bus);
   return 1.0;
 }

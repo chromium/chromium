@@ -200,7 +200,9 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   void MaybeReportFormatRelatedInitError(HRESULT hr) const;
 
   // AudioConverter::InputCallback implementation.
-  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
+  double ProvideInput(AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override;
 
   // Reports glitch stats and resets associated variables.
   void ReportAndResetGlitchStats();

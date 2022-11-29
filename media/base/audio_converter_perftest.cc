@@ -20,7 +20,9 @@ class NullInputProvider : public AudioConverter::InputCallback {
   NullInputProvider() = default;
   ~NullInputProvider() override = default;
 
-  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override {
+  double ProvideInput(AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override {
     audio_bus->Zero();
     return 1;
   }

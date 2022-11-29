@@ -67,6 +67,7 @@ source_set("base") {
     "audio_encoder.h",
     "audio_fifo.cc",
     "audio_fifo.h",
+    "audio_glitch_info.h",
     "audio_hash.cc",
     "audio_hash.h",
     "audio_power_monitor.cc",

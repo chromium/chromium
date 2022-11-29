@@ -218,8 +218,10 @@ void AudioRendererMixerInput::SwitchOutputDevice(
                      base::RetainedRef(this), std::move(callback), new_sink));
 }
 
-double AudioRendererMixerInput::ProvideInput(AudioBus* audio_bus,
-                                             uint32_t frames_delayed) {
+double AudioRendererMixerInput::ProvideInput(
+    AudioBus* audio_bus,
+    uint32_t frames_delayed,
+    const AudioGlitchInfo& glitch_info) {
   TRACE_EVENT0("audio", "AudioRendererMixerInput::ProvideInput");
   const base::TimeDelta delay =
       AudioTimestampHelper::FramesToTime(frames_delayed, params_.sample_rate());

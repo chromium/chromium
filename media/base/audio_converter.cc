@@ -217,7 +217,7 @@ void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
   // Have each mixer render its data into an output buffer then mix the result.
   for (auto* input : transform_inputs_) {
     const float volume =
-        input->ProvideInput(provide_input_dest, total_frames_delayed);
+        input->ProvideInput(provide_input_dest, total_frames_delayed, {});
     // Optimize the most common single input, full volume case.
     if (input == transform_inputs_.front()) {
       if (volume == 1.0f) {

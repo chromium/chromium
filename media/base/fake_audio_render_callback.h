@@ -39,7 +39,9 @@ class FakeAudioRenderCallback : public AudioRendererSink::RenderCallback,
   MOCK_METHOD0(OnRenderError, void());
 
   // AudioConverter::InputCallback implementation.
-  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
+  double ProvideInput(AudioBus* audio_bus,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override;
 
   // Toggles only filling half the requested amount during Render().
   void set_half_fill(bool half_fill) { half_fill_ = half_fill; }

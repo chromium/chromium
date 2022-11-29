@@ -14,8 +14,10 @@ LoopbackAudioConverter::LoopbackAudioConverter(
 
 LoopbackAudioConverter::~LoopbackAudioConverter() = default;
 
-double LoopbackAudioConverter::ProvideInput(AudioBus* audio_bus,
-                                            uint32_t frames_delayed) {
+double LoopbackAudioConverter::ProvideInput(
+    AudioBus* audio_bus,
+    uint32_t frames_delayed,
+    const AudioGlitchInfo& glitch_info) {
   audio_converter_.ConvertWithDelay(frames_delayed, audio_bus);
   return 1.0;
 }

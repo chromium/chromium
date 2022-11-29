@@ -24,8 +24,10 @@ SyncMixingGraphInput::~SyncMixingGraphInput() {
 // Either calls Render() directly to produce the requested input audio, or - in
 // the case of a frames per buffer mismatch - pulls audio from the |fifo_| which
 // in turn calls Render() as needed.
-double SyncMixingGraphInput::ProvideInput(media::AudioBus* audio_bus,
-                                          uint32_t frames_delayed) {
+double SyncMixingGraphInput::ProvideInput(
+    media::AudioBus* audio_bus,
+    uint32_t frames_delayed,
+    const media::AudioGlitchInfo& glitch_info) {
   DCHECK_EQ(audio_bus->channels(), params_.channels());
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("audio"),
                "SyncMixingGraphInput::ProvideInput", "frames_delayed",

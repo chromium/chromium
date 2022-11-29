@@ -153,9 +153,10 @@ void WebAudioMediaStreamAudioSink::ProvideInput(
 // AudioConverter which in turn is called by the above ProvideInput() function.
 // Thus thread safety analysis is disabled here and |lock_| acquire manually
 // asserted.
-double WebAudioMediaStreamAudioSink::ProvideInput(media::AudioBus* audio_bus,
-                                                  uint32_t frames_delayed)
-    NO_THREAD_SAFETY_ANALYSIS {
+double WebAudioMediaStreamAudioSink::ProvideInput(
+    media::AudioBus* audio_bus,
+    uint32_t frames_delayed,
+    const media::AudioGlitchInfo& glitch_info) NO_THREAD_SAFETY_ANALYSIS {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "WebAudioMediaStreamAudioSink::ProvideInput 2");
 

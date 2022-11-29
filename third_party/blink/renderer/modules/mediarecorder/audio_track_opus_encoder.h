@@ -43,7 +43,8 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
 
   // media::AudioConverted::InputCallback implementation.
   double ProvideInput(media::AudioBus* audio_bus,
-                      uint32_t frames_delayed) override;
+                      uint32_t frames_delayed,
+                      const media::AudioGlitchInfo& glitch_info) override;
 
   // Target bitrate for Opus. If 0, Opus provide automatic bitrate is used.
   const uint32_t bits_per_second_;

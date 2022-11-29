@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 
@@ -56,7 +57,8 @@ class MEDIA_EXPORT AudioConverter {
     // the volume level will be used to scale the provided audio data.
     // |frames_delayed| is given in terms of the input sample rate.
     virtual double ProvideInput(AudioBus* audio_bus,
-                                uint32_t frames_delayed) = 0;
+                                uint32_t frames_delayed,
+                                const AudioGlitchInfo& glitch_info) = 0;
 
    protected:
     virtual ~InputCallback() {}
