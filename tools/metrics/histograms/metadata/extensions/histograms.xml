@@ -1316,22 +1316,6 @@ chromium-metrics-reviews@google.com.
   <summary>An extension has been uninstalled.</summary>
 </histogram>
 
-<histogram name="Extensions.ExternalExtensionEvent{ExternalExtensionEvent}"
-    enum="SideloadUIEvents" expires_after="M81">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Records what happens to extensions that are sideloaded, grouped by the
-    ExternalExtensionEvent enum. {ExternalExtensionEvent}
-  </summary>
-  <token key="ExternalExtensionEvent">
-    <variant name=""/>
-    <variant name="NonWebstore"
-        summary="sideloaded extensions that don't update from the webstore"/>
-    <variant name="Webstore"
-        summary="sideloaded extensions that update from the webstore"/>
-  </token>
-</histogram>
-
 <histogram name="Extensions.ExternalItemState" enum="ExternalItemState"
     expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
