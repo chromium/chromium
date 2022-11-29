@@ -513,8 +513,12 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 
 #if BUILDFLAG(IS_WIN)
   options.set_allow_cropping_window_capturer(true);
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer))
+  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer)) {
     options.set_allow_wgc_capturer(true);
+
+    // We prefer to allow the WGC capturer to embed the cursor when possible.
+    options.set_prefer_cursor_embedded(true);
+  }
 #endif
 
   // For browser tests, to create a fake desktop capturer.
