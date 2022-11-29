@@ -95,13 +95,11 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   ui::ColorTransform primary_foreground_color =
       ui::GetColorWithMaxContrast(element_background_color);
   ui::ColorTransform themed_foreground_color = SelectBasedOnWhiteNtpBackground(
-      {primary_foreground_color},
+      {gfx::kGoogleBlue600},
       ui::PickGoogleColor(element_background_color, element_background_color,
                           color_utils::kMinimumReadableContrastRatio));
-
   const ui::ColorTransform select_topmost_element_background_color =
-      SelectBasedOnWhiteNtpBackground(gfx::kGoogleBlue600,
-                                      themed_foreground_color);
+      themed_foreground_color;
   const ui::ColorTransform select_topmost_element_foreground_color =
       GetColorWithMaxContrast(select_topmost_element_background_color);
 
@@ -112,8 +110,7 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageBorder] = SelectBasedOnWhiteNtpBackground(
       {gfx::kGoogleGrey300}, element_background_color);
   mixer[kColorNewTabPageChipBackground] = element_background_color;
-  mixer[kColorNewTabPageButtonBackground] = SelectBasedOnWhiteNtpBackground(
-      {ui::kColorFrameActive}, element_background_color);
+  mixer[kColorNewTabPageButtonBackground] = element_background_color;
   mixer[kColorNewTabPageButtonForeground] = themed_foreground_color;
   mixer[kColorNewTabPageCartModuleDiscountChipBackground] =
       SelectBasedOnDarkInput(element_background_color, gfx::kGoogleGrey800,
@@ -128,10 +125,7 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
       ui::SetAlpha({gfx::kGoogleGrey900},
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE));
   mixer[kColorNewTabPageLogo] = element_background_color;
-  mixer[kColorNewTabPageLink] = SelectBasedOnWhiteNtpBackground(
-      ui::PickGoogleColor({ui::kColorFrameActive}, element_background_color,
-                          color_utils::kMinimumReadableContrastRatio),
-      themed_foreground_color);
+  mixer[kColorNewTabPageLink] = themed_foreground_color;
   mixer[kColorNewTabPageFirstRunBackground] = {kColorNewTabPageBackground};
   mixer[kColorNewTabPageModuleBackground] = element_background_color;
   mixer[kColorNewTabPageChipBackground] =
