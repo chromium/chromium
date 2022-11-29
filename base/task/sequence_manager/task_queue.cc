@@ -128,7 +128,9 @@ TaskQueue::TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
       default_task_runner_(impl_ ? impl_->CreateTaskRunner(kTaskTypeNone)
                                  : CreateNullTaskRunner()),
       name_(impl_ ? impl_->GetName() : "") {
-  // Pointer registration is needed for sorting in TaskQueueThrottler::PumpThrottledTasks.
+  // Pointer registration is needed for sorting in the following places:
+  // TaskQueueThrottler::PumpThrottledTasks
+  // BudgetPool::UpdateThrottlingStateForAllQueues
   recordreplay::RegisterPointer("TaskQueue", this);
 }
 

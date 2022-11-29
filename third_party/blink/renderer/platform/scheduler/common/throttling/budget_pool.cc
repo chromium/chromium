@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "base/optional.h"
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
@@ -91,7 +92,11 @@ void BudgetPool::Close() {
 }
 
 void BudgetPool::UpdateThrottlingStateForAllQueues(base::TimeTicks now) {
+  std::vector<TaskQueue*> queues;
   for (TaskQueue* queue : associated_task_queues_)
+    queues.push_back(queue);
+  std::sort(queues.begin(), queues.end(), recordreplay::CompareByPointerId());
+  for (TaskQueue* queue : queues)
     budget_pool_controller_->UpdateQueueSchedulingLifecycleState(now, queue);
 }
 
