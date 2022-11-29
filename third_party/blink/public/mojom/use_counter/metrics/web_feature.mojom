@@ -3748,6 +3748,7 @@ enum WebFeature {
   kCSSAtRuleSwash = 4407 ,
   kCSSAtRuleOrnaments = 4408,
   kCSSAtRuleAnnotation = 4409,
+  kServiceWorkerBypassFetchHandlerForMainResource = 4410,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -41696,6 +41696,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4407" label="CSSAtRuleSwash"/>
   <int value="4408" label="CSSAtRuleOrnaments"/>
   <int value="4409" label="CSSAtRuleAnnotation"/>
+  <int value="4410" label="ServiceWorkerBypassFetchHandlerForMainResource"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
