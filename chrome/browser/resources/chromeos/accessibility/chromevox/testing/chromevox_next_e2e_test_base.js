@@ -93,9 +93,8 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
    * @return {function(): void}
    */
   doGesture(gesture, opt_x, opt_y) {
-    return () => {
-      GestureCommandHandler.onAccessibilityGesture_(gesture, opt_x, opt_y);
-    };
+    return () => GestureCommandHandler.instance_.onAccessibilityGesture_(
+               gesture, opt_x, opt_y);
   }
 
   /**
