@@ -155,28 +155,6 @@ public class TabUiThemeProvider {
     }
 
     /**
-     * Returns the {@link ColorInt} to use for the {@link TabSelectionEditorSelectionAction}
-     * icon background.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @return The {@link ColorInt} for select all icon background.
-     */
-    public static @ColorInt int getSelectionActionIconBackgroundColor(Context context) {
-        return MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
-    }
-
-    /**
-     * Returns the {@link ColorInt} to use for the "check" drawable on the
-     * {@link TabSelectionEditorSelectionAction}.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @return The {@link ColorInt} for "check" drawable.
-     */
-    public static @ColorInt int getSelectionActionIconCheckedDrawableColor(Context context) {
-        return MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorOnPrimary, TAG);
-    }
-
-    /**
      * Returns the thumbnail placeholder color resource id based on the incognito mode.
      *
      * @param isIncognito Whether the color is used for incognito mode.

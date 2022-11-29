@@ -136,8 +136,8 @@ public class TabSelectionEditorTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
-                    .setRevision(4)
-                    .setDescription("TabSelectionEditorV2 UI Polish")
+                    .setRevision(5)
+                    .setDescription("TabSelectionEditorV2 New selection icons")
                     .build();
 
     @Mock
@@ -873,9 +873,9 @@ public class TabSelectionEditorTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
-            actions.add(TabSelectionEditorSelectionAction.createAction(
-                    sActivityTestRule.getActivity(), ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT,
-                    IconPosition.END, /*isIncognito=*/false));
+            actions.add(
+                    TabSelectionEditorSelectionAction.createAction(sActivityTestRule.getActivity(),
+                            ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END));
 
             mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
         });
@@ -1080,9 +1080,9 @@ public class TabSelectionEditorTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
-            actions.add(TabSelectionEditorSelectionAction.createAction(
-                    sActivityTestRule.getActivity(), ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT,
-                    IconPosition.END, /*isIncognito=*/false));
+            actions.add(
+                    TabSelectionEditorSelectionAction.createAction(sActivityTestRule.getActivity(),
+                            ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END));
 
             mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
         });
@@ -1241,9 +1241,9 @@ public class TabSelectionEditorTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
-            actions.add(TabSelectionEditorSelectionAction.createAction(
-                    sActivityTestRule.getActivity(), ShowMode.MENU_ONLY, ButtonType.TEXT,
-                    IconPosition.START, /*isIncognito=*/false));
+            actions.add(
+                    TabSelectionEditorSelectionAction.createAction(sActivityTestRule.getActivity(),
+                            ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START));
             actions.add(TabSelectionEditorCloseAction.createAction(sActivityTestRule.getActivity(),
                     ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START));
 
