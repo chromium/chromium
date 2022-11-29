@@ -10,9 +10,6 @@
 # Workaround page loaded when content_shell starts, but not run as a test.
 crbug.com/1231599 wpt_internal/webgpu/000_run_me_first.https.html [ Skip ]
 
-# VVL failure
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.https.html [ Crash ]
-
 # Mac doesn't support rgba8unorm for the swapchain format (yet)
 crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_copy.https.html [ Skip ]
 crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_draw.https.html [ Skip ]
