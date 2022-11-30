@@ -8,9 +8,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_coordinator.h"
-#include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -30,11 +29,11 @@ const gfx::VectorIcon& kExtensionIcon = vector_icons::kExtensionIcon;
 ExtensionsToolbarButton::ExtensionsToolbarButton(
     Browser* browser,
     ExtensionsToolbarContainer* extensions_container,
-    ExtensionsTabbedMenuCoordinator* extensions_tabbed_menu_coordinator)
+    ExtensionsMenuCoordinator* extensions_menu_coordinator)
     : ToolbarButton(PressedCallback()),
       browser_(browser),
       extensions_container_(extensions_container),
-      extensions_tabbed_menu_coordinator_(extensions_tabbed_menu_coordinator) {
+      extensions_menu_coordinator_(extensions_menu_coordinator) {
   std::unique_ptr<views::MenuButtonController> menu_button_controller =
       std::make_unique<views::MenuButtonController>(
           this,
@@ -114,9 +113,9 @@ void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void ExtensionsToolbarButton::ToggleExtensionsMenu() {
-  if (extensions_tabbed_menu_coordinator_ &&
-      extensions_tabbed_menu_coordinator_->IsShowing()) {
-    extensions_tabbed_menu_coordinator_->Hide();
+  if (extensions_menu_coordinator_ &&
+      extensions_menu_coordinator_->IsShowing()) {
+    extensions_menu_coordinator_->Hide();
     return;
   } else if (ExtensionsMenuView::IsShowing()) {
     ExtensionsMenuView::Hide();
@@ -129,9 +128,8 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   views::Widget* menu;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    extensions_tabbed_menu_coordinator_->Show(this);
-    menu = extensions_tabbed_menu_coordinator_->GetExtensionsTabbedMenuView()
-               ->GetWidget();
+    extensions_menu_coordinator_->Show(this);
+    menu = extensions_menu_coordinator_->GetExtensionsMenuWidget();
   } else {
     menu = ExtensionsMenuView::ShowBubble(
         this, browser_, extensions_container_,

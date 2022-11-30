@@ -27,7 +27,7 @@
 class Browser;
 class ExtensionsToolbarButton;
 class ToolbarActionViewController;
-class ExtensionsTabbedMenuCoordinator;
+class ExtensionsMenuCoordinator;
 
 // Container for extensions shown in the toolbar. These include pinned
 // extensions and extensions that are 'popped out' transitively to show dialogs
@@ -69,9 +69,8 @@ class ExtensionsToolbarContainer
 
   static void SetOnVisibleCallbackForTesting(base::OnceClosure callback);
 
-  ExtensionsTabbedMenuCoordinator*
-  GetExtensionsTabbedMenuCoordinatorForTesting() {
-    return extensions_tabbed_menu_coordinator_.get();
+  ExtensionsMenuCoordinator* GetExtensionsMenuCoordinatorForTesting() {
+    return extensions_menu_coordinator_.get();
   }
 
   explicit ExtensionsToolbarContainer(
@@ -301,9 +300,8 @@ class ExtensionsToolbarContainer
                           extensions::PermissionsManager::Observer>
       permissions_manager_observation_{this};
 
-  // Coordinator to show and hide the ExtensionsTabbedMenuView.
-  std::unique_ptr<ExtensionsTabbedMenuCoordinator>
-      extensions_tabbed_menu_coordinator_;
+  // Coordinator to show and hide the ExtensionsMenuView.
+  const std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
 
   // TODO(emiliapaz): Remove `extensions_button_` once
   // `extensions_features::kExtensionsMenuAccessControl` experiment is released.
