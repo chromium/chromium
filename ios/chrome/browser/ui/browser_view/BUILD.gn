@@ -5,6 +5,7 @@
 source_set("browser_view") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "browser_coordinator+private.h",
     "browser_coordinator.h",
     "browser_coordinator.mm",
     "browser_view_controller+delegates.h",

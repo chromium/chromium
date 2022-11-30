@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
+#import "ios/chrome/browser/ui/browser_view/browser_coordinator+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
@@ -199,8 +200,7 @@ enum class ToolbarKind {
 
 }  // anonymous namespace
 
-@interface BrowserCoordinator () <ActivityServiceCommands,
-                                  BrowserCoordinatorCommands,
+@interface BrowserCoordinator () <BrowserCoordinatorCommands,
                                   CRWWebStateObserver,
                                   DefaultBrowserPromoCommands,
                                   DefaultPromoNonModalPresentationDelegate,
