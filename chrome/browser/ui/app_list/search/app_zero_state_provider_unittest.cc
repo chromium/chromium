@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/search/app_search_provider_test_base.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,7 +23,13 @@ namespace app_list {
 
 namespace {
 
-constexpr char kRankingNormalAppName[] = "testRankingAppNormal";
+constexpr char kNormalAppName[] = "Normal app";
+constexpr char kHiddenAppName[] = "Hidden app";
+
+constexpr char kPlayStoreArcName[] = "Play Store";
+constexpr char kPlayStorePackageName[] = "com.android.vending";
+constexpr char kPlayStoreActivity[] =
+    "com.android.vending.AssetBrowserActivity";
 
 base::Time MicrosecondsSinceEpoch(int microseconds) {
   return base::Time::FromDeltaSinceWindowsEpoch(
@@ -88,12 +95,10 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
 
   profile_->SetIsNewProfile(true);
   ASSERT_TRUE(profile()->IsNewProfile());
+  arc_test().SetUp(profile());
 
   // There are four default web apps. We use real app IDs here, as these are
   // used internally by the ranking logic. We can use arbitrary app names.
-  //
-  // TODO(crbug.com/1235272): There is one default ARC app (PlayStore). Figure
-  // out how to test-install PlayStore as a default ARC app.
   const std::vector<std::string> kDefaultRecommendedWebAppIds = {
       web_app::kCanvasAppId, web_app::kHelpAppId, web_app::kOsSettingsAppId,
       web_app::kCameraAppId};
@@ -114,16 +119,22 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
     service_->EnableExtension(kDefaultRecommendedWebAppIds[i]);
   }
 
+  // Install the default ARC app (Play Store). This is marked here as sticky so
+  // that its installation time does not count as a ranking activity.
+  const std::string playstore_app_id =
+      AddArcApp(kPlayStoreArcName, kPlayStorePackageName, kPlayStoreActivity,
+                /*sticky=*/true);
+
   // Allow app installations to finish.
   base::RunLoop().RunUntilIdle();
   InitializeSearchProvider();
 
-  EXPECT_EQ("OsSettings,Help,Canvas,Camera", RunZeroStateSearch());
+  EXPECT_EQ("OsSettings,Help,Play Store,Canvas,Camera", RunZeroStateSearch());
 
   // Install a normal (non-default-installed) app.
   const std::string normal_app_id =
-      crx_file::id_util::GenerateId(kRankingNormalAppName);
-  AddExtension(normal_app_id, kRankingNormalAppName,
+      crx_file::id_util::GenerateId(kNormalAppName);
+  AddExtension(normal_app_id, kNormalAppName,
                ManifestLocation::kExternalPrefDownload,
                extensions::Extension::NO_FLAGS);
   WaitTimeUpdated();
@@ -137,15 +148,15 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   prefs->SetLastLaunchTime(normal_app_id, base::Time::Now());
   InitializeSearchProvider();
   EXPECT_EQ(
-      std::string(kRankingNormalAppName) + ",OsSettings,Help,Canvas,Camera",
+      std::string(kNormalAppName) + ",OsSettings,Help,Play Store,Canvas,Camera",
       RunZeroStateSearch());
 
   // Simulate launching one of the default apps. Expect that this brings it to
   // higher precedence than all the others.
   prefs->SetLastLaunchTime(web_app::kCanvasAppId, base::Time::Now());
   InitializeSearchProvider();
-  EXPECT_EQ("Canvas," + std::string(kRankingNormalAppName) +
-                ",OsSettings,Help,Camera",
+  EXPECT_EQ("Canvas," + std::string(kNormalAppName) +
+                ",OsSettings,Help,Play Store,Camera",
             RunZeroStateSearch());
 }
 
@@ -161,6 +172,37 @@ TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {
   prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(0));
   prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(0));
   EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunZeroStateSearch());
+}
+
+TEST_F(AppZeroStateProviderTest, HideNotShownInLauncher) {
+  // Disable the pre-installed high-priority extensions.
+  service_->UninstallExtension(
+      kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+  service_->UninstallExtension(
+      kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+  service_->UninstallExtension(
+      kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+
+  // Install two apps, one which is hidden and one shown in the launcher.
+  const std::string shown_app_id =
+      crx_file::id_util::GenerateId(kNormalAppName);
+  AddExtension(shown_app_id, kNormalAppName, ManifestLocation::kComponent,
+               extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
+               /*display_in_launcher=*/true);
+  service_->EnableExtension(shown_app_id);
+
+  const std::string hidden_app_id =
+      crx_file::id_util::GenerateId(kHiddenAppName);
+  AddExtension(hidden_app_id, kHiddenAppName, ManifestLocation::kComponent,
+               extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
+               /*display_in_launcher=*/false);
+  service_->EnableExtension(hidden_app_id);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Only the app that is shown in launcher should be available.
+  InitializeSearchProvider();
+  EXPECT_EQ(std::string(kNormalAppName), RunZeroStateSearch());
 }
 
 }  // namespace app_list

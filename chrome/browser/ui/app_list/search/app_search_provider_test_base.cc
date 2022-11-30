@@ -108,12 +108,13 @@ std::string AppSearchProviderTestBase::GetSortedResultsString() {
 
 std::string AppSearchProviderTestBase::AddArcApp(const std::string& name,
                                                  const std::string& package,
-                                                 const std::string& activity) {
+                                                 const std::string& activity,
+                                                 bool sticky) {
   arc::mojom::AppInfo app_info;
   app_info.name = name;
   app_info.package_name = package;
   app_info.activity = activity;
-  app_info.sticky = false;
+  app_info.sticky = sticky;
   app_info.notifications_enabled = false;
   arc_test_.app_instance()->SendAppAdded(app_info);
   return ArcAppListPrefs::GetAppId(package, activity);
@@ -122,7 +123,8 @@ std::string AppSearchProviderTestBase::AddArcApp(const std::string& name,
 void AppSearchProviderTestBase::AddExtension(const std::string& id,
                                              const std::string& name,
                                              ManifestLocation location,
-                                             int init_from_value_flags) {
+                                             int init_from_value_flags,
+                                             bool display_in_launcher) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetManifest(
@@ -145,6 +147,7 @@ void AppSearchProviderTestBase::AddExtension(const std::string& id,
                                             "hosted_app/main.html")
                                     .Build())
                            .Build())
+                  .Set("display_in_launcher", display_in_launcher)
                   .Build())
           .SetLocation(location)
           .AddFlags(init_from_value_flags)

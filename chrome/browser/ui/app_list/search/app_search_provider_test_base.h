@@ -58,13 +58,15 @@ class AppSearchProviderTestBase : public AppListTestBase {
   // Installs a test ARC app.
   std::string AddArcApp(const std::string& name,
                         const std::string& package,
-                        const std::string& activity);
+                        const std::string& activity,
+                        bool sticky = false);
 
   // Installs a test extension.
   void AddExtension(const std::string& id,
                     const std::string& name,
                     extensions::mojom::ManifestLocation location,
-                    int init_from_value_flags);
+                    int init_from_value_flags,
+                    bool display_in_launcher = true);
 
   // Notifies search providers that app list view is closing (simulating a call
   // that happens when app list closes, or gets hidden in tablet mode).
