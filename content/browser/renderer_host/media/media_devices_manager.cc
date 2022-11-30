@@ -584,11 +584,6 @@ void MediaDevicesManager::StopMonitoring() {
     SetCachePolicy(static_cast<MediaDeviceType>(i), CachePolicy::NO_CACHE);
 }
 
-bool MediaDevicesManager::IsMonitoringStarted() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return monitoring_started_;
-}
-
 void MediaDevicesManager::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -648,12 +643,6 @@ blink::WebMediaDeviceInfoArray MediaDevicesManager::GetCachedDeviceInfo(
     MediaDeviceType type) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   return current_snapshot_[static_cast<size_t>(type)];
-}
-
-MediaDevicesPermissionChecker*
-MediaDevicesManager::media_devices_permission_checker() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return permission_checker_.get();
 }
 
 void MediaDevicesManager::SetPermissionChecker(

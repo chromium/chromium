@@ -126,9 +126,6 @@ class CONTENT_EXPORT MediaDevicesManager
   // Stops device monitoring and disables caching for all device types.
   void StopMonitoring();
 
-  // Returns true if device monitoring is active, false otherwise.
-  bool IsMonitoringStarted();
-
   // Implements base::SystemMonitor::DevicesChangedObserver.
   // This function is only called in response to physical audio/video device
   // changes.
@@ -147,8 +144,6 @@ class CONTENT_EXPORT MediaDevicesManager
   // See http://crbug.com/648155.
   blink::WebMediaDeviceInfoArray GetCachedDeviceInfo(
       MediaDeviceType type) const;
-
-  MediaDevicesPermissionChecker* media_devices_permission_checker();
 
   const MediaDeviceSaltAndOriginCallback& salt_and_origin_callback() const {
     return salt_and_origin_callback_;
