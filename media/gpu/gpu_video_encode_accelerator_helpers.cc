@@ -5,6 +5,7 @@
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
