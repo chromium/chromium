@@ -934,10 +934,22 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
   RenderFrameHostImpl* rfh = GetMainRenderFrameHost();
   if (!rfh || !rfh->IsActive())
     return {};
+
   FrameTreeNode* root = rfh->frame_tree_node();
   FrameTree* tree = root->frame_tree();
+
+  // Inner tree nodes are used for several purposes, e.g. fenced frames,
+  // <webview>, portals and PDF. These may have a compositor surface as well, in
+  // which case we need to explore not the outer node only, but the inner ones
+  // as well.
+  FrameTree::NodeRange node_range =
+      base::FeatureList::IsEnabled(
+          features::kInnerFrameCompositorSurfaceEviction)
+          ? tree->NodesIncludingInnerTreeNodes()
+          : tree->SubtreeNodes(root);
+
   std::vector<viz::SurfaceId> ids;
-  for (FrameTreeNode* node : tree->SubtreeNodes(root)) {
+  for (FrameTreeNode* node : node_range) {
     if (!node->current_frame_host()->is_local_root())
       continue;
     RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
@@ -949,6 +961,7 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
       ids.push_back(id);
     view->set_is_evicted();
   }
+
   return ids;
 }
 

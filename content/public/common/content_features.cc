@@ -491,6 +491,14 @@ BASE_FEATURE(kInMemoryCodeCache,
              "InMemoryCodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// During compositor frame eviction, collect not only the surfaces that are
+// reachable from the main frame tree, but also recurse into inner
+// frames. Otherwise only toplevel frames and OOPIF are handled, and other
+// cases, e.g. PDF tiles are ignored. See https://crbug.com/1360351 for details.
+BASE_FEATURE(kInnerFrameCompositorSurfaceEviction,
+             "InnerFrameCompositorSurfaceEviction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, "InstalledApp", base::FEATURE_ENABLED_BY_DEFAULT);
 
