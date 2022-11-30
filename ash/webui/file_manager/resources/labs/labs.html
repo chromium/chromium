@@ -13,6 +13,14 @@
       background-color: var(--cros-bg-color);
       color: var(--cros-text-color-primary);
     }
+    xf-tree {
+      width: 300px;
+    }
+
+    .trailing-icon {
+      box-sizing: border-box;
+      padding: 5px 0 0 5px;
+    }
   </style>
 
   <script type="module" src="./main.js"></script>
@@ -21,5 +29,22 @@
   <h1>Files app Labs</h1>
   <button> Ok </button>
   <xf-button data-category="dismiss"></xf-button>
+
+  <xf-breadcrumb path="My Files/Downloads"></xf-breadcrumb>
+  <xf-breadcrumb path="My Files/Downloads/AAA/BBB/CCC"></xf-breadcrumb>
+
+  <xf-tree>
+    <xf-tree-item label="Level 1 (2 children)">
+      <xf-tree-item label="Level 1.1 (2 children)">
+        <xf-tree-item label="Level 1.1.1 (no children)" selected></xf-tree-item>
+        <xf-tree-item label="Level 1.1.2 (no children)" disabled></xf-tree-item>
+      </xf-tree-item>
+      <xf-tree-item label="Level 1.2 (no children)"></xf-tree-item>
+    </xf-tree-item>
+    <xf-tree-item label="Level 2 (may have children)" may-have-children separator></xf-tree-item>
+    <xf-tree-item label="Level 3 (no children)">
+      <span class="trailing-icon" tabindex="0" slot="trailingIcon">X</span>
+    </xf-tree-item>
+  </xf-tree>
 </body>
 </html>

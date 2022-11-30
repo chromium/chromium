@@ -3,5 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://file-manager/foreground/elements/xf_button.js';
+import 'chrome://file-manager/widgets/xf_breadcrumb.js';
+import 'chrome://file-manager/widgets/xf_tree.js';
+import 'chrome://file-manager/widgets/xf_tree_item.js';
 
 console.log('main ts is here.');
