@@ -368,6 +368,7 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
   tree_->GetChildren(node, &children);
   for (size_t i = 0; i < children.size(); ++i) {
     AXSourceNode& child = children[i];
+    DCHECK(tree_->IsValid(child));
     int child_id = tree_->GetId(child);
     ClientTreeNode* client_child = ClientTreeNodeById(child_id);
     if (client_child) {
@@ -728,8 +729,11 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
     int child_id = tree_->GetId(child);
 
     // Skip if the child isn't valid.
-    if (!tree_->IsValid(child))
+    // TODO(accessibility) Turn into a DCHECK() once it's proven not to occur.
+    if (!tree_->IsValid(child)) {
+      NOTREACHED();
       continue;
+    }
 
     // Skip if the same child is included more than once.
     if (new_child_ids.find(child_id) == new_child_ids.end())

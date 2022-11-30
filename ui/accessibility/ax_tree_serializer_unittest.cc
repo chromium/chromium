@@ -288,7 +288,8 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
   int invalid_id_;
 };
 
-// Test that the serializer skips invalid children.
+// Test that the serializer DCHECKs when it finds invalid children, or skips
+// them when DCHECKs are off.
 TEST(AXTreeSerializerInvalidTest, InvalidChild) {
   // (1 (2 3))
   AXTreeUpdate treedata;
@@ -305,11 +306,16 @@ TEST(AXTreeSerializerInvalidTest, InvalidChild) {
 
   BasicAXTreeSerializer serializer(&source);
   AXTreeUpdate update;
+#if !defined(GTEST_HAS_DEATH_TEST)
+  // Do not complete test.
+#elif DCHECK_IS_ON()
+  EXPECT_DEATH(serializer.SerializeChanges(tree.root(), &update), "");
+#else
   ASSERT_TRUE(serializer.SerializeChanges(tree.root(), &update));
-
   ASSERT_EQ(2U, update.nodes.size());
   EXPECT_EQ(1, update.nodes[0].id);
   EXPECT_EQ(2, update.nodes[1].id);
+#endif
 }
 
 // Test that we can set a maximum number of nodes to serialize.
