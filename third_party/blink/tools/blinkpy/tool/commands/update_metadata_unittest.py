@@ -187,11 +187,8 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
         self.assertLog([
             'INFO: All builds finished.\n',
             'INFO: Processing wptrunner report (1/1)\n',
-            "INFO: Updated 'crash.html' (1/5, modified)\n",
-            "INFO: Updated 'dir/multiglob.https.any.js' (2/5)\n",
-            "INFO: Updated 'fail.html' (3/5)\n",
-            "INFO: Updated 'pass.html' (4/5)\n",
-            "INFO: Updated 'variant.html' (5/5)\n",
+            'INFO: Updating expectations for up to 5 test files.\n',
+            "INFO: Updated 'crash.html'\n",
             'INFO: Staged 1 metadata file.\n',
         ])
         self.assertEqual(self.command.git.added_paths, {
@@ -217,9 +214,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
         self.assertLog([
             'INFO: All builds finished.\n',
             'INFO: Processing wptrunner report (1/1)\n',
-            "INFO: Updated 'dir/multiglob.https.any.js' (1/3)\n",
-            "INFO: Updated 'pass.html' (2/3)\n",
-            "INFO: Updated 'variant.html' (3/3)\n",
+            'INFO: Updating expectations for up to 3 test files.\n',
             'INFO: Staged 0 metadata files.\n',
         ])
 
@@ -297,11 +292,8 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             'INFO: Processing wptrunner report (1/1)\n',
             'WARNING: Deleting 1 orphaned metadata file:\n',
             'WARNING:   external/wpt/dir/is/orphaned.html.ini\n',
-            "INFO: Updated 'crash.html' (1/5, modified)\n",
-            "INFO: Updated 'dir/multiglob.https.any.js' (2/5)\n",
-            "INFO: Updated 'fail.html' (3/5)\n",
-            "INFO: Updated 'pass.html' (4/5)\n",
-            "INFO: Updated 'variant.html' (5/5)\n",
+            'INFO: Updating expectations for up to 5 test files.\n',
+            "INFO: Updated 'crash.html'\n",
         ])
         self.assertEqual(self.tool.filesystem.files, files_before)
         self.assertEqual(self.tool.executive.calls, [['luci-auth', 'token']])
@@ -322,7 +314,8 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
         self.assertLog([
             'INFO: All builds finished.\n',
             'INFO: Processing wptrunner report (1/1)\n',
-            "INFO: Updated 'crash.html' (1/1, modified)\n",
+            'INFO: Updating expectations for up to 1 test file.\n',
+            "INFO: Updated 'crash.html'\n",
             'INFO: Staged 1 metadata file.\n',
         ])
 
@@ -378,7 +371,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             'from your local checkout.\n',
             'WARNING: To update metadata for these tests, please rebase-update '
             'on tip-of-tree.\n',
-            "INFO: Updated 'fail.html' (1/1)\n",
+            'INFO: Updating expectations for up to 1 test file.\n',
             'INFO: Staged 0 metadata files.\n',
         ])
 
