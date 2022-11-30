@@ -104,7 +104,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Verifies the items are ordered as expected.
 // https://crbug.com/1392609.
-#if defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_ItemOrder DISABLED_ItemOrder
 #else
 #define MAYBE_ItemOrder ItemOrder
