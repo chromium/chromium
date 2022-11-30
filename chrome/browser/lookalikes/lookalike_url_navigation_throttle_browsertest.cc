@@ -250,14 +250,13 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
         LookalikeUrlService::Get(browser()->profile());
     lookalike_service->SetClockForTesting(&test_clock_);
 
-    test_helper_ = std::make_unique<LookalikeTestHelper>(browser());
-    test_helper_->SetUp();
+    SetUpLookalikeTestParams();
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
-    test_helper_->TearDown();
+    TearDownLookalikeTestParams();
   }
 
   GURL GetURL(const char* hostname) const {
@@ -439,7 +438,6 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   base::SimpleTestClock test_clock_;
-  std::unique_ptr<LookalikeTestHelper> test_helper_;
 };
 
 // Navigating to a non-IDN shouldn't show an interstitial or record metrics.

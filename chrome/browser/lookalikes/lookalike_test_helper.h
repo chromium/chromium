@@ -5,22 +5,10 @@
 #ifndef CHROME_BROWSER_LOOKALIKES_LOOKALIKE_TEST_HELPER_H_
 #define CHROME_BROWSER_LOOKALIKES_LOOKALIKE_TEST_HELPER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/test/base/in_process_browser_test.h"
-
-class Browser;
-
-// A class that provides helper methods for interstitial and safety tips
-// lookalike tests.
-class LookalikeTestHelper {
- public:
-  explicit LookalikeTestHelper(Browser* browser);
-
-  void SetUp();
-  void TearDown();
-
- private:
-  raw_ptr<Browser> browser_;
-};
+// Helper methods for interstitial and safety tips lookalike tests.
+// These allow the tests to use test data instead of prod, such as test top
+// domain lists.
+void SetUpLookalikeTestParams();
+void TearDownLookalikeTestParams();
 
 #endif

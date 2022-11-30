@@ -89,13 +89,6 @@ class ReputationService : public KeyedService {
   // seen as flagged in metrics. This only impacts metrics for control groups.
   void OnUIDisabledFirstVisit(const GURL& url);
 
-  // Used to help mock the generated keywords for the sensitive keywords
-  // heuristic for testing. The keywords passed to this function MUST be in
-  // sorted order, and must have a lifetime at least as long as this service.
-  void SetSensitiveKeywordsForTesting(const char* const* new_keywords,
-                                      size_t num_new_keywords);
-  void ResetSensitiveKeywordsForTesting();
-
   // Reset set of eTLD+1s to forget the user action that ignores warning. Only
   // for testing.
   void ResetWarningDismissedETLDPlusOnesForTesting();
@@ -116,9 +109,6 @@ class ReputationService : public KeyedService {
   std::set<std::string> warning_dismissed_etld1s_;
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
-
-  raw_ptr<const char* const, DanglingUntriaged> sensitive_keywords_;
-  size_t num_sensitive_keywords_;
 
   base::WeakPtrFactory<ReputationService> weak_factory_{this};
 };

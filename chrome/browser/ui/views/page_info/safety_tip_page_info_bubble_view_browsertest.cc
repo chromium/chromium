@@ -268,14 +268,15 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    test_helper_ = std::make_unique<LookalikeTestHelper>(browser());
-    test_helper_->SetUp();
+    SetUpLookalikeTestParams();
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
-    test_helper_->TearDown();
+    TearDownLookalikeTestParams();
+    ReputationService::Get(browser()->profile())
+        ->ResetWarningDismissedETLDPlusOnesForTesting();
   }
 
   GURL GetURL(const char* hostname) const {
@@ -425,7 +426,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<LookalikeTestHelper> test_helper_;
 };
 
 // Ensure normal sites with low engagement are not blocked.
@@ -1150,19 +1150,22 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
 }
 
-// Ensure that the sensitive-keyword heuristic doesn't show up in PageInfo. Also
+// Ensure that a metrics-only heuristic doesn't show up in PageInfo. Also
 // a regression test for crbug/1061244.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       SensitiveKeywordHeuristicDoesntShowInPageInfo) {
-  const std::vector<const char*> kSensitiveKeywords = {"test"};
-  auto kNavigatedUrl = GetURL("test-secure.com");
-
-  ReputationService* rep_service = ReputationService::Get(browser()->profile());
-  rep_service->SetSensitiveKeywordsForTesting(kSensitiveKeywords.data(),
-                                              kSensitiveKeywords.size());
-
+                       MetricsOnlyHeuristicDoesntShowInPageInfo) {
+  // This URL will trigger Combo Squatting. Combo Squatting UI is disabled by
+  // default so this should only record metrics.
+  const GURL kNavigatedUrl = GetURL("google-login.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  base::HistogramTester histograms;
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+
+  // Make sure that the UI isn't showing but interstitial histogram is recorded.
+  ASSERT_FALSE(IsUIShowing());
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(lookalikes::kHistogramName,
+                               NavigationSuggestionEvent::kComboSquatting, 1);
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
 }
@@ -1170,12 +1173,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // Tests that UKM data gets properly recorded when safety tip heuristics get
 // triggered.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       DISABLED_HeuristicsUkmRecorded) {
-  const std::vector<const char*> kSensitiveKeywords = {"test"};
-
-  ReputationService* rep_service = ReputationService::Get(browser()->profile());
-  rep_service->SetSensitiveKeywordsForTesting(kSensitiveKeywords.data(),
-                                              kSensitiveKeywords.size());
+                       HeuristicsUkmRecorded) {
+  SetEngagementScore(browser(), GURL("https://google.com"), kHighEngagement);
+  SetEngagementScore(browser(), GURL("https://youtube.com"), kHighEngagement);
 
   // Note that we only want the lookalike heuristic to trigger when our UI
   // status is fully enabled (if it's not, our lookalike heuristic shouldn't
@@ -1183,20 +1183,13 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   const std::vector<HeuristicsTestCase> test_cases = {
       /*blocklist*/ /*lookalike*/ /*keywords*/
       {GetURL("test.com"), {false, false, false}},
-      {GetURL("test-secure.com"), {false, false, true}},
-      {GetURL("test-insecure.com"), {false, false, true}},
-      {GetURL("test-blocklist.com"), {true, false, true}},
-      {GetURL("other.com"), {false, false, false}},
-      {GetURL("other-insecure.com"), {false, false, false}},
-      {GetURL("other-insecure.com"), {false, false, false}},
-      {GetURL("noblocklist.com"), {false, false, false}},
-      {GetURL("blocklist.com"), {true, false, false}},
-      {GetURL("a-normal-site.com"), {false, false, false}},
-      {GetURL("googlé.sk"), {false, true, false}},
-      {GetURL("test-secure.com"),
-       {true, false,
-        true}},  // This test case expects multiple heuristics to trigger.
-      {GetURL("googlé.sk"), {true, true, false}},
+      {GetURL("googlee.com"), {false, true, false}},
+      // Following tests are disabled because the blocklisted UI doesn't have a
+      // "Leave" button.
+      // TODO(crbug.com/1386300): Remove once the blocklist heuristic is
+      // deleted.
+      // {GetURL("youtubee.com"), {true, true, false}},
+      // {GetURL("blocklist.com"), {true, false, false}},
   };
 
   for (const HeuristicsTestCase& test_case : test_cases) {
@@ -1210,7 +1203,6 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
       NavigateToURL(browser(), test_case.navigated_url,
                     WindowOpenDisposition::CURRENT_TAB);
     }
-
     // If a warning should show, dismiss it to ensure UKM data gets recorded.
     if ((test_case.expected_results.lookalike_heuristic_triggered ||
          test_case.expected_results.blocklist_heuristic_triggered)) {
@@ -1346,10 +1338,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_FALSE(IsUIShowing());
 
   CheckRecordedHeuristicsUkmCount(1);
-  // Boolean values are /*blocklist*/ /*lookalike*/ /*keywords*/
-  // This test case expects triggering with lookalike heuristic and
-  // keywords heuristic.
-  CheckHeuristicsUkmRecord({kNavigatedUrl, {false, true, true}}, 0);
+  CheckHeuristicsUkmRecord(
+      {kNavigatedUrl,
+       {/*blocklist=*/false, /*lookalike=*/true, /*keywords=*/false}},
+      0);
 
   // Navigate to the same site again, but close the warning with an ignore
   // instead of an accept. This should still record UKM data.
@@ -1359,13 +1351,22 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   // Make sure the already collected UKM data still exists.
   CheckRecordedHeuristicsUkmCount(1);
-  CheckHeuristicsUkmRecord({kNavigatedUrl, {false, true, true}}, 0);
+  CheckHeuristicsUkmRecord(
+      {kNavigatedUrl,
+       {/*blocklist=*/false, /*lookalike=*/true, /*keywords=*/false}},
+      0);
 
   CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
   ASSERT_FALSE(IsUIShowing());
   CheckRecordedHeuristicsUkmCount(2);
-  CheckHeuristicsUkmRecord({kNavigatedUrl, {false, true, true}}, 0);
-  CheckHeuristicsUkmRecord({kNavigatedUrl, {false, true, true}}, 1);
+  CheckHeuristicsUkmRecord(
+      {kNavigatedUrl,
+       {/*blocklist=*/false, /*lookalike=*/true, /*keywords=*/false}},
+      0);
+  CheckHeuristicsUkmRecord(
+      {kNavigatedUrl,
+       {/*blocklist=*/false, /*lookalike=*/true, /*keywords=*/false}},
+      1);
 }
 
 // Test that a Safety Tip is shown and metrics are recorded when
