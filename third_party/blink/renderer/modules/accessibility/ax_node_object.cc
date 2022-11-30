@@ -4681,6 +4681,13 @@ bool AXNodeObject::OnNativeFocusAction() {
   }
 
   element->Focus();
+
+  // Calling NotifyUserActivation here allows the browser to activate features
+  // that need user activation, such as showing an autofill suggestion.
+  LocalFrame::NotifyUserActivation(
+      document->GetFrame(),
+      mojom::blink::UserActivationNotificationType::kInteraction);
+
   return true;
 }
 
