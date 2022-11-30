@@ -152,12 +152,12 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
   *allocated_objects_size += partition_stats_dumper.total_active_bytes();
   *allocated_objects_count += partition_stats_dumper.total_active_count();
   *syscall_count += partition_stats_dumper.syscall_count();
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   *cumulative_brp_quarantined_size +=
       partition_stats_dumper.cumulative_brp_quarantined_bytes();
   *cumulative_brp_quarantined_count +=
       partition_stats_dumper.cumulative_brp_quarantined_count();
-#endif
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -486,12 +486,12 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   total_active_bytes_ += memory_stats->total_active_bytes;
   total_active_count_ += memory_stats->total_active_count;
   syscall_count_ += memory_stats->syscall_count;
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   cumulative_brp_quarantined_bytes_ +=
       memory_stats->cumulative_brp_quarantined_bytes;
   cumulative_brp_quarantined_count_ +=
       memory_stats->cumulative_brp_quarantined_count;
-#endif  //  BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
   MemoryAllocatorDump* allocator_dump =
@@ -531,13 +531,13 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   allocator_dump->AddScalar("discardable_size",
                             MemoryAllocatorDump::kUnitsBytes,
                             memory_stats->total_discardable_bytes);
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   allocator_dump->AddScalar("brp_quarantined_size",
                             MemoryAllocatorDump::kUnitsBytes,
                             memory_stats->total_brp_quarantined_bytes);
   allocator_dump->AddScalar("brp_quarantined_count", "count",
                             memory_stats->total_brp_quarantined_count);
-#endif
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   allocator_dump->AddScalar("syscall_count", "count",
                             memory_stats->syscall_count);
   allocator_dump->AddScalar("syscall_total_time_ms", "ms",

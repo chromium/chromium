@@ -220,12 +220,12 @@ void GuardedPageAllocator::Init(size_t max_alloced_pages,
       free_slots_ = std::make_unique<PartitionAllocSlotFreeList>();
     else
       free_slots_ = std::make_unique<SimpleFreeList<AllocatorState::SlotIdx>>();
-#if BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     free_slots_->Initialize(state_.total_reserved_pages,
                             std::move(free_list_indices));
-#else   // BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#else
     free_slots_->Initialize(state_.total_reserved_pages);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif
   }
 
   slot_to_metadata_idx_.resize(state_.total_reserved_pages);
