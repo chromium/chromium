@@ -11,16 +11,6 @@ import {
 } from './stream_manager.js';
 
 /**
- * Thrown for no camera available on the device.
- */
-export class NoCameraError extends Error {
-  constructor(message = 'No camera available on the device') {
-    super(message);
-    this.name = this.constructor.name;
-  }
-}
-
-/**
  * Contains information of all cameras on the device and will updates its value
  * when any plugin/unplug external camera changes.
  */
