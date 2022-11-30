@@ -4279,25 +4279,26 @@ class QuickActionShowBubbleTest : public ShelfLayoutManagerTestBase,
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
 };
 
+const struct {
+  ShelfAlignment alignment;
+  bool swipe_gesture;
+} test_table[]{
+    {ShelfAlignment::kBottom, false},
+    {ShelfAlignment::kBottom, true},
+    {ShelfAlignment::kBottomLocked, false},
+    {ShelfAlignment::kBottomLocked, true},
+    {ShelfAlignment::kLeft, false},
+    {ShelfAlignment::kLeft, true},
+    {ShelfAlignment::kRight, false},
+    {ShelfAlignment::kRight, true},
+};
+
 // Used to test RTL UI orientation.
 INSTANTIATE_TEST_SUITE_P(All, QuickActionShowBubbleTest, testing::Bool());
 
 // Tests that the two finger gesture and the swipe gesture when the mouse is
 // over the shelf near the edge shows the bubble launcher.
 TEST_P(QuickActionShowBubbleTest, ScrollFromShelfToShowAppList) {
-  const struct {
-    ShelfAlignment alignment;
-    bool swipe_gesture;
-  } test_table[]{
-      {ShelfAlignment::kBottom, false},
-      {ShelfAlignment::kBottom, true},
-      {ShelfAlignment::kBottomLocked, false},
-      {ShelfAlignment::kBottomLocked, true},
-      {ShelfAlignment::kLeft, false},
-      {ShelfAlignment::kLeft, true},
-      {ShelfAlignment::kRight, false},
-      {ShelfAlignment::kRight, true},
-  };
   base::HistogramTester histogram_tester;
   const int scroll_offset_threshold =
       ShelfConfig::Get()->mousewheel_scroll_offset_threshold() + 10;
@@ -4311,19 +4312,10 @@ TEST_P(QuickActionShowBubbleTest, ScrollFromShelfToShowAppList) {
 
     // Direction of the swipe gesture depends on the shelf alignment and on the
     // event being a swipe or a fling.
-    gfx::Vector2d offset;
-    switch (test.alignment) {
-      case ShelfAlignment::kBottom:
-      case ShelfAlignment::kBottomLocked:
-        offset.set_y(scroll_offset_threshold);
-        break;
-      case ShelfAlignment::kLeft:
-        offset.set_x(-scroll_offset_threshold);
-        break;
-      case ShelfAlignment::kRight:
-        offset.set_x(scroll_offset_threshold);
-        break;
-    }
+    gfx::Vector2d offset = GetPrimaryShelf()->SelectValueForShelfAlignment(
+        gfx::Vector2d(0, scroll_offset_threshold),
+        gfx::Vector2d(-scroll_offset_threshold, 0),
+        gfx::Vector2d(scroll_offset_threshold, 0));
 
     // Action performed from the navigation_widget should show the bubble
     // launcher.
@@ -4367,6 +4359,108 @@ TEST_P(QuickActionShowBubbleTest, ScrollFromShelfToShowAppList) {
     } else {
       DoTwoFingerScrollAtLocation(status_area_widget_center, offset.x(),
                                   offset.y(), false);
+    }
+
+    GetAppListTestHelper()->WaitUntilIdle();
+    GetAppListTestHelper()->CheckVisibility(false);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kSwipeFromShelf,
+                                       bucket_swipe_count);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kScrollFromShelf,
+                                       bucket_scroll_count);
+  }
+}
+
+// Tests that the two finger gesture and the swipe gesture when the mouse is
+// over the shelf before the shelf apps, does not show the bubble launcher.
+TEST_P(QuickActionShowBubbleTest, ScrollFromShelfToShowAppListOverShelfApps) {
+  base::HistogramTester histogram_tester;
+  const int scroll_offset_threshold =
+      ShelfConfig::Get()->mousewheel_scroll_offset_threshold() + 10;
+  int bucket_scroll_count = 0;
+  int bucket_swipe_count = 0;
+
+  ShelfView* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+  const size_t max_app_count = 4;
+  for (size_t app_count = 1; app_count <= max_app_count; ++app_count)
+    AddApp();
+  EXPECT_EQ(max_app_count, shelf_view->number_of_visible_apps());
+
+  for (auto test : test_table) {
+    GetShelfLayoutManager()->LayoutShelf();
+    GetPrimaryShelf()->SetAlignment(test.alignment);
+    ASSERT_EQ(test.alignment, GetPrimaryShelf()->alignment());
+
+    // Direction of the swipe gesture depends on the shelf alignment and on the
+    // event being a swipe or a fling.
+    gfx::Vector2d offset = GetPrimaryShelf()->SelectValueForShelfAlignment(
+        gfx::Vector2d(0, scroll_offset_threshold),
+        gfx::Vector2d(-scroll_offset_threshold, 0),
+        gfx::Vector2d(scroll_offset_threshold, 0));
+    // Action performed on the edge closer to the home button should show the
+    // bubble launcher.
+    gfx::Point swipe_point;
+    if (GetParam())
+      swipe_point = GetHotseatWidget()->GetTargetBounds().right_center();
+    else
+      swipe_point = GetHotseatWidget()->GetTargetBounds().left_center();
+
+    swipe_point = GetPrimaryShelf()->PrimaryAxisValue(
+        swipe_point, GetHotseatWidget()->GetTargetBounds().top_center());
+
+    if (test.swipe_gesture) {
+      FlingBetweenLocations(swipe_point, swipe_point - offset);
+      ++bucket_swipe_count;
+    } else {
+      DoTwoFingerScrollAtLocation(swipe_point, offset.x(), offset.y(), false);
+      ++bucket_scroll_count;
+    }
+
+    GetAppListTestHelper()->WaitUntilIdle();
+    GetAppListTestHelper()->CheckVisibility(true);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kSwipeFromShelf,
+                                       bucket_swipe_count);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kScrollFromShelf,
+                                       bucket_scroll_count);
+
+    GetAppListTestHelper()->DismissAndRunLoop();
+    GetAppListTestHelper()->CheckVisibility(false);
+
+    // Action performed over the hotseat should not show the bubble launcher
+    swipe_point = GetHotseatWidget()->GetTargetBounds().CenterPoint();
+
+    if (test.swipe_gesture) {
+      FlingBetweenLocations(swipe_point, swipe_point - offset);
+    } else {
+      DoTwoFingerScrollAtLocation(swipe_point, offset.x(), offset.y(), false);
+    }
+
+    GetAppListTestHelper()->WaitUntilIdle();
+    GetAppListTestHelper()->CheckVisibility(false);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kSwipeFromShelf,
+                                       bucket_swipe_count);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kScrollFromShelf,
+                                       bucket_scroll_count);
+
+    // Action performed on the edge farther to the home button should not show
+    // the bubble launcher.
+    if (GetParam())
+      swipe_point = GetHotseatWidget()->GetTargetBounds().left_center();
+    else
+      swipe_point = GetHotseatWidget()->GetTargetBounds().right_center();
+
+    swipe_point = GetPrimaryShelf()->PrimaryAxisValue(
+        swipe_point, GetHotseatWidget()->GetTargetBounds().bottom_center());
+
+    if (test.swipe_gesture) {
+      FlingBetweenLocations(swipe_point, swipe_point - offset);
+    } else {
+      DoTwoFingerScrollAtLocation(swipe_point, offset.x(), offset.y(), false);
     }
 
     GetAppListTestHelper()->WaitUntilIdle();

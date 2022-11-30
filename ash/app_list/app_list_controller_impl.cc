@@ -1922,4 +1922,11 @@ int AppListControllerImpl::GetFullscreenLauncherContainerId() const {
                                  : kShellWindowId_AppListContainer;
 }
 
+int AppListControllerImpl::GetPreferredBubbleWidth(
+    aura::Window* root_window) const {
+  DCHECK(bubble_presenter_);
+
+  return bubble_presenter_->GetPreferredBubbleWidth(root_window);
+}
+
 }  // namespace ash

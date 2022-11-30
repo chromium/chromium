@@ -102,6 +102,9 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
   // ShelfObserver:
   void OnShelfShuttingDown() override;
 
+  // Returns the preferred width for the bubble launcher for the |root_window|.
+  int GetPreferredBubbleWidth(aura::Window* root_window) const;
+
   views::Widget* bubble_widget_for_test() { return bubble_widget_; }
   AppListBubbleView* bubble_view_for_test() { return bubble_view_; }
 

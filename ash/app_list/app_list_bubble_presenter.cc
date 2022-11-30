@@ -485,4 +485,16 @@ void AppListBubblePresenter::OnHideAnimationEnded() {
   controller_->MaybeCloseAssistant();
 }
 
+int AppListBubblePresenter::GetPreferredBubbleWidth(
+    aura::Window* root_window) const {
+  const gfx::Rect work_area = GetWorkAreaForBubble(root_window);
+
+  // As of August 2021 the assistant cards require a minimum width of 640. If
+  // the cards become narrower then this could be reduced.
+  return app_list_features::IsCompactBubbleLauncherEnabled() &&
+                 work_area.width() < 1200
+             ? 544
+             : 640;
+}
+
 }  // namespace ash

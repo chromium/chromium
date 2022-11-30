@@ -32,6 +32,7 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/in_app_to_home_nudge_controller.h"
 #include "ash/shelf/login_shelf_widget.h"
+#include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_metrics.h"
@@ -118,6 +119,14 @@ constexpr int kMaxAutoHideShowShelfRegionSize = 10;
 
 // Delay before showing the shelf. This is after the mouse stops moving.
 constexpr int kShelfPalmRejectionSwipeOffset = 80;
+
+// The minimum size of the area in the shelf where a user can perform the swipe
+// gesture to show the bubble launcher in clamshell mode. The user is able to
+// use a swipe upward gesture on screen or on the trackpad to show the bubble
+// launcher. The area allowed to recognize the gesture will be between the home
+// button and the first app in the shelf. When the scrollable shelf is full, we
+// allow a minimum width for the shelf to recognize the gesture.
+constexpr int kQuickShowMinAllowDistance = 100;
 
 const constexpr char* const kStylusAppIds[] = {
     "fhapgmpiiiigioilnjmkiohjhlegnceb",  // Cursive/A4 Dogfood
@@ -949,31 +958,48 @@ bool ShelfLayoutManager::MaybeHandleShelfFling(
 
 bool ShelfLayoutManager::IsLocationInBubbleLauncherShowBounds(
     const gfx::Point& location_in_screen) {
-  gfx::Rect app_list_swipe_bounds =
+  const gfx::Rect shelf_bounds_in_screen =
       shelf_->shelf_widget()->GetWindowBoundsInScreen();
 
-  // We want to be able to recognize the swipe/fling action only on part of the
-  // shelf that is closer to the launcher button.
-  if (shelf_->IsHorizontalAlignment()) {
-    const int app_list_swipe_width = app_list_swipe_bounds.width() / 4;
-    // On the horizontal shelf, the poision of the launcher button may vary if
-    // the UI direction is RTL.
-    gfx::Insets insets;
-    const int non_actionable_insets =
-        app_list_swipe_bounds.width() - app_list_swipe_width;
-    if (base::i18n::IsRTL())
-      insets.set_left(non_actionable_insets);
-    else
-      insets.set_right(non_actionable_insets);
+  if (!shelf_bounds_in_screen.Contains(location_in_screen))
+    return false;
 
-    app_list_swipe_bounds.Inset(insets);
-  } else {
-    // On the vertical shelf, the launcher button is always on top regardless of
-    // locale.
-    app_list_swipe_bounds.set_height(app_list_swipe_bounds.height() / 4);
+  // Handle events that are close enough to the home button.
+  const int distance_from_start = shelf_->PrimaryAxisValue(
+      (base::i18n::IsRTL()
+           ? shelf_bounds_in_screen.right() - location_in_screen.x()
+           : location_in_screen.x() - shelf_bounds_in_screen.x()),
+      location_in_screen.y());
+
+  if (distance_from_start < kQuickShowMinAllowDistance)
+    return true;
+
+  // Don't handle swipes that would be outside app list bubble bounds.
+  if (shelf_->IsHorizontalAlignment() &&
+      distance_from_start >
+          Shell::Get()->app_list_controller()->GetPreferredBubbleWidth(
+              shelf_widget_->GetNativeWindow())) {
+    return false;
   }
 
-  return app_list_swipe_bounds.Contains(location_in_screen);
+  // For events that fall between min and max distance for swipes, only handle
+  // swipes that are outside hotseat bounds.
+  ScrollableShelfView* scrollable_shelf_view =
+      shelf_->hotseat_widget()->scrollable_shelf_view();
+  gfx::Rect available_bounds_in_screen =
+      scrollable_shelf_view->GetHotseatBackgroundBounds();
+  views::View::ConvertRectToScreen(scrollable_shelf_view,
+                                   &available_bounds_in_screen);
+
+  // Only handle swipes that would fall on the mirrored left side of the
+  // shelf before the hotseat.
+  const int mirrored_left_for_hotseat =
+      base::i18n::IsRTL()
+          ? shelf_bounds_in_screen.right() - available_bounds_in_screen.right()
+          : available_bounds_in_screen.x();
+  return distance_from_start <
+         shelf_->PrimaryAxisValue(mirrored_left_for_hotseat,
+                                  available_bounds_in_screen.y());
 }
 
 void ShelfLayoutManager::ProcessMouseWheelEventFromShelf(

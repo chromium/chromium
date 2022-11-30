@@ -344,6 +344,9 @@ class ASH_EXPORT AppListControllerImpl
     return badge_controller_.get();
   }
 
+  // Returns the preferred width for the bubble launcher for the |root_window|.
+  int GetPreferredBubbleWidth(aura::Window* root_window) const;
+
  private:
   // Convenience methods for getting models from `model_provider_`.
   AppListModel* GetModel();
