@@ -671,6 +671,12 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
                product_rename_cmd.GetCommandLineString())
         .AddCreateAppCommandWorkItems(root, in_use_update_work_items.get());
 
+    if (!installer_state.system_install()) {
+      in_use_update_work_items->AddSetRegValueWorkItem(
+          root, clients_key, KEY_WOW64_32KEY, kRegLegacyRenameCmd,
+          product_rename_cmd.GetCommandLineString(), true);
+    }
+
     // Delay deploying the new chrome_proxy while chrome is running.
     in_use_update_work_items->AddCopyTreeWorkItem(
         src_path.Append(kChromeProxyExe),
@@ -702,6 +708,11 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
         google_update::kRegCriticalVersionField);
     AppCommand(installer::kCmdRenameChromeExe, {})
         .AddDeleteAppCommandWorkItems(root, regular_update_work_items.get());
+
+    if (!installer_state.system_install()) {
+      regular_update_work_items->AddDeleteRegValueWorkItem(
+          root, clients_key, KEY_WOW64_32KEY, kRegLegacyRenameCmd);
+    }
 
     // Only copy chrome_proxy.exe directly when chrome.exe isn't in use to avoid
     // different versions getting mixed up between the two binaries.

@@ -25,6 +25,8 @@ const char kBsdiff[] = "bsdiff";
 const char kZucchini[] = "zucchini";
 #endif  // BUILDFLAG(ZUCCHINI)
 
+const wchar_t kRegLegacyRenameCmd[] = L"cmd";
+
 namespace switches {
 
 // Set the MSI-managed DisplayVersion in the registry to match Chrome's real

@@ -587,6 +587,11 @@ installer::InstallStatus RenameChromeExecutables(
   installer::AppCommand(installer::kCmdRenameChromeExe, {})
       .AddDeleteAppCommandWorkItems(reg_root, install_list.get());
 
+  if (!installer_state->system_install()) {
+    install_list->AddDeleteRegValueWorkItem(
+        reg_root, clients_key, KEY_WOW64_32KEY, installer::kRegLegacyRenameCmd);
+  }
+
   // If a channel was specified by policy, update the "channel" registry value
   // with it so that the browser knows which channel to use, otherwise delete
   // whatever value that key holds.
