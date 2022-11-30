@@ -99,3 +99,79 @@ cc_test(
         "@com_google_protobuf//:protobuf",
     ],
 )
+
+cc_library(
+    name = "evaluate_prg_hwy",
+    srcs = ["evaluate_prg_hwy.cc"],
+    hdrs = ["evaluate_prg_hwy.h"],
+    deps = [
+        ":aes_128_fixed_key_hash_hwy",
+        "//dpf:aes_128_fixed_key_hash",
+        "//dpf:status_macros",
+        "@boringssl//:crypto",
+        "@com_github_google_glog//:glog",
+        "@com_github_google_highway//:hwy",
+        "@com_google_absl//absl/base:config",
+        "@com_google_absl//absl/base:core_headers",
+        "@com_google_absl//absl/numeric:int128",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/types:span",
+    ],
+)
+
+cc_test(
+    name = "evaluate_prg_hwy_test",
+    srcs = [
+        "evaluate_prg_hwy_test.cc",
+    ],
+    deps = [
+        ":evaluate_prg_hwy",
+        ":status_matchers",
+        "//dpf:aes_128_fixed_key_hash",
+        "@com_github_google_googletest//:gtest_main",
+        "@com_github_google_highway//:hwy",
+        "@com_github_google_highway//:hwy_test_util",
+        "@com_google_absl//absl/numeric:int128",
+    ],
+)
+
+cc_library(
+    name = "get_hwy_mode",
+    srcs = ["get_hwy_mode.cc"],
+    hdrs = ["get_hwy_mode.h"],
+    deps = [
+        "@com_github_google_highway//:hwy",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "aes_128_fixed_key_hash_hwy",
+    hdrs = [
+        "aes_128_fixed_key_hash_hwy.h",
+    ],
+    deps = [
+        "@com_github_google_highway//:hwy",
+        "@com_google_absl//absl/numeric:int128",
+    ],
+)
+
+cc_test(
+    name = "aes_128_fixed_key_hash_hwy_test",
+    srcs = [
+        "aes_128_fixed_key_hash_hwy_test.cc",
+    ],
+    deps = [
+        ":aes_128_fixed_key_hash_hwy",
+        ":get_hwy_mode",
+        ":status_matchers",
+        "//dpf:aes_128_fixed_key_hash",
+        "@boringssl//:crypto",
+        "@com_github_google_glog//:glog",
+        "@com_github_google_googletest//:gtest_main",
+        "@com_github_google_highway//:hwy",
+        "@com_github_google_highway//:hwy_test_util",
+        "@com_google_absl//absl/flags:parse",
+        "@com_google_absl//absl/numeric:int128",
+    ],
+)

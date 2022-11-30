@@ -21,8 +21,8 @@
 namespace distributed_point_functions {
 
 Aes128FixedKeyHash::Aes128FixedKeyHash(
-    bssl::UniquePtr<EVP_CIPHER_CTX> cipher_ctx)
-    : cipher_ctx_(std::move(cipher_ctx)) {}
+    bssl::UniquePtr<EVP_CIPHER_CTX> cipher_ctx, absl::uint128 key)
+    : cipher_ctx_(std::move(cipher_ctx)), key_(key) {}
 
 absl::StatusOr<Aes128FixedKeyHash> Aes128FixedKeyHash::Create(
     absl::uint128 key) {
@@ -41,7 +41,7 @@ absl::StatusOr<Aes128FixedKeyHash> Aes128FixedKeyHash::Create(
   if (openssl_status != 1) {
     return absl::InternalError("Failed to set up AES context");
   }
-  return Aes128FixedKeyHash(std::move(cipher_ctx));
+  return Aes128FixedKeyHash(std::move(cipher_ctx), key);
 }
 
 absl::Status Aes128FixedKeyHash::Evaluate(absl::Span<const absl::uint128> in,

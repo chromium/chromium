@@ -64,20 +64,20 @@ http_archive(
 # abseil-cpp
 http_archive(
     name = "com_google_absl",
-    sha256 = "368be019fc8d69a566ac2cf7a75262d5ba8f6409e3ef3cdbcf0106bdeb32e91c",
-    strip_prefix = "abseil-cpp-9336be04a242237cd41a525bedfcf3be1bb55377",
+    sha256 = "c3b9d19cd38cd475f60b5756db1bdc6d10ed43e5c7ce7374eae9a57d763d0597",
+    strip_prefix = "abseil-cpp-ebab79b5783b3298ee2f31251174c660c322d7ef",
     urls = [
-        "https://github.com/abseil/abseil-cpp/archive/9336be04a242237cd41a525bedfcf3be1bb55377.zip",
+        "https://github.com/abseil/abseil-cpp/archive/ebab79b5783b3298ee2f31251174c660c322d7ef.zip",
     ],
 )
 
 # BoringSSL
 http_archive(
     name = "boringssl",
-    sha256 = "8410719cd36c41a96f375a2b868fc24378d86112dcb2be022ffcb2fbfec2432a",
-    strip_prefix = "boringssl-4fb158925f7753d80fb858cb0239dff893ef9f15",
+    sha256 = "0369cbbee0340c42576e760138e0e9a6a749fd570ad1f963ac764584893ca727",
+    strip_prefix = "boringssl-57e74c2c7f76111fda83f8f3955a82ec3a2bde44",
     urls = [
-        "https://github.com/google/boringssl/archive/4fb158925f7753d80fb858cb0239dff893ef9f15.zip",
+        "https://github.com/google/boringssl/archive/57e74c2c7f76111fda83f8f3955a82ec3a2bde44.zip",
     ],
 )
 
@@ -126,20 +126,30 @@ http_archive(
 
 # riegeli for file IO
 http_archive(
-  name = "com_github_google_riegeli",
-  sha256 = "3919f42bae25c890b89bf96525939debdd3679abfc6a81725a11397694cfbe07",
-  strip_prefix = "riegeli-accecad7fbbbe1af525ba5e35c6260f63eebf8c5",
-  urls = [
-    "https://github.com/google/riegeli/archive/accecad7fbbbe1af525ba5e35c6260f63eebf8c5.zip",
-  ],
+    name = "com_github_google_riegeli",
+    sha256 = "63253b1e0550657f590e0ac827c5f88af1829100a84ce1c8cec3777c9a5647c7",
+    strip_prefix = "riegeli-13e762cbeac9e0060914e83c9f326c3b6763078b",
+    urls = [
+        "https://github.com/google/riegeli/archive/13e762cbeac9e0060914e83c9f326c3b6763078b.zip",
+    ],
+)
+
+# Highway for SIMD operations.
+http_archive(
+    name = "com_github_google_highway",
+    sha256 = "2b11bd6356a425015c8f524cb3b3804784c0dc895fb7f3f1c48460f0327b5b1e",
+    strip_prefix = "highway-1c3c2bc6417f69ccb598c440678048ac6a8a561e",
+    urls = [
+        "https://github.com/google/highway/archive/1c3c2bc6417f69ccb598c440678048ac6a8a561e.zip",
+    ],
 )
 
 # cppitertools for logging
 http_archive(
-  name = "com_github_ryanhaining_cppitertools",
-  sha256 = "83aedc4f593212d8112eac0b32b5f191219604f3db922cc218fd733ea448118c",
-  strip_prefix = "cppitertools-b2b98e60438f1ed6b04b77cdb6cc5d5516af301b",
-  urls = [
-    "https://github.com/ryanhaining/cppitertools/archive/b2b98e60438f1ed6b04b77cdb6cc5d5516af301b.zip",
-  ]
+    name = "com_github_ryanhaining_cppitertools",
+    sha256 = "83aedc4f593212d8112eac0b32b5f191219604f3db922cc218fd733ea448118c",
+    strip_prefix = "cppitertools-b2b98e60438f1ed6b04b77cdb6cc5d5516af301b",
+    urls = [
+        "https://github.com/ryanhaining/cppitertools/archive/b2b98e60438f1ed6b04b77cdb6cc5d5516af301b.zip",
+    ],
 )

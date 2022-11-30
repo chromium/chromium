@@ -165,8 +165,7 @@ message EvaluationContext {
   // to continue the evaluation under each prefix. Uses a repeated message field
   // since Protobuf doesn't allow messages (such as `Block`) as map keys.
   repeated PartialEvaluation partial_evaluations = 4;
-  // The hierarchy level `partial_evaluations` corresponds to. If levels are
-  // expanded sequentially, this is equal to `previous_hierarchy_level - 1`,
-  // otherwise it can be smaller. Ignored when `partial_evaluations` is empty.
+  // The hierarchy level `partial_evaluations` corresponds to. Ignored when
+  // `partial_evaluations` is empty.
   int32 partial_evaluations_level = 5;
 }

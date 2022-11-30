@@ -59,6 +59,10 @@ class Aes128FixedKeyHash {
   Aes128FixedKeyHash(Aes128FixedKeyHash&&) = default;
   Aes128FixedKeyHash& operator=(Aes128FixedKeyHash&&) = default;
 
+  // Returns the key used to construct this hash function.
+  // DO NOT SEND THIS TO ANY OTHER PARTY!
+  const absl::uint128& key() const { return key_; }
+
   // The maximum number of AES blocks encrypted at once. Chosen to pipeline AES
   // as much as possible, while still allowing both source and destination to
   // comfortably fit in the L1 CPU cache.
@@ -66,10 +70,14 @@ class Aes128FixedKeyHash {
 
  private:
   // Called by `Create`.
-  Aes128FixedKeyHash(bssl::UniquePtr<EVP_CIPHER_CTX> cipher_ctx);
+  Aes128FixedKeyHash(bssl::UniquePtr<EVP_CIPHER_CTX> cipher_ctx,
+                     absl::uint128 key);
 
   // The OpenSSL encryption context used by `Evaluate`.
   bssl::UniquePtr<EVP_CIPHER_CTX> cipher_ctx_;
+
+  // The key used to construct this hash function.
+  absl::uint128 key_;
 };
 
 }  // namespace distributed_point_functions

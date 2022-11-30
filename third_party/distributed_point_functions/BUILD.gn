@@ -14,6 +14,9 @@ proto_library("proto") {
 if (!defined(dpf_abseil_cpp_dir)) {
   dpf_abseil_cpp_dir = "//third_party/abseil-cpp"
 }
+if (!defined(dpf_highway_cpp_dir)) {
+  dpf_highway_cpp_dir = "//third_party/highway"
+}
 
 config("distributed_point_functions_includes") {
   include_dirs = [
@@ -31,6 +34,10 @@ source_set("distributed_point_functions") {
     "code/dpf/distributed_point_function.h",
     "code/dpf/int_mod_n.cc",
     "code/dpf/int_mod_n.h",
+    "code/dpf/internal/evaluate_prg_hwy.cc",
+    "code/dpf/internal/evaluate_prg_hwy.h",
+    "code/dpf/internal/get_hwy_mode.cc",
+    "code/dpf/internal/get_hwy_mode.h",
     "code/dpf/internal/proto_validator.cc",
     "code/dpf/internal/proto_validator.h",
     "code/dpf/internal/value_type_helpers.cc",
@@ -44,6 +51,7 @@ source_set("distributed_point_functions") {
   public_deps = [
     ":proto",
     "$dpf_abseil_cpp_dir:absl",
+    "$dpf_highway_cpp_dir:libhwy",
     "//base",
     "//third_party/boringssl",
     "//third_party/protobuf:protobuf_lite",

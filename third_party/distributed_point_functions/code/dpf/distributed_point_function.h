@@ -26,12 +26,16 @@
 #include "absl/container/btree_map.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/meta/type_traits.h"
+#include "absl/numeric/int128.h"
+#include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "dpf/aes_128_fixed_key_hash.h"
 #include "dpf/distributed_point_function.pb.h"
 #include "dpf/internal/proto_validator.h"
 #include "dpf/internal/value_type_helpers.h"
+#include "hwy/aligned_allocator.h"
 
 namespace distributed_point_functions {
 
@@ -311,7 +315,7 @@ class DistributedPointFunction {
   }
 
   // Evaluates a single key at one or multiple points, up to the given
-  // hierarchy_level. Each element of `evaluation_points` must be within the
+  // `hierarchy_level`. Each element of `evaluation_points` must be within the
   // domain of this DPF at `hierarchy_level`.
   //
   // Example:
@@ -327,7 +331,33 @@ class DistributedPointFunction {
   template <typename T>
   absl::StatusOr<std::vector<T>> EvaluateAt(
       const DpfKey& key, int hierarchy_level,
-      absl::Span<const absl::uint128> evaluation_points) const;
+      absl::Span<const absl::uint128> evaluation_points) const {
+    return EvaluateAtImpl<T>(key, hierarchy_level, evaluation_points, nullptr);
+  }
+
+  // Evaluates a single key at one or multiple points, up to the given
+  // `hierarchy_level`. Each element of `evaluation_points` must be within the
+  // domain of this DPF at `hierarchy_level`.
+  //
+  // If `ctx.partial_evaluations_size() != 0`, uses the given partial
+  // evaluations as starting point of the DPF evaluation. Otherwise, the result
+  // is equivalent to calling `EvaluateAt(ctx.key(), hierarchy_level,
+  // evaluation_points)`.
+  //
+  // When successful, `ctx` is updated to include partial evaluations at
+  // `hierarchy_level`. The contents of `ctx` are undefined in case of an error.
+  //
+  // Returns INVALID_ARGUMENT if `ctx` is malformed, if `hierarchy_level` or
+  // any element of `evaluation_points` is out of range, or
+  // `ctx.partial_evaluations()` does not contain the prefixes of all
+  // `evaluation_points` at `ctx.partial_evaluations_level()`.
+  template <typename T>
+  absl::StatusOr<std::vector<T>> EvaluateAt(
+      int hierarchy_level, absl::Span<const absl::uint128> evaluation_points,
+      EvaluationContext& ctx) const {
+    return EvaluateAtImpl<T>(ctx.key(), hierarchy_level, evaluation_points,
+                             &ctx);
+  }
 
   // Returns the DpfParameters of this DPF.
   inline absl::Span<const DpfParameters> parameters() const {
@@ -344,7 +374,8 @@ class DistributedPointFunction {
   // Seeds and control bits resulting from a DPF expansion. This type is
   // returned by `ExpandSeeds` and `ExpandAndUpdateContext`.
   struct DpfExpansion {
-    std::vector<absl::uint128> seeds;
+    // Ensures that seeds are aligned correctly for SIMD operations.
+    hwy::AlignedFreeUniquePtr<absl::uint128[]> seeds;
     BitVector control_bits;
   };
 
@@ -399,44 +430,55 @@ class DistributedPointFunction {
   // whether the given domain index fits in the domain at `hierarchy_level`.
   int DomainToBlockIndex(absl::uint128 domain_index, int hierarchy_level) const;
 
-  // Performs DPF evaluation of the given `partial_evaluations` using
-  // prg_ctx_left_ or prg_ctx_right_, and the given `correction_words`. At each
-  // level `l < correction_words.size()`, the evaluation for the i-th seed in
-  // `partial_evaluations` continues along the left or right path depending on
-  // the l-th most significant bit among the lowest `correction_words.size()`
+  // Performs DPF evaluation of the given `seeds` using prg_ctx_left_ or
+  // prg_ctx_right_, and the given `control_bits` and `correction_words`. At
+  // each level `l < correction_words.size()`, the evaluation for the i-th seed
+  // in `partial_evaluations` continues along the left or right path depending
+  // on the l-th most significant bit among the lowest `correction_words.size()`
   // bits of `paths[i]`.
+  //
+  // The output is written to `seeds_out` and `control_bits_out`. These may
+  // overlap with `seeds` and `control_bits`. We use output spans instead of a
+  // return value to allow the caller to pre-allocate aligned output arrays,
+  // which is necessary for the vectorized implementation. The output is
+  // undefined if `correction_words.size() == 0`.
   //
   // Returns INVALID_ARGUMENT if the input sizes don't match.
   // Returns INTERNAL in case of OpenSSL errors.
-  absl::StatusOr<DpfExpansion> EvaluateSeeds(
-      DpfExpansion partial_evaluations, absl::Span<const absl::uint128> paths,
-      absl::Span<const CorrectionWord* const> correction_words) const;
+  absl::Status EvaluateSeeds(
+      absl::Span<const absl::uint128> seeds,
+      absl::Span<const bool> control_bits,
+      absl::Span<const absl::uint128> paths,
+      absl::Span<const CorrectionWord* const> correction_words,
+      absl::Span<absl::uint128> seeds_out,
+      absl::Span<bool> control_bits_out) const;
 
   // Performs DPF expansion of the given `partial_evaluations` using
-  // prg_ctx_left_ and prg_ctx_right_, and the given `correction_words`. In more
-  // detail, each of the partial evaluations is subjected to a full subtree
-  // expansion of `correction_words.size()` levels, and the concatenated result
-  // is provided in the response. The result contains
-  // `(partial_evaluations.size() * (2^correction_words.size())` evaluations in
-  // a single `DpfExpansion`.
+  // prg_ctx_left_ and prg_ctx_right_, and the given `correction_words`. In
+  // more detail, each of the partial evaluations is subjected to a full
+  // subtree expansion of `correction_words.size()` levels, and the
+  // concatenated result is provided in the response. The result contains
+  // `(partial_evaluations.size() * (2^correction_words.size())` evaluations
+  // in a single `DpfExpansion`.
   //
   // Returns INTERNAL in case of OpenSSL errors.
   absl::StatusOr<DpfExpansion> ExpandSeeds(
       const DpfExpansion& partial_evaluations,
       absl::Span<const CorrectionWord* const> correction_words) const;
 
-  // Computes partial evaluations of the paths to `prefixes` to be used as the
-  // starting point of the expansion of `ctx`. If `update_ctx == true`, saves
-  // the partial evaluations of `ctx.previous_hierarchy_level` to `ctx` and sets
-  // `ctx.partial_evaluations_level` to `ctx.previous_hierarchy_level`.
-  // Called by `ExpandAndUpdateContext`.
+  // Computes partial evaluations of the paths to `prefixes` up to
+  // `hierarchy_level`, to be used as the starting point of the expansion of
+  // `ctx`. If `update_ctx
+  // == true`, saves the partial evaluations of `ctx.previous_hierarchy_level`
+  // to `ctx` and sets `ctx.partial_evaluations_level` to
+  // `ctx.previous_hierarchy_level`. Called by `ExpandAndUpdateContext`.
   //
   // Returns INVALID_ARGUMENT if any element of `prefixes` is not found in
   // `ctx.partial_evaluations()`, or `ctx.partial_evaluations()` contains
-  // duplicate seeds.
+  // duplicate prefixes with inconsistent seeds or control bits.
   absl::StatusOr<DpfExpansion> ComputePartialEvaluations(
-      absl::Span<const absl::uint128> prefixes, bool update_ctx,
-      EvaluationContext& ctx) const;
+      absl::Span<const absl::uint128> prefixes, int hierarchy_level,
+      bool update_ctx, EvaluationContext& ctx) const;
 
   // Extracts the seeds for the given `prefixes` from `ctx` and expands them as
   // far as needed for the next hierarchy level. Returns the result as a
@@ -448,7 +490,8 @@ class DistributedPointFunction {
   //
   // Returns INVALID_ARGUMENT if any element of `prefixes` is not found in
   // `ctx.partial_evaluations()`, or `ctx.partial_evaluations()` contains
-  // duplicate seeds. Returns INTERNAL in case of OpenSSL errors.
+  // duplicate prefixes with inconsistent seeds or control bits. Returns
+  // INTERNAL in case of OpenSSL errors.
   absl::StatusOr<DpfExpansion> ExpandAndUpdateContext(
       int hierarchy_level, absl::Span<const absl::uint128> prefixes,
       EvaluationContext& ctx) const;
@@ -459,7 +502,7 @@ class DistributedPointFunction {
   // input seed.
   //
   // Returns INTERNAL in case of OpenSSL errors.
-  absl::StatusOr<std::vector<absl::uint128>> HashExpandedSeeds(
+  absl::StatusOr<hwy::AlignedFreeUniquePtr<absl::uint128[]>> HashExpandedSeeds(
       int hierarchy_level, absl::Span<const absl::uint128> expansion) const;
 
   // Deterministically serializes the given value_type.
@@ -482,6 +525,16 @@ class DistributedPointFunction {
   static absl::Status RegisterValueTypeImpl(
       absl::flat_hash_map<std::string, ValueCorrectionFunction>&
           value_correction_functions);
+
+  // Joint implementation of the two variants of `EvaluateAt<T>`. If `ctx !=
+  // NULL`, `key` must point to `ctx->key()`, and `*ctx` will be updated with
+  // the partial evaluations at this `hierarchy_level`.
+  //
+  template <typename T>
+  absl::StatusOr<std::vector<T>> EvaluateAtImpl(
+      const DpfKey& key, int hierarchy_level,
+      absl::Span<const absl::uint128> evaluation_points,
+      EvaluationContext* ctx) const;
 
   // Used to validate DpfParameters, DpfKey and EvaluationContext protos.
   const std::unique_ptr<dpf_internal::ProtoValidator> proto_validator_;
@@ -679,7 +732,7 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateUntil(
     int block_index = DomainToBlockIndex(prefixes[i], previous_hierarchy_level);
 
     // Check if `tree_index` already exists in `tree_indices`.
-    auto previous_size = tree_indices_inverse.size();
+    size_t previous_size = tree_indices_inverse.size();
     auto it = tree_indices_inverse.try_emplace(tree_indices_inverse.end(),
                                                tree_index, tree_indices.size());
     if (tree_indices_inverse.size() > previous_size) {
@@ -694,10 +747,13 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateUntil(
   if (!expansion.ok()) {
     return expansion.status();
   }
+  const auto expansion_size =
+      static_cast<int64_t>(expansion->control_bits.size());
+  auto seeds = absl::MakeConstSpan(expansion->seeds.get(), expansion_size);
 
   // Hash the expanded seeds.
-  absl::StatusOr<std::vector<absl::uint128>> hashed_expansion =
-      HashExpandedSeeds(hierarchy_level, expansion->seeds);
+  absl::StatusOr<hwy::AlignedFreeUniquePtr<absl::uint128[]>> hashed_expansion =
+      HashExpandedSeeds(hierarchy_level, seeds);
   if (!hashed_expansion.ok()) {
     return hashed_expansion.status();
   }
@@ -729,17 +785,16 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateUntil(
   const int corrected_elements_per_block =
       1 << (parameters_[hierarchy_level].log_domain_size() -
             hierarchy_to_tree_[hierarchy_level]);
-  const auto expansion_size = static_cast<int64_t>(expansion->seeds.size());
   const int blocks_needed = blocks_needed_[hierarchy_level];
   DCHECK(corrected_elements_per_block <= elements_per_block);
   std::vector<T> corrected_expansion(expansion_size *
                                      corrected_elements_per_block);
   for (int64_t i = 0; i < expansion_size; ++i) {
     std::array<T, elements_per_block> current_elements =
-        dpf_internal::ConvertBytesToArrayOf<T>(
-            absl::string_view(reinterpret_cast<const char*>(
-                                  &(*hashed_expansion)[i * blocks_needed]),
-                              blocks_needed * sizeof(absl::uint128)));
+        dpf_internal::ConvertBytesToArrayOf<T>(absl::string_view(
+            reinterpret_cast<const char*>(hashed_expansion->get() +
+                                          i * blocks_needed),
+            blocks_needed * sizeof(absl::uint128)));
     for (int j = 0; j < corrected_elements_per_block; ++j) {
       if (expansion->control_bits[i]) {
         current_elements[j] += (*correction_ints)[j];
@@ -766,7 +821,8 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateUntil(
     return corrected_expansion;
   } else {
     // Otherwise, only return elements under `prefixes`.
-    int blocks_per_tree_prefix = expansion->seeds.size() / tree_indices.size();
+    int blocks_per_tree_prefix =
+        expansion->control_bits.size() / tree_indices.size();
     std::vector<T> result(prefixes_size * outputs_per_prefix);
     for (int64_t i = 0; i < prefixes_size; ++i) {
       int64_t prefix_expansion_start =
@@ -781,10 +837,16 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateUntil(
 }
 
 template <typename T>
-absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateAt(
+absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateAtImpl(
     const DpfKey& key, int hierarchy_level,
-    absl::Span<const absl::uint128> evaluation_points) const {
-  auto num_evaluation_points = static_cast<int64_t>(evaluation_points.size());
+    absl::Span<const absl::uint128> evaluation_points,
+    EvaluationContext* ctx) const {
+  if (ctx != nullptr) {
+    if (&key != &ctx->key()) {
+      return absl::InvalidArgumentError(
+          "`key` and `ctx->key()` must refer to the same object");
+    }
+  }
   if (hierarchy_level < 0) {
     return absl::InvalidArgumentError("`hierarchy_level` must be non-negative");
   }
@@ -793,9 +855,29 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateAt(
         "`hierarchy_level` must be less than the number of parameters passed "
         "at construction");
   }
+  const auto num_evaluation_points =
+      static_cast<int64_t>(evaluation_points.size());
+  const int log_domain_size = parameters_[hierarchy_level].log_domain_size();
+  absl::uint128 max_evaluation_point = absl::Uint128Max();
+  if (log_domain_size < 128) {
+    max_evaluation_point = (absl::uint128{1} << log_domain_size) - 1;
+  }
+  // Check if `evaluation_points` are inside the domain. This has minimal (~ 1%)
+  // performance impact.
+  for (int64_t i = 0; i < num_evaluation_points; ++i) {
+    if (evaluation_points[i] > max_evaluation_point) {
+      return absl::InvalidArgumentError(
+          absl::StrCat("`evaluation_points[", i,
+                       "]` larger than the domain size at hierarchy level ",
+                       hierarchy_level));
+    }
+  }
   absl::Status status = proto_validator_->ValidateDpfKey(key);
   if (!status.ok()) {
     return status;
+  }
+  if (num_evaluation_points == 0) {
+    return std::vector<T>{};  // Nothing to do.
   }
 
   // Get output correction word from `key`.
@@ -822,42 +904,71 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateAt(
   // Split up evaluation_points into tree indices and block indices, if we're
   // operating on a packed type. Otherwise set `tree_indices` to
   // `evaluation_points`.
-  std::vector<absl::uint128> maybe_recomputed_tree_indices(0);
+  hwy::AlignedFreeUniquePtr<absl::uint128[]> maybe_recomputed_tree_indices;
   absl::Span<const absl::uint128> tree_indices;
   if (elements_per_block > 1) {
-    maybe_recomputed_tree_indices.reserve(num_evaluation_points);
+    maybe_recomputed_tree_indices =
+        hwy::AllocateAligned<absl::uint128>(num_evaluation_points);
     for (int64_t i = 0; i < num_evaluation_points; ++i) {
-      maybe_recomputed_tree_indices.push_back(
-          DomainToTreeIndex(evaluation_points[i], hierarchy_level));
+      maybe_recomputed_tree_indices[i] =
+          DomainToTreeIndex(evaluation_points[i], hierarchy_level);
     }
-    tree_indices = absl::MakeConstSpan(maybe_recomputed_tree_indices);
+    tree_indices = absl::MakeConstSpan(maybe_recomputed_tree_indices.get(),
+                                       num_evaluation_points);
+    // Copy evaluation_points to new array if not aligned.
   } else {
     // This avoids copying the evaluation points when elements_per_block == 1.
     tree_indices = evaluation_points;
   }
 
-  // Extract seed and party for DPF evaluation.
-  absl::uint128 seed = absl::MakeUint128(key.seed().high(), key.seed().low());
-  bool party = key.party();
-  DpfExpansion inputs;
-  inputs.seeds.resize(num_evaluation_points, seed);
-  inputs.control_bits.resize(num_evaluation_points, party);
+  // Set up partial evaluations for the selected tree_indices. If we have a
+  // context `ctx`, Compute them from `ctx.partial_evaluations`, otherwise start
+  // from the beginning.
+  absl::StatusOr<DpfExpansion> selected_partial_evaluations = DpfExpansion();
+  int start_level = 0;
+  if (!ctx) {
+    // No context or context was never evaluated -> start from the beginning.
+    absl::uint128 seed = absl::MakeUint128(key.seed().high(), key.seed().low());
+    bool party = key.party();
+    selected_partial_evaluations->seeds =
+        hwy::AllocateAligned<absl::uint128>(num_evaluation_points);
+    auto seeds = absl::MakeSpan(selected_partial_evaluations->seeds.get(),
+                                num_evaluation_points);
+    std::fill(seeds.begin(), seeds.end(), seed);
+    selected_partial_evaluations->control_bits.resize(num_evaluation_points,
+                                                      party);
+  } else {
+    // We have a context -> Use it to compute partial evaluations. Always update
+    // `ctx`, since unlike for full expansion the amount of proto data written
+    // will always be `tree_indices.size()` and should therefore be negligible.
+    selected_partial_evaluations =
+        ComputePartialEvaluations(tree_indices, hierarchy_level,
+                                  /*update_ctx=*/true, *ctx);
+    if (!selected_partial_evaluations.ok()) {
+      return selected_partial_evaluations.status();
+    }
+    start_level = hierarchy_to_tree_[hierarchy_level];
+  }
 
   // Evaluate DPFs.
   const int stop_level = hierarchy_to_tree_[hierarchy_level];
-  auto correction_words =
-      absl::MakeConstSpan(key.correction_words()).subspan(0, stop_level);
-  absl::StatusOr<DpfExpansion> evaluated_inputs =
-      EvaluateSeeds(std::move(inputs), tree_indices, correction_words);
-  if (!evaluated_inputs.ok()) {
-    return evaluated_inputs.status();
+  absl::Span<absl::uint128> seeds(
+      selected_partial_evaluations->seeds.get(),
+      selected_partial_evaluations->control_bits.size());
+  auto correction_words = absl::MakeConstSpan(key.correction_words())
+                              .subspan(start_level, stop_level - start_level);
+  status =
+      EvaluateSeeds(seeds, selected_partial_evaluations->control_bits,
+                    tree_indices, correction_words, seeds,
+                    absl::MakeSpan(selected_partial_evaluations->control_bits));
+  if (!status.ok()) {
+    return status;
   }
-  DCHECK(static_cast<int64_t>(evaluated_inputs->seeds.size()) ==
-         num_evaluation_points);
+  DCHECK(static_cast<int64_t>(seeds.size()) == num_evaluation_points);
 
   // Hash DPF evaluations.
-  absl::StatusOr<std::vector<absl::uint128>> hashed_expansion =
-      HashExpandedSeeds(hierarchy_level, evaluated_inputs->seeds);
+  absl::StatusOr<hwy::AlignedFreeUniquePtr<absl::uint128[]>> hashed_expansion =
+      HashExpandedSeeds(hierarchy_level, seeds);
   if (!hashed_expansion.ok()) {
     return hashed_expansion.status();
   }
@@ -868,21 +979,25 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateAt(
   const int blocks_needed = blocks_needed_[hierarchy_level];
   for (int64_t i = 0; i < num_evaluation_points; ++i) {
     std::array<T, elements_per_block> current_elements =
-        dpf_internal::ConvertBytesToArrayOf<T>(
-            absl::string_view(reinterpret_cast<const char*>(
-                                  &(*hashed_expansion)[i * blocks_needed]),
-                              blocks_needed * sizeof(absl::uint128)));
+        dpf_internal::ConvertBytesToArrayOf<T>(absl::string_view(
+            reinterpret_cast<const char*>(hashed_expansion->get() +
+                                          i * blocks_needed),
+            blocks_needed * sizeof(absl::uint128)));
     int block_index = 0;
     if (elements_per_block > 1) {
       block_index = DomainToBlockIndex(evaluation_points[i], hierarchy_level);
     }
     result.push_back(current_elements[block_index]);
-    if (evaluated_inputs->control_bits[i]) {
+    if (selected_partial_evaluations->control_bits[i]) {
       result[i] += (*correction_ints)[block_index];
     }
-    if (party == 1) {
+    if (key.party() == 1) {
       result[i] = -result[i];
     }
+  }
+
+  if (ctx) {
+    ctx->set_previous_hierarchy_level(hierarchy_level);
   }
 
   return result;

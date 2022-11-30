@@ -75,6 +75,15 @@ TEST_F(ProtoValidatorTest, CreateFailsWhenDomainSizeNegative) {
                        "`log_domain_size` must be non-negative"));
 }
 
+TEST_F(ProtoValidatorTest, CreateFailsWhenDomainSizeTooLarge) {
+  parameters_.resize(1);
+  parameters_[0].set_log_domain_size(129);
+
+  EXPECT_THAT(ProtoValidator::Create(parameters_),
+              StatusIs(absl::StatusCode::kInvalidArgument,
+                       "`log_domain_size` must be <= 128"));
+}
+
 TEST_F(ProtoValidatorTest, CreateFailsWhenElementBitsizeNegative) {
   parameters_.resize(1);
   parameters_[0].mutable_value_type()->mutable_integer()->set_bitsize(-1);
@@ -251,16 +260,17 @@ TEST_F(ProtoValidatorTest,
                        "This context has already been fully evaluated"));
 }
 
-TEST_F(
-    ProtoValidatorTest,
-    ValidateEvaluationContextFailsIfPreviousHierarchyLevelEqualsHierarchyLevel) {
-  ctx_.set_previous_hierarchy_level(ctx_.partial_evaluations_level());
+TEST_F(ProtoValidatorTest,
+       ValidateEvaluationContextFailsIfPartialEvaluationsLevelTooLarge) {
+  ctx_.set_previous_hierarchy_level(0);
+  ctx_.set_partial_evaluations_level(1);
   ctx_.add_partial_evaluations();
 
-  EXPECT_THAT(proto_validator_->ValidateEvaluationContext(ctx_),
-              StatusIs(absl::StatusCode::kInvalidArgument,
-                       "ctx.previous_hierarchy_level must be less than "
-                       "ctx.partial_evaluations_level"));
+  EXPECT_THAT(
+      proto_validator_->ValidateEvaluationContext(ctx_),
+      StatusIs(absl::StatusCode::kInvalidArgument,
+               "ctx.partial_evaluations_level must be less than or equal to "
+               "ctx.previous_hierarchy_level"));
 }
 
 TEST_F(ProtoValidatorTest, ValidateValueFailsIfTypeNotInteger) {
