@@ -115,33 +115,6 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
   self.navigationItem.rightBarButtonItem = doneButton;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  // Center search bar's cancel button vertically so it looks centered.
-  // We change the cancel button proxy styles, so we will return it to
-  // default in viewDidDisappear.
-  if (self.searchController) {
-    UIOffset offset =
-        UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
-    UIBarButtonItem* cancelButton = [UIBarButtonItem
-        appearanceWhenContainedInInstancesOfClasses:@ [[UISearchBar class]]];
-    [cancelButton setTitlePositionAdjustment:offset
-                               forBarMetrics:UIBarMetricsDefault];
-  }
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-
-  // Restore to default origin offset for cancel button proxy style.
-  if (self.searchController) {
-    UIBarButtonItem* cancelButton = [UIBarButtonItem
-        appearanceWhenContainedInInstancesOfClasses:@ [[UISearchBar class]]];
-    [cancelButton setTitlePositionAdjustment:UIOffsetZero
-                               forBarMetrics:UIBarMetricsDefault];
-  }
-}
-
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView

@@ -446,15 +446,6 @@ NSInteger kTrailingSymbolSize = 18;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  // Center search bar's cancel button vertically so it looks centered.
-  // We change the cancel button proxy styles, so we will return it to
-  // default in viewDidDisappear.
-  UIOffset offset =
-      UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
-  UIBarButtonItem* cancelButton = [UIBarButtonItem
-      appearanceWhenContainedInInstancesOfClasses:@[ [UISearchBar class] ]];
-  [cancelButton setTitlePositionAdjustment:offset
-                             forBarMetrics:UIBarMetricsDefault];
   self.navigationController.toolbarHidden = NO;
 }
 
@@ -463,12 +454,6 @@ NSInteger kTrailingSymbolSize = 18;
 
   // Record favicons metrics only if the feature is enabled.
   [self logMetricsForFavicons];
-
-  // Restore to default origin offset for cancel button proxy style.
-  UIBarButtonItem* cancelButton = [UIBarButtonItem
-      appearanceWhenContainedInInstancesOfClasses:@[ [UISearchBar class] ]];
-  [cancelButton setTitlePositionAdjustment:UIOffsetZero
-                             forBarMetrics:UIBarMetricsDefault];
 
   // Dismiss the search bar if presented; otherwise UIKit may retain it and
   // cause a memory leak. If this dismissal happens before viewWillDisappear

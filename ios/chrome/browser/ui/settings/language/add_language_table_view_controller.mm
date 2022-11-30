@@ -122,29 +122,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self loadModel];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-
-  // Center search bar's cancel button vertically so it looks centered in the
-  // header when searching in iPad and in landscape mode.
-  UIOffset offset =
-      UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
-  UIBarButtonItem* cancelButton = [UIBarButtonItem
-      appearanceWhenContainedInInstancesOfClasses:@ [[UISearchBar class]]];
-  [cancelButton setTitlePositionAdjustment:offset
-                             forBarMetrics:UIBarMetricsDefault];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-
-  // Restore the origin offset for the cancel button proxy style to default.
-  UIBarButtonItem* cancelButton = [UIBarButtonItem
-      appearanceWhenContainedInInstancesOfClasses:@ [[UISearchBar class]]];
-  [cancelButton setTitlePositionAdjustment:UIOffsetZero
-                             forBarMetrics:UIBarMetricsDefault];
-}
-
 #pragma mark - ChromeTableViewController
 
 - (void)loadModel {
