@@ -1052,17 +1052,21 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
       }
 
       case H264NALU::kSEIMessage: {
-        H264SEIMessage sei_msg;
-        result = h264_parser_.ParseSEI(&sei_msg);
-        if (result == H264Parser::kOk &&
-            sei_msg.type == H264SEIMessage::kSEIRecoveryPoint &&
-            sei_msg.recovery_point.recovery_frame_cnt == 0) {
-          // We only support immediate recovery points. Supporting future points
-          // would require dropping |recovery_frame_cnt| frames when needed.
-          frame->has_recovery_point = true;
-        }
         nalus.push_back(nalu);
         data_size += kNALUHeaderLength + nalu.size;
+        H264SEI sei;
+        result = h264_parser_.ParseSEI(&sei);
+        if (result != H264Parser::kOk)
+          break;
+        for (auto& sei_msg : sei.msgs) {
+          if (sei_msg.type == H264SEIMessage::kSEIRecoveryPoint &&
+              sei_msg.recovery_point.recovery_frame_cnt == 0) {
+            // We only support immediate recovery points. Supporting
+            // future points would require dropping |recovery_frame_cnt|
+            // frames when needed.
+            frame->has_recovery_point = true;
+          }
+        }
         break;
       }
 

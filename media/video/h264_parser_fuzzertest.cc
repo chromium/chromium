@@ -60,8 +60,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       }
 
       case media::H264NALU::kSEIMessage: {
-        media::H264SEIMessage sei_msg;
-        res = parser.ParseSEI(&sei_msg);
+        media::H264SEI sei;
+        res = parser.ParseSEI(&sei);
         break;
       }
 

@@ -115,7 +115,7 @@ TEST(H264ParserTest, StreamFileParsing) {
   int num_parsed_nalus = 0;
   while (true) {
     media::H264SliceHeader shdr;
-    media::H264SEIMessage sei_msg;
+    media::H264SEI sei;
     H264NALU nalu;
     H264Parser::Result res = parser.AdvanceToNextNALU(&nalu);
     if (res == H264Parser::kEOStream) {
@@ -144,7 +144,7 @@ TEST(H264ParserTest, StreamFileParsing) {
         break;
 
       case H264NALU::kSEIMessage:
-        ASSERT_EQ(parser.ParseSEI(&sei_msg), H264Parser::kOk);
+        ASSERT_EQ(parser.ParseSEI(&sei), H264Parser::kOk);
         break;
 
       default:
@@ -274,4 +274,70 @@ TEST(H264ParserTest, GetCurrentSubsamplesSubsampleNotStartingAtNaluBoundary) {
   EXPECT_EQ(0u, nalu_subsamples[0].cypher_bytes);
 }
 
+// Verify recovery point SEI is correctly parsed.
+TEST(H264ParserTest, RecoveryPointSEIParsing) {
+  constexpr uint8_t kStream[] = {
+      // First NALU Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      // NALU type = 6 (kSEIMessage).
+      0x06,
+      // SEI payload type = 6 (recovery_point).
+      0x06,
+      // SEI payload size = 1.
+      0x01,
+      // SEI payload.
+      0x84,
+      // RBSP trailing bits.
+      0x80,
+      // Second NALU Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      // NALU type = 6 (kSEIMessage).
+      0x06,
+      // SEI payload type = 1 (pic_timing).
+      0x01,
+      // SEI payload size = 1.
+      0x01,
+      // SEI payload.
+      0x04,
+      // RBSP trailing bits.
+      0x80,
+  };
+
+  H264Parser parser;
+  parser.SetStream(kStream, std::size(kStream));
+
+  H264NALU target_nalu;
+  ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&target_nalu));
+  EXPECT_EQ(target_nalu.nal_unit_type, H264NALU::kSEIMessage);
+
+  // Parse the first SEI.
+  H264SEI recovery_point_sei;
+  EXPECT_EQ(H264Parser::kOk, parser.ParseSEI(&recovery_point_sei));
+
+  // Recovery point present.
+  EXPECT_EQ(recovery_point_sei.msgs.size(), 1u);
+  for (auto& sei_msg : recovery_point_sei.msgs) {
+    EXPECT_EQ(sei_msg.type, H264SEIMessage::kSEIRecoveryPoint);
+    EXPECT_EQ(sei_msg.recovery_point.recovery_frame_cnt, 0);
+    EXPECT_EQ(sei_msg.recovery_point.exact_match_flag, false);
+    EXPECT_EQ(sei_msg.recovery_point.broken_link_flag, false);
+    EXPECT_EQ(sei_msg.recovery_point.changing_slice_group_idc, 0);
+  }
+
+  ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&target_nalu));
+  EXPECT_EQ(target_nalu.nal_unit_type, H264NALU::kSEIMessage);
+
+  // Parse the second SEI.
+  H264SEI pic_timing_sei;
+  EXPECT_EQ(H264Parser::kOk, parser.ParseSEI(&pic_timing_sei));
+
+  // Recovery point not present.
+  EXPECT_EQ(pic_timing_sei.msgs.size(), 0u);
+}
 }  // namespace media

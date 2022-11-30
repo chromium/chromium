@@ -1635,22 +1635,25 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           // (spec D.2.8) if one is present. However, if we are already in the
           // process of handling one, skip any subsequent ones until we are done
           // processing.
-          H264SEIMessage sei{};
+          H264SEI sei;
           if (parser_.ParseSEI(&sei) != H264Parser::kOk)
             SET_ERROR_AND_RETURN();
 
-          if (sei.type == H264SEIMessage::kSEIRecoveryPoint) {
-            recovery_frame_cnt_ = sei.recovery_point.recovery_frame_cnt;
-            if (0 > *recovery_frame_cnt_ ||
-                *recovery_frame_cnt_ >= max_frame_num_) {
-              DVLOG(1) << "Invalid recovery_frame_cnt=" << *recovery_frame_cnt_
-                       << " (it must be [0, max_frame_num_-1="
-                       << max_frame_num_ - 1 << "])";
-              SET_ERROR_AND_RETURN();
+          for (auto& sei_msg : sei.msgs) {
+            if (sei_msg.type == H264SEIMessage::kSEIRecoveryPoint) {
+              recovery_frame_cnt_ = sei_msg.recovery_point.recovery_frame_cnt;
+              if (0 > *recovery_frame_cnt_ ||
+                  *recovery_frame_cnt_ >= max_frame_num_) {
+                DVLOG(1) << "Invalid recovery_frame_cnt="
+                         << *recovery_frame_cnt_
+                         << " (it must be [0, max_frame_num_-1="
+                         << max_frame_num_ - 1 << "])";
+                SET_ERROR_AND_RETURN();
+              }
+              DVLOG(3) << "Recovery point SEI is found, recovery_frame_cnt_="
+                       << *recovery_frame_cnt_;
+              break;
             }
-            DVLOG(3) << "Recovery point SEI is found, recovery_frame_cnt_="
-                     << *recovery_frame_cnt_;
-            break;
           }
         }
 
