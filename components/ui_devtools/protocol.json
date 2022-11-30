@@ -1061,7 +1061,7 @@
                     "parameters": [
                         { "name": "value", "type": "array", "items": { "type": "object" } }
                     ],
-                    "description": "Contains an bucket of collected trace events. When tracing is stopped collected events will be send as a sequence of dataCollected events followed by tracingComplete event."
+                    "description": "Contains a bucket of collected trace events. When tracing is stopped collected events will be sent as a sequence of dataCollected events followed by tracingComplete event."
                 },
                 {
                     "name": "tracingComplete",
