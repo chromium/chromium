@@ -84,6 +84,10 @@
           "group": "tryserver.chromium.win"
         },
         {
+          "builder": "win-rel-cft",
+          "group": "tryserver.chromium.win"
+        },
+        {
           "builder": "win-rel-inverse-fyi",
           "group": "tryserver.chromium.win"
         },

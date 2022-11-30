@@ -312,3 +312,8 @@ try_.gpu.optional_tests_builder(
     ),
     goma_backend = None,
 )
+
+try_.builder(
+    name = "win-rel-cft",
+    mirrors = builder_config.copy_from("win-rel"),
+)

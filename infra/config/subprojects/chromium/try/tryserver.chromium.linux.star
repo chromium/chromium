@@ -786,3 +786,8 @@ try_.builder(
     experiments = {"chromium_rts.experimental_model": 100},
     goma_backend = None,
 )
+
+try_.builder(
+    name = "linux-rel-cft",
+    mirrors = builder_config.copy_from("linux-rel"),
+)

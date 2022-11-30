@@ -6,6 +6,33 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "GPU Win x64 Builder",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-gpu-archive",
+              "builder_group": "chromium.gpu",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
+                "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Win x64 Builder",
               "project": "chromium"
             },
@@ -65,12 +92,12 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Win11 Tests x64",
+              "builder": "Win10 x64 Release (NVIDIA)",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-win-archive",
-              "builder_group": "chromium.win",
+              "build_gs_bucket": "chromium-gpu-archive",
+              "builder_group": "chromium.gpu",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -89,7 +116,7 @@
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "Win x64 Builder",
+                "builder": "GPU Win x64 Builder",
                 "project": "chromium"
               }
             }
@@ -97,6 +124,11 @@
         ]
       },
       "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "GPU Win x64 Builder",
+          "project": "chromium"
+        },
         {
           "bucket": "ci",
           "builder": "Win x64 Builder",
@@ -111,41 +143,20 @@
         },
         {
           "bucket": "ci",
-          "builder": "Win11 Tests x64",
+          "builder": "Win10 x64 Release (NVIDIA)",
           "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "win-rel",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win-rel-cft",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win-rel-inverse-fyi",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win11-x64-fyi-rel",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win_chromium_x64_rel_ng",
-          "group": "tryserver.chromium.win"
         }
       ]
     }
   },
+  "$build/goma": {
+    "enable_ats": false,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org"
+  },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -155,9 +166,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.win",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.win",
+  "recipe": "chromium_trybot"
 }

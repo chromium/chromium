@@ -294,6 +294,11 @@ try_.builder(
     goma_backend = None,  # Does not use Goma.
 )
 
+try_.builder(
+    name = "mac-rel-cft",
+    mirrors = builder_config.copy_from("mac-rel"),
+)
+
 ios_builder(
     name = "ios-asan",
     mirrors = [
