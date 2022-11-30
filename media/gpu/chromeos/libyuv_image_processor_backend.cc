@@ -174,6 +174,15 @@ std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
   DCHECK_EQ(output_mode, OutputMode::IMPORT)
       << "Only OutputMode::IMPORT supported";
 
+  if (!gfx::Rect(input_config.size).Contains(input_config.visible_rect)) {
+    VLOGF(1) << "Input size should contain input visible rect.";
+    return nullptr;
+  }
+  if (!gfx::Rect(output_config.size).Contains(output_config.visible_rect)) {
+    VLOGF(1) << "Output size should contain output visible rect.";
+    return nullptr;
+  }
+
   std::unique_ptr<VideoFrameMapper> input_frame_mapper;
   // LibYUVImageProcessorBackend supports only memory-based video frame for
   // input.
