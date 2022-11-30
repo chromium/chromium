@@ -414,8 +414,11 @@ def main():
   parser.add_argument('--line',
                       type=int,
                       help='run only the test on this line number. c++ only.')
-  parser.add_argument(
-      '--gtest_filter', '-f', metavar='FILTER', help='test filter')
+  parser.add_argument('--gtest_filter',
+                      '--gtest-filter',
+                      '-f',
+                      metavar='FILTER',
+                      help='test filter')
   parser.add_argument(
       '--dry-run',
       '-n',
