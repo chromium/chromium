@@ -73,6 +73,9 @@ try_.orchestrator_builder(
     tryjob = try_.job(
         experiment_percentage = 60,
     ),
+
+    # TODO(crbug.com/1362440): remove this after confirm py3 works on this builder.
+    omit_python2 = True,
 )
 
 try_.compilator_builder(
