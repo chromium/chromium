@@ -65,8 +65,9 @@ functions to the others via additional wrapper functions.
   in the legacy method.
 - For each JNI method:
   - C++ stubs are generated that forward to C++ functions that you must write.
-  - If the first parameter is a C++ object (e.g. `long mNativePointer`), then
-    the bindings will generate the appropriate cast and call into C++ code.
+  - If the first parameter is a C++ object (e.g.
+    `long native${OriginalClassName}`), then the bindings will generate the
+    appropriate cast and call into C++ code.
 
 To add JNI to a class:
 
