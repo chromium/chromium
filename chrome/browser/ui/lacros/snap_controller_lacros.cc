@@ -26,8 +26,10 @@ ui::WaylandWindowSnapDirection ToWaylandWindowSnapDirection(
 ui::WaylandExtension* WaylandExtensionForAuraWindow(aura::Window* window) {
   // Lacros is based on Ozone/Wayland, which uses ui::PlatformWindow and
   // views::DesktopWindowTreeHostLacros.
-  return views::DesktopWindowTreeHostLacros::From(window->GetHost())
-      ->GetWaylandExtension();
+  if (auto* host = views::DesktopWindowTreeHostLacros::From(window->GetHost()))
+    return host->GetWaylandExtension();
+
+  return nullptr;
 }
 
 }  // namespace
@@ -43,15 +45,17 @@ bool SnapControllerLacros::CanSnap(aura::Window* window) {
 void SnapControllerLacros::ShowSnapPreview(aura::Window* window,
                                            chromeos::SnapDirection snap,
                                            bool allow_haptic_feedback) {
-  auto* wayland_extension = WaylandExtensionForAuraWindow(window);
-  wayland_extension->ShowSnapPreview(ToWaylandWindowSnapDirection(snap),
-                                     allow_haptic_feedback);
+  if (auto* wayland_extension = WaylandExtensionForAuraWindow(window)) {
+    wayland_extension->ShowSnapPreview(ToWaylandWindowSnapDirection(snap),
+                                       allow_haptic_feedback);
+  }
 }
 
 void SnapControllerLacros::CommitSnap(aura::Window* window,
                                       chromeos::SnapDirection snap,
                                       chromeos::SnapRatio snap_ratio) {
-  auto* wayland_extension = WaylandExtensionForAuraWindow(window);
-  // TODO(crbug.com/1346780): Set `snap_ratio` for Lacros windows.
-  wayland_extension->CommitSnap(ToWaylandWindowSnapDirection(snap));
+  if (auto* wayland_extension = WaylandExtensionForAuraWindow(window)) {
+    // TODO(crbug.com/1346780): Set `snap_ratio` for Lacros windows.
+    wayland_extension->CommitSnap(ToWaylandWindowSnapDirection(snap));
+  }
 }
