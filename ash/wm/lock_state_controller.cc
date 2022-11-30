@@ -564,6 +564,7 @@ void LockStateController::PostLockAnimationFinished(bool aborted) {
   if (!animating_lock_)
     return;
   animating_lock_ = false;
+  post_lock_immediate_animation_ = false;
   post_lock_fail_timer_.Stop();
   OnLockStateEvent(LockStateObserver::EVENT_LOCK_ANIMATION_FINISHED);
   if (!lock_screen_displayed_callback_.is_null())
