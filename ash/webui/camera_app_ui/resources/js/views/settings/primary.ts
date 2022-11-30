@@ -118,12 +118,6 @@ export class PrimarySettings extends BaseSettings {
           setting.disabled = false;
         }
       },
-      onUpdateCapability: (cameraInfo) => {
-        const devices = cameraInfo.camera3DevicesInfo;
-        if (devices === null) {
-          return;
-        }
-      },
     });
 
     this.cameraManager.addPhotoResolutionOptionListener((groups) => {
