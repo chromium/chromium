@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
@@ -1196,6 +1198,28 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
     EXPECT_TRUE(app_found) << "System Web App "
                            << type_and_info.second->GetInternalName()
                            << " can't be found in AppService after install.";
+  }
+
+  // Verify that all system web apps which are enabled by default and appear in
+  // the launcher have an explicit launcher position set.
+  std::vector<std::string> app_order;
+  chromeos::default_app_order::Get(&app_order);
+
+  // Demo/testing apps don't need a launcher position.
+  const base::flat_set<SystemWebAppType> kLauncherPositionExemptTypes = {
+      SystemWebAppType::SAMPLE};
+
+  for (const auto& [app_type, app_delegate] : app_map) {
+    if (app_delegate->IsAppEnabled() && app_delegate->ShouldShowInLauncher() &&
+        !base::Contains(kLauncherPositionExemptTypes, app_type)) {
+      EXPECT_TRUE(base::Contains(app_order,
+                                 GetManager().GetAppIdForSystemApp(app_type)))
+          << "System app '" << app_delegate->GetInternalName()
+          << "' appears in the launcher but does not have an app order "
+             "definition. Its app ID should be added to GetDefault() in "
+             "//chrome/browser/ash/extensions/default_app_order.cc, which "
+             "should match the order in go/default-apps";
+    }
   }
 }
 

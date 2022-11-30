@@ -114,7 +114,10 @@ class SystemWebAppDelegate {
   // Resource Ids for additional search terms.
   virtual std::vector<int> GetAdditionalSearchTerms() const;
 
-  // If false, this app will be hidden from the Chrome OS app launcher.
+  // If false, this app will be hidden from the Chrome OS app launcher. If true,
+  // the app must have a launcher position defined in the GetDefault() function
+  // in //chrome/browser/ash/extensions/default_app_order.cc, which should match
+  // the order in go/default-apps.
   virtual bool ShouldShowInLauncher() const;
 
   // If false, this app will be hidden from the Chrome OS search.

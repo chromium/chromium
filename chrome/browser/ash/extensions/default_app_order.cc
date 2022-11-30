@@ -172,6 +172,8 @@ void GetDefault(std::vector<std::string>* app_ids) {
 
     ash::kChromeUITrustedProjectorSwaAppId,
     extension_misc::kTextEditorAppId,
+    web_app::kPrintManagementAppId,
+    web_app::kScanningAppId,
     guest_os::kTerminalSystemAppId,
 
     web_app::kYoutubeTVAppId,
