@@ -345,3 +345,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfSelect) {
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NudgeContainer) {
   RunTestURL("containers/nudge_container_unittest.js");
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfTree) {
+  RunTestURL("widgets/xf_tree_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfTreeItem) {
+  RunTestURL("widgets/xf_tree_item_unittest.js");
+}
