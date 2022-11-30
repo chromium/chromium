@@ -62,6 +62,8 @@ class CORE_EXPORT StyleRuleFontFeatureValues : public StyleRuleBase {
   const Vector<AtomicString>& GetFamilies() const { return families_; }
   String FamilyAsString() const;
 
+  void SetFamilies(Vector<AtomicString>);
+
   StyleRuleFontFeatureValues* Copy() const {
     return MakeGarbageCollected<StyleRuleFontFeatureValues>(*this);
   }

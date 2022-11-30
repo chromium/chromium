@@ -53,6 +53,10 @@ StyleRuleFontFeatureValues::StyleRuleFontFeatureValues(
 
 StyleRuleFontFeatureValues::~StyleRuleFontFeatureValues() = default;
 
+void StyleRuleFontFeatureValues::SetFamilies(Vector<AtomicString> families) {
+  families_ = std::move(families);
+}
+
 String StyleRuleFontFeatureValues::FamilyAsString() const {
   StringBuilder families;
   for (wtf_size_t i = 0; i < families_.size(); ++i) {

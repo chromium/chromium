@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
+#include "third_party/blink/renderer/core/css/css_font_feature_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
@@ -290,6 +291,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSFontPaletteValuesRule>(
           To<StyleRuleFontPaletteValues>(self), parent_sheet);
       break;
+    case kFontFeatureValues:
+      rule = MakeGarbageCollected<CSSFontFeatureValuesRule>(
+          To<StyleRuleFontFeatureValues>(self), parent_sheet);
+      break;
     case kMedia:
       rule = MakeGarbageCollected<CSSMediaRule>(To<StyleRuleMedia>(self),
                                                 parent_sheet);
@@ -335,9 +340,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
           To<StyleRulePositionFallback>(self), parent_sheet);
       break;
     case kFontFeature:
-    case kFontFeatureValues:
-      // TODO(drott): CSSOM implementation follows.
-      return nullptr;
     case kTry:
     case kKeyframe:
     case kCharset:
