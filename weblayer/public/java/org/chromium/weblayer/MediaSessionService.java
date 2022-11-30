@@ -22,7 +22,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
  * in turn manages a system notification and {@link MediaSession}. This service will be in the
  * foreground when the MediaSession is active.
  */
-class MediaSessionService extends MediaPlaybackBaseService {
+public class MediaSessionService extends MediaPlaybackBaseService {
     // A helper to automatically pause the media session when a user removes headphones.
     private BroadcastReceiver mAudioBecomingNoisyReceiver;
 
