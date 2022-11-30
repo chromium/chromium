@@ -34,6 +34,12 @@ Polymer({
       },
     },
 
+    isAutoDetected: {
+      type: Boolean,
+      value() {
+        return false;
+      },
+    },
     /**
      * TODO(b/162365553): Implement.
      *  @private

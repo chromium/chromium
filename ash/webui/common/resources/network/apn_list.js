@@ -35,6 +35,12 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private */
+    isConnectedApnAutoDetected_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -51,7 +57,11 @@ Polymer({
     }
 
     const connectedApn = this.managedCellularProperties.connectedApn;
+    this.isConnectedApnAutoDetected_ = false;
     if (connectedApn) {
+      // TODO(b/162365553) Check whether connectedApn is a custom APN or not
+      // when assigning this property.
+      this.isConnectedApnAutoDetected_ = true;
       return [connectedApn];
     }
     // TODO(b/162365553): Handle the case when there is no connected APN.
@@ -67,6 +77,16 @@ Polymer({
   isApnConnected_(index) {
     return !!this.managedCellularProperties &&
         !!this.managedCellularProperties.connectedApn && index === 0;
+  },
+
+  /**
+   * Returns true if the APN is automatically detected.
+   * @param {number} index index in the APNs array.
+   * @return {boolean}
+   * @private
+   */
+  isApnAutoDetected_(index) {
+    return this.isApnConnected_(index) && this.isConnectedApnAutoDetected_;
   },
 
   /**

@@ -30,12 +30,20 @@
   #subLabel {
     color: var(--cros-text-color-positive);
   }
+
+  #autoDetected {
+    margin-inline-start: 10px;
+    color: var(--cr-secondary-text-color);
+  }
 </style>
 
   <!-- TODO(b/162365553): Implement accessibility attributes. -->
 <div id="labelWrapper">
   <div id="label" aria-hidden="true">
-    [[apn.name]]
+    <div>[[apn.name]]</div>
+    <div id="autoDetected" hidden="[[!isAutoDetected]]">
+      [[i18n('apnAutoDetected')]]
+    </div>
   </div>
   <!-- TODO(b/162365553): Implement isConnected logic. -->
   <div id="subLabel" class="cr-secondary-text" aria-hidden="true"

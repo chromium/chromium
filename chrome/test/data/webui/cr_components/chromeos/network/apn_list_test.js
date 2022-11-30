@@ -72,5 +72,6 @@ suite('ApnListTest', function() {
     assertEquals(apns.length, 1);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
     assertTrue(apns[0].isConnected);
+    assertTrue(apns[0].isAutoDetected);
   });
 });

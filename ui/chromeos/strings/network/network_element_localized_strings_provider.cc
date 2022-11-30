@@ -331,6 +331,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnDetailIPTypeIPV4", IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV4},
       {"apnDetailIPTypeIPV6", IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV6},
       {"apnDetailIPTypeIPV4_IPV6", IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV4_IPV6},
+      {"apnAutoDetected", IDS_SETTINGS_APN_AUTO_DETECTED},
       {"hidePassword", IDS_SETTINGS_PASSWORD_HIDE},
       {"showPassword", IDS_SETTINGS_PASSWORD_SHOW},
       {"networkProxy", IDS_SETTINGS_INTERNET_NETWORK_PROXY_PROXY},

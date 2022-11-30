@@ -3702,6 +3702,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SETTINGS_APN_DIALOG_APN_TYPE_ATTACH_CHECKBOX" desc="Label for checkbox that specifies that the attach APN  type will be used">
         Attach
       </message>
+      <message name="IDS_SETTINGS_APN_AUTO_DETECTED" desc="Statement that the APN is automatically detected">
+        Automatically detected
+      </message>
       <!-- End of APN -->
     </messages>
   </release>
