@@ -31,7 +31,8 @@ public class ChromeNextTabPolicySupplier implements NextTabPolicySupplier {
     @Override
     public @NextTabPolicy Integer get() {
         if (mLayoutStateProvider != null
-                && mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                && (mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)
+                        || mLayoutStateProvider.isLayoutVisible(LayoutType.START_SURFACE))) {
             return NextTabPolicy.LOCATIONAL;
         } else {
             return NextTabPolicy.HIERARCHICAL;

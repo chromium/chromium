@@ -220,7 +220,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
 
     /** Returns whether it's on a normal tab. */
     private boolean isOnATab() {
-        return mIsRefactorEnabled ? mLayoutType == LayoutType.BROWSING
+        return mIsRefactorEnabled ? (!isOnHomepage() && !isOnGridTabSwitcher())
                                   : mStartSurfaceState == StartSurfaceState.NOT_SHOWN;
     }
 

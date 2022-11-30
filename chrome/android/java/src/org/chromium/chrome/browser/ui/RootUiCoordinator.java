@@ -1424,7 +1424,7 @@ public class RootUiCoordinator
                 this::getBottomSheetSnackbarManager, mTabObscuringHandlerSupplier.get(),
                 mOmniboxFocusStateSupplier, panelManagerSupplier, mStartSurfaceSupplier,
                 mLayoutStateProviderOneShotSupplier,
-                ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mActivity));
+                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity));
 
         // TODO(crbug.com/1279941): Consider moving handler registration to feature code.
         if (BackPressManager.isEnabled()) {

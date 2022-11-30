@@ -212,7 +212,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                     layoutStateProvider -> { mLayoutStateProvider = layoutStateProvider; }));
         }
 
-        if (!ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext)
+        if (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
                 && startSurfaceSupplier != null
                 && ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {
             mStartSurfaceSupplier = startSurfaceSupplier;
@@ -314,7 +314,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     @VisibleForTesting
     boolean isInStartSurfaceHomepage() {
-        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext)) {
+        if (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)) {
             return mLayoutStateProvider != null
                     && mLayoutStateProvider.isLayoutVisible(LayoutType.START_SURFACE);
         }

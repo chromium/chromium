@@ -49,8 +49,8 @@ public class StartSurfaceDelegate {
      * @param startSurface The {@link StartSurface} the layout should own.
      * @return The {@link StartSurfaceHomeLayout}.
      */
-    public static Layout createStartSurfaceHomeLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface) {
+    public static StartSurfaceHomeLayout createStartSurfaceHomeLayout(Context context,
+            LayoutUpdateHost updateHost, LayoutRenderHost renderHost, StartSurface startSurface) {
         return new StartSurfaceHomeLayout(context, updateHost, renderHost, startSurface);
     }
 

@@ -203,6 +203,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private boolean mIsNativeInitialized;
     // The timestamp at which the Start Surface was last shown to the user.
     private long mLastShownTimeMs = LAST_SHOW_TIME_NOT_SET;
+    private boolean mIsStartSurfaceRefactorEnabled;
 
     StartSurfaceMediator(Controller controller, ViewGroup tabSwitcherContainer,
             TabModelSelector tabModelSelector, @Nullable PropertyModel propertyModel,
@@ -240,6 +241,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // causes inconsistency with toolbar's check.
         mIsFeedGoneImprovementEnabled =
                 ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context);
+        mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -271,14 +273,16 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             mNormalTabModelObserver = new TabModelObserver() {
                 @Override
                 public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                    if ((mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                                || mIsStartSurfaceRefactorEnabled)
                             && mTabModelSelector.getModel(false).getCount() <= 1) {
                         setTabCarouselVisibility(false);
                     }
                 }
                 @Override
                 public void tabClosureUndone(Tab tab) {
-                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                            || mIsStartSurfaceRefactorEnabled) {
                         setTabCarouselVisibility(true);
                     }
                 }
@@ -286,7 +290,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 @Override
                 public void restoreCompleted() {
                     if (!(mPropertyModel.get(IS_SHOWING_OVERVIEW)
-                                && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE)) {
+                                && (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                                        || mIsStartSurfaceRefactorEnabled))) {
                         return;
                     }
                     setTabCarouselVisibility(
@@ -295,7 +300,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
                 @Override
                 public void willAddTab(Tab tab, @TabLaunchType int type) {
-                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                    if ((mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                                || mIsStartSurfaceRefactorEnabled)
                             && type != TabLaunchType.FROM_LONGPRESS_BACKGROUND) {
                         // Log if the creation of this tab will hide the surface and there is an
                         // ongoing feed launch. If the tab creation is due to a feed card tap, "card
@@ -318,7 +324,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                     // Updates the visibility of the tab switcher module if it is invisible and a
                     // new Tab is created in the background without hiding the Start surface
                     // homepage.
-                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                    if ((mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                                || mIsStartSurfaceRefactorEnabled)
                             && !mHideOverviewOnTabSelecting
                             && !mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) {
                         setTabCarouselVisibility(!mIsIncognito);
@@ -360,7 +367,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 @Override
                 public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
                         int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                            || mIsStartSurfaceRefactorEnabled) {
                         // Set the top margin to the top controls min height (indicator height if
                         // it's shown) since the toolbar height as extra margin is handled by top
                         // toolbar placeholder.
@@ -379,7 +387,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                         int bottomControlsHeight, int bottomControlsMinHeight) {
                     // Only pad single pane home page since tabs grid has already been
                     // padded for the bottom bar.
-                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                            || mIsStartSurfaceRefactorEnabled) {
                         setBottomMargin(bottomControlsHeight);
                     } else {
                         setBottomMargin(0);
@@ -458,7 +467,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             // and MV tiles haven't been set.
             if (mController.overviewVisible()) {
                 mOmniboxStub.addUrlFocusChangeListener(mUrlFocusChangeListener);
-                if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                        || mIsStartSurfaceRefactorEnabled) {
                     if (mExploreSurfaceCoordinatorFactory != null) {
                         setExploreSurfaceVisibility(!mIsIncognito);
                     }
@@ -503,8 +513,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
      * @param animate Whether to play an entry animation.
      */
     void show(boolean animate) {
-        assert ReturnToChromeUtil.isStartSurfaceEnabled(mContext)
-                && ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext);
+        assert ReturnToChromeUtil.isStartSurfaceEnabled(mContext) && mIsStartSurfaceRefactorEnabled;
 
         // This null check is for testing.
         if (mPropertyModel == null) return;
@@ -663,7 +672,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         setStartSurfaceState(state, mLaunchOrigin);
     }
 
-    private void setLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
+    void setLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
         if (launchOrigin == NewTabPageLaunchOrigin.WEB_FEED) {
             StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
         }
@@ -885,6 +894,10 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             if (feedReliabilityLogger != null) {
                 feedReliabilityLogger.onNavigateBack();
             }
+        }
+
+        if (ReturnToChromeUtil.isStartSurfaceEnabled(mContext) && mIsStartSurfaceRefactorEnabled) {
+            return false;
         }
 
         boolean ret = mController.onBackPressed(isOnHomepage);
@@ -1349,6 +1362,10 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 return Boolean.TRUE.equals(
                         mSecondaryTasksSurfaceController.getHandleBackPressChangedSupplier().get());
             }
+        }
+
+        if (ReturnToChromeUtil.isStartSurfaceEnabled(mContext) && mIsStartSurfaceRefactorEnabled) {
+            return false;
         }
 
         return Boolean.TRUE.equals(mController.getHandleBackPressChangedSupplier().get());

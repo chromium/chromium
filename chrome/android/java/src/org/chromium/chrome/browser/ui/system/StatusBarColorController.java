@@ -17,7 +17,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -204,20 +203,28 @@ public class StatusBarColorController
             layoutManagerSupplier.addObserver(mCallbackController.makeCancelable(layoutManager -> {
                 assert layoutManager != null;
                 mLayoutStateProvider = layoutManager;
-                mLayoutStateObserver = new FilterLayoutStateObserver(
-                        LayoutType.TAB_SWITCHER, new LayoutStateObserver() {
-                            @Override
-                            public void onStartedShowing(int layoutType, boolean showToolbar) {
-                                mIsInOverviewMode = true;
-                                updateStatusBarColor();
-                            }
+                mLayoutStateObserver = new LayoutStateObserver() {
+                    @Override
+                    public void onStartedShowing(int layoutType, boolean showToolbar) {
+                        if (layoutType != LayoutType.TAB_SWITCHER
+                                && layoutType != LayoutType.START_SURFACE) {
+                            return;
+                        }
+                        mIsInOverviewMode = true;
+                        updateStatusBarColor();
+                    }
 
-                            @Override
-                            public void onFinishedHiding(int layoutType) {
-                                mIsInOverviewMode = false;
-                                updateStatusBarColor();
-                            }
-                        });
+                    @Override
+                    public void onFinishedHiding(int layoutType) {
+                        if (layoutType != LayoutType.TAB_SWITCHER
+                                && layoutType != LayoutType.START_SURFACE) {
+                            return;
+                        }
+                        mIsInOverviewMode = false;
+                        updateStatusBarColor();
+                    }
+                };
+
                 mLayoutStateProvider.addObserver(mLayoutStateObserver);
             }));
         }

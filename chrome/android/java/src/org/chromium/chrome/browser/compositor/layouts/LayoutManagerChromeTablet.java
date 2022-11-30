@@ -154,6 +154,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     @Override
     public void showLayout(int layoutType, boolean animate) {
         if (layoutType == LayoutType.TAB_SWITCHER && mOverviewLayout == null
+                && mTabSwitcherLayout == null
                 && TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mHost.getContext())) {
             try {
                 if (!mStartSurfaceSupplier.hasValue()) {

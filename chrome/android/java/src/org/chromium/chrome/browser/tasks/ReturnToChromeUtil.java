@@ -941,12 +941,9 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * Returns true if START_SURFACE_REFACTOR is enabled but Start surface is disabled.
-     * Currently we only support the refactor code when Start surface is disabled. We may remove
-     * #isStartSurfaceEnabled check in this method after we support the refactor when Start surface
-     * is enabled.
+     * Returns true if START_SURFACE_REFACTOR is enabled.
      */
-    public static boolean isTabSwitcherOnlyRefactorEnabled(Context context) {
+    public static boolean isStartSurfaceRefactorEnabled(Context context) {
         return ChromeFeatureList.sStartSurfaceRefactor.isEnabled()
                 && TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
     }

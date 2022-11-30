@@ -284,7 +284,8 @@ public class StartSurfaceCoordinator implements StartSurface {
         mTabSwitcherCustomViewManagerSupplier = new OneshotSupplierImpl<>();
         boolean excludeQueryTiles = !mIsStartSurfaceEnabled
                 || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
-        if (!mIsStartSurfaceEnabled) {
+        if (!mIsStartSurfaceEnabled
+                && !ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity)) {
             // Create Tab switcher directly to save one layer in the view hierarchy.
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
                     activityLifecycleDispatcher, tabModelSelector, tabContentManager,
@@ -499,6 +500,11 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public void setStartSurfaceState(int state) {
         mStartSurfaceMediator.setStartSurfaceState(state);
+    }
+
+    @Override
+    public void setLaunchOrigin(int launchOrigin) {
+        mStartSurfaceMediator.setLaunchOrigin(launchOrigin);
     }
 
     @Override

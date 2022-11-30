@@ -155,7 +155,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
 
     public ButtonData getForStartSurface(
             @StartSurfaceState int overviewModeState, @LayoutType int layoutType) {
-        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext)) {
+        if (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)) {
             if (layoutType != LayoutType.START_SURFACE) {
                 mButtonData.setCanShow(false);
                 return mButtonData;

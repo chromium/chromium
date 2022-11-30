@@ -93,7 +93,10 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             @Override
             public void didSelectTab(Tab tab, int type, int lastId) {
                 mBackPressChangedSupplier.set(shouldInterceptBackPress());
-                if (mTabModelSelector.isIncognitoSelected()) return;
+                if (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
+                        && mTabModelSelector.isIncognitoSelected()) {
+                    return;
+                }
 
                 assert overviewVisible();
 
