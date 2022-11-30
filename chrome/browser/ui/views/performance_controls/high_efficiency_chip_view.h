@@ -20,6 +20,9 @@ class HighEfficiencyChipView : public PageActionIconView,
                                public TabStripModelObserver {
  public:
   METADATA_HEADER(HighEfficiencyChipView);
+  // The number of times a user should see the expanded chip.
+  static constexpr int kChipAnimationCount = 3;
+
   HighEfficiencyChipView(
       CommandUpdater* command_updater,
       Browser* browser,
