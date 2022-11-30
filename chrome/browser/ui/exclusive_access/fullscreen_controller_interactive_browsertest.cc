@@ -717,8 +717,8 @@ class TestScreenEnvironment {
   TestScreenEnvironment(const TestScreenEnvironment&) = delete;
   TestScreenEnvironment& operator=(const TestScreenEnvironment&) = delete;
 
-  // Set up a test Screen environment with two displays after `display::Screen`
-  // has initialized.
+  // Set up a test Screen environment with at least two displays after
+  // `display::Screen` has been initialized.
   void SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
@@ -732,7 +732,7 @@ class TestScreenEnvironment {
     screen_.display_list().AddDisplay({2, gfx::Rect(800, 0, 800, 800)},
                                       display::DisplayList::Type::NOT_PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    EXPECT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+    ASSERT_GE(display::Screen::GetScreen()->GetNumDisplays(), 2);
   }
 
   // Tear down the test Screen environment before `display::Screen` has shut
@@ -796,12 +796,9 @@ class MultiScreenFullscreenControllerInteractiveTest
     test_screen_environment_->RemoveSecondDisplay();
   }
 
-  // Move the browser onto the first display, and auto-grant the Window
-  // Placement permission on its active tab.
-  content::WebContents* SetUpWindowPlacementTab() {
-    // Move the window to the first display (on the left).
-    browser()->window()->SetBounds({150, 150, 600, 500});
-
+  // Get a new tab that observes the test screen environment and auto-accepts
+  // Window Management permission prompts.
+  content::WebContents* SetUpWindowManagementTab() {
     // Open a new tab that observes the test screen environment.
     EXPECT_TRUE(embedded_test_server()->Start());
     const GURL url(embedded_test_server()->GetURL("/simple.html"));
@@ -809,13 +806,19 @@ class MultiScreenFullscreenControllerInteractiveTest
 
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
-    // Auto-accept Window Placement permission prompts.
+    // Auto-accept Window Management permission prompts.
     permissions::PermissionRequestManager* permission_request_manager =
         permissions::PermissionRequestManager::FromWebContents(tab);
     permission_request_manager->set_auto_response_for_test(
         permissions::PermissionRequestManager::ACCEPT_ALL);
 
     return tab;
+  }
+
+  // Get the display matching the `browser`'s current window bounds.
+  display::Display GetCurrentDisplay(Browser* browser) const {
+    return display::Screen::GetScreen()->GetDisplayMatching(
+        browser->window()->GetBounds());
   }
 
   // Wait for a JS content fullscreen change with the given script and options.
@@ -834,38 +837,40 @@ class MultiScreenFullscreenControllerInteractiveTest
 
   // Execute JS to request content fullscreen on the current screen.
   void RequestContentFullscreen() {
-    const std::string script = R"(
+    const std::string script = R"JS(
       (async () => {
         await document.body.requestFullscreen();
         return !!document.fullscreenElement;
       })();
-    )";
+    )JS";
     EXPECT_EQ(true, RequestContentFullscreenFromScript(script));
   }
 
-  // Execute JS to request content fullscreen on a screen with the given index.
-  void RequestContentFullscreenOnScreen(int screen_index) {
-    const std::string script = base::StringPrintf(R"(
+  // Execute JS to request content fullscreen on a different screen from where
+  // the window is currently located.
+  void RequestContentFullscreenOnAnotherScreen() {
+    const std::string script = R"JS(
       (async () => {
         if (!window.screenDetails)
           window.screenDetails = await window.getScreenDetails();
-        const options = { screen: window.screenDetails.screens[%d] };
+        const otherScreen = window.screenDetails.screens.find(
+            s => s !== window.screenDetails.currentScreen);
+        const options = { screen: otherScreen };
         await document.body.requestFullscreen(options);
         return !!document.fullscreenElement;
       })();
-    )",
-                                                  screen_index);
+    )JS";
     EXPECT_EQ(true, RequestContentFullscreenFromScript(script));
   }
 
   // Execute JS to exit content fullscreen.
   void ExitContentFullscreen(bool expect_window_fullscreen = false) {
-    const std::string script = R"(
+    const std::string script = R"JS(
       (async () => {
         await document.exitFullscreen();
         return !!document.fullscreenElement;
       })();
-    )";
+    )JS";
     // Exiting fullscreen does not require a user gesture; do not supply one.
     EXPECT_EQ(false, RequestContentFullscreenFromScript(
                          script, content::EXECUTE_SCRIPT_NO_USER_GESTURE,
@@ -905,16 +910,13 @@ class MultiScreenFullscreenControllerInteractiveTest
 // Test requesting fullscreen on a separate display.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplay) {
-  SetUpWindowPlacementTab();
+  SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
+  const display::Display original_display = GetCurrentDisplay(browser());
 
-  // Execute JS to request fullscreen on the second display (on the right).
-  RequestContentFullscreenOnScreen(1);
-  const display::Screen* screen = display::Screen::GetScreen();
-  const auto second_display = screen->GetAllDisplays()[1];
-  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
-  EXPECT_NE(screen->GetDisplayMatching(original_bounds),
-            screen->GetDisplayMatching(browser()->window()->GetBounds()));
+  // Execute JS to request fullscreen on a different screen.
+  RequestContentFullscreenOnAnotherScreen();
+  EXPECT_NE(original_display.id(), GetCurrentDisplay(browser()).id());
 
   ExitContentFullscreen();
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
@@ -934,18 +936,17 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting fullscreen on a separate display from a maximized window.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayMaximized) {
-  SetUpWindowPlacementTab();
+  SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
+  const display::Display original_display = GetCurrentDisplay(browser());
 
   browser()->window()->Maximize();
   EXPECT_TRUE(browser()->window()->IsMaximized());
   const gfx::Rect maximized_bounds = browser()->window()->GetBounds();
 
-  // Execute JS to request fullscreen on the second display (on the right).
-  RequestContentFullscreenOnScreen(1);
-  const display::Screen* screen = display::Screen::GetScreen();
-  const auto second_display = screen->GetAllDisplays()[1];
-  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
+  // Execute JS to request fullscreen on a different screen.
+  RequestContentFullscreenOnAnotherScreen();
+  EXPECT_NE(original_display.id(), GetCurrentDisplay(browser()).id());
 
   ExitContentFullscreen();
   EXPECT_EQ(maximized_bounds, browser()->window()->GetBounds());
@@ -971,19 +972,17 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting fullscreen on the current display and then swapping displays.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwap) {
-  SetUpWindowPlacementTab();
+  SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
+  const display::Display original_display = GetCurrentDisplay(browser());
 
-  // Execute JS to request fullscreen on the current display (on the left).
+  // Execute JS to request fullscreen on the current screen.
   RequestContentFullscreen();
-  const display::Screen* screen = display::Screen::GetScreen();
-  const auto first_display = screen->GetAllDisplays()[0];
-  EXPECT_EQ(first_display.bounds(), browser()->window()->GetBounds());
+  EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
 
-  // Execute JS to request fullscreen on the other display (on the right).
-  RequestContentFullscreenOnScreen(1);
-  const auto second_display = screen->GetAllDisplays()[1];
-  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
+  // Execute JS to request fullscreen on a different screen.
+  RequestContentFullscreenOnAnotherScreen();
+  EXPECT_NE(original_display.id(), GetCurrentDisplay(browser()).id());
 
   ExitContentFullscreen();
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
@@ -1004,23 +1003,21 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // from a maximized window.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwapMaximized) {
-  SetUpWindowPlacementTab();
+  SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
+  const display::Display original_display = GetCurrentDisplay(browser());
 
   browser()->window()->Maximize();
   EXPECT_TRUE(browser()->window()->IsMaximized());
   const gfx::Rect maximized_bounds = browser()->window()->GetBounds();
 
-  // Execute JS to request fullscreen on the current display (on the left).
+  // Execute JS to request fullscreen on the current screen.
   RequestContentFullscreen();
-  const display::Screen* screen = display::Screen::GetScreen();
-  const auto first_display = screen->GetAllDisplays()[0];
-  EXPECT_EQ(first_display.bounds(), browser()->window()->GetBounds());
+  EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
 
-  // Execute JS to request fullscreen on the other display (on the right).
-  RequestContentFullscreenOnScreen(1);
-  const auto second_display = screen->GetAllDisplays()[1];
-  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
+  // Execute JS to request fullscreen on a different screen.
+  RequestContentFullscreenOnAnotherScreen();
+  EXPECT_NE(original_display.id(), GetCurrentDisplay(browser()).id());
 
   ExitContentFullscreen();
   EXPECT_EQ(maximized_bounds, browser()->window()->GetBounds());
@@ -1050,20 +1047,19 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // restore browser-fullscreen on the original display.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_BrowserFullscreenContentFullscreenSwapDisplay) {
-  SetUpWindowPlacementTab();
+  SetUpWindowManagementTab();
 
   ToggleBrowserFullscreen(true);
   EXPECT_TRUE(IsFullscreenForBrowser());
   EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
 
   const gfx::Rect fullscreen_bounds = browser()->window()->GetBounds();
-  const display::Screen* screen = display::Screen::GetScreen();
-  const auto first_display = screen->GetAllDisplays()[0];
-  EXPECT_EQ(first_display.bounds(), fullscreen_bounds);
+  const display::Display original_display = GetCurrentDisplay(browser());
+  EXPECT_EQ(original_display.bounds(), fullscreen_bounds);
 
-  RequestContentFullscreenOnScreen(1);
-  const auto second_display = screen->GetAllDisplays()[1];
-  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
+  // Execute JS to request fullscreen on a different screen.
+  RequestContentFullscreenOnAnotherScreen();
+  EXPECT_NE(original_display.id(), GetCurrentDisplay(browser()).id());
   // Fullscreen was originally initiated by browser, this should still be true.
   EXPECT_TRUE(IsFullscreenForBrowser());
   EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
@@ -1088,23 +1084,16 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting fullscreen on a separate display and then swapping displays.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayAndSwap) {
-  SetUpWindowPlacementTab();
+  SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
+  display::Display last_recorded_display = GetCurrentDisplay(browser());
 
-  // Execute JS to request fullscreen on the second display (on the right).
-  RequestContentFullscreenOnScreen(1);
-  const display::Screen* screen = display::Screen::GetScreen();
-  const auto second_display = screen->GetAllDisplays()[1];
-  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
-
-  // Execute JS to change fullscreen screens back to the original.
-  RequestContentFullscreenOnScreen(0);
-  const auto first_display = screen->GetAllDisplays()[0];
-  EXPECT_EQ(first_display.bounds(), browser()->window()->GetBounds());
-
-  // Go back to the second display, just for good measure.
-  RequestContentFullscreenOnScreen(1);
-  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
+  // Execute JS to request fullscreen on a different screen a few times.
+  for (size_t i = 0; i < 4; ++i) {
+    RequestContentFullscreenOnAnotherScreen();
+    EXPECT_NE(last_recorded_display.id(), GetCurrentDisplay(browser()).id());
+    last_recorded_display = GetCurrentDisplay(browser());
+  }
 
   ExitContentFullscreen();
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
@@ -1124,13 +1113,11 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting fullscreen on the current display and then swapping displays.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SwapShowsBubble) {
-  SetUpWindowPlacementTab();
+  SetUpWindowManagementTab();
 
-  // Execute JS to request fullscreen on the current display (on the left).
+  // Execute JS to request fullscreen on the current screen.
   RequestContentFullscreen();
-  const display::Screen* screen = display::Screen::GetScreen();
-  const auto first_display = screen->GetAllDisplays()[0];
-  EXPECT_EQ(first_display.bounds(), browser()->window()->GetBounds());
+  const display::Display original_display = GetCurrentDisplay(browser());
 
   // Explicitly check for, and destroy, the exclusive access bubble.
   EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
@@ -1147,10 +1134,9 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
   run_loop.Run();
   EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
-  // Execute JS to request fullscreen on the other display (on the right).
-  RequestContentFullscreenOnScreen(1);
-  const auto second_display = screen->GetAllDisplays()[1];
-  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
+  // Execute JS to request fullscreen on a different screen.
+  RequestContentFullscreenOnAnotherScreen();
+  EXPECT_NE(original_display.id(), GetCurrentDisplay(browser()).id());
 
   // Ensure the exclusive access bubble is re-shown on fullscreen display swap.
   EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
@@ -1205,7 +1191,8 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test opening a popup on a separate display while fullscreen.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_OpenPopupWhileFullscreen) {
-  content::WebContents* tab = SetUpWindowPlacementTab();
+  content::WebContents* tab = SetUpWindowManagementTab();
+  const display::Display original_display = GetCurrentDisplay(browser());
 
   BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1u, browser_list->size());
@@ -1213,16 +1200,19 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
       blocked_content::PopupBlockerTabHelper::FromWebContents(tab);
   EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
 
-  // Execute JS to request fullscreen on the first display (on the left).
-  RequestContentFullscreenOnScreen(0);
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 800), browser()->window()->GetBounds());
+  // Execute JS to request fullscreen on the current screen.
+  RequestContentFullscreen();
+  EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
 
-  // Execute JS to open a popup on the other display (on the right).
+  // Execute JS to open a popup on a different screen.
   const std::string script = R"(
     (async () => {
-      const s = window.screenDetails.screens[1];
-      const l = s.availLeft + 100;
-      const t = s.availTop + 100;
+      // Note: WindowManagementPermissionContext will send an activation signal.
+      window.screenDetails = await window.getScreenDetails();
+      const otherScreen = window.screenDetails.screens.find(
+          s => s !== window.screenDetails.currentScreen);
+      const l = otherScreen.availLeft + 100;
+      const t = otherScreen.availTop + 100;
       const w = window.open('', '', `left=${l},top=${t},width=300,height=300`);
       // Return true iff the opener is fullscreen and the popup is open.
       return !!document.fullscreenElement && !!w && !w.closed;
@@ -1235,10 +1225,11 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
   EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetPrimaryMainFrame()));
   EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
   EXPECT_EQ(2u, browser_list->size());
+  EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
+  EXPECT_NE(original_display.id(), GetCurrentDisplay(popup).id());
 
   // The opener should still be fullscreen.
   EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 800), browser()->window()->GetBounds());
   // Popup window activation is delayed until its opener exits fullscreen.
   EXPECT_EQ(browser(), browser_list->GetLastActive());
   ToggleTabFullscreen(/*enter_fullscreen=*/false);
@@ -1261,7 +1252,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // https://w3c.github.io/window-placement/#usage-overview-initiate-multi-screen-experiences
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenCompanionWindow) {
-  content::WebContents* tab = SetUpWindowPlacementTab();
+  content::WebContents* tab = SetUpWindowManagementTab();
 
   BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1u, browser_list->size());
@@ -1310,17 +1301,19 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
     })();
   )";
   EXPECT_TRUE(RequestContentFullscreenFromScript(script).ExtractBool());
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 800), browser()->window()->GetBounds());
-
+  EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
   EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
   EXPECT_EQ(2u, browser_list->size());
+  Browser* popup = browser_list->get(1);
+  EXPECT_NE(browser(), popup);
+  EXPECT_NE(GetCurrentDisplay(browser()).id(), GetCurrentDisplay(popup).id());
+
   // Popup window activation is delayed until its opener exits fullscreen.
   EXPECT_EQ(browser(), browser_list->GetLastActive());
   ToggleTabFullscreen(/*enter_fullscreen=*/false);
-  EXPECT_NE(browser(), browser_list->GetLastActive());
+  EXPECT_EQ(popup, browser_list->GetLastActive());
 }
 
-// Tests FullscreenController support for fullscreen on screenschange events.
 // Tests FullscreenController support for fullscreen on screenschange events.
 class FullscreenOnScreensChangeFullscreenControllerInteractiveTest
     : public MultiScreenFullscreenControllerInteractiveTest,
@@ -1347,7 +1340,7 @@ class FullscreenOnScreensChangeFullscreenControllerInteractiveTest
 IN_PROC_BROWSER_TEST_P(
     FullscreenOnScreensChangeFullscreenControllerInteractiveTest,
     MAYBE_FullscreenOnScreensChange) {
-  content::WebContents* tab = SetUpWindowPlacementTab();
+  content::WebContents* tab = SetUpWindowManagementTab();
 
   // Add a screenschange handler to requestFullscreen using the transient
   // affordance granted on screen change events, after user activation expiry.
