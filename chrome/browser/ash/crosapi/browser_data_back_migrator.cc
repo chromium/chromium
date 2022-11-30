@@ -118,8 +118,8 @@ BrowserDataBackMigrator::PreMigrationCleanUp(
     bool result = item.is_directory ? base::DeletePathRecursively(item.path)
                                     : base::DeleteFile(item.path);
     if (!result) {
-      // This is not critical to the migration so log the error but do stop the
-      // migration.
+      // This is not critical to the migration so log the error, but do not stop
+      // the migration.
       PLOG(ERROR) << "Could not delete " << item.path.value();
     }
   }
@@ -186,7 +186,7 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::MergeSplitItems(
   }
 
   // For Storage objects for extensions that exist in both Ash and Lacros, take
-  // the Lacros version and delete the Ash version.
+  // the Lacros version.
   if (!MergeCommonExtensionsDataFiles(
           ash_profile_dir, lacros_profile_dir, tmp_profile_dir,
           base::FilePath(browser_data_migrator_util::kStorageFilePath)
@@ -198,14 +198,9 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::MergeSplitItems(
   }
 
   // Merge IndexedDB.
-  const base::FilePath ash_indexed_db_dir =
-      ash_profile_dir.Append(browser_data_migrator_util::kIndexedDBFilePath);
-  const base::FilePath lacros_indexed_db_dir =
-      lacros_profile_dir.Append(browser_data_migrator_util::kIndexedDBFilePath);
-
   for (const char* extension_id :
        browser_data_migrator_util::kExtensionsBothChromes) {
-    if (!MergeCommonIndexedDB(ash_indexed_db_dir, lacros_indexed_db_dir,
+    if (!MergeCommonIndexedDB(ash_profile_dir, lacros_profile_dir,
                               extension_id)) {
       return {TaskStatus::kMergeSplitItemsMergeIndexedDBFailed, errno};
     }
@@ -659,15 +654,15 @@ bool BrowserDataBackMigrator::RemoveAshCommonExtensionsDataFiles(
 
 // static
 bool BrowserDataBackMigrator::MergeCommonIndexedDB(
-    const base::FilePath& ash_indexed_db_dir,
-    const base::FilePath& lacros_indexed_db_dir,
+    const base::FilePath& ash_profile_dir,
+    const base::FilePath& lacros_profile_dir,
     const char* extension_id) {
   const auto& [ash_blob_path, ash_leveldb_path] =
-      browser_data_migrator_util::GetIndexedDBPaths(ash_indexed_db_dir,
+      browser_data_migrator_util::GetIndexedDBPaths(ash_profile_dir,
                                                     extension_id);
 
   const auto& [lacros_blob_path, lacros_leveldb_path] =
-      browser_data_migrator_util::GetIndexedDBPaths(lacros_indexed_db_dir,
+      browser_data_migrator_util::GetIndexedDBPaths(lacros_profile_dir,
                                                     extension_id);
 
   if (base::PathExists(lacros_blob_path)) {
@@ -676,6 +671,11 @@ bool BrowserDataBackMigrator::MergeCommonIndexedDB(
         PLOG(ERROR) << "Failed deleting " << ash_blob_path.value();
         return false;
       }
+    }
+
+    if (!base::CreateDirectory(ash_blob_path)) {
+      PLOG(ERROR) << "Failed creating empty " << ash_blob_path.value();
+      return false;
     }
 
     if (!base::Move(lacros_blob_path, ash_blob_path)) {
@@ -691,6 +691,11 @@ bool BrowserDataBackMigrator::MergeCommonIndexedDB(
         PLOG(ERROR) << "Failed deleting " << ash_leveldb_path.value();
         return false;
       }
+    }
+
+    if (!base::CreateDirectory(ash_leveldb_path)) {
+      PLOG(ERROR) << "Failed creating empty " << ash_leveldb_path.value();
+      return false;
     }
 
     if (!base::Move(lacros_leveldb_path, ash_leveldb_path)) {
