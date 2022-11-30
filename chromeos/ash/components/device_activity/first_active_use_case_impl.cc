@@ -101,11 +101,11 @@ base::Time FirstActiveUseCaseImpl::DecryptPsmValueAsTimestamp(
   return retrieved_ts;
 }
 
-ImportDataRequest FirstActiveUseCaseImpl::GenerateImportRequestBody() {
+FresnelImportDataRequest FirstActiveUseCaseImpl::GenerateImportRequestBody() {
   std::string psm_id_str = GetPsmIdentifier().value().sensitive_id();
 
   // Generate Fresnel PSM import request body.
-  device_activity::ImportDataRequest import_request;
+  FresnelImportDataRequest import_request;
 
   // Create fresh |DeviceMetadata| object.
   // Note every dimension added to this proto must be approved by privacy.

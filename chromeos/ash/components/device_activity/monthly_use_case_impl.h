@@ -18,7 +18,7 @@ enum class Channel;
 namespace ash::device_activity {
 
 // Forward declaration from fresnel_service.proto.
-class ImportDataRequest;
+class FresnelImportDataRequest;
 
 // Contains the methods required to report the fixed monthly active use case.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   //
   // Important: Each new dimension added to metadata will need to be approved by
   // privacy.
-  ImportDataRequest GenerateImportRequestBody() override;
+  FresnelImportDataRequest GenerateImportRequestBody() override;
 };
 
 }  // namespace ash::device_activity

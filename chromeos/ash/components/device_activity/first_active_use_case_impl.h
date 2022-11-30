@@ -19,7 +19,7 @@ enum class Channel;
 namespace ash::device_activity {
 
 // Forward declaration from fresnel_service.proto.
-class ImportDataRequest;
+class FresnelImportDataRequest;
 
 // Contains the methods required to report the first active use case.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   base::Time DecryptPsmValueAsTimestamp(std::string ciphertext) const override;
 
   // DeviceActiveUseCase:
-  ImportDataRequest GenerateImportRequestBody() override;
+  FresnelImportDataRequest GenerateImportRequestBody() override;
 
   // For testing:
   std::string GetTsCiphertext() const;

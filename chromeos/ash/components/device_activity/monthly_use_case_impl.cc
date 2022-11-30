@@ -37,12 +37,12 @@ std::string MonthlyUseCaseImpl::GenerateUTCWindowIdentifier(
   return base::StringPrintf("%04d%02d", exploded.year, exploded.month);
 }
 
-ImportDataRequest MonthlyUseCaseImpl::GenerateImportRequestBody() {
+FresnelImportDataRequest MonthlyUseCaseImpl::GenerateImportRequestBody() {
   std::string psm_id_str = GetPsmIdentifier().value().sensitive_id();
   std::string window_id_str = GetWindowIdentifier().value();
 
   // Generate Fresnel PSM import request body.
-  device_activity::ImportDataRequest import_request;
+  FresnelImportDataRequest import_request;
   import_request.set_window_identifier(window_id_str);
 
   // Create fresh |DeviceMetadata| object.

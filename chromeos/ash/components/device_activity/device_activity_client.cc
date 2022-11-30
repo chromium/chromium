@@ -1039,7 +1039,7 @@ void DeviceActivityClient::TransitionToCheckIn(
   }
 
   // Generate Fresnel PSM import request body.
-  device_activity::ImportDataRequest import_request =
+  FresnelImportDataRequest import_request =
       current_use_case->GenerateImportRequestBody();
 
   std::string request_body;

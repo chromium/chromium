@@ -18,7 +18,7 @@ enum class Channel;
 namespace ash::device_activity {
 
 // Forward declaration from fresnel_service.proto.
-class ImportDataRequest;
+class FresnelImportDataRequest;
 
 // Contains the methods required to report the daily active use case.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) DailyUseCaseImpl
@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) DailyUseCaseImpl
 
   // DeviceActiveUseCase:
   std::string GenerateUTCWindowIdentifier(base::Time ts) const override;
-  ImportDataRequest GenerateImportRequestBody() override;
+  FresnelImportDataRequest GenerateImportRequestBody() override;
 };
 
 }  // namespace ash::device_activity

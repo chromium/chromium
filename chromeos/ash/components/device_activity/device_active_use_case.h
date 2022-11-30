@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   //
   // Important: Each new dimension added to metadata will need to be approved by
   // privacy.
-  virtual ImportDataRequest GenerateImportRequestBody() = 0;
+  virtual FresnelImportDataRequest GenerateImportRequestBody() = 0;
 
   // Method used to reset the non constant saved state of the device active use
   // case. The state should be cleared after reporting device actives.
