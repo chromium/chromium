@@ -71,6 +71,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   // web_app::AppRegistrarObserver
   void OnAlwaysShowToolbarInFullscreenChanged(const web_app::AppId& app_id,
                                               bool show) override;
+  void OnAppRegistrarDestroyed() override;
 
  protected:
   // views::View:

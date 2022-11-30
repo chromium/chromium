@@ -288,6 +288,10 @@ void BrowserNonClientFrameViewMac::OnAlwaysShowToolbarInFullscreenChanged(
   }
 }
 
+void BrowserNonClientFrameViewMac::OnAppRegistrarDestroyed() {
+  always_show_toolbar_in_fullscreen_observation_.Reset();
+}
+
 bool BrowserNonClientFrameViewMac::ShouldHideTopUIForFullscreen() const {
   if (frame()->IsFullscreen()) {
     return [fullscreen_toolbar_controller_ toolbarStyle] !=

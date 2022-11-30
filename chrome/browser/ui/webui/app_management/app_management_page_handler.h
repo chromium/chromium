@@ -89,6 +89,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   // web_app::AppRegistrarObserver:
   void OnWebAppFileHandlerApprovalStateChanged(
       const web_app::AppId& app_id) override;
+  void OnAppRegistrarDestroyed() override;
 
  private:
   app_management::mojom::AppPtr CreateUIAppPtr(const apps::AppUpdate& update);

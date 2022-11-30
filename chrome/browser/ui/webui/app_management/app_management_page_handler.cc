@@ -402,6 +402,10 @@ void AppManagementPageHandler::OnWebAppFileHandlerApprovalStateChanged(
   page_->OnAppChanged(std::move(app));
 }
 
+void AppManagementPageHandler::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+}
+
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
   auto app = app_management::mojom::App::New();

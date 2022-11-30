@@ -135,6 +135,7 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
   void OnWebAppLastBadgingTimeChanged(const AppId& app_id,
                                       const base::Time& time) override;
   void OnWebAppProtocolSettingsChanged() override;
+  void OnAppRegistrarDestroyed() override;
 
  protected:
   // Helper method for subclasses to allow easy waiting on `wait_loop_`.

@@ -135,6 +135,10 @@ void ProtocolHandlersHandler::OnWebAppProtocolSettingsChanged() {
   UpdateAllDisallowedLaunchProtocols();
 }
 
+void ProtocolHandlersHandler::OnAppRegistrarDestroyed() {
+  app_observation_.Reset();
+}
+
 void ProtocolHandlersHandler::OnWebAppUninstalled(
     const web_app::AppId& app_id) {
   OnWebAppProtocolSettingsChanged();

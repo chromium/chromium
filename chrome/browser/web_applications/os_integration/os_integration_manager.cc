@@ -768,6 +768,10 @@ void OsIntegrationManager::OnWebAppProfileWillBeDeleted(const AppId& app_id) {
   UninstallAllOsHooks(app_id, base::DoNothing());
 }
 
+void OsIntegrationManager::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+}
+
 std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
     const AppId& app_id) {
   DCHECK(shortcut_manager_);

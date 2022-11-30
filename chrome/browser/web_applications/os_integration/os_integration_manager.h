@@ -210,6 +210,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   // AppRegistrarObserver:
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
+  void OnAppRegistrarDestroyed() override;
 
  protected:
   WebAppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }

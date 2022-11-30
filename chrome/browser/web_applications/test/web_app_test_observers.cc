@@ -178,6 +178,10 @@ void WebAppTestRegistryObserverAdapter::OnWebAppProtocolSettingsChanged() {
     app_protocol_settings_changed_delegate_.Run();
 }
 
+void WebAppTestRegistryObserverAdapter::OnAppRegistrarDestroyed() {
+  observation_.Reset();
+}
+
 void WebAppTestRegistryObserverAdapter::SignalRunLoopAndStoreAppId(
     const AppId& app_id) {
   if (!is_listening_)

@@ -56,6 +56,7 @@ class ProtocolHandlersHandler
 
   // web_app::AppRegistrarObserver:
   void OnWebAppProtocolSettingsChanged() override;
+  void OnAppRegistrarDestroyed() override;
 
  private:
   // Called to fetch the state of the protocol handlers. If the full list of

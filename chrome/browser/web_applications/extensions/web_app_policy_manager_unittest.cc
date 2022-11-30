@@ -227,6 +227,8 @@ class MockAppRegistrarObserver : public AppRegistrarObserver {
     return on_policy_changed_call_count;
   }
 
+  void OnAppRegistrarDestroyed() override { NOTREACHED(); }
+
  private:
   int on_policy_changed_call_count = 0;
 };

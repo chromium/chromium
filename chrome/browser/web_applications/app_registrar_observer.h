@@ -27,7 +27,7 @@ class AppRegistrarObserver : public base::CheckedObserver {
 
   virtual void OnWebAppProfileWillBeDeleted(const AppId& app_id) {}
 
-  virtual void OnAppRegistrarDestroyed() {}
+  virtual void OnAppRegistrarDestroyed() = 0;
 
   // Called after remembering the user choice to always launch an app via
   // a given protocol.

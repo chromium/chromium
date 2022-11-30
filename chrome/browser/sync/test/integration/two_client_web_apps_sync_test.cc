@@ -42,12 +42,16 @@ class DisplayModeChangeWaiter : public AppRegistrarObserver {
   explicit DisplayModeChangeWaiter(WebAppRegistrar& registrar) {
     observation_.Observe(&registrar);
   }
+
   void OnWebAppUserDisplayModeChanged(
       const AppId& app_id,
       UserDisplayMode user_display_mode) override {
     run_loop_.Quit();
   }
+
   void Wait() { run_loop_.Run(); }
+
+  void OnAppRegistrarDestroyed() override { NOTREACHED(); }
 
  private:
   base::RunLoop run_loop_;
