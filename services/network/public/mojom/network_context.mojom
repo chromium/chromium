@@ -99,6 +99,11 @@ struct CustomProxyConfig {
   // case properly.
   bool allow_non_idempotent_methods = false;
 
+  // Whether the custom proxy config should override direct settings. When
+  // this is true origins using the direct setting will be merged to respect
+  // the custom config settings first with a fallback of the direct setting.
+  bool should_replace_direct = false;
+
   // For tunneled requests (https://, ws://, wss://), these headers are added
   // to the CONNECT request. Headers here will overwrite matching headers on
   // the CONNECT request if a custom proxy is used.

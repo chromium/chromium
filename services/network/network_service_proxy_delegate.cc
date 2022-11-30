@@ -125,13 +125,18 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
-  if (!EligibleForProxy(*result, method))
+  if (!EligibleForProxy(*result, method)) {
     return;
+  }
 
   net::ProxyInfo proxy_info;
   if (ApplyProxyConfigToProxyInfo(proxy_config_->rules, proxy_retry_info, url,
                                   &proxy_info)) {
     DCHECK(!proxy_info.is_empty() && !proxy_info.is_direct());
+    if (proxy_config_->should_replace_direct &&
+        !proxy_config_->should_override_existing_config) {
+      MergeProxyRules(result->proxy_list(), proxy_info);
+    }
     result->OverrideProxyList(proxy_info.proxy_list());
   }
 }
@@ -218,8 +223,11 @@ bool NetworkServiceProxyDelegate::EligibleForProxy(
     const std::string& method) const {
   bool has_existing_config =
       !proxy_info.is_direct() || proxy_info.proxy_list().size() > 1u;
-  if (!proxy_config_->should_override_existing_config && has_existing_config)
+
+  if (!proxy_config_->should_override_existing_config && has_existing_config &&
+      !proxy_config_->should_replace_direct) {
     return false;
+  }
 
   if (!proxy_config_->allow_non_idempotent_methods &&
       !net::HttpUtil::IsMethodIdempotent(method)) {
@@ -227,6 +235,25 @@ bool NetworkServiceProxyDelegate::EligibleForProxy(
   }
 
   return true;
+}
+
+void NetworkServiceProxyDelegate::MergeProxyRules(
+    const net::ProxyList& existing_proxy_list,
+    net::ProxyInfo& proxy_info) const {
+  net::ProxyList custom_proxy_list = proxy_info.proxy_list();
+  net::ProxyList merged_proxy_list;
+  for (const auto& existing_proxy : existing_proxy_list.GetAll()) {
+    if (existing_proxy.is_direct()) {
+      // Replace direct option with all proxies in the custom proxy list
+      for (const auto& custom_proxy : custom_proxy_list.GetAll()) {
+        merged_proxy_list.AddProxyServer(custom_proxy);
+      }
+    } else {
+      merged_proxy_list.AddProxyServer(existing_proxy);
+    }
+  }
+
+  proxy_info.OverrideProxyList(merged_proxy_list);
 }
 
 void NetworkServiceProxyDelegate::OnObserverDisconnect() {

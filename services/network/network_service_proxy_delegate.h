@@ -70,6 +70,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   bool EligibleForProxy(const net::ProxyInfo& proxy_info,
                         const std::string& method) const;
 
+  // Replaces all DIRECT options in `proxy_info`'s proxy_list with the HTTPS
+  // proxy set in `proxy_config_`. No op when the HTTPS proxy list in
+  // `proxy_config_` is empty.
+  void MergeProxyRules(const net::ProxyList& existing_proxy_list,
+                       net::ProxyInfo& proxy_info) const;
+
   void OnObserverDisconnect();
 
   // mojom::CustomProxyConfigClient implementation:
