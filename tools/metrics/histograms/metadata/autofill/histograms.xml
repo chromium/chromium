@@ -871,6 +871,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.CardUnmaskAuthenticationSelectionDialog.Shown"
     enum="BooleanShown" expires_after="2023-04-16">
+  <obsolete>
+    Deprecated in M109. Subsumed by
+    Autofill.CardUnmaskAuthenticationSelectionDialog.Shown2.
+  </obsolete>
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>siashah@chromium.org</owner>
@@ -878,6 +882,20 @@ chromium-metrics-reviews@google.com.
     Records true every time the card unmask challenge option selection dialog
     was shown. This dialog is shown when a user needs to select a challenge
     option to authenticate a card for payments autofill.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CardUnmaskAuthenticationSelectionDialog.Shown2"
+    units="challenge_options" expires_after="2023-04-16">
+  <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>siashah@chromium.org</owner>
+  <owner>vinnypersky@google.com</owner>
+  <summary>
+    On every show of the card unmask challenge option selection dialog, this
+    histogram records a count (with a maximum of 10) for the number of challenge
+    options that were shown. This dialog is shown when a user needs to select a
+    challenge option to authenticate a card for payments autofill.
   </summary>
 </histogram>
 
