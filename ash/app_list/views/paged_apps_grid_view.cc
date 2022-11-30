@@ -204,8 +204,6 @@ PagedAppsGridView::PagedAppsGridView(
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  view_structure_.Init(PagedViewStructure::Mode::kFullPages);
-
   pagination_model_.SetTransitionDurations(kPageTransitionDuration,
                                            kOverscrollPageTransitionDuration);
   pagination_model_.AddObserver(this);
@@ -258,7 +256,6 @@ void PagedAppsGridView::SetMaxColumnsAndRows(int max_columns,
   // Update paging and pulsing blocks if the page sizes have changed.
   if (item_list() && (TilesPerPage(0) != first_page_size ||
                       TilesPerPage(1) != default_page_size)) {
-    view_structure_.LoadFromMetadata();
     UpdatePaging();
     UpdatePulsingBlockViews();
     PreferredSizeChanged();
@@ -469,6 +466,34 @@ int PagedAppsGridView::GetSelectedPage() const {
   return pagination_model_.selected_page();
 }
 
+bool PagedAppsGridView::IsPageFull(size_t page_index) const {
+  const int first_page_size = *TilesPerPage(0);
+  const int default_page_size = *TilesPerPage(1);
+  const size_t last_page_index =
+      first_page_size - 1 + page_index * default_page_size;
+  size_t tiles = view_model()->view_size();
+  return tiles > last_page_index;
+}
+
+GridIndex PagedAppsGridView::GetGridIndexFromIndexInViewModel(int index) const {
+  const int first_page_size = *TilesPerPage(0);
+  if (index < first_page_size)
+    return GridIndex(0, index);
+  const int default_page_size = *TilesPerPage(1);
+  const int offset_from_first_page = index - first_page_size;
+  return GridIndex(1 + (offset_from_first_page / default_page_size),
+                   offset_from_first_page % default_page_size);
+}
+
+int PagedAppsGridView::GetNumberOfPulsingBlocksToShow(int item_count) const {
+  const int tiles_on_first_page = *TilesPerPage(0);
+  if (item_count < tiles_on_first_page)
+    return tiles_on_first_page - item_count;
+
+  const int tiles_per_page = *TilesPerPage(1);
+  return tiles_per_page - (item_count - tiles_on_first_page) % tiles_per_page;
+}
+
 void PagedAppsGridView::MaybeStartCardifiedView() {
   if (!cardified_state_)
     StartAppsGridCardifiedView();
@@ -479,7 +504,7 @@ void PagedAppsGridView::MaybeEndCardifiedView() {
     EndAppsGridCardifiedView();
 }
 
-void PagedAppsGridView::MaybeStartPageFlip() {
+bool PagedAppsGridView::MaybeStartPageFlip() {
   MaybeStartPageFlipTimer(last_drag_point());
 
   if (cardified_state_) {
@@ -489,6 +514,7 @@ void PagedAppsGridView::MaybeStartPageFlip() {
 
     SetHighlightedBackgroundCard(hovered_page);
   }
+  return page_flip_timer_.IsRunning();
 }
 
 void PagedAppsGridView::MaybeStopPageFlip() {
@@ -535,6 +561,8 @@ gfx::Vector2d PagedAppsGridView::GetGridCenteringOffset(int page) const {
 void PagedAppsGridView::UpdatePaging() {
   // The grid can have a different number of tiles per page.
   size_t tiles = view_model()->view_size();
+  if (HasExtraSlotForReorderPlaceholder())
+    ++tiles;
   int total_pages = 1;
   size_t tiles_on_page = *TilesPerPage(0);
   while (tiles > tiles_on_page) {

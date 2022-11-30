@@ -56,7 +56,6 @@ ScrollableAppsGridView::ScrollableAppsGridView(
                    keyboard_controller),
       scroll_view_(parent_scroll_view) {
   DCHECK(scroll_view_);
-  view_structure_.Init(PagedViewStructure::Mode::kSinglePage);
 }
 
 ScrollableAppsGridView::~ScrollableAppsGridView() {
@@ -111,11 +110,15 @@ gfx::Insets ScrollableAppsGridView::GetTilePadding(int page) const {
 
 gfx::Size ScrollableAppsGridView::GetTileGridSize() const {
   // AppListItemList may contain page break items, so use the view_model().
-  size_t items = view_model()->view_size();
+  size_t items = view_model()->view_size() + pulsing_blocks_model().view_size();
   // Tests sometimes start with 0 items. Ensure space for at least 1 item.
   if (items == 0) {
     items = 1;
   }
+
+  if (HasExtraSlotForReorderPlaceholder())
+    ++items;
+
   const bool is_last_row_full = (items % cols() == 0);
   const int rows = is_last_row_full ? items / cols() : items / cols() + 1;
   gfx::Size tile_size = GetTotalTileSize(/*page=*/0);
@@ -130,6 +133,21 @@ int ScrollableAppsGridView::GetTotalPages() const {
 
 int ScrollableAppsGridView::GetSelectedPage() const {
   return 0;
+}
+
+bool ScrollableAppsGridView::IsPageFull(size_t page_index) const {
+  return false;
+}
+
+GridIndex ScrollableAppsGridView::GetGridIndexFromIndexInViewModel(
+    int index) const {
+  return GridIndex(0, index);
+}
+
+int ScrollableAppsGridView::GetNumberOfPulsingBlocksToShow(
+    int item_count) const {
+  const int residue = item_count % cols();
+  return cols() + (residue ? cols() - residue : 0);
 }
 
 bool ScrollableAppsGridView::MaybeAutoScroll() {

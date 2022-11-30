@@ -53,6 +53,9 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   gfx::Size GetTileGridSize() const override;
   int GetTotalPages() const override;
   int GetSelectedPage() const override;
+  bool IsPageFull(size_t page_index) const override;
+  GridIndex GetGridIndexFromIndexInViewModel(int index) const override;
+  int GetNumberOfPulsingBlocksToShow(int item_count) const override;
   bool MaybeAutoScroll() override;
   void StopAutoScroll() override;
   void HandleScrollFromParentView(const gfx::Vector2d& offset,

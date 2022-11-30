@@ -24,7 +24,6 @@ class View;
 namespace ash {
 
 class AppListItemView;
-class PagedViewStructure;
 
 namespace test {
 
@@ -95,10 +94,6 @@ class AppsGridViewTestApi {
   void ReorderItemByDragAndDrop(int source_index, int target_index);
 
   AppListItemList* GetItemList() { return view_->item_list_; }
-
-  PagedViewStructure* GetPagedViewStructure() {
-    return &view_->view_structure_;
-  }
 
  private:
   AppsGridView* view_;

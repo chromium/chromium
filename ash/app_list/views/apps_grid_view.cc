@@ -19,7 +19,6 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/paged_view_structure.h"
 #include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
@@ -255,9 +254,6 @@ class AppsGridView::ScopedModelUpdate {
     // is in the scope to avoid handling temporary layout.
     DCHECK(!apps_grid_view_->ignore_layout_);
     apps_grid_view_->ignore_layout_ = true;
-
-    view_structure_sanitize_lock_ =
-        apps_grid_view_->view_structure_.GetSanitizeLock();
   }
   ScopedModelUpdate(const ScopedModelUpdate&) = delete;
   ScopedModelUpdate& operator=(const ScopedModelUpdate&) = delete;
@@ -275,8 +271,6 @@ class AppsGridView::ScopedModelUpdate {
  private:
   AppsGridView* const apps_grid_view_;
   const gfx::Size initial_grid_size_;
-  std::unique_ptr<PagedViewStructure::ScopedSanitizeLock>
-      view_structure_sanitize_lock_;
 };
 
 AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
@@ -571,12 +565,12 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
   DropTargetRegion last_drop_target_region = drop_target_region_;
   UpdateDropTargetRegion();
 
-  MaybeStartPageFlip();
+  const bool has_page_flip = MaybeStartPageFlip();
+  const bool is_scrolling = MaybeAutoScroll();
 
-  bool is_scrolling = MaybeAutoScroll();
-  if (is_scrolling) {
-    // Don't do reordering while auto-scrolling, otherwise there is too much
-    // motion during the drag.
+  if (is_scrolling || has_page_flip) {
+    // Don't do reordering while auto-scrolling, or flipping page, otherwise
+    // there is too much motion during the drag.
     reorder_timer_.Stop();
     // Reset the previous drop target.
     if (last_drop_target_region == ON_ITEM)
@@ -693,7 +687,7 @@ void AppsGridView::EndDrag(bool cancel) {
           // `SetOpenFolderInfo()`.
           Layout();
         }
-      } else if (IsValidReorderTargetIndex(drop_target_)) {
+      } else if (IsValidIndex(drop_target_)) {
         // Ensure reorder event has already been announced by the end of drag.
         MaybeCreateDragReorderAccessibilityEvent();
         MoveItemInModel(drag_item_, drop_target_);
@@ -717,6 +711,7 @@ void AppsGridView::EndDrag(bool cancel) {
 
   ClearDragState();
   UpdatePaging();
+
   if (GetWidget()) {
     // Normally Layout() cancels any animations. At this point there may be a
     // pending Layout(), force it now so that one isn't triggered part way
@@ -736,7 +731,7 @@ void AppsGridView::EndDrag(bool cancel) {
     // dragged item ends up in a folder.
     const size_t model_index = GetModelIndexOfItem(drag_item);
     if (model_index < view_model_.view_size())
-      EnsureViewVisible(view_structure_.GetIndexFromModelIndex(model_index));
+      EnsureViewVisible(GetGridIndexFromIndexInViewModel(model_index));
   }
 
   // Hide the |current_ghost_view_| for item drag that started
@@ -770,9 +765,12 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
   DCHECK(original_drag_view && !drag_view_);
   DCHECK(!dragging_for_reparent_item_);
 
+  const gfx::Size initial_grid_size = GetTileGridSize();
+
   // Since the item is new, its placeholder is conceptually at the back of the
   // entire apps grid.
-  reorder_placeholder_ = view_structure_.GetLastTargetIndex();
+  reorder_placeholder_ =
+      GetGridIndexFromIndexInViewModel(view_model()->view_size());
 
   PrepareItemsForBoundsAnimation();
 
@@ -782,6 +780,10 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
   // Set the flag in root level grid view.
   dragging_for_reparent_item_ = true;
   reparent_drag_cancellation_ = std::move(cancellation_callback);
+
+  UpdatePaging();
+  if (GetTileGridSize() != initial_grid_size)
+    PreferredSizeChanged();
 }
 
 void AppsGridView::UpdateDragFromReparentItem(Pointer pointer,
@@ -853,7 +855,7 @@ void AppsGridView::FolderHidden(const std::string& item_id) {
   // If the item view is gone, or the location in the grid did not change,
   // the folder item should not be animated - immediately update apps grid state
   // for folder hide.
-  if (!item_view || view_structure_.GetIndexFromModelIndex(model_index) ==
+  if (!item_view || GetGridIndexFromIndexInViewModel(model_index) ==
                         open_folder_info_->grid_index) {
     open_folder_info_.reset();
     OnFolderHideAnimationDone();
@@ -1080,11 +1082,10 @@ void AppsGridView::Update() {
       item_views.push_back(items_container_->AddChildView(std::move(view)));
     }
   }
-  view_structure_.LoadFromMetadata();
   UpdateColsAndRowsForFolder();
   UpdatePaging();
   UpdatePulsingBlockViews();
-  InvalidateLayout();
+  PreferredSizeChanged();
 
   // Icon load can change the item position in the view model, so don't iterate
   // over view model to get items to update.
@@ -1163,29 +1164,19 @@ AppListItemView* AppsGridView::MaybeSwapPlaceholderAsset(size_t index) {
 }
 
 void AppsGridView::UpdatePulsingBlockViews() {
-  int existing_items = item_list_ ? item_list_->item_count() : 0;
-  const int tablet_page_size =
-      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
-  // For scrolling app list, the "page size" is not defined, so cap the number
-  // of pulsing blocks to the size of the legacy tablet mode page (~20 items).
-  const int tiles_per_page = TilesPerPage(1).value_or(tablet_page_size);
-  if (view_structure_.mode() != PagedViewStructure::Mode::kSinglePage) {
-    if (existing_items > *TilesPerPage(0))
-      existing_items -= *TilesPerPage(0);
+  if (!model_ || model_->status() != AppListModelStatus::kStatusSyncing) {
+    pulsing_blocks_model_.Clear();
+    return;
   }
-  const size_t available_slots =
-      tiles_per_page - (existing_items % tiles_per_page);
-  const size_t desired =
-      model_ && model_->status() == AppListModelStatus::kStatusSyncing
-          ? available_slots
-          : 0;
 
-  if (pulsing_blocks_model_.view_size() == desired)
+  const size_t desired_count =
+      GetNumberOfPulsingBlocksToShow(item_list_ ? item_list_->item_count() : 0);
+  if (pulsing_blocks_model_.view_size() == desired_count)
     return;
 
   pulsing_blocks_model_.Clear();
 
-  while (pulsing_blocks_model_.view_size() < desired) {
+  while (pulsing_blocks_model_.view_size() < desired_count) {
     base::TimeDelta time = GetPulsingBlockAnimationDelayForIndex(
         pulsing_blocks_model_.view_size());
     auto view = std::make_unique<PulsingBlockView>(
@@ -1231,19 +1222,30 @@ void AppsGridView::SetSelectedItemByIndex(const GridIndex& index) {
   }
 }
 
+int AppsGridView::GetIndexInViewModel(const GridIndex& index) const {
+  if (index.page == 0)
+    return index.slot;
+
+  // NOTE: Non-zero page implies that the grid supports paging, so
+  // `TilesPerPage()` should return non-null optional.
+  const int first_page_size = *TilesPerPage(0);
+  const int default_page_size = *TilesPerPage(1);
+  return first_page_size + (index.page - 1) * default_page_size + index.slot;
+}
+
 GridIndex AppsGridView::GetIndexOfView(const AppListItemView* view) const {
   const auto model_index = view_model_.GetIndexOfView(view);
   if (!model_index.has_value())
     return GridIndex();
 
-  return view_structure_.GetIndexFromModelIndex(model_index.value());
+  return GetGridIndexFromIndexInViewModel(model_index.value());
 }
 
 AppListItemView* AppsGridView::GetViewAtIndex(const GridIndex& index) const {
   if (!IsValidIndex(index))
     return nullptr;
 
-  const size_t model_index = view_structure_.GetModelIndexFromIndex(index);
+  const size_t model_index = GetIndexInViewModel(index);
   return GetItemViewAt(model_index);
 }
 
@@ -1252,6 +1254,10 @@ absl::optional<int> AppsGridView::TilesPerPage(int page) const {
   if (!max_rows.has_value())
     return absl::nullopt;
   return *max_rows * cols();
+}
+
+bool AppsGridView::MaybeStartPageFlip() {
+  return false;
 }
 
 void AppsGridView::SetMaxColumnsInternal(int max_cols) {
@@ -1308,12 +1314,12 @@ void AppsGridView::CalculateIdealBounds() {
       continue;
     }
 
-    GridIndex view_index = view_structure_.GetIndexFromModelIndex(slot_index);
+    GridIndex view_index = GetGridIndexFromIndexInViewModel(slot_index);
 
     // Leaves a blank space in the grid for the current reorder placeholder.
     while (reserved_slots.count(view_index)) {
       ++slot_index;
-      view_index = view_structure_.GetIndexFromModelIndex(slot_index);
+      view_index = GetGridIndexFromIndexInViewModel(slot_index);
     }
 
     if (i < view_model_.view_size())
@@ -1648,14 +1654,24 @@ void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
              GetGridCenteringOffset(selected_page).x()) /
             total_tile_size.width();
   col = base::clamp(col, 0, cols_ - 1);
-  drop_target_ =
-      std::min(GridIndex(selected_page, row * cols_ + col),
-               view_structure_.GetLastTargetIndexOfPage(selected_page));
 
-  DCHECK(IsValidReorderTargetIndex(drop_target_))
+  GridIndex max_target_index;
+  if (selected_page == GetTotalPages() - 1) {
+    // On the last page, cap the target index at the view model size.
+    max_target_index = GetGridIndexFromIndexInViewModel(
+        view_model()->view_size() -
+        (HasExtraSlotForReorderPlaceholder() ? 0 : 1));
+  } else {
+    max_target_index =
+        GridIndex(selected_page, *TilesPerPage(selected_page) - 1);
+  }
+
+  drop_target_ =
+      std::min(GridIndex(selected_page, row * cols_ + col), max_target_index);
+
+  DCHECK(IsValidIndex(drop_target_))
       << drop_target_.ToString() << " selected page " << selected_page
-      << " row " << row << " col " << col << " "
-      << view_structure_.GetLastTargetIndexOfPage(drop_target_.page).ToString();
+      << " row " << row << " col " << col << " " << max_target_index.ToString();
 }
 
 bool AppsGridView::DragIsCloseToItem(const gfx::Point& point) {
@@ -1973,8 +1989,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
       } else {
         cancel_reparent = true;
       }
-    } else if (drop_target_region_ != NO_TARGET &&
-               IsValidReorderTargetIndex(drop_target_)) {
+    } else if (drop_target_region_ != NO_TARGET && IsValidIndex(drop_target_)) {
       ReparentItemForReorder(drag_item, drop_target_);
       RecordAppMovingTypeMetrics(kMoveByDragOutOfFolder);
       // Announce accessibility event before the end of drag for reparented
@@ -1994,8 +2009,8 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   const GridIndex after_index = drop_target_;
   const bool top_to_bottom_animation = before_index < after_index;
 
-  UpdatePaging();
   ClearDragState();
+  UpdatePaging();
   if (GetWidget()) {
     // Normally Layout() cancels any animations. At this point there may be a
     // pending Layout(), force it now so that one isn't triggered part way
@@ -2154,7 +2169,7 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
   // Assume all the items matched by the indices in `range` are
   // placed on the same page.
   const int page_index =
-      view_structure_.GetIndexFromModelIndex(range->first_index).page;
+      GetGridIndexFromIndexInViewModel(range->first_index).page;
   const int base_offset =
       kFadeAnimationOffsetRatio * GetTotalTileSize(page_index).height();
 
@@ -2198,7 +2213,7 @@ void AppsGridView::SlideVisibleItemsForHideContinueSection(int base_offset) {
 
   // The continue section is on the 0th page. Don't animate if a different page
   // is selected.
-  if (view_structure_.GetIndexFromModelIndex(range->first_index).page != 0)
+  if (GetGridIndexFromIndexInViewModel(range->first_index).page != 0)
     return;
 
   grid_animation_status_ = AppListGridAnimationStatus::kHideContinueSection;
@@ -2403,8 +2418,7 @@ void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
   bool found = item_list_->FindItemIndex(item_id, &current_item_list_index);
   CHECK(found);
 
-  size_t target_item_list_index =
-      view_structure_.GetTargetItemListIndexForMove(item, target);
+  size_t target_item_list_index = GetIndexInViewModel(target);
   {
     ScopedModelUpdate update(this);
     item_list_->MoveItem(current_item_list_index, target_item_list_index);
@@ -2455,8 +2469,7 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
 
   const std::string item_id = item->id();
   const std::string source_folder_id = item->folder_id();
-  int target_item_index =
-      view_structure_.GetTargetItemListIndexForMove(item, target);
+  int target_item_index = GetIndexInViewModel(target);
 
   // Move the item from its parent folder to top level item list. Calculate the
   // target position in the top level list.
@@ -2487,7 +2500,7 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
   GridIndex start_index(GetSelectedPage(), 0);
   if (!IsValidIndex(start_index))
     return;
-  const size_t start = view_structure_.GetModelIndexFromIndex(start_index);
+  const size_t start = GetIndexInViewModel(start_index);
   const absl::optional<int> tiles_per_page = TilesPerPage(start_index.page);
   const size_t end = tiles_per_page ? std::min(view_model_.view_size(),
                                                start + *tiles_per_page)
@@ -2499,7 +2512,6 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
 void AppsGridView::DeleteItemViewAtIndex(size_t index) {
   AppListItemView* item_view = GetItemViewAt(index);
   view_model_.Remove(index);
-  view_structure_.Remove(item_view);
   if (item_view == drag_view_)
     drag_view_ = nullptr;
   if (open_folder_info_ &&
@@ -2541,8 +2553,6 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
   }
   view->InitializeIconLoader();
 
-  view_structure_.LoadFromMetadata();
-
   // If model update is in progress, paging should be updated when the operation
   // that caused the model update completes.
   if (!updating_model_) {
@@ -2568,8 +2578,6 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
   MaybeAbortWholeGridAnimation();
 
   DeleteItemViewAtIndex(GetModelIndexOfItem(item));
-
-  view_structure_.LoadFromMetadata();
 
   // If model update is in progress, paging should be updated when the operation
   // that caused the model update completes.
@@ -2605,8 +2613,6 @@ void AppsGridView::OnListItemMoved(size_t from_index,
   items_container_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                                              true /* send_native_event */);
 
-  view_structure_.LoadFromMetadata();
-
   // If model update is in progress, paging should be updated when the operation
   // that caused the model update completes.
   if (!updating_model_) {
@@ -2629,8 +2635,7 @@ void AppsGridView::OnListItemMoved(size_t from_index,
 
 void AppsGridView::OnAppListModelStatusChanged() {
   UpdatePulsingBlockViews();
-  Layout();
-  SchedulePaint();
+  InvalidateLayout();
 }
 
 void AppsGridView::DestroyLayerItemsIfNotNeeded() {
@@ -2850,9 +2855,8 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardReparent(
   // creating an extra trailing slot is allowed.
   if (target_index == folder_index &&
       (key_code != ui::VKEY_UP && key_code != backward)) {
-    if (view_structure_.IsFullPage(target_index.page)) {
+    if (IsPageFull(target_index.page))
       return GridIndex(target_index.page + 1, 0);
-    }
     return GridIndex(target_index.page, target_index.slot + 1);
   }
 
@@ -2877,10 +2881,8 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
   DCHECK(selected_view_);
   const GridIndex target_index = GetTargetGridIndexForKeyboardMove(key_code);
   const GridIndex starting_index = GetIndexOfView(selected_view_);
-  if (target_index == starting_index ||
-      !IsValidReorderTargetIndex(target_index)) {
+  if (target_index == starting_index || !IsValidIndex(target_index))
     return;
-  }
 
   handling_keyboard_move_ = true;
 
@@ -2891,21 +2893,14 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
   // to a full page, or a dump to a page with room. A move within a folder is
   // always a swap because there are no gaps.
   const bool swap_items =
-      folder_delegate_ || view_structure_.IsFullPage(target_index.page) ||
+      folder_delegate_ || IsPageFull(target_index.page) ||
       target_index.page == original_selected_view_index.page;
 
   AppListItemView* target_view = GetViewAtIndex(target_index);
-  {
-    // If the move is a two part operation (swap) do not clear the overflow
-    // during the initial move. Clearing the overflow when |target_index| is on
-    // a full page results in the last item being pushed to the next page.
-    std::unique_ptr<PagedViewStructure::ScopedSanitizeLock> sanitize_lock =
-        view_structure_.GetSanitizeLock();
-    MoveItemInModel(selected_view_->item(), target_index);
-    if (swap_items) {
-      DCHECK(target_view);
-      MoveItemInModel(target_view->item(), original_selected_view_index);
-    }
+  MoveItemInModel(selected_view_->item(), target_index);
+  if (swap_items) {
+    DCHECK(target_view);
+    MoveItemInModel(target_view->item(), original_selected_view_index);
   }
 
   int target_page = target_index.page;
@@ -2930,14 +2925,11 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
 
 bool AppsGridView::IsValidIndex(const GridIndex& index) const {
   const absl::optional<int> tiles_per_page = TilesPerPage(index.page);
+  const int extra_valid_slots = HasExtraSlotForReorderPlaceholder() ? 1 : 0;
   return index.page >= 0 && index.page < GetTotalPages() && index.slot >= 0 &&
          (!tiles_per_page || index.slot < *tiles_per_page) &&
-         static_cast<size_t>(view_structure_.GetModelIndexFromIndex(index)) <
-             view_model_.view_size();
-}
-
-bool AppsGridView::IsValidReorderTargetIndex(const GridIndex& index) const {
-  return view_structure_.IsValidReorderTargetIndex(index);
+         static_cast<size_t>(GetIndexInViewModel(index)) <
+             view_model_.view_size() + extra_valid_slots;
 }
 
 size_t AppsGridView::GetModelIndexOfItem(const AppListItem* item) const {
@@ -3016,15 +3008,15 @@ void AppsGridView::MaybeCreateDragReorderAccessibilityEvent() {
 }
 
 void AppsGridView::AnnounceReorder(const GridIndex& target_index) {
-  const int page = target_index.page + 1;
   const int row =
       ((target_index.slot - (target_index.slot % cols_)) / cols_) + 1;
   const int col = (target_index.slot % cols_) + 1;
-  if (view_structure_.mode() == PagedViewStructure::Mode::kSinglePage) {
+  if (!GetMaxRowsInPage(0)) {
     // Don't announce the page for single-page grids (e.g. scrollable grids).
     a11y_announcer_->AnnounceAppsGridReorder(row, col);
   } else {
     // Announce the page for paged grids.
+    const int page = target_index.page + 1;
     a11y_announcer_->AnnounceAppsGridReorder(page, row, col);
   }
 }
@@ -3082,6 +3074,10 @@ void AppsGridView::BeginHideCurrentGhostImageView() {
 void AppsGridView::PrepareItemsForBoundsAnimation() {
   for (size_t i = 0; i < view_model_.view_size(); ++i)
     view_model_.view_at(i)->EnsureLayer();
+}
+
+bool AppsGridView::HasExtraSlotForReorderPlaceholder() const {
+  return reorder_placeholder_.IsValid() && !drag_view_;
 }
 
 void AppsGridView::OnAppListItemViewActivated(

@@ -104,9 +104,12 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   gfx::Size GetTileGridSize() const override;
   int GetTotalPages() const override;
   int GetSelectedPage() const override;
+  bool IsPageFull(size_t page_index) const override;
+  GridIndex GetGridIndexFromIndexInViewModel(int index) const override;
+  int GetNumberOfPulsingBlocksToShow(int item_count) const override;
   void MaybeStartCardifiedView() override;
   void MaybeEndCardifiedView() override;
-  void MaybeStartPageFlip() override;
+  bool MaybeStartPageFlip() override;
   void MaybeStopPageFlip() override;
   bool MaybeAutoScroll() override;
   void StopAutoScroll() override {}

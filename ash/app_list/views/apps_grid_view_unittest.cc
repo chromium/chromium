@@ -507,7 +507,7 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     return apps_grid_view_->items_container();
   }
 
-  views::ViewModelT<PulsingBlockView>& GetPulsingBlocksModel() {
+  const views::ViewModelT<PulsingBlockView>& GetPulsingBlocksModel() const {
     return apps_grid_view_->pulsing_blocks_model();
   }
 
@@ -3288,6 +3288,164 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
   EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
+TEST_P(AppsGridViewTabletTest, ReparentDragToNewPage) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+
+  model_->CreateAndPopulateFolderWithApps(3);
+  // Fill up the first page.
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) - 1);
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Open the folder.
+  test_api_->PressItemAt(0);
+
+  // Drag an item from the first page to the last existing slot on the next
+  // page.
+  AppListItemView* dragged_view =
+      folder_apps_grid_view()->view_model()->view_at(0);
+  const std::string dragged_view_id = dragged_view->item()->id();
+  auto* generator = GetEventGenerator();
+
+  // Initiate drag.
+  generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  dragged_view->FireMouseDragTimerForTest();
+  generator->MoveMouseBy(10, 10);
+
+  // Drag the item outside the folder bounds.
+  gfx::Point point_outside_folder =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(10, 10);
+  views::View::ConvertPointToScreen(app_list_folder_view(),
+                                    &point_outside_folder);
+  generator->MoveMouseTo(point_outside_folder);
+
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  // Reparent drag temporarily adds an extra slot to the apps grid, which should
+  // create an extra page.
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+  EXPECT_EQ(0, GetPaginationModel()->selected_page());
+
+  // Move mouse to the bottom into the page flip zone.
+  generator->MoveMouseTo(
+      paged_apps_grid_view_->GetBoundsInScreen().bottom_center() +
+      gfx::Vector2d(0, -1));
+  ASSERT_TRUE(HasPendingPageFlip(paged_apps_grid_view_));
+  page_flip_waiter_->Wait();
+  // Move outside page flip zone, and verify the reorder timer gets run.
+  generator->MoveMouseBy(0, -50);
+
+  // Ensure that the reoreder timer ran, and that any views on the second page
+  // that should have been moved to the first page have done so.
+  ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
+  paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+  test_api_->WaitForItemMoveAnimationDone();
+
+  // Move the item to the first empty slot on the second page.
+  gfx::Point empty_slot =
+      test_api_->GetItemTileRectAtVisualIndex(1, 0).CenterPoint();
+  views::View::ConvertPointToScreen(paged_apps_grid_view_, &empty_slot);
+  generator->MoveMouseTo(empty_slot);
+  if (paged_apps_grid_view_->reorder_timer_for_test()->IsRunning())
+    paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+  test_api_->WaitForItemMoveAnimationDone();
+
+  // Finalize drag.
+  generator->ReleaseLeftButton();
+
+  EXPECT_EQ(1, GetPaginationModel()->selected_page());
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+  TestAppListItemViewIndice();
+
+  // Verify that the dragged item was moved to the last slot.
+  AppListItemView* last_item_view = test_api_->GetViewAtVisualIndex(1, 0);
+  ASSERT_TRUE(last_item_view);
+  EXPECT_EQ(dragged_view_id, last_item_view->item()->id());
+}
+
+TEST_P(AppsGridViewTabletTest, ReparentDragToAFolderOnNewPage) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+
+  model_->CreateAndPopulateFolderWithApps(3);
+  // Fill up the first page, with a folder in the last slot.
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) - 2);
+  AppListFolderItem* trailing_folder =
+      model_->CreateAndPopulateFolderWithApps(2);
+  const std::string trailing_folder_id = trailing_folder->id();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Open the folder.
+  test_api_->PressItemAt(0);
+
+  // Drag an item from the first page to the last existing slot on the next
+  // page.
+  AppListItemView* dragged_view =
+      folder_apps_grid_view()->view_model()->view_at(0);
+  const std::string dragged_view_id = dragged_view->item()->id();
+  auto* generator = GetEventGenerator();
+
+  // Initiate drag.
+  generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  dragged_view->FireMouseDragTimerForTest();
+  generator->MoveMouseBy(10, 10);
+
+  // Drag the item outside the folder bounds.
+  gfx::Point point_outside_folder =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(10, 10);
+  views::View::ConvertPointToScreen(app_list_folder_view(),
+                                    &point_outside_folder);
+  generator->MoveMouseTo(point_outside_folder);
+
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
+  paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+  test_api_->WaitForItemMoveAnimationDone();
+
+  // Reparent drag temporarily adds an extra slot to the apps grid, which should
+  // create an extra page.
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+  EXPECT_EQ(0, GetPaginationModel()->selected_page());
+
+  // Move mouse to the bottom into the page flip zone.
+  generator->MoveMouseTo(
+      paged_apps_grid_view_->GetBoundsInScreen().bottom_center() +
+      gfx::Vector2d(0, -1));
+  ASSERT_TRUE(HasPendingPageFlip(paged_apps_grid_view_));
+  page_flip_waiter_->Wait();
+
+  // Move the item on top of the folder in the first slot on the page.
+  gfx::Point trailing_slot =
+      test_api_->GetItemTileRectAtVisualIndex(1, 0).CenterPoint();
+  views::View::ConvertPointToScreen(paged_apps_grid_view_, &trailing_slot);
+  generator->MoveMouseTo(trailing_slot);
+
+  // Finalize drag.
+  generator->ReleaseLeftButton();
+
+  // The item was moved to another folder, so the number of pages should have
+  // dropped back to 1.
+  EXPECT_EQ(0, GetPaginationModel()->selected_page());
+  EXPECT_EQ(1, GetPaginationModel()->total_pages());
+  TestAppListItemViewIndice();
+
+  // Verify that the dragged item was moved to the last slot.
+  AppListItemView* last_item_view =
+      test_api_->GetViewAtVisualIndex(0, GetTilesPerPageInPagedGrid(0) - 1);
+  ASSERT_TRUE(last_item_view);
+  EXPECT_EQ(trailing_folder_id, last_item_view->item()->id());
+  const AppListItem* const dragged_item = model_->FindItem(dragged_view_id);
+  ASSERT_TRUE(dragged_item);
+  EXPECT_EQ(trailing_folder_id, dragged_item->folder_id());
+}
+
 TEST_P(AppsGridViewTabletTest, DragAcrossPagesToTheLastSlot) {
   ASSERT_TRUE(paged_apps_grid_view_);
 
@@ -5291,13 +5449,16 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  // For scrolling app list, the "page size" is very large, so cap the number of
-  // pulsing blocks to the size of the tablet mode page (~20 items).
-  const size_t tiles_per_page =
-      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   model_->SetStatus(AppListModelStatus::kStatusSyncing);
   UpdateLayout();
-  ASSERT_EQ(tiles_per_page - 3, GetPulsingBlocksModel().view_size());
+  if (GetParam()) {
+    ASSERT_EQ(GetTilesPerPageInPagedGrid(0) - 3,
+              GetPulsingBlocksModel().view_size());
+  } else {
+    ASSERT_EQ(static_cast<size_t>(apps_grid_view_->cols() +
+                                  apps_grid_view_->cols() - 3),
+              GetPulsingBlocksModel().view_size());
+  }
 
   PulsingBlockView* pulsing_block_view = GetPulsingBlocksModel().view_at(0);
 
@@ -5321,13 +5482,13 @@ TEST_F(AppsGridViewTest, AppIconSubtitutesPulsingBlockView) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  // For scrolling app list, the "page size" is very large, so cap the number of
-  // pulsing blocks to the size of the tablet mode page (~20 items).
-  const size_t tiles_per_page =
-      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   model_->SetStatus(AppListModelStatus::kStatusSyncing);
   UpdateLayout();
-  ASSERT_EQ(tiles_per_page - 3, GetPulsingBlocksModel().view_size());
+
+  const size_t initial_pulsing_blocks = GetPulsingBlocksModel().view_size();
+  ASSERT_EQ(static_cast<size_t>(apps_grid_view_->cols() +
+                                apps_grid_view_->cols() - 3),
+            initial_pulsing_blocks);
 
   PulsingBlockView* pulsing_block_view = GetPulsingBlocksModel().view_at(0);
 
@@ -5342,7 +5503,7 @@ TEST_F(AppsGridViewTest, AppIconSubtitutesPulsingBlockView) {
 
   // The number of pulsing blocks will be decreased by one in order for the
   // incoming app to fade in its place.
-  ASSERT_EQ(tiles_per_page - 4, GetPulsingBlocksModel().view_size());
+  ASSERT_EQ(initial_pulsing_blocks - 1, GetPulsingBlocksModel().view_size());
 
   AppListItemView* item_view = GetItemViewInTopLevelGrid(3);
 
