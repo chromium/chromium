@@ -20,12 +20,12 @@ namespace storage {
 struct QuotaSettings {
   QuotaSettings() = default;
   QuotaSettings(int64_t pool_size,
-                int64_t per_host_quota,
+                int64_t per_storage_key_quota,
                 int64_t should_remain_available,
                 int64_t must_remain_available)
       : pool_size(pool_size),
-        per_host_quota(per_host_quota),
-        session_only_per_host_quota(per_host_quota),
+        per_storage_key_quota(per_storage_key_quota),
+        session_only_per_storage_key_quota(per_storage_key_quota),
         should_remain_available(should_remain_available),
         must_remain_available(must_remain_available) {}
 
@@ -36,11 +36,11 @@ struct QuotaSettings {
 
   // The amount in bytes of the pool an individual site may consume. The
   // value must be less than or equal to the pool_size.
-  int64_t per_host_quota = 0;
+  int64_t per_storage_key_quota = 0;
 
   // The amount allotted to origins that are considered session only
   // according to the SpecialStoragePolicy provided by the embedder.
-  int64_t session_only_per_host_quota = 0;
+  int64_t session_only_per_storage_key_quota = 0;
 
   // The amount of space that should remain available on the storage
   // volume. As the volume approaches this limit, the quota system gets
@@ -83,16 +83,16 @@ void GetNominalDynamicSettings(const base::FilePath& partition_path,
 
 COMPONENT_EXPORT(STORAGE_BROWSER)
 
-// Returns settings with a poolsize of zero and no per host quota.
+// Returns settings with a poolsize of zero and no per StorageKey quota.
 inline QuotaSettings GetNoQuotaSettings() {
   return QuotaSettings();
 }
 
-// Returns settings that provide given |per_host_quota| and a total poolsize of
-// five times that.
-inline QuotaSettings GetHardCodedSettings(int64_t per_host_quota) {
-  return QuotaSettings(per_host_quota * 5, per_host_quota,
-                       per_host_quota, per_host_quota);
+// Returns settings that provide given `per_storage_key_quota` and a total
+// poolsize of five times that.
+inline QuotaSettings GetHardCodedSettings(int64_t per_storage_key_quota) {
+  return QuotaSettings(per_storage_key_quota * 5, per_storage_key_quota,
+                       per_storage_key_quota, per_storage_key_quota);
 }
 
 COMPONENT_EXPORT(STORAGE_BROWSER)

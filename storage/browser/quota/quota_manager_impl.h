@@ -458,7 +458,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Kept non-const so that test code can change the value.
   // TODO(kinuko): Make this a real const value and add a proper way to set
   // the quota for syncable storage. (http://crbug.com/155488)
-  static int64_t kSyncableStorageDefaultHostQuota;
+  static int64_t kSyncableStorageDefaultStorageKeyQuota;
 
   void SetGetVolumeInfoFnForTesting(GetVolumeInfoFn fn) {
     get_volume_info_fn_ = fn;

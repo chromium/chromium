@@ -44,12 +44,12 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
     // TODO(calvinlo): Update test code after default quota is made const
     // (http://crbug.com/155488).
     real_default_quota_ =
-        storage::QuotaManager::kSyncableStorageDefaultHostQuota;
-    storage::QuotaManager::kSyncableStorageDefaultHostQuota = 123456;
+        storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota;
+    storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota = 123456;
   }
 
   void TearDownInProcessBrowserTestFixture() override {
-    storage::QuotaManager::kSyncableStorageDefaultHostQuota =
+    storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota =
         real_default_quota_;
     extensions::ExtensionApiTest::TearDownInProcessBrowserTestFixture();
   }

@@ -76,8 +76,8 @@ void BackgroundFetchTestDataManager::Initialize() {
   // The mock one is still used for testing quota exceeded scenarios in
   // DatabaseTask.
   storage::QuotaSettings settings;
-  settings.per_host_quota = kBackgroundFetchMaxQuotaBytes;
-  settings.pool_size = settings.per_host_quota * 5;
+  settings.per_storage_key_quota = kBackgroundFetchMaxQuotaBytes;
+  settings.pool_size = settings.per_storage_key_quota * 5;
   settings.must_remain_available = 0;
   settings.refresh_interval = base::TimeDelta::Max();
   storage_partition_->GetQuotaManager()->SetQuotaSettings(settings);

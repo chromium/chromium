@@ -241,8 +241,9 @@ class ObfuscatedFileUtilTest : public testing::Test,
         FROM_HERE, base::BindOnce(
                        [](const scoped_refptr<QuotaManager>& quota_manager) {
                          QuotaSettings settings;
-                         settings.per_host_quota = 25 * 1024 * 1024;
-                         settings.pool_size = settings.per_host_quota * 5;
+                         settings.per_storage_key_quota = 25 * 1024 * 1024;
+                         settings.pool_size =
+                             settings.per_storage_key_quota * 5;
                          settings.must_remain_available = 10 * 1024 * 1024;
                          settings.refresh_interval = base::TimeDelta::Max();
                          quota_manager->SetQuotaSettings(settings);

@@ -129,7 +129,8 @@ void DidGetUsageAndQuotaStripOverride(
 // Heuristics: assuming average cloud server allows a few Gigs storage
 // on the server side and the storage needs to be shared for user data
 // and by multiple apps.
-int64_t QuotaManagerImpl::kSyncableStorageDefaultHostQuota = 500 * kMBytes;
+int64_t QuotaManagerImpl::kSyncableStorageDefaultStorageKeyQuota =
+    500 * kMBytes;
 
 constexpr int64_t QuotaManagerImpl::kGBytes;
 constexpr int64_t QuotaManagerImpl::kNoLimit;
@@ -179,7 +180,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Start the async process of gathering the info we need.
     // Gather info before computing an answer:
-    // settings, host_usage, host_quota and device_storage_capacity if
+    // settings, host_usage, storage_key_quota and device_storage_capacity if
     // unlimited.
     int callback_count = is_unlimited_ ? 4 : 3;
     base::RepeatingClosure barrier = base::BarrierClosure(
@@ -203,7 +204,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
                          weak_factory_.GetWeakPtr(), barrier));
     }
 
-    // Determine host_quota differently depending on type.
+    // Determine storage_key_quota differently depending on type.
     if (is_unlimited_) {
       manager()->GetStorageCapacity(
           base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotCapacity,
@@ -212,7 +213,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
                                 kNoLimit);
     } else if (type_ == StorageType::kSyncable) {
       SetDesiredStorageKeyQuota(barrier, blink::mojom::QuotaStatusCode::kOk,
-                                kSyncableStorageDefaultHostQuota);
+                                kSyncableStorageDefaultStorageKeyQuota);
     } else {
       DCHECK_EQ(StorageType::kTemporary, type_);
       // For temporary storage,  OnGotSettings will set the host quota.
@@ -241,7 +242,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
       quota = *quota_override_size;
 
     // For an individual bucket, the quota is the minimum of the requested quota
-    // and the host quota.
+    // and the StorageKey quota.
     if (bucket_info_ && bucket_info_->quota > 0)
       quota = std::min(quota, bucket_info_->quota);
 
@@ -283,9 +284,10 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     settings_ = settings;
     barrier_closure.Run();
     if (type_ == StorageType::kTemporary && !is_unlimited_) {
-      int64_t storage_key_quota = manager()->IsSessionOnly(storage_key_, type_)
-                                      ? settings.session_only_per_host_quota
-                                      : settings.per_host_quota;
+      int64_t storage_key_quota =
+          manager()->IsSessionOnly(storage_key_, type_)
+              ? settings.session_only_per_storage_key_quota
+              : settings.per_storage_key_quota;
       SetDesiredStorageKeyQuota(std::move(barrier_closure),
                                 blink::mojom::QuotaStatusCode::kOk,
                                 storage_key_quota);

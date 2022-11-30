@@ -107,8 +107,8 @@ TEST_F(QuotaSettingsTest, Default) {
   ASSERT_TRUE(settings.has_value());
   // 1600 = 2000 * default PoolSizeRatio (0.8)
   EXPECT_EQ(settings->pool_size, 1600);
-  // 1200 = 1600 * default PerHostRatio (.75)
-  EXPECT_EQ(settings->per_host_quota, 1200);
+  // 1200 = 1600 * default PerStorageKeyRatio (.75)
+  EXPECT_EQ(settings->per_storage_key_quota, 1200);
 }
 
 TEST_F(QuotaSettingsTest, FeatureParamsWithLargeFixedQuota) {

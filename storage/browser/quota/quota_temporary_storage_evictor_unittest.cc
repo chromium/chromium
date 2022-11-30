@@ -81,7 +81,7 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
   const QuotaSettings& settings() const { return settings_; }
   void SetPoolSize(int64_t pool_size) {
     settings_.pool_size = pool_size;
-    settings_.per_host_quota = pool_size / 5;
+    settings_.per_storage_key_quota = pool_size / 5;
     settings_.should_remain_available = pool_size / 5;
     settings_.must_remain_available = pool_size / 100;
     settings_.refresh_interval = base::TimeDelta::Max();

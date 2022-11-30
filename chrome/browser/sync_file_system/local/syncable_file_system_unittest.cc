@@ -121,7 +121,8 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
   EXPECT_EQ(base::File::FILE_OK,
             file_system_.CreateFile(URL("dir/foo")));
 
-  const int64_t kOriginalQuota = QuotaManager::kSyncableStorageDefaultHostQuota;
+  const int64_t kOriginalQuota =
+      QuotaManager::kSyncableStorageDefaultStorageKeyQuota;
 
   const int64_t kQuota = 12345 * 1024;
   file_system_.quota_manager()->SetQuota(

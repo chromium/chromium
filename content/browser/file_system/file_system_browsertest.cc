@@ -92,7 +92,7 @@ class FileSystemBrowserTestWithLowQuota : public FileSystemBrowserTest {
           const int kMeg = 1000 * 1024;
           storage::QuotaSettings settings;
           settings.pool_size = 25 * kMeg;
-          settings.per_host_quota = 5 * kMeg;
+          settings.per_storage_key_quota = 5 * kMeg;
           settings.must_remain_available = 10 * kMeg;
           settings.refresh_interval = base::TimeDelta::Max();
           qm->SetQuotaSettings(settings);
