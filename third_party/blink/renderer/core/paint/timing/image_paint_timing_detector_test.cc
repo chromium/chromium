@@ -156,13 +156,15 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   }
 
   void UpdateCandidate() {
-    GetPaintTimingDetector().GetImagePaintTimingDetector().UpdateCandidate();
+    GetPaintTimingDetector()
+        .GetImagePaintTimingDetector()
+        .UpdateMetricsCandidate();
   }
 
   void UpdateCandidateForChildFrame() {
     GetChildPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        .UpdateCandidate();
+        .UpdateMetricsCandidate();
   }
 
   base::TimeTicks LargestPaintTime() {

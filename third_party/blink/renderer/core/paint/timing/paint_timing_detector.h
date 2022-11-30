@@ -111,11 +111,16 @@ class CORE_EXPORT PaintTimingCallbackManagerImpl final
   std::unique_ptr<PaintTimingCallbackManager::CallbackQueue> frame_callbacks_;
 };
 
-// PaintTimingDetector contains some of paint metric detectors,
-// providing common infrastructure for these detectors.
+// PaintTimingDetector receives signals regarding text and image paints and
+// orchestrates the functionality of more specific paint detectors
+// (ImagePaintTimingDetector and TextPaintTimingDetector), to ensure proper
+// registration and emission of LCP entries. The class has a dual role, both
+// ensuring the emission of web-exposed LCP entries, as well as sending that
+// signal towards browser metrics - UKM, UMA and potentially other forms of
+// logging implemented by chrome/.
 //
 // See also:
-// https://docs.google.com/document/d/1DRVd4a2VU8-yyWftgOparZF-sf16daf0vfbsHuz2rws/edit
+// https://bit.ly/lcp-explainer
 class CORE_EXPORT PaintTimingDetector
     : public GarbageCollected<PaintTimingDetector> {
   friend class ImagePaintTimingDetectorTest;
@@ -166,13 +171,13 @@ class CORE_EXPORT PaintTimingDetector
   void NotifyScroll(mojom::blink::ScrollType);
 
   // The returned value indicates whether the candidates have changed.
-  bool NotifyIfChangedLargestImagePaint(
+  bool NotifyMetricsIfLargestImagePaintChanged(
       base::TimeTicks image_paint_time,
       uint64_t image_size,
       ImageRecord* image_record,
       double image_bpp,
       absl::optional<WebURLRequest::Priority> priority);
-  bool NotifyIfChangedLargestTextPaint(base::TimeTicks, uint64_t size);
+  bool NotifyMetricsIfLargestTextPaintChanged(base::TimeTicks, uint64_t size);
 
   void DidChangePerformanceTiming();
 

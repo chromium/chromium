@@ -282,7 +282,7 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
   return largest_contentful_paint_calculator_;
 }
 
-bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
+bool PaintTimingDetector::NotifyMetricsIfLargestImagePaintChanged(
     base::TimeTicks image_paint_time,
     uint64_t image_paint_size,
     ImageRecord* image_record,
@@ -344,7 +344,7 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
   return true;
 }
 
-bool PaintTimingDetector::NotifyIfChangedLargestTextPaint(
+bool PaintTimingDetector::NotifyMetricsIfLargestTextPaintChanged(
     base::TimeTicks text_paint_time,
     uint64_t text_paint_size) {
   if (!HasLargestTextPaintChanged(text_paint_time, text_paint_size))
@@ -369,8 +369,8 @@ void PaintTimingDetector::UpdateLargestContentfulPaintTime() {
     // use lcp_details_.largest_contentful_paint_type_ to track the LCP type of
     // the largest image only. When the largest image gets updated, the
     // lcp_details_.largest_contentful_paint_type_ gets reset and updated
-    // accordingly in the NotifyIfChangedLargestImagePaint() method. If the LCP
-    // element turns out to be the largest text, we simply set the
+    // accordingly in the NotifyMetricsIfLargestImagePaintChanged() method. If
+    // the LCP element turns out to be the largest text, we simply set the
     // lcp_details_.largest_contentful_paint_type_ to be kText here. This is
     // possible because currently text elements have only 1 LCP type kText.
     lcp_details_.largest_contentful_paint_type_ =
@@ -480,14 +480,15 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
   const TextRecord* largest_text_record = nullptr;
   const ImageRecord* largest_image_record = nullptr;
   if (text_paint_timing_detector_->IsRecordingLargestTextPaint()) {
-    largest_text_record = text_paint_timing_detector_->UpdateCandidate();
+    largest_text_record = text_paint_timing_detector_->UpdateMetricsCandidate();
   }
   if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
-    largest_image_record = image_paint_timing_detector_->UpdateCandidate();
+    largest_image_record =
+        image_paint_timing_detector_->UpdateMetricsCandidate();
   }
 
-  lcp_calculator->UpdateLargestContentfulPaintIfNeeded(largest_text_record,
-                                                       largest_image_record);
+  lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
+      largest_text_record, largest_image_record);
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {

@@ -121,7 +121,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
         test_task_runner_->NowTicks());
     // Outside the tests, this is invoked by
     // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
-    GetLargestTextPaintManager()->UpdateCandidate();
+    GetLargestTextPaintManager()->UpdateMetricsCandidate();
   }
 
   base::TimeTicks LargestPaintTime() {

@@ -24,16 +24,17 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   LargestContentfulPaintCalculator& operator=(
       const LargestContentfulPaintCalculator&) = delete;
 
-  void UpdateLargestContentfulPaintIfNeeded(const TextRecord* largest_text,
-                                            const ImageRecord* largest_image);
+  void UpdateWebExposedLargestContentfulPaintIfNeeded(
+      const TextRecord* largest_text,
+      const ImageRecord* largest_image);
 
   void Trace(Visitor* visitor) const;
 
  private:
   friend class LargestContentfulPaintCalculatorTest;
 
-  void UpdateLargestContentfulImage(const ImageRecord* largest_image);
-  void UpdateLargestContentfulText(const TextRecord& largest_text);
+  void UpdateWebExposedLargestContentfulImage(const ImageRecord* largest_image);
+  void UpdateWebExposedLargestContentfulText(const TextRecord& largest_text);
 
   std::unique_ptr<TracedValue> TextCandidateTraceData(
       const TextRecord& largest_text);

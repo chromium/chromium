@@ -64,15 +64,15 @@ void LargestTextPaintManager::ReportCandidateToTrace(
                                    ToTraceValue(&frame_view_->GetFrame()));
 }
 
-TextRecord* LargestTextPaintManager::UpdateCandidate() {
+TextRecord* LargestTextPaintManager::UpdateMetricsCandidate() {
   if (!largest_text_) {
     return nullptr;
   }
   const base::TimeTicks time = largest_text_->paint_time;
   const uint64_t size = largest_text_->recorded_size;
   DCHECK(paint_timing_detector_);
-  bool changed =
-      paint_timing_detector_->NotifyIfChangedLargestTextPaint(time, size);
+  bool changed = paint_timing_detector_->NotifyMetricsIfLargestTextPaintChanged(
+      time, size);
   if (changed) {
     // It is not possible for an update to happen with a candidate that has no
     // paint time.
@@ -124,7 +124,7 @@ void TextPaintTimingDetector::ReportPresentationTime(
   }
   AssignPaintTimeToQueuedRecords(frame_index, timestamp);
   if (recording_largest_text_paint_)
-    ltp_manager_->UpdateCandidate();
+    ltp_manager_->UpdateMetricsCandidate();
 }
 
 bool TextPaintTimingDetector::ShouldWalkObject(

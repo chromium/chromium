@@ -26,25 +26,26 @@ LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
     WindowPerformance* window_performance)
     : window_performance_(window_performance) {}
 
-void LargestContentfulPaintCalculator::UpdateLargestContentfulPaintIfNeeded(
-    const TextRecord* largest_text,
-    const ImageRecord* largest_image) {
+void LargestContentfulPaintCalculator::
+    UpdateWebExposedLargestContentfulPaintIfNeeded(
+        const TextRecord* largest_text,
+        const ImageRecord* largest_image) {
   uint64_t text_size = largest_text ? largest_text->recorded_size : 0u;
   uint64_t image_size = largest_image ? largest_image->recorded_size : 0u;
   if (image_size > text_size) {
     if (image_size > largest_reported_size_ &&
         largest_image->paint_time > base::TimeTicks()) {
-      UpdateLargestContentfulImage(largest_image);
+      UpdateWebExposedLargestContentfulImage(largest_image);
     }
   } else {
     if (text_size > largest_reported_size_ &&
         largest_text->paint_time > base::TimeTicks()) {
-      UpdateLargestContentfulText(*largest_text);
+      UpdateWebExposedLargestContentfulText(*largest_text);
     }
   }
 }
 
-void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
+void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
     const ImageRecord* largest_image) {
   DCHECK(window_performance_);
   DCHECK(largest_image);
@@ -118,7 +119,7 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
   }
 }
 
-void LargestContentfulPaintCalculator::UpdateLargestContentfulText(
+void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
     const TextRecord& largest_text) {
   DCHECK(window_performance_);
   // |node_| could be null and |largest_text| should be ignored in this

@@ -65,15 +65,15 @@ class CORE_EXPORT LargestTextPaintManager final
     return largest_text_;
   }
   void MaybeUpdateLargestText(TextRecord* record);
-
-  void ReportCandidateToTrace(const TextRecord&);
-  TextRecord* UpdateCandidate();
-  void PopulateTraceValue(TracedValue&, const TextRecord& first_text_paint);
-
   void MaybeUpdateLargestIgnoredText(const LayoutObject&,
                                      const uint64_t&,
                                      const gfx::Rect& frame_visual_rect,
                                      const gfx::RectF& root_visual_rect);
+  TextRecord* UpdateMetricsCandidate();
+
+  void ReportCandidateToTrace(const TextRecord&);
+  void PopulateTraceValue(TracedValue&, const TextRecord& first_text_paint);
+
   Member<TextRecord> PopLargestIgnoredText() {
     return std::move(largest_ignored_text_);
   }
@@ -143,8 +143,8 @@ class CORE_EXPORT TextPaintTimingDetector final
   inline bool IsRecordingLargestTextPaint() const {
     return recording_largest_text_paint_;
   }
-  inline TextRecord* UpdateCandidate() {
-    return ltp_manager_->UpdateCandidate();
+  inline TextRecord* UpdateMetricsCandidate() {
+    return ltp_manager_->UpdateMetricsCandidate();
   }
   void ReportLargestIgnoredText();
   void ReportPresentationTime(uint32_t frame_index, base::TimeTicks timestamp);

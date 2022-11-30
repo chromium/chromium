@@ -162,7 +162,7 @@ void ImagePaintTimingDetector::ReportNoCandidateToTrace() {
                ToTraceValue(&frame_view_->GetFrame()));
 }
 
-ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
+ImageRecord* ImagePaintTimingDetector::UpdateMetricsCandidate() {
   ImageRecord* largest_image_record = records_manager_.LargestImage();
   base::TimeTicks time = largest_image_record ? largest_image_record->paint_time
                                               : base::TimeTicks();
@@ -186,12 +186,12 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
                            : absl::nullopt;
 
   PaintTimingDetector& detector = frame_view_->GetPaintTimingDetector();
-  // Calling NotifyIfChangedLargestImagePaint only has an impact on
+  // Calling NotifyMetricsIfLargestImagePaintChanged only has an impact on
   // PageLoadMetrics, and not on the web exposed metrics.
   //
   // Two different candidates are rare to have the same time and size.
   // So when they are unchanged, the candidate is considered unchanged.
-  bool changed = detector.NotifyIfChangedLargestImagePaint(
+  bool changed = detector.NotifyMetricsIfLargestImagePaintChanged(
       time, size, largest_image_record, bpp, std::move(priority));
   if (changed) {
     if (!time.is_null() && largest_image_record->loaded) {
