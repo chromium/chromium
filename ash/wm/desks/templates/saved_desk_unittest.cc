@@ -204,13 +204,6 @@ class SavedDeskTest : public OverviewTestBase {
     return nullptr;
   }
 
-  OverviewGrid* GetOverviewGridForRoot(aura::Window* root_window) {
-    auto* overview_session = GetOverviewSession();
-    return overview_session
-               ? overview_session->GetGridWithRootWindow(root_window)
-               : nullptr;
-  }
-
   SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButtonForRoot(
       aura::Window* root_window) {
     const auto* overview_grid = GetOverviewGridForRoot(root_window);

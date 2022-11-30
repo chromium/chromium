@@ -88,6 +88,15 @@ OverviewSession* GetOverviewSession() {
   return session;
 }
 
+OverviewGrid* GetOverviewGridForRoot(aura::Window* root) {
+  DCHECK(root->IsRootWindow());
+
+  auto* overview_controller = Shell::Get()->overview_controller();
+  DCHECK(overview_controller->InOverviewSession());
+
+  return overview_controller->overview_session()->GetGridWithRootWindow(root);
+}
+
 const std::vector<std::unique_ptr<OverviewItem>>& GetOverviewItemsForRoot(
     int index) {
   return GetOverviewSession()->grid_list()[index]->window_list();

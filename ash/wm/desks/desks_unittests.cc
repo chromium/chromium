@@ -173,15 +173,6 @@ bool DoesActiveDeskContainWindow(aura::Window* window) {
                         window);
 }
 
-OverviewGrid* GetOverviewGridForRoot(aura::Window* root) {
-  DCHECK(root->IsRootWindow());
-
-  auto* overview_controller = Shell::Get()->overview_controller();
-  DCHECK(overview_controller->InOverviewSession());
-
-  return overview_controller->overview_session()->GetGridWithRootWindow(root);
-}
-
 void CloseDeskFromMiniView(const DeskMiniView* desk_mini_view,
                            ui::test::EventGenerator* event_generator) {
   DCHECK(desk_mini_view);
@@ -3690,7 +3681,7 @@ TEST_P(DesksTest, PerDeskZOrder) {
 
           // Retrieves the mirrored layers `mirrored_layers` of application
           // windows for `desk`. The root of `layer_tree_owner` is a layer that
-          // has only one child, and the only child acts as the parnet of all
+          // has only one child, and the only child acts as the parent of all
           // the mirrored layers of application windows.
           const ui::LayerTreeOwner* layer_tree_owner =
               DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(root,
