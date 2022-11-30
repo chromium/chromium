@@ -19,7 +19,7 @@ namespace gpu {
 // in //media's DXVA video decoder. DO NOT USE FOR ANY OTHER PURPOSE.
 // TODO(crbug.com/1384438): Remove this class.
 class GPU_GLES2_EXPORT GLImagePbufferBacking
-    : public SharedImageBacking,
+    : public ClearTrackingSharedImageBacking,
       public GLTextureImageRepresentationClient {
  public:
   // Used when GLImagePbufferBacking is serving as a temporary SharedImage
@@ -34,7 +34,6 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      GLenum texture_target,
       scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture);
 
   GLImagePbufferBacking(const GLImagePbufferBacking& other) = delete;
@@ -54,7 +53,7 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      const GLTextureImageBackingHelper::InitializeGLTextureParams& params);
+      scoped_refptr<gles2::TexturePassthrough> passthrough_texture);
 
   // SharedImageBacking:
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
@@ -63,8 +62,6 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override;
   SharedImageBackingType GetType() const override;
-  gfx::Rect ClearedRect() const final;
-  void SetClearedRect(const gfx::Rect& cleared_rect) final;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) final;
@@ -83,10 +80,6 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
-  std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker) override;
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
 
   // GLTextureImageRepresentationClient:
   bool GLTextureImageRepresentationBeginAccess(bool readonly) override;
@@ -95,18 +88,9 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
 
   scoped_refptr<GLImagePbuffer> image_;
 
-  void ReleaseGLTexture(bool have_context);
-
-  const GLTextureImageBackingHelper::InitializeGLTextureParams gl_params_;
-
-  // This is the cleared rect used by ClearedRect and SetClearedRect.
-  gfx::Rect cleared_rect_;
-
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
 
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
-
-  base::WeakPtrFactory<GLImagePbufferBacking> weak_factory_;
 };
 
 }  // namespace gpu

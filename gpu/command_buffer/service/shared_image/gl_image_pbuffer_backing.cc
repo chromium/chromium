@@ -15,19 +15,11 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {
-
-namespace {
-
-using InitializeGLTextureParams =
-    GLTextureImageBackingHelper::InitializeGLTextureParams;
-
-}  // namespace
 
 // static
 std::unique_ptr<GLImagePbufferBacking>
@@ -40,23 +32,14 @@ GLImagePbufferBacking::CreateFromGLTexture(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    GLenum texture_target,
     scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture) {
   DCHECK(!!wrapped_gl_texture);
-
-  // We don't expect the backing to allocate a new
-  // texture but it does need to know the texture target so we supply that
-  // one param.
-  InitializeGLTextureParams params;
-  params.target = texture_target;
 
   auto si_format = viz::SharedImageFormat::SinglePlane(format);
   auto shared_image =
       base::WrapUnique<GLImagePbufferBacking>(new GLImagePbufferBacking(
           std::move(image), mailbox, si_format, size, color_space,
-          surface_origin, alpha_type, usage, params));
-
-  shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
+          surface_origin, alpha_type, usage, std::move(wrapped_gl_texture)));
 
   return shared_image;
 }
@@ -70,8 +53,8 @@ GLImagePbufferBacking::GLImagePbufferBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    const InitializeGLTextureParams& params)
-    : SharedImageBacking(
+    scoped_refptr<gles2::TexturePassthrough> passthrough_texture)
+    : ClearTrackingSharedImageBacking(
           mailbox,
           format,
           size,
@@ -82,17 +65,11 @@ GLImagePbufferBacking::GLImagePbufferBacking(
           viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
           false /* is_thread_safe */),
       image_(image),
-      gl_params_(params),
-      cleared_rect_(params.is_cleared ? gfx::Rect(size) : gfx::Rect()),
-      weak_factory_(this) {
+      passthrough_texture_(std::move(passthrough_texture)) {
   DCHECK(image_);
 }
 
 GLImagePbufferBacking::~GLImagePbufferBacking() {
-  ReleaseGLTexture(have_context());
-}
-
-void GLImagePbufferBacking::ReleaseGLTexture(bool have_context) {
   // If the cached promise texture is referencing the GL texture, then it needs
   // to be deleted, too.
   if (cached_promise_texture_) {
@@ -102,21 +79,17 @@ void GLImagePbufferBacking::ReleaseGLTexture(bool have_context) {
     }
   }
 
-  if (passthrough_texture_) {
-    if (!have_context)
-      passthrough_texture_->MarkContextLost();
-    passthrough_texture_.reset();
-  }
+  if (!have_context())
+    passthrough_texture_->MarkContextLost();
+  passthrough_texture_.reset();
 }
 
 GLenum GLImagePbufferBacking::GetGLTarget() const {
-  return gl_params_.target;
+  return GL_TEXTURE_2D;
 }
 
 GLuint GLImagePbufferBacking::GetGLServiceId() const {
-  if (passthrough_texture_)
-    return passthrough_texture_->service_id();
-  return 0;
+  return passthrough_texture_->service_id();
 }
 
 scoped_refptr<gfx::NativePixmap> GLImagePbufferBacking::GetNativePixmap() {
@@ -142,14 +115,6 @@ void GLImagePbufferBacking::OnMemoryDump(
 
 SharedImageBackingType GLImagePbufferBacking::GetType() const {
   return SharedImageBackingType::kGLImage;
-}
-
-gfx::Rect GLImagePbufferBacking::ClearedRect() const {
-  return cleared_rect_;
-}
-
-void GLImagePbufferBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
-  cleared_rect_ = cleared_rect;
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
@@ -210,20 +175,6 @@ std::unique_ptr<SkiaImageRepresentation> GLImagePbufferBacking::ProduceSkia(
   return std::make_unique<SkiaGLCommonRepresentation>(
       manager, this, gl_client, std::move(context_state),
       cached_promise_texture_, tracker);
-}
-
-std::unique_ptr<MemoryImageRepresentation> GLImagePbufferBacking::ProduceMemory(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
-  return nullptr;
-}
-
-void GLImagePbufferBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  if (in_fence) {
-    std::unique_ptr<gl::GLFence> egl_fence =
-        gl::GLFence::CreateFromGpuFence(*in_fence.get());
-    egl_fence->ServerWait();
-  }
 }
 
 bool GLImagePbufferBacking::GLTextureImageRepresentationBeginAccess(
