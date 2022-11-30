@@ -14,6 +14,7 @@
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,12 +52,25 @@ class ReadingListManagerImplTest : public testing::Test {
 
   void SetUp() override {
     clock_.SetNow(base::Time::Now());
+    EXPECT_TRUE(ResetStorage()->TriggerLoadCompletion());
+    EXPECT_TRUE(manager()->IsLoaded());
+  }
+
+  base::WeakPtr<FakeReadingListModelStorage> ResetStorage() {
+    manager_.reset();
+    reading_list_model_.reset();
+
+    auto storage = std::make_unique<FakeReadingListModelStorage>();
+    base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
+        storage->AsWeakPtr();
+
     reading_list_model_ = std::make_unique<ReadingListModelImpl>(
-        /*storage_layer=*/nullptr, /*pref_service=*/nullptr, &clock_);
+        std::move(storage), /*pref_service=*/nullptr, &clock_);
     manager_ =
         std::make_unique<ReadingListManagerImpl>(reading_list_model_.get());
     manager_->AddObserver(observer());
-    EXPECT_TRUE(manager()->IsLoaded());
+
+    return storage_ptr;
   }
 
   void TearDown() override { manager_->RemoveObserver(observer()); }
@@ -101,11 +115,18 @@ TEST_F(ReadingListManagerImplTest, RootWithEmptyReadingList) {
 
 // Verifies load data into reading list model will update |manager_| as well.
 TEST_F(ReadingListManagerImplTest, Load) {
-  // Load data into reading list model.
+  base::WeakPtr<FakeReadingListModelStorage> fake_storage = ResetStorage();
+  ASSERT_FALSE(manager()->IsLoaded());
+
+  // Mimic the completion of storage loading.
   ReadingListEntries entries;
   GURL url(kURL);
   entries.emplace(url, ReadingListEntry(url, kTitle, clock()->Now()));
-  reading_list_model()->StoreLoaded(std::move(entries));
+  ASSERT_TRUE(
+      fake_storage->TriggerLoadCompletion(ReadingListModelStorage::LoadResult{
+          std::move(entries), /*metadata_batch=*/nullptr}));
+
+  EXPECT_TRUE(manager()->IsLoaded());
 
   const auto* node = manager()->Get(url);
   EXPECT_TRUE(node);

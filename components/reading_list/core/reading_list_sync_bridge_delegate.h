@@ -5,23 +5,15 @@
 #ifndef COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_DELEGATE_H_
 #define COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_DELEGATE_H_
 
-#include <map>
-
 class ReadingListEntry;
 
 // The delegate to handle callbacks from the ReadingListSyncBridge.
 class ReadingListSyncBridgeDelegate {
  public:
-  using ReadingListEntries = std::map<GURL, ReadingListEntry>;
-
   ReadingListSyncBridgeDelegate(const ReadingListSyncBridgeDelegate&) = delete;
   ReadingListSyncBridgeDelegate& operator=(
       const ReadingListSyncBridgeDelegate&) = delete;
 
-  // These three methods handle callbacks from a ReadingListSyncBridge.
-  // This method is called when the local store is loaded. |entries| contains
-  // the ReadingListEntry present on the device before sync starts.
-  virtual void StoreLoaded(ReadingListEntries entries) = 0;
   // Handle sync events.
   // Called to add a new entry to the model.
   // |entry| must not already exist in the model.

@@ -17,6 +17,10 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace syncer {
 class ModelTypeChangeProcessor;
 class MutableDataBatch;
@@ -39,14 +43,18 @@ class ReadingListSyncBridge : public ReadingListModelStorage,
 
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
 
-  // ReadingListModelStorage implementation
   void SetReadingListModel(ReadingListModel* model,
                            ReadingListSyncBridgeDelegate* delegate,
-                           base::Clock* clock) override;
+                           base::Clock* clock);
+  void ModelReadyToSync(
+      std::unique_ptr<syncer::MetadataBatch> sync_metadata_batch);
+  void ReportError(const syncer::ModelError& error);
 
+  // ReadingListModelStorage implementation.
+  void Load(LoadCallback load_cb) override;
   void SaveEntry(const ReadingListEntry& entry) override;
   void RemoveEntry(const ReadingListEntry& entry) override;
-  syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override;
+  ReadingListSyncBridge* GetSyncBridge() override;
 
   // Creates an object used to communicate changes in the sync metadata to the
   // model type store.
@@ -160,10 +168,9 @@ class ReadingListSyncBridge : public ReadingListModelStorage,
       const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
   void OnDatabaseSave(const absl::optional<syncer::ModelError>& error);
-  void OnReadAllMetadata(
-      ReadingListSyncBridgeDelegate::ReadingListEntries loaded_entries,
-      const absl::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnReadAllMetadata(ReadingListEntries loaded_entries,
+                         const absl::optional<syncer::ModelError>& error,
+                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        const ReadingListEntry& entry);
@@ -172,6 +179,7 @@ class ReadingListSyncBridge : public ReadingListModelStorage,
   raw_ptr<ReadingListModel> model_;
   raw_ptr<ReadingListSyncBridgeDelegate> delegate_;
   syncer::OnceModelTypeStoreFactory create_store_callback_;
+  LoadCallback store_load_callback_;
 
   int pending_transaction_count_;
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch_;

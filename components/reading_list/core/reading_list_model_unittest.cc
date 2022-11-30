@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
+#include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
-#include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_sync_bridge_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,103 +19,69 @@ base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
   return clock->Now();
 }
 
-class TestReadingListStorageObserver {
- public:
-  virtual void ReadingListDidSaveEntry() = 0;
-  virtual void ReadingListDidRemoveEntry() = 0;
-};
+ReadingListModelStorage::ReadingListEntries PopulateSampleEntries(
+    base::SimpleTestClock* clock) {
+  ReadingListModelStorage::ReadingListEntries entries;
+  // Adds timer and interlace read/unread entry creation to avoid having two
+  // entries with the same creation timestamp.
+  ReadingListEntry unread_a(GURL("http://unread_a.com"), "unread_a",
+                            AdvanceAndGetTime(clock));
+  entries.emplace(GURL("http://unread_a.com"), std::move(unread_a));
 
-class TestReadingListStorage : public ReadingListModelStorage {
- public:
-  TestReadingListStorage(TestReadingListStorageObserver* observer,
-                         base::SimpleTestClock* clock)
-      : observer_(observer), clock_(clock) {}
+  ReadingListEntry read_a(GURL("http://read_a.com"), "read_a",
+                          AdvanceAndGetTime(clock));
+  read_a.SetRead(true, AdvanceAndGetTime(clock));
+  entries.emplace(GURL("http://read_a.com"), std::move(read_a));
 
-  void AddSampleEntries() {
-    // Adds timer and interlace read/unread entry creation to avoid having two
-    // entries with the same creation timestamp.
-    ReadingListEntry unread_a(GURL("http://unread_a.com"), "unread_a",
-                              AdvanceAndGetTime(clock_));
-    entries_.emplace(GURL("http://unread_a.com"), std::move(unread_a));
+  ReadingListEntry unread_b(GURL("http://unread_b.com"), "unread_b",
+                            AdvanceAndGetTime(clock));
+  entries.emplace(GURL("http://unread_b.com"), std::move(unread_b));
 
-    ReadingListEntry read_a(GURL("http://read_a.com"), "read_a",
-                            AdvanceAndGetTime(clock_));
-    read_a.SetRead(true, AdvanceAndGetTime(clock_));
-    entries_.emplace(GURL("http://read_a.com"), std::move(read_a));
+  ReadingListEntry read_b(GURL("http://read_b.com"), "read_b",
+                          AdvanceAndGetTime(clock));
+  read_b.SetRead(true, AdvanceAndGetTime(clock));
+  entries.emplace(GURL("http://read_b.com"), std::move(read_b));
 
-    ReadingListEntry unread_b(GURL("http://unread_b.com"), "unread_b",
-                              AdvanceAndGetTime(clock_));
-    entries_.emplace(GURL("http://unread_b.com"), std::move(unread_b));
+  ReadingListEntry unread_c(GURL("http://unread_c.com"), "unread_c",
+                            AdvanceAndGetTime(clock));
+  entries.emplace(GURL("http://unread_c.com"), std::move(unread_c));
 
-    ReadingListEntry read_b(GURL("http://read_b.com"), "read_b",
-                            AdvanceAndGetTime(clock_));
-    read_b.SetRead(true, AdvanceAndGetTime(clock_));
-    entries_.emplace(GURL("http://read_b.com"), std::move(read_b));
+  ReadingListEntry read_c(GURL("http://read_c.com"), "read_c",
+                          AdvanceAndGetTime(clock));
+  read_c.SetRead(true, AdvanceAndGetTime(clock));
+  entries.emplace(GURL("http://read_c.com"), std::move(read_c));
 
-    ReadingListEntry unread_c(GURL("http://unread_c.com"), "unread_c",
-                              AdvanceAndGetTime(clock_));
-    entries_.emplace(GURL("http://unread_c.com"), std::move(unread_c));
+  ReadingListEntry unread_d(GURL("http://unread_d.com"), "unread_d",
+                            AdvanceAndGetTime(clock));
+  entries.emplace(GURL("http://unread_d.com"), std::move(unread_d));
 
-    ReadingListEntry read_c(GURL("http://read_c.com"), "read_c",
-                            AdvanceAndGetTime(clock_));
-    read_c.SetRead(true, AdvanceAndGetTime(clock_));
-    entries_.emplace(GURL("http://read_c.com"), std::move(read_c));
-
-    ReadingListEntry unread_d(GURL("http://unread_d.com"), "unread_d",
-                              AdvanceAndGetTime(clock_));
-    entries_.emplace(GURL("http://unread_d.com"), std::move(unread_d));
-  }
-
-  void SetReadingListModel(ReadingListModel* model,
-                           ReadingListSyncBridgeDelegate* delegate,
-                           base::Clock* clock) override {
-    delegate->StoreLoaded(std::move(entries_));
-    clock_ = static_cast<base::SimpleTestClock*>(clock);
-  }
-
-  // Saves or updates an entry. If the entry is not yet in the database, it is
-  // created.
-  void SaveEntry(const ReadingListEntry& entry) override {
-    observer_->ReadingListDidSaveEntry();
-  }
-
-  // Removes an entry from the storage.
-  void RemoveEntry(const ReadingListEntry& entry) override {
-    observer_->ReadingListDidRemoveEntry();
-  }
-
-  std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override {
-    return nullptr;
-  }
-
-  syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override {
-    // Syncing is not used in this test class.
-    NOTREACHED();
-    return nullptr;
-  }
-
- private:
-  ReadingListSyncBridgeDelegate::ReadingListEntries entries_;
-  raw_ptr<TestReadingListStorageObserver> observer_;
-  raw_ptr<base::SimpleTestClock> clock_;
-};
+  return entries;
+}
 
 class ReadingListModelTest : public ReadingListModelObserver,
-                             public TestReadingListStorageObserver,
+                             public FakeReadingListModelStorage::Observer,
                              public testing::Test {
  public:
   ReadingListModelTest() {
-    model_ = std::make_unique<ReadingListModelImpl>(nullptr, nullptr, &clock_);
-    ClearCounts();
-    model_->AddObserver(this);
+    EXPECT_TRUE(ResetStorage()->TriggerLoadCompletion());
   }
-  ~ReadingListModelTest() override {}
 
-  void SetStorage(std::unique_ptr<TestReadingListStorage> storage) {
-    model_ = std::make_unique<ReadingListModelImpl>(std::move(storage), nullptr,
-                                                    &clock_);
+  ~ReadingListModelTest() override = default;
+
+  base::WeakPtr<FakeReadingListModelStorage> ResetStorage() {
+    model_.reset();
     ClearCounts();
+
+    auto storage =
+        std::make_unique<FakeReadingListModelStorage>(/*observer=*/this);
+    base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
+        storage->AsWeakPtr();
+
+    model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage), /*pref_service=*/nullptr, &clock_);
     model_->AddObserver(this);
+
+    return storage_ptr;
   }
 
   void ClearCounts() {
@@ -126,32 +92,34 @@ class ReadingListModelTest : public ReadingListModelObserver,
                     storage_saved_ = storage_removed_ = 0;
   }
 
-  void AssertObserverCount(int observer_loaded,
-                           int observer_started_batch_update,
-                           int observer_completed_batch_update,
-                           int observer_deleted,
-                           int observer_remove,
-                           int observer_move,
-                           int observer_add,
-                           int observer_update,
-                           int observer_did_apply) {
-    ASSERT_EQ(observer_loaded, observer_loaded_);
-    ASSERT_EQ(observer_started_batch_update, observer_started_batch_update_);
-    ASSERT_EQ(observer_completed_batch_update,
+  void AssertObserverCount(int expected_observer_loaded,
+                           int expected_observer_started_batch_update,
+                           int expected_observer_completed_batch_update,
+                           int expected_observer_deleted,
+                           int expected_observer_remove,
+                           int expected_observer_move,
+                           int expected_observer_add,
+                           int expected_observer_update,
+                           int expected_observer_did_apply) {
+    ASSERT_EQ(expected_observer_loaded, observer_loaded_);
+    ASSERT_EQ(expected_observer_started_batch_update,
+              observer_started_batch_update_);
+    ASSERT_EQ(expected_observer_completed_batch_update,
               observer_completed_batch_update_);
-    ASSERT_EQ(observer_deleted, observer_deleted_);
-    ASSERT_EQ(observer_remove, observer_remove_);
-    ASSERT_EQ(observer_move, observer_move_);
+    ASSERT_EQ(expected_observer_deleted, observer_deleted_);
+    ASSERT_EQ(expected_observer_remove, observer_remove_);
+    ASSERT_EQ(expected_observer_move, observer_move_);
     // Add and did_add should be the same.
-    ASSERT_EQ(observer_add, observer_add_);
-    ASSERT_EQ(observer_add, observer_did_add_);
-    ASSERT_EQ(observer_update, observer_update_);
-    ASSERT_EQ(observer_did_apply, observer_did_apply_);
+    ASSERT_EQ(expected_observer_add, observer_add_);
+    ASSERT_EQ(expected_observer_add, observer_did_add_);
+    ASSERT_EQ(expected_observer_update, observer_update_);
+    ASSERT_EQ(expected_observer_did_apply, observer_did_apply_);
   }
 
-  void AssertStorageCount(int storage_saved, int storage_removed) {
-    ASSERT_EQ(storage_saved, storage_saved_);
-    ASSERT_EQ(storage_removed, storage_removed_);
+  void AssertStorageCount(int expected_storage_saved,
+                          int expected_storage_removed) {
+    ASSERT_EQ(expected_storage_saved, storage_saved_);
+    ASSERT_EQ(expected_storage_removed, storage_removed_);
   }
 
   // ReadingListModelObserver
@@ -194,8 +162,9 @@ class ReadingListModelTest : public ReadingListModelObserver,
     observer_did_apply_ += 1;
   }
 
-  void ReadingListDidSaveEntry() override { storage_saved_ += 1; }
-  void ReadingListDidRemoveEntry() override { storage_removed_ += 1; }
+  // FakeReadingListModelStorage::Observer implementation.
+  void FakeStorageDidSaveEntry() override { storage_saved_ += 1; }
+  void FakeStorageDidRemoveEntry() override { storage_removed_ += 1; }
 
   size_t UnreadSize() {
     size_t size = 0;
@@ -252,12 +221,11 @@ TEST_F(ReadingListModelTest, EmptyLoaded) {
   AssertObserverCount(1, 0, 0, 1, 0, 0, 0, 0, 0);
 }
 
-// Tests load model.
-TEST_F(ReadingListModelTest, ModelLoaded) {
-  ClearCounts();
-  auto storage = std::make_unique<TestReadingListStorage>(this, &clock_);
-  storage->AddSampleEntries();
-  SetStorage(std::move(storage));
+// Tests successful load model.
+TEST_F(ReadingListModelTest, ModelLoadSuccess) {
+  ASSERT_TRUE(
+      ResetStorage()->TriggerLoadCompletion(ReadingListModelStorage::LoadResult{
+          PopulateSampleEntries(&clock_), /*metadata_batch=*/nullptr}));
 
   AssertObserverCount(1, 0, 0, 0, 0, 0, 0, 0, 0);
   std::map<GURL, std::string> loaded_entries;
@@ -277,10 +245,20 @@ TEST_F(ReadingListModelTest, ModelLoaded) {
   EXPECT_EQ(loaded_entries[GURL("http://read_c.com")], "read_c");
 }
 
+// Tests errors during load model.
+TEST_F(ReadingListModelTest, ModelLoadFailure) {
+  ASSERT_TRUE(
+      ResetStorage()->TriggerLoadCompletion(base::unexpected("Fake error")));
+
+  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+  // TODO(crbug.com/1386158): Ideally it should be verified that the sync
+  // processor is in an error state. This isn't possible currently as these
+  // tests don't instantiate a bridge.
+}
+
 // Tests adding entry.
 TEST_F(ReadingListModelTest, AddEntry) {
-  auto storage = std::make_unique<TestReadingListStorage>(this, &clock_);
-  SetStorage(std::move(storage));
   ClearCounts();
 
   const ReadingListEntry& entry =
@@ -305,8 +283,6 @@ TEST_F(ReadingListModelTest, AddEntry) {
 
 // Tests adding an entry that already exists.
 TEST_F(ReadingListModelTest, AddExistingEntry) {
-  auto storage = std::make_unique<TestReadingListStorage>(this, &clock_);
-  SetStorage(std::move(storage));
   GURL url = GURL("http://example.com");
   std::string title = "\n  \tsample Test ";
   model_->AddEntry(url, title, reading_list::ADDED_VIA_CURRENT_APP);
@@ -333,8 +309,6 @@ TEST_F(ReadingListModelTest, AddExistingEntry) {
 
 // Tests addin entry from sync.
 TEST_F(ReadingListModelTest, SyncAddEntry) {
-  auto storage = std::make_unique<TestReadingListStorage>(this, &clock_);
-  SetStorage(std::move(storage));
   auto entry = std::make_unique<ReadingListEntry>(
       GURL("http://example.com"), "sample", AdvanceAndGetTime(&clock_));
   entry->SetRead(true, AdvanceAndGetTime(&clock_));
@@ -350,8 +324,6 @@ TEST_F(ReadingListModelTest, SyncAddEntry) {
 
 // Tests updating entry from sync.
 TEST_F(ReadingListModelTest, SyncMergeEntry) {
-  auto storage = std::make_unique<TestReadingListStorage>(this, &clock_);
-  SetStorage(std::move(storage));
   model_->AddEntry(GURL("http://example.com"), "sample",
                    reading_list::ADDED_VIA_CURRENT_APP);
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
@@ -389,8 +361,6 @@ TEST_F(ReadingListModelTest, SyncMergeEntry) {
 
 // Tests deleting entry.
 TEST_F(ReadingListModelTest, RemoveEntryByUrl) {
-  auto storage = std::make_unique<TestReadingListStorage>(this, &clock_);
-  SetStorage(std::move(storage));
   model_->AddEntry(GURL("http://example.com"), "sample",
                    reading_list::ADDED_VIA_CURRENT_APP);
   ClearCounts();
@@ -421,8 +391,6 @@ TEST_F(ReadingListModelTest, RemoveEntryByUrl) {
 
 // Tests deleting entry from sync.
 TEST_F(ReadingListModelTest, RemoveSyncEntryByUrl) {
-  auto storage = std::make_unique<TestReadingListStorage>(this, &clock_);
-  SetStorage(std::move(storage));
   model_->AddEntry(GURL("http://example.com"), "sample",
                    reading_list::ADDED_VIA_CURRENT_APP);
   ClearCounts();

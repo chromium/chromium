@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
@@ -94,7 +95,6 @@ class MockReadingListSyncBridgeDelegate : public ReadingListSyncBridgeDelegate {
   MockReadingListSyncBridgeDelegate() = default;
   ~MockReadingListSyncBridgeDelegate() override = default;
 
-  MOCK_METHOD(void, StoreLoaded, (ReadingListEntries), (override));
   MOCK_METHOD(void,
               SyncAddEntry,
               (std::unique_ptr<ReadingListEntry>),
@@ -108,29 +108,6 @@ class MockReadingListSyncBridgeDelegate : public ReadingListSyncBridgeDelegate {
 
 }  // namespace
 
-// This test doesn't use the test fixture to intercept and verify early calls
-// during loading.
-TEST(ReadingListSyncBridgeLoadTest, Load) {
-  base::SimpleTestClock clock;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor;
-  testing::NiceMock<MockReadingListSyncBridgeDelegate> delegate;
-  base::test::SingleThreadTaskEnvironment task_environment;
-
-  auto bridge = std::make_unique<ReadingListSyncBridge>(
-      syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(
-          syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()),
-      processor.CreateForwardingProcessor());
-  auto model = std::make_unique<ReadingListModelImpl>(nullptr, nullptr, &clock);
-
-  // StoreLoaded() should be invoked after ModelReadyToSync().
-  testing::InSequence seq;
-  EXPECT_CALL(processor, ModelReadyToSync);
-  EXPECT_CALL(delegate, StoreLoaded);
-
-  bridge->SetReadingListModel(model.get(), &delegate, &clock);
-  base::RunLoop().RunUntilIdle();
-}
-
 class ReadingListSyncBridgeTest : public testing::Test {
  protected:
   ReadingListSyncBridgeTest() {
@@ -143,7 +120,10 @@ class ReadingListSyncBridgeTest : public testing::Test {
     model_ = std::make_unique<ReadingListModelImpl>(nullptr, nullptr, &clock_);
     reading_list_sync_bridge_->SetReadingListModel(model_.get(), &delegate_,
                                                    &clock_);
-    base::RunLoop().RunUntilIdle();
+    base::RunLoop loop;
+    reading_list_sync_bridge_->Load(base::BindLambdaForTesting(
+        [&loop](ReadingListModelStorage::LoadResultOrError) { loop.Quit(); }));
+    loop.Run();
   }
 
   // In memory model type store needs to be able to post tasks.

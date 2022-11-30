@@ -22,7 +22,6 @@ source_set("core") {
     "reading_list_sync_bridge_delegate.h",
   ]
   deps = [
-    "//base",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/reading_list/features:flags",
@@ -30,7 +29,10 @@ source_set("core") {
     "//net",
     "//url",
   ]
-  public_deps = [ "//components/reading_list/core/proto" ]
+  public_deps = [
+    "//base",
+    "//components/reading_list/core/proto",
+  ]
 }
 
 static_library("test_support") {
@@ -39,6 +41,8 @@ static_library("test_support") {
   sources = [
     "fake_reading_list_model.cc",
     "fake_reading_list_model.h",
+    "fake_reading_list_model_storage.cc",
+    "fake_reading_list_model_storage.h",
   ]
 
   public_deps = [
@@ -57,6 +61,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":core",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/sync",

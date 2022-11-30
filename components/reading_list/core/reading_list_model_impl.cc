@@ -13,6 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
+#include "components/reading_list/core/reading_list_sync_bridge.h"
 #include "url/gurl.h"
 
 ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
@@ -53,7 +54,11 @@ ReadingListModelImpl::ReadingListModelImpl(
       clock_(clock) {
   DCHECK(clock_);
   if (storage_layer_) {
-    storage_layer_->SetReadingListModel(this, this, clock_);
+    if (storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->SetReadingListModel(this, this, clock_);
+    }
+    storage_layer_->Load(base::BindOnce(&ReadingListModelImpl::StoreLoaded,
+                                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     loaded_ = true;
   }
@@ -64,24 +69,6 @@ ReadingListModelImpl::~ReadingListModelImpl() {
   for (auto& observer : observers_) {
     observer.ReadingListModelBeingDeleted(this);
   }
-}
-
-void ReadingListModelImpl::StoreLoaded(ReadingListEntries entries) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  entries_ = std::move(entries);
-  for (auto& iterator : entries_) {
-    UpdateEntryStateCountersOnEntryInsertion(iterator.second);
-  }
-  DCHECK(read_entry_count_ + unread_entry_count_ == entries_.size());
-  loaded_ = true;
-
-  base::UmaHistogramCounts1000("ReadingList.Unread.Count.OnModelLoaded",
-                               unread_entry_count_);
-  base::UmaHistogramCounts1000("ReadingList.Read.Count.OnModelLoaded",
-                               read_entry_count_);
-
-  for (auto& observer : observers_)
-    observer.ReadingListModelLoaded(this);
 }
 
 void ReadingListModelImpl::Shutdown() {
@@ -590,6 +577,42 @@ void ReadingListModelImpl::RemoveObserver(ReadingListModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void ReadingListModelImpl::StoreLoaded(
+    ReadingListModelStorage::LoadResultOrError result_or_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!result_or_error.has_value()) {
+    if (storage_layer_ && storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->ReportError(
+          syncer::ModelError(FROM_HERE, result_or_error.error()));
+    }
+    return;
+  }
+
+  entries_ = std::move(result_or_error.value().first);
+
+  for (auto& iterator : entries_) {
+    UpdateEntryStateCountersOnEntryInsertion(iterator.second);
+  }
+
+  DCHECK_EQ(read_entry_count_ + unread_entry_count_, entries_.size());
+  loaded_ = true;
+
+  if (storage_layer_ && storage_layer_->GetSyncBridge()) {
+    storage_layer_->GetSyncBridge()->ModelReadyToSync(
+        std::move(result_or_error.value().second));
+  }
+
+  base::UmaHistogramCounts1000("ReadingList.Unread.Count.OnModelLoaded",
+                               unread_entry_count_);
+  base::UmaHistogramCounts1000("ReadingList.Read.Count.OnModelLoaded",
+                               read_entry_count_);
+
+  for (auto& observer : observers_) {
+    observer.ReadingListModelLoaded(this);
+  }
+}
+
 void ReadingListModelImpl::EndBatchUpdates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsPerformingBatchUpdates());
@@ -626,7 +649,7 @@ bool ReadingListModelImpl::GetPersistentHasUnseen() {
 syncer::ModelTypeSyncBridge* ReadingListModelImpl::GetModelTypeSyncBridge() {
   if (!storage_layer_)
     return nullptr;
-  return storage_layer_->GetModelTypeSyncBridge();
+  return storage_layer_->GetSyncBridge();
 }
 
 ReadingListModelStorage* ReadingListModelImpl::StorageLayer() {

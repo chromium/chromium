@@ -39,6 +39,22 @@ void ReadingListSyncBridge::SetReadingListModel(
   model_ = model;
   delegate_ = delegate;
   clock_ = clock;
+}
+
+void ReadingListSyncBridge::ModelReadyToSync(
+    std::unique_ptr<syncer::MetadataBatch> sync_metadata_batch) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  change_processor()->ModelReadyToSync(std::move(sync_metadata_batch));
+}
+
+void ReadingListSyncBridge::ReportError(const syncer::ModelError& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  change_processor()->ReportError(error);
+}
+
+void ReadingListSyncBridge::Load(LoadCallback load_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  store_load_callback_ = std::move(load_cb);
   std::move(create_store_callback_)
       .Run(syncer::READING_LIST,
            base::BindOnce(&ReadingListSyncBridge::OnStoreCreated,
@@ -115,7 +131,7 @@ void ReadingListSyncBridge::RemoveEntry(const ReadingListEntry& entry) {
                              batch_->GetMetadataChangeList());
 }
 
-syncer::ModelTypeSyncBridge* ReadingListSyncBridge::GetModelTypeSyncBridge() {
+ReadingListSyncBridge* ReadingListSyncBridge::GetSyncBridge() {
   return this;
 }
 
@@ -124,11 +140,11 @@ void ReadingListSyncBridge::OnDatabaseLoad(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
-    change_processor()->ReportError(*error);
+    std::move(store_load_callback_).Run(base::unexpected(error->message()));
     return;
   }
 
-  ReadingListSyncBridgeDelegate::ReadingListEntries loaded_entries;
+  ReadingListEntries loaded_entries;
 
   for (const syncer::ModelTypeStore::Record& r : *entries) {
     reading_list::ReadingListLocal proto;
@@ -154,17 +170,22 @@ void ReadingListSyncBridge::OnDatabaseLoad(
 }
 
 void ReadingListSyncBridge::OnReadAllMetadata(
-    ReadingListSyncBridgeDelegate::ReadingListEntries loaded_entries,
+    ReadingListEntries loaded_entries,
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
-    change_processor()->ReportError({FROM_HERE, "Failed to read metadata."});
+    std::move(store_load_callback_)
+        .Run(base::unexpected("Failed to read metadata"));
   } else {
-    change_processor()->ModelReadyToSync(std::move(metadata_batch));
+    // TODO(crbug.com/1386158): Note that this is awkward because the completion
+    // event will bounce back with ReadingListSyncBridge::ModelReadyToSync().
+    // This oddness will soon go away once the storage is fully decoupled from
+    // the bridge.
+    std::move(store_load_callback_)
+        .Run(std::make_pair(std::move(loaded_entries),
+                            std::move(metadata_batch)));
   }
-
-  delegate_->StoreLoaded(std::move(loaded_entries));
 }
 
 void ReadingListSyncBridge::OnDatabaseSave(

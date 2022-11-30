@@ -39,8 +39,6 @@ class ReadingListModelImpl : public ReadingListModel,
                        base::Clock* clock_);
   ~ReadingListModelImpl() override;
 
-  void StoreLoaded(ReadingListEntries entries) override;
-
   // KeyedService implementation.
   void Shutdown() override;
 
@@ -108,6 +106,8 @@ class ReadingListModelImpl : public ReadingListModel,
   };
 
  private:
+  void StoreLoaded(ReadingListModelStorage::LoadResultOrError result_or_error);
+
   // Tells model that batch updates have completed. Called from
   // ScopedReadingListBatchUpdateImpl's destructor.
   void EndBatchUpdates();

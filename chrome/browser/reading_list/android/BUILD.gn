@@ -52,6 +52,7 @@ source_set("unit_tests") {
     "//chrome/browser/notifications/scheduler/test:test_support",
     "//components/bookmarks/browser",
     "//components/reading_list/core:core",
+    "//components/reading_list/core:test_support",
     "//components/reading_list/features:flags",
     "//components/sync",
     "//components/sync:test_support",
