@@ -539,7 +539,7 @@ void IndexedDBFactoryImpl::ReportOutstandingBlobs(
   if (!context_)
     return;
   auto it = factories_per_bucket_.find(bucket_locator.id);
-  DCHECK(it != factories_per_bucket_.end());
+  CHECK(it != factories_per_bucket_.end());
 
   it->second->ReportOutstandingBlobs(blobs_outstanding);
 }
