@@ -34,8 +34,8 @@ namespace sandbox {
 //    requests other sandboxing status via the status functions.
 class SANDBOX_EXPORT SetuidSandboxClient {
  public:
-  // All instantation should go through this factory method.
-  static SetuidSandboxClient* Create();
+  // All instantiation should go through this factory method.
+  static std::unique_ptr<SetuidSandboxClient> Create();
 
   SetuidSandboxClient(const SetuidSandboxClient&) = delete;
   SetuidSandboxClient& operator=(const SetuidSandboxClient&) = delete;
@@ -64,8 +64,8 @@ class SANDBOX_EXPORT SetuidSandboxClient {
   explicit SetuidSandboxClient(std::unique_ptr<base::Environment> env);
 
   // Holds the environment. Will never be NULL.
-  std::unique_ptr<base::Environment> env_;
-  bool sandboxed_;
+  const std::unique_ptr<base::Environment> env_;
+  bool sandboxed_ = false;
 };
 
 }  // namespace sandbox

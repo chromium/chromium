@@ -15,6 +15,7 @@
 #include "base/environment.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "sandbox/linux/suid/common/sandbox.h"
@@ -65,17 +66,17 @@ int GetIPCDescriptor(base::Environment* env) {
 
 namespace sandbox {
 
-SetuidSandboxClient* SetuidSandboxClient::Create() {
-  return new SetuidSandboxClient(base::Environment::Create());
+std::unique_ptr<SetuidSandboxClient> SetuidSandboxClient::Create() {
+  // Private constructor.
+  return base::WrapUnique(new SetuidSandboxClient(base::Environment::Create()));
 }
 
 SetuidSandboxClient::SetuidSandboxClient(std::unique_ptr<base::Environment> env)
-    : env_(std::move(env)), sandboxed_(false) {
+    : env_(std::move(env)) {
   DCHECK(env_);
 }
 
-SetuidSandboxClient::~SetuidSandboxClient() {
-}
+SetuidSandboxClient::~SetuidSandboxClient() = default;
 
 void SetuidSandboxClient::CloseDummyFile() {
   // When we're launched through the setuid sandbox, SetupLaunchOptions

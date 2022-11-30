@@ -30,8 +30,8 @@ namespace sandbox {
 // (The remaining steps are described within setuid_sandbox_client.h.)
 class SANDBOX_EXPORT SetuidSandboxHost {
  public:
-  // All instantation should go through this factory method.
-  static SetuidSandboxHost* Create();
+  // All instantiation should go through this factory method.
+  static std::unique_ptr<SetuidSandboxHost> Create();
 
   SetuidSandboxHost(const SetuidSandboxHost&) = delete;
   SetuidSandboxHost& operator=(const SetuidSandboxHost&) = delete;
@@ -69,7 +69,7 @@ class SANDBOX_EXPORT SetuidSandboxHost {
   explicit SetuidSandboxHost(std::unique_ptr<base::Environment> env);
 
   // Holds the environment. Will never be NULL.
-  std::unique_ptr<base::Environment> env_;
+  const std::unique_ptr<base::Environment> env_;
 };
 
 }  // namespace sandbox
