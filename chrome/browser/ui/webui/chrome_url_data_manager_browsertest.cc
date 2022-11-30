@@ -260,7 +260,6 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 // (like flaky failures).
 static constexpr const char* const kChromeUrls[] = {
     "chrome://accessibility",
-    "chrome://apc-internals",
     "chrome://app-service-internals",
     "chrome://attribution-internals",
     "chrome://autofill-internals",
