@@ -38,7 +38,7 @@ import './screens/common/recommend_apps.js';
 import './screens/common/saml_confirm_password.js';
 import './screens/common/signin_fatal_error.js';
 import './screens/common/smart_privacy_protection.js';
-import './screens/common/sync_consent.m.js';
+import './screens/common/sync_consent.js';
 import './screens/common/theme_selection.js';
 import './screens/common/tpm_error.js';
 import './screens/common/user_creation.js';

@@ -4,163 +4,138 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="oobe-dialog-host-styles">
+  :root {
+    color: #333;
+  }
 
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<if expr="_google_chrome">
-  <link rel="import" href="chrome://oobe/sync-consent-icons.html">
-</if>
+  .overview-list-item {
+    border-top: 1px solid var(--google-grey-200);
+    padding: 16px;
+  }
 
-<link rel="import" href="../../components/display_manager_types.html">
-<link rel="import" href="../../components/hd_iron_icon.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/buttons/oobe_text_button.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+  .overview-list-item:last-of-type {
+    border-bottom: 1px solid var(--google-grey-200);
+    margin-bottom: 0;
+  }
 
-<dom-module id="sync-consent-element">
-  <template>
-    <style include="oobe-dialog-host-styles">
-      :root {
-        color: #333;
-      }
+  .overview-list-item-title {
+    font-size: 14px;
+    font-weight: 500; /* roboto-medium */
+    line-height: 24px;
+    margin-bottom: 4px;
+  }
 
-      .overview-list-item {
-        border-top: 1px solid var(--google-grey-200);
-        padding: 16px;
-      }
+  .overview-list-item-icon {
+    padding-inline-end: 16px;
+  }
 
-      .overview-list-item:last-of-type {
-        border-bottom: 1px solid var(--google-grey-200);
-        margin-bottom: 0;
-      }
+  .overview-list-item-description {
+    padding-inline-end: 16px;
+  }
 
-      .overview-list-item-title {
-        font-size: 14px;
-        font-weight: 500; /* roboto-medium */
-        line-height: 24px;
-        margin-bottom: 4px;
-      }
+  cr-checkbox {
+    align-self: start; /* Prevent label from spanning the whole width. */
+    margin-top: 16px;
+    padding-inline-start: 8px;
+    --cr-checkbox-label-padding-start: 12px;
+  }
 
-      .overview-list-item-icon {
-        padding-inline-end: 16px;
-      }
+  img[slot='subtitle'] {
+    padding-top: 20px;
+  }
 
-      .overview-list-item-description {
-        padding-inline-end: 16px;
-      }
+  @media screen and (max-height: 610px) {
+    :host-context([screen=gaia-signin]) img[slot='subtitle'] {
+      display: none;
+    }
+  }
 
-      cr-checkbox {
-        align-self: start; /* Prevent label from spanning the whole width. */
-        margin-top: 16px;
-        padding-inline-start: 8px;
-        --cr-checkbox-label-padding-start: 12px;
-      }
+  @media screen and (max-height: 740px) {
+    :host-context([screen=oobe]) img[slot='subtitle'] {
+      display: none;
+    }
+  }
 
-      img[slot='subtitle'] {
-        padding-top: 20px;
-      }
+  :host-context([orientation=vertical]) #syncConsentOverviewDialog {
+    --oobe-adaptive-dialog-content-top-padding: 20px;
+  }
+</style>
 
-      @media screen and (max-height: 610px) {
-        :host-context([screen=gaia-signin]) img[slot='subtitle'] {
-          display: none;
-        }
-      }
-
-      @media screen and (max-height: 740px) {
-        :host-context([screen=oobe]) img[slot='subtitle'] {
-          display: none;
-        }
-      }
-
-      :host-context([orientation=vertical]) #syncConsentOverviewDialog {
-        --oobe-adaptive-dialog-content-top-padding: 20px;
-      }
-    </style>
-
-    <oobe-adaptive-dialog id="syncConsentOverviewDialog" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
-        for-step="loaded">
-      <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
-      <h1 slot="title" consent-description hidden="[[isArcRestricted_]]">
-        [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
-      </h1>
-      <h1 slot="title" consent-description hidden="[[!isArcRestricted_]]">
-        [[i18nDynamic(locale, 'syncConsentScreenTitleArcRestrictions')]]
-      </h1>
-      <div slot="subtitle" consent-description hidden="[[isArcRestricted_]]">
-        [[i18nDynamic(locale, 'syncConsentScreenSubtitle')]]
-      </div>
-      <img slot="subtitle" src="images/sync-consent.svg"
-          class="oobe-illustration" aria-hidden="true">
-      </div>
-      <div slot="content" class="landscape-header-aligned">
-        <div class="overview-list-item layout horizontal"
-            hidden="[[isArcRestricted_]]">
-          <img class="overview-list-item-icon" src="images/settings_gear.svg"
-              width="24" height="24" aria-hidden="true">
-          <div class="flex layout vertical center-justified">
-            <div role="heading" aria-level="2" class="overview-list-item-title"
-                consent-description>
-              [[i18nDynamic(locale, 'syncConsentScreenOsSyncTitle')]]
-            </div>
-          </div>
-        </div>
-        <div class="overview-list-item layout horizontal"
-            hidden="[[isArcRestricted_]]">
-          <img class="overview-list-item-icon" src="images/browser_sync.svg"
-              width="24" height="24" aria-hidden="true">
-          <div class="flex layout vertical center-justified">
-            <div role="heading" aria-level="2" class="overview-list-item-title"
-                consent-description>
-              [[i18nDynamic(locale, 'syncConsentScreenChromeBrowserSyncTitle')]]
-            </div>
-            <div class="overview-list-item-description" consent-description>
-              [[i18nDynamic(locale,
-                  'syncConsentScreenChromeBrowserSyncDescription')]]
-            </div>
-          </div>
-        </div>
-        <div hidden="[[!isArcRestricted_]]" consent-description>
-          [[i18nDynamic(locale,
-              'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
-        </div>
-
-        <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode_]]"
+<oobe-adaptive-dialog id="syncConsentOverviewDialog" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
+    for-step="loaded">
+  <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
+  <h1 slot="title" consent-description hidden="[[isArcRestricted_]]">
+    [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
+  </h1>
+  <h1 slot="title" consent-description hidden="[[!isArcRestricted_]]">
+    [[i18nDynamic(locale, 'syncConsentScreenTitleArcRestrictions')]]
+  </h1>
+  <div slot="subtitle" consent-description hidden="[[isArcRestricted_]]">
+    [[i18nDynamic(locale, 'syncConsentScreenSubtitle')]]
+  </div>
+  <img slot="subtitle" src="images/sync-consent.svg"
+      class="oobe-illustration" aria-hidden="true">
+  </div>
+  <div slot="content" class="landscape-header-aligned">
+    <div class="overview-list-item layout horizontal"
+        hidden="[[isArcRestricted_]]">
+      <img class="overview-list-item-icon" src="images/settings_gear.svg"
+          width="24" height="24" aria-hidden="true">
+      <div class="flex layout vertical center-justified">
+        <div role="heading" aria-level="2" class="overview-list-item-title"
             consent-description>
-          [[getReviewSettingText_(locale, isArcRestricted_)]]
-        </cr-checkbox>
+          [[i18nDynamic(locale, 'syncConsentScreenOsSyncTitle')]]
+        </div>
       </div>
-      <div slot="bottom-buttons">
-        <oobe-text-button id="declineButton"
-            on-click="onDeclined_" hidden="[[!isMinorMode_]]"
-            label-for-aria="[[i18nDynamic(locale,
-                                          'syncConsentScreenDecline')]]">
-          <div slot="text" consent-description consent-confirmation>
-            [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
-          </div>
-        </oobe-text-button>
-        <oobe-text-button class="focus-on-show" inverse="[[!isMinorMode_]]"
-            id="acceptButton"
-            on-click="onAccepted_"
-            label-for-aria="[[i18nDynamic(locale, optInButtonTextKey_)]]">
-          <div slot="text" consent-description consent-confirmation>
-            [[i18nDynamic(locale, optInButtonTextKey_)]]
-          </div>
-        </oobe-text-button>
+    </div>
+    <div class="overview-list-item layout horizontal"
+        hidden="[[isArcRestricted_]]">
+      <img class="overview-list-item-icon" src="images/browser_sync.svg"
+          width="24" height="24" aria-hidden="true">
+      <div class="flex layout vertical center-justified">
+        <div role="heading" aria-level="2" class="overview-list-item-title"
+            consent-description>
+          [[i18nDynamic(locale, 'syncConsentScreenChromeBrowserSyncTitle')]]
+        </div>
+        <div class="overview-list-item-description" consent-description>
+          [[i18nDynamic(locale,
+              'syncConsentScreenChromeBrowserSyncDescription')]]
+        </div>
       </div>
-    </oobe-adaptive-dialog>
+    </div>
+    <div hidden="[[!isArcRestricted_]]" consent-description>
+      [[i18nDynamic(locale,
+          'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
+    </div>
 
-    <oobe-loading-dialog id="sync-loading" role="dialog" for-step="loading"
-        title-key="gaiaLoading">
-      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-    </oobe-loading-dialog>
-  </template>
-  <script src="sync_consent.js"></script>
-</dom-module>
+    <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode_]]"
+        consent-description>
+      [[getReviewSettingText_(locale, isArcRestricted_)]]
+    </cr-checkbox>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="declineButton"
+        on-click="onDeclined_" hidden="[[!isMinorMode_]]"
+        label-for-aria="[[i18nDynamic(locale,
+                                      'syncConsentScreenDecline')]]">
+      <div slot="text" consent-description consent-confirmation>
+        [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
+      </div>
+    </oobe-text-button>
+    <oobe-text-button class="focus-on-show" inverse="[[!isMinorMode_]]"
+        id="acceptButton"
+        on-click="onAccepted_"
+        label-for-aria="[[i18nDynamic(locale, optInButtonTextKey_)]]">
+      <div slot="text" consent-description consent-confirmation>
+        [[i18nDynamic(locale, optInButtonTextKey_)]]
+      </div>
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-loading-dialog id="sync-loading" role="dialog" for-step="loading"
+    title-key="gaiaLoading">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+</oobe-loading-dialog>
