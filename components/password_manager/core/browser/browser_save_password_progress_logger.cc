@@ -297,40 +297,39 @@ void BrowserSavePasswordProgressLogger::LogSuccessfulSubmissionIndicatorEvent(
 void BrowserSavePasswordProgressLogger::LogPasswordForm(
     BrowserSavePasswordProgressLogger::StringID label,
     const PasswordForm& form) {
-  base::DictionaryValue log;
-  log.SetString(GetStringFromID(STRING_SCHEME_MESSAGE),
-                GetStringFromID(FormSchemeToStringID(form.scheme)));
-  log.SetString(GetStringFromID(STRING_SCHEME_MESSAGE),
-                GetStringFromID(FormSchemeToStringID(form.scheme)));
-  log.SetString(GetStringFromID(STRING_SIGNON_REALM),
-                ScrubURL(GURL(form.signon_realm)));
-  log.SetString(GetStringFromID(STRING_ORIGIN), ScrubURL(form.url));
-  log.SetString(GetStringFromID(STRING_ACTION), ScrubURL(form.action));
-  log.SetString(GetStringFromID(STRING_USERNAME_ELEMENT),
-                ScrubElementID(form.username_element));
-  log.SetString(GetStringFromID(STRING_USERNAME_ELEMENT_RENDERER_ID),
-                NumberToString(form.username_element_renderer_id.value()));
-  log.SetString(GetStringFromID(STRING_PASSWORD_ELEMENT),
-                ScrubElementID(form.password_element));
-  log.SetString(GetStringFromID(STRING_PASSWORD_ELEMENT_RENDERER_ID),
-                NumberToString(form.password_element_renderer_id.value()));
-  log.SetString(GetStringFromID(STRING_NEW_PASSWORD_ELEMENT),
-                ScrubElementID(form.new_password_element));
-  log.SetString(GetStringFromID(STRING_NEW_PASSWORD_ELEMENT_RENDERER_ID),
-                NumberToString(form.new_password_element_renderer_id.value()));
+  base::Value::Dict log;
+  log.Set(GetStringFromID(STRING_SCHEME_MESSAGE),
+          GetStringFromID(FormSchemeToStringID(form.scheme)));
+  log.Set(GetStringFromID(STRING_SCHEME_MESSAGE),
+          GetStringFromID(FormSchemeToStringID(form.scheme)));
+  log.Set(GetStringFromID(STRING_SIGNON_REALM),
+          ScrubURL(GURL(form.signon_realm)));
+  log.Set(GetStringFromID(STRING_ORIGIN), ScrubURL(form.url));
+  log.Set(GetStringFromID(STRING_ACTION), ScrubURL(form.action));
+  log.Set(GetStringFromID(STRING_USERNAME_ELEMENT),
+          ScrubElementID(form.username_element));
+  log.Set(GetStringFromID(STRING_USERNAME_ELEMENT_RENDERER_ID),
+          NumberToString(form.username_element_renderer_id.value()));
+  log.Set(GetStringFromID(STRING_PASSWORD_ELEMENT),
+          ScrubElementID(form.password_element));
+  log.Set(GetStringFromID(STRING_PASSWORD_ELEMENT_RENDERER_ID),
+          NumberToString(form.password_element_renderer_id.value()));
+  log.Set(GetStringFromID(STRING_NEW_PASSWORD_ELEMENT),
+          ScrubElementID(form.new_password_element));
+  log.Set(GetStringFromID(STRING_NEW_PASSWORD_ELEMENT_RENDERER_ID),
+          NumberToString(form.new_password_element_renderer_id.value()));
   if (!form.confirmation_password_element.empty()) {
-    log.SetString(GetStringFromID(STRING_CONFIRMATION_PASSWORD_ELEMENT),
-                  ScrubElementID(form.confirmation_password_element));
-    log.SetString(
+    log.Set(GetStringFromID(STRING_CONFIRMATION_PASSWORD_ELEMENT),
+            ScrubElementID(form.confirmation_password_element));
+    log.Set(
         GetStringFromID(STRING_CONFIRMATION_PASSWORD_ELEMENT_RENDERER_ID),
         NumberToString(form.confirmation_password_element_renderer_id.value()));
   }
-  log.SetBoolean(GetStringFromID(STRING_PASSWORD_GENERATED),
-                 form.type == PasswordForm::Type::kGenerated);
-  log.SetInteger(GetStringFromID(STRING_TIMES_USED), form.times_used);
-  log.SetBoolean(GetStringFromID(STRING_PSL_MATCH),
-                 form.is_public_suffix_match);
-  LogValue(label, log);
+  log.Set(GetStringFromID(STRING_PASSWORD_GENERATED),
+          form.type == PasswordForm::Type::kGenerated);
+  log.Set(GetStringFromID(STRING_TIMES_USED), form.times_used);
+  log.Set(GetStringFromID(STRING_PSL_MATCH), form.is_public_suffix_match);
+  LogValue(label, base::Value(std::move(log)));
 }
 
 void BrowserSavePasswordProgressLogger::LogPasswordRequirements(
