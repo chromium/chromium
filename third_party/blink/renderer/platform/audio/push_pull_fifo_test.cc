@@ -31,7 +31,8 @@ TEST(PushPullFIFOBasicTest, BasicTests) {
 
   // FIFO length exceeding the maximum length allowed will cause crash.
   // i.e.) fifo_length_ <= kMaxFIFOLength
-  EXPECT_DEATH(new PushPullFIFO(2, PushPullFIFO::kMaxFIFOLength + 1), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      new PushPullFIFO(2, PushPullFIFO::kMaxFIFOLength + 1), "");
 
   std::unique_ptr<PushPullFIFO> test_fifo =
       std::make_unique<PushPullFIFO>(2, 1024);
@@ -40,20 +41,22 @@ TEST(PushPullFIFOBasicTest, BasicTests) {
   // i.e.) input_bus->length() == kRenderQuantumFrames
   scoped_refptr<AudioBus> input_bus_129_frames =
       AudioBus::Create(2, kRenderQuantumFrames + 1);
-  EXPECT_DEATH(test_fifo->Push(input_bus_129_frames.get()), "");
+  EXPECT_DEATH_IF_SUPPORTED(test_fifo->Push(input_bus_129_frames.get()), "");
   scoped_refptr<AudioBus> input_bus_127_frames =
       AudioBus::Create(2, kRenderQuantumFrames - 1);
-  EXPECT_DEATH(test_fifo->Push(input_bus_127_frames.get()), "");
+  EXPECT_DEATH_IF_SUPPORTED(test_fifo->Push(input_bus_127_frames.get()), "");
 
   // Pull request frames cannot exceed the length of output bus.
   // i.e.) frames_requested <= output_bus->length()
   scoped_refptr<AudioBus> output_bus_512_frames = AudioBus::Create(2, 512);
-  EXPECT_DEATH(test_fifo->Pull(output_bus_512_frames.get(), 513), "");
+  EXPECT_DEATH_IF_SUPPORTED(test_fifo->Pull(output_bus_512_frames.get(), 513),
+                            "");
 
   // Pull request frames cannot exceed the length of FIFO.
   // i.e.) frames_requested <= fifo_length_
   scoped_refptr<AudioBus> output_bus_1025_frames = AudioBus::Create(2, 1025);
-  EXPECT_DEATH(test_fifo->Pull(output_bus_1025_frames.get(), 1025), "");
+  EXPECT_DEATH_IF_SUPPORTED(test_fifo->Pull(output_bus_1025_frames.get(), 1025),
+                            "");
 }
 
 // Fills each AudioChannel in an AudioBus with a series of linearly increasing

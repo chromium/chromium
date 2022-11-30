@@ -99,9 +99,10 @@ TEST(TextCodecUTF8, DecodeOverflow) {
   codec->Decode("\xC2", 1, FlushBehavior::kDoNotFlush, false, saw_error);
   EXPECT_FALSE(saw_error);
 
-  EXPECT_DEATH(codec->Decode(nullptr, std::numeric_limits<wtf_size_t>::max(),
-                             FlushBehavior::kDataEOF, false, saw_error),
-               "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      codec->Decode(nullptr, std::numeric_limits<wtf_size_t>::max(),
+                    FlushBehavior::kDataEOF, false, saw_error),
+      "");
 }
 
 }  // namespace
