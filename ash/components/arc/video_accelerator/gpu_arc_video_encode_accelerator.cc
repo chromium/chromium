@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
@@ -213,7 +214,9 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
 
-  frame->AddDestructionObserver(std::move(callback));
+  // Make sure the Mojo callback is called on the same thread as where the Mojo
+  // call is received (here).
+  frame->AddDestructionObserver(media::BindToCurrentLoop(std::move(callback)));
   accelerator_->Encode(std::move(frame), force_keyframe);
 }
 
