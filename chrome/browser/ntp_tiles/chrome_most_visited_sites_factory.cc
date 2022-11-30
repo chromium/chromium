@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -144,7 +145,7 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
       nullptr,
 #endif
 #if !BUILDFLAG(IS_ANDROID)
-      web_app::IsAnyChromeAppToWebAppMigrationEnabled(*profile)
+      web_app::IsAnyChromeAppToWebAppMigrationEnabled(CHECK_DEREF(profile))
 #else
       false
 #endif

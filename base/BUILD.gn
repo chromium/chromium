@@ -231,6 +231,7 @@ component("base") {
     "cancelable_callback.h",
     "check.cc",
     "check.h",
+    "check_deref.h",
     "check_is_test.cc",
     "check_is_test.h",
     "check_op.cc",
