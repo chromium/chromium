@@ -207,6 +207,7 @@ js_library("internet_page") {
     "//chrome/browser/resources/settings/chromeos:metrics_recorder",
     "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
+    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

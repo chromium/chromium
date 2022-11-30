@@ -5247,6 +5247,7 @@ static_library("browser") {
       "//chromeos/ash/services/device_sync/public/cpp:prefs",
       "//chromeos/ash/services/device_sync/public/cpp:prefs",
       "//chromeos/ash/services/device_sync/public/mojom",
+      "//chromeos/ash/services/hotspot_config",
       "//chromeos/ash/services/hotspot_config/public/mojom",
       "//chromeos/ash/services/multidevice_setup",
       "//chromeos/ash/services/multidevice_setup/public/cpp",

@@ -22,6 +22,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -132,6 +133,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
           receiver);
+
+  // Instantiates implementor of the mojom::CrosHotspotConfig mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<hotspot_config::mojom::CrosHotspotConfig> receiver);
 
   // Binds to the cros authentication factor editing services.
   void BindInterface(

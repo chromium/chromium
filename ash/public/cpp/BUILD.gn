@@ -429,6 +429,7 @@ component("cpp") {
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/ash/services/cellular_setup/public/mojom",
+    "//chromeos/ash/services/hotspot_config/public/mojom",
     "//chromeos/components/security_token_pin",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/network_config/public/mojom",

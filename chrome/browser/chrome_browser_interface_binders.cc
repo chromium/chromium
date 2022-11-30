@@ -299,6 +299,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
@@ -1258,6 +1259,12 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::audio_config::mojom::CrosAudioConfig, ash::settings::OSSettingsUI>(
         map);
+  }
+
+  if (ash::features::IsHotspotEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::hotspot_config::mojom::CrosHotspotConfig,
+        ash::settings::OSSettingsUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,

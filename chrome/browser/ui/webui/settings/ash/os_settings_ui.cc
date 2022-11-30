@@ -10,6 +10,7 @@
 #include "ash/public/cpp/audio_config_service.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/esim_manager.h"
+#include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
@@ -213,6 +214,11 @@ void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
         receiver) {
   GetBluetoothConfigService(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<hotspot_config::mojom::CrosHotspotConfig> receiver) {
+  GetHotspotConfigService(std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

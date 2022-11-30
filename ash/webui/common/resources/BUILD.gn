@@ -199,6 +199,7 @@ preprocess_if_expr("preprocess_ts_generated") {
   out_manifest = "$target_gen_dir/$preprocessed_generated_manifest"
   in_files = [
     "hotspot/cros_hotspot_config.js",
+    "hotspot/fake_hotspot_config.js",
     "hotspot/cros_hotspot_config.mojom-webui.js",
   ]
 }
@@ -208,6 +209,7 @@ copy("copy_generated_dts_files") {
   sources = [
     "$target_gen_dir/hotspot/cros_hotspot_config.d.ts",
     "$target_gen_dir/hotspot/cros_hotspot_config.mojom-webui.d.ts",
+    "$target_gen_dir/hotspot/fake_hotspot_config.d.ts",
   ]
   outputs = [ "$target_gen_dir/$preprocessed_dir/hotspot/{{source_file_part}}" ]
 }

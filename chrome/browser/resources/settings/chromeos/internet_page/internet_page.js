@@ -33,6 +33,7 @@ import './esim_remove_profile_dialog.js';
 
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
+import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
@@ -41,6 +42,7 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, CrosHotspotConfigObserverReceiver, HotspotInfo, HotspotState} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
 import {CrosNetworkConfigRemote, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -328,6 +330,13 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+
+    if (this.isHotspotFeatureEnabled_) {
+      /** @private {?HotspotInfo} */
+      this.hotspotInfo_ = null;
+      /** @private {!CrosHotspotConfigInterface} */
+      this.crosHotspotConfig_ = getHotspotConfig();
+    }
   }
 
   ready() {
@@ -400,6 +409,16 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     });
   }
 
+  /**
+   * @private
+   */
+  getHotspotInfo_() {
+    this.crosHotspotConfig_.getHotspotInfo().then(response => {
+      /** @private {!HotspotInfo} */
+      this.hotspotInfo_ = response.hotspotInfo;
+    });
+  }
+
   /** @override */
   connectedCallback() {
     super.connectedCallback();
@@ -407,6 +426,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     this.onPoliciesApplied(/*userhash=*/ '');
     this.onVpnProvidersChanged();
     this.onNetworkStateListChanged();
+    if (this.isHotspotFeatureEnabled_) {
+      this.getHotspotInfo_();
+    }
   }
 
   /**
@@ -1055,6 +1077,14 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       return;
     }
     this.showApnDetailDialog_();
+  }
+
+  /**
+   * Used in browser_tests for verifying the hotspotInfo.
+   * @return {?HotspotInfo}
+   */
+  getHotspotInfoForTesting() {
+    return this.hotspotInfo_;
   }
 }
 
