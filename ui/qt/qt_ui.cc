@@ -36,8 +36,8 @@
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_base.h"
 #include "ui/qt/qt_interface.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
-#include "ui/shell_dialogs/shell_dialog_linux.h"
 #include "ui/views/controls/button/label_button_border.h"
 
 namespace qt {
@@ -125,9 +125,7 @@ class QtNativeTheme : public ui::NativeThemeAura {
 QtUi::QtUi(ui::LinuxUi* fallback_linux_ui)
     : fallback_linux_ui_(fallback_linux_ui) {}
 
-QtUi::~QtUi() {
-  shell_dialog_linux::Finalize();
-}
+QtUi::~QtUi() = default;
 
 std::unique_ptr<ui::LinuxInputMethodContext> QtUi::CreateInputMethodContext(
     ui::LinuxInputMethodContextDelegate* delegate) const {
@@ -185,7 +183,6 @@ bool QtUi::Initialize() {
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&QtUi::AddNativeColorMixer, base::Unretained(this)));
   FontChanged();
-  shell_dialog_linux::Initialize();
 
   return true;
 }

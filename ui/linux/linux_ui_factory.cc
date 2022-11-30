@@ -11,6 +11,7 @@
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
 #include "base/strings/string_util.h"
+#include "build/chromecast_buildflags.h"
 #include "ui/base/buildflags.h"
 #include "ui/color/system_theme.h"
 #include "ui/linux/linux_ui.h"
@@ -21,6 +22,10 @@
 #endif
 #if BUILDFLAG(USE_QT)
 #include "ui/qt/qt_ui.h"
+#endif
+
+#if !BUILDFLAG(IS_CASTOS)
+#include "ui/shell_dialogs/shell_dialog_linux.h"
 #endif
 
 namespace ui {
@@ -96,7 +101,15 @@ LinuxUiAndTheme* GetDefaultLinuxUiAndTheme() {
 BASE_FEATURE(kAllowQt, "AllowQt", base::FEATURE_DISABLED_BY_DEFAULT);
 
 LinuxUi* GetDefaultLinuxUi() {
-  return GetDefaultLinuxUiAndTheme();
+  auto* linux_ui = GetDefaultLinuxUiAndTheme();
+#if !BUILDFLAG(IS_CASTOS)
+  // This may create an extra thread that may race against the LinuxUi instance
+  // initialization, GtkInitFromCommandLine, in GtkUi for example, so this must
+  // be done after the call to GetDefaultLinuxUiAndTheme above, so the race
+  // condition is avoided.
+  shell_dialog_linux::Initialize();
+#endif
+  return linux_ui;
 }
 
 LinuxUiTheme* GetDefaultLinuxUiTheme() {

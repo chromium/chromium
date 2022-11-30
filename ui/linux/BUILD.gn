@@ -48,6 +48,7 @@ component("linux_ui_factory") {
   deps = [
     "//base",
     "//ui/base:buildflags",
+    "//ui/shell_dialogs",
   ]
   if (use_gtk) {
     # This is the only component that can interact with gtk.
