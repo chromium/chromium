@@ -1730,7 +1730,7 @@ crbug.com/1163437 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [
 crbug.com/1163437 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-001.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-002.html [ Failure ]
-crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-004.html [ Failure ]
+crbug.com/1147859 [ Mac ] external/wpt/css/css-pseudo/highlight-painting-004.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-pseudos-inheritance-computed-001.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-pseudo/first-letter-exclude-inline-marker.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-pseudo/first-letter-exclude-inline-child-marker.html [ Failure ]
@@ -2921,6 +2921,8 @@ crbug.com/1371358 external/wpt/navigation-timing/prefetch-transfer-size-iframe.h
 
 # virtual/css-highlight-inheritance/
 crbug.com/1217745 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/active-selection-018.html [ Failure ]
+crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/active-selection-025.html [ Pass ]
+crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/active-selection-056.html [ Pass ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/cascade-highlight-004.html [ Pass ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/cascade-highlight-005.html [ Pass ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-cascade-001.html [ Pass ]
@@ -2935,9 +2937,9 @@ crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-styling-002.html [ Pass ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-styling-004.html [ Pass ]
 crbug.com/1309822 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-pseudos-inheritance-computed-001.html [ Pass ]
-crbug.com/1179938 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-001.html [ Failure ]
-crbug.com/1035708 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-002.html [ Failure ]
-crbug.com/1179938 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-003.html [ Failure ]
+crbug.com/1179938 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-001.html [ Pass ]
+crbug.com/1035708 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-002.html [ Pass ]
+crbug.com/1179938 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-003.html [ Pass ]
 crbug.com/1179938 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-004.html [ Failure ]
 crbug.com/1314629 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/selection-link-001.html [ Pass ]
 crbug.com/1314629 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/selection-link-002.html [ Pass ]
@@ -7260,7 +7262,6 @@ crbug.com/1323246 external/wpt/web-animations/timing-model/timelines/sibling-ifr
 
 # introduce blink_wpt_tests
 crbug.com/1299834 [ Win ] wpt_internal/html/interaction/focus/the-autofocus-attribute/object-fallback.html [ Timeout ]
-crbug.com/1299834 external/wpt/css/css-pseudo/first-letter-with-quote.html [ Failure ]
 
 # Sheriff 2022-05-20
 crbug.com/1291841 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security.sub.html [ Pass Timeout ]
