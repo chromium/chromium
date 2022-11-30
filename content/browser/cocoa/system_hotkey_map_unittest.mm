@@ -8,9 +8,13 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/path_service.h"
+#include "base/test/task_environment.h"
+#include "content/browser/cocoa/system_hotkey_helper_mac.h"
 #import "content/browser/cocoa/system_hotkey_map.h"
 #include "content/public/common/content_paths.h"
 
@@ -33,7 +37,8 @@ class SystemHotkeyMapTest : public ::testing::Test {
 
   void AddEntryToDictionary(BOOL enabled,
                             unsigned short key_code,
-                            NSUInteger modifiers) {
+                            NSUInteger modifiers,
+                            int index = 0) {
     NSMutableArray* parameters = [NSMutableArray array];
     // The first parameter is unused.
     [parameters addObject:[NSNumber numberWithInt:65535]];
@@ -50,7 +55,9 @@ class SystemHotkeyMapTest : public ::testing::Test {
     NSNumber* enabled_number = [NSNumber numberWithBool:enabled];
     [outer_dictionary setObject:enabled_number forKey:@"enabled"];
 
-    NSString* key = [NSString stringWithFormat:@"%d", count_];
+    NSString* key = index ? [NSString stringWithFormat:@"%d", index]
+                          : [NSString stringWithFormat:@"%d", count_];
+
     [system_hotkey_inner_dictionary_ setObject:outer_dictionary forKey:key];
     ++count_;
   }
@@ -188,6 +195,91 @@ TEST_F(SystemHotkeyMapTest, ParseCustomEntries) {
   EXPECT_TRUE(map.IsHotkeyReserved(key_code, NSEventModifierFlagControl));
   EXPECT_TRUE(map.IsHotkeyReserved(
       key_code, NSEventModifierFlagFunction | NSEventModifierFlagControl));
+}
+
+// Tests that we skip over certain undocumented shortcut entries that appear in
+// AppleSymbolicHotKeys. See https://crbug.com/874219 .
+TEST_F(SystemHotkeyMapTest, IgnoreUndocumentedShortcutEntries) {
+  const int kSpacesLeftIndex = 79;
+  const int kShiftedSpacesLeftIndex = 80;
+  const int kSpacesRightIndex = 81;
+  const int kShiftedSpacesRightIndex = 82;
+  AddEntryToDictionary(YES, kVK_ANSI_A, NSEventModifierFlagControl,
+                       kSpacesLeftIndex);
+  AddEntryToDictionary(YES, kVK_ANSI_B, NSEventModifierFlagControl,
+                       kShiftedSpacesLeftIndex);
+  AddEntryToDictionary(YES, kVK_ANSI_C, NSEventModifierFlagControl,
+                       kSpacesRightIndex);
+  AddEntryToDictionary(YES, kVK_ANSI_D, NSEventModifierFlagControl,
+                       kShiftedSpacesRightIndex);
+
+  SystemHotkeyMap map;
+
+  bool result = map.ParseDictionary(system_hotkey_dictionary_.get());
+  EXPECT_TRUE(result);
+
+  EXPECT_TRUE(map.IsHotkeyReserved(kVK_ANSI_A, NSEventModifierFlagControl));
+  EXPECT_FALSE(map.IsHotkeyReserved(kVK_ANSI_B, NSEventModifierFlagControl));
+  EXPECT_TRUE(map.IsHotkeyReserved(kVK_ANSI_C, NSEventModifierFlagControl));
+  EXPECT_FALSE(map.IsHotkeyReserved(kVK_ANSI_D, NSEventModifierFlagControl));
+}
+
+// Tests that the SystemHotkeyMap gets flushed when the user switches away and
+// back to Chrome.
+TEST_F(SystemHotkeyMapTest, ReloadShortcutsAfterAppActivation) {
+  base::test::TaskEnvironment task_environment;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  constexpr auto* kSystemHotkeyPlistPath = "com.apple.symbolichotkeys.plist";
+  base::FilePath test_path =
+      temp_dir.GetPath().AppendASCII(kSystemHotkeyPlistPath);
+  SetSystemHotkeyPlistPathForTesting(test_path);
+
+  // Create an entry for symbolic hotkey number 79.
+  const NSString* kTypeKey = @"type";
+  const NSString* kStandardValue = @"standard";
+  const NSString* kParametersKey = @"parameters";
+  NSArray* parameters = @[ @65535, @123, @10747904 ];
+  NSDictionary* values =
+      @{kTypeKey : kStandardValue, kParametersKey : parameters};
+
+  const NSString* kEnabledKey = @"enabled";
+  const NSString* kValueKey = @"value";
+  NSDictionary* entrySeventyNine = @{kEnabledKey : @YES, kValueKey : values};
+
+  const NSString* kSeventyNineKey = @"79";
+  NSDictionary* symbolic_hotkeys = @{kSeventyNineKey : entrySeventyNine};
+
+  const NSString* kAppleSymbolicHotKeysKey = @"AppleSymbolicHotKeys";
+  NSDictionary* root = @{kAppleSymbolicHotKeysKey : symbolic_hotkeys};
+
+  auto* hotkey_plist_url = base::mac::FilePathToNSURL(test_path);
+  [root writeToURL:hotkey_plist_url error:nullptr];
+
+  // Prepare to respond to filesystem changes.
+  WaitForEventsForTesting();
+
+  // Make sure we load what we expect from the hotkey file.
+  EXPECT_TRUE(GetSystemHotkeyMap()->IsHotkeyReserved(123, 10747904));
+
+  // Pause to let events propagate.
+  WaitForEventsForTesting();
+
+  // Change the parameters of hotkey number 79.
+  parameters = @[ @65535, @321, @10747904 ];
+  values = @{kTypeKey : kStandardValue, kParametersKey : parameters};
+  entrySeventyNine = @{kEnabledKey : @YES, kValueKey : values};
+  symbolic_hotkeys = @{kSeventyNineKey : entrySeventyNine};
+  root = @{kAppleSymbolicHotKeysKey : symbolic_hotkeys};
+  [root writeToURL:hotkey_plist_url error:nullptr];
+
+  // Wait for changes to be noticed.
+  WaitForEventsForTesting();
+
+  // Expect that the old parameters no longer exist, in favor of the new ones.
+  EXPECT_FALSE(GetSystemHotkeyMap()->IsHotkeyReserved(123, 10747904));
+  EXPECT_TRUE(GetSystemHotkeyMap()->IsHotkeyReserved(321, 10747904));
 }
 
 }  // namespace content

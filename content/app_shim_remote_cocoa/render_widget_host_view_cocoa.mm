@@ -938,15 +938,6 @@ void ExtractUnderlines(NSAttributedString* string,
   NSEventModifierFlags modifierFlags = [theEvent modifierFlags];
   int keyCode = [theEvent keyCode];
 
-  // If the user changes the system hotkey mapping after Chrome has been
-  // launched, then it is possible that a formerly reserved system hotkey is no
-  // longer reserved. The hotkey would have skipped the renderer, but would
-  // also have not been handled by the system. If this is the case, immediately
-  // return.
-  // TODO(erikchen): SystemHotkeyHelperMac should use the File System Events
-  // api to monitor changes to system hotkeys. This logic will have to be
-  // updated.
-  // http://crbug.com/383558.
   if (EventIsReservedBySystem(theEvent))
     return;
 

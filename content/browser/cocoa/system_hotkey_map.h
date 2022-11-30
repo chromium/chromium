@@ -43,6 +43,10 @@ class CONTENT_EXPORT SystemHotkeyMap {
   FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest, Parse);
   FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest, ParseCustomEntries);
   FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest, ParseMouse);
+  FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest,
+                           IgnoreUndocumentedShortcutEntries);
+  FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest,
+                           ReloadShortcutsAfterAppActivation);
 
   // Whether the hotkey has been reserved by the user.
   bool IsHotkeyReserved(unsigned short key_code, NSUInteger modifiers) const;

@@ -12,7 +12,7 @@
 
 namespace {
 
-// All 4 following functions return nil if the object doesn't exist, or isn't of
+// All 5 following functions return nil if the object doesn't exist, or isn't of
 // the right class.
 id ObjectForKey(NSDictionary* dict, NSString* key, Class aClass) {
   id object = [dict objectForKey:key];
@@ -35,6 +35,11 @@ NSNumber* NumberForKey(NSDictionary* dict, NSString* key) {
 
 NSString* StringForKey(NSDictionary* dict, NSString* key) {
   return ObjectForKey(dict, key, [NSString class]);
+}
+
+NSNumber* NumberAtIndex(NSArray* array, NSUInteger index) {
+  id object = [array objectAtIndex:index];
+  return [object isKindOfClass:[NSNumber class]] ? object : nil;
 }
 
 }  // namespace
@@ -65,11 +70,11 @@ bool SystemHotkeyMap::ParseDictionary(NSDictionary* dictionary) {
   if (!user_hotkey_dictionaries)
     return false;
 
-  // Start with a dictionary of default OS X hotkeys that are not necessarily
+  // Start with a dictionary of default macOS hotkeys that are not necessarily
   // listed in com.apple.symbolichotkeys.plist, but should still be handled as
   // reserved.
   // If the user has overridden or disabled any of these hotkeys,
-  // -NSMutableDictionary addEntriesFromDictionary:] will ensure that the new
+  // [NSMutableDictionary addEntriesFromDictionary:] will ensure that the new
   // values are used.
   // See https://crbug.com/145062#c8
   base::scoped_nsobject<NSMutableDictionary> hotkey_dictionaries([@{
@@ -87,17 +92,48 @@ bool SystemHotkeyMap::ParseDictionary(NSDictionary* dictionary) {
   } mutableCopy]);
   [hotkey_dictionaries addEntriesFromDictionary:user_hotkey_dictionaries];
 
+  // The meanings of the keys in `user_hotkey_dictionaries` are listed here:
+  // https://web.archive.org/web/20141112224103/http://hintsforums.macworld.com/showthread.php?t=114785
+  // Of particular interest are the following:
+  //
+  // # Spaces Left - Control, Left
+  // 79 = { enabled = 1; ... };
+  //
+  // # Spaces Right - Control, Right
+  // 81 = { enabled = 1; ... };
+  //
+  // Apparently when you change the shortcuts for Spaces Left/Right, macOS
+  // also inserts entries at slots 80 and 82 which differ from the previous
+  // entries by the addition of the Shift key. This is similar to entries 60
+  // and 61 as documented in the web page above where Command, Option, Space
+  // cycles to the previous input source and Command, Option, Space, Shift
+  // cycles to the next. This approach doesn't make sense for moving between
+  // Spaces given the arrow keys. Maybe there's machinery in the AppKit that
+  // automatically creates the shifted versions and macOS knows to ignore them
+  // (not expecting any non-system applications to read this file).
+  //
+  // Treating these shortcuts as valid results in unexpected behavior. For
+  // example, in the case of "Space Left" being mapped to Option Left Arrow,
+  // Chrome would silently ignore Shift-Option Left Arrow, the shortcut which
+  // appends the current text selection by one word to the left. To avoid
+  // this we'll ignore these two undocumented shortcuts.
+  // See https://crbug.com/874219 .
+  const NSString* kShortcutEntry80 = @"80";
+  const NSString* kShortcutEntry82 = @"82";
+  [hotkey_dictionaries removeObjectForKey:kShortcutEntry80];
+  [hotkey_dictionaries removeObjectForKey:kShortcutEntry82];
+
   for (NSString* hotkey_system_effect in [hotkey_dictionaries allKeys]) {
     if (![hotkey_system_effect isKindOfClass:[NSString class]])
       continue;
 
     NSDictionary* hotkey_dictionary =
-        [hotkey_dictionaries objectForKey:hotkey_system_effect];
-    if (![hotkey_dictionary isKindOfClass:[NSDictionary class]])
+        DictionaryForKey(hotkey_dictionaries, hotkey_system_effect);
+    if (!hotkey_dictionary)
       continue;
 
     NSNumber* enabled = NumberForKey(hotkey_dictionary, @"enabled");
-    if (!enabled || enabled.boolValue == NO)
+    if (!enabled.boolValue)
       continue;
 
     NSDictionary* value = DictionaryForKey(hotkey_dictionary, @"value");
@@ -105,19 +141,19 @@ bool SystemHotkeyMap::ParseDictionary(NSDictionary* dictionary) {
       continue;
 
     NSString* type = StringForKey(value, @"type");
-    if (!type || ![type isEqualToString:@"standard"])
+    if (![type isEqualToString:@"standard"])
       continue;
 
     NSArray* parameters = ArrayForKey(value, @"parameters");
-    if (!parameters || [parameters count] != 3)
+    if (parameters.count != 3)
       continue;
 
-    NSNumber* key_code = [parameters objectAtIndex:1];
-    if (![key_code isKindOfClass:[NSNumber class]])
+    NSNumber* key_code = NumberAtIndex(parameters, 1);
+    if (!key_code)
       continue;
 
-    NSNumber* modifiers = [parameters objectAtIndex:2];
-    if (![modifiers isKindOfClass:[NSNumber class]])
+    NSNumber* modifiers = NumberAtIndex(parameters, 2);
+    if (!modifiers)
       continue;
 
     ReserveHotkey(key_code.unsignedShortValue,
