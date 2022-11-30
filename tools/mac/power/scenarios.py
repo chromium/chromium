@@ -47,13 +47,11 @@ class ScenarioOSADriver(abc.ABC):
     # the screen. This is fine because there isn't a sequence but a single move.
     pyautogui.FAILSAFE = False
 
-    # Move the cursor out of the way so it's always in the same spot.
-    # This cannot be 0,0 as this keeps the task bar visible in full-screen
-    # scenarios. By being at the extreme right the cursor should be outside
-    # of the visibility of the content and avoid triggering on-hovers and the
-    # like.
+    # Move the cursor in the midle of the screen so it's always in the same
+    # spot. This cannot be 0,0 as this keeps the task bar visible in
+    # full-screen scenarios.
     width, height = pyautogui.size()
-    pyautogui.moveTo(width, height / 2)
+    pyautogui.moveTo(width / 2, height / 2)
 
     assert self.osa_script is not None
     logging.debug(f"Starting scenario {self.name}")
