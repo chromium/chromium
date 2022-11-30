@@ -97,6 +97,7 @@ _DESIRED_VERSIONS = [
     '106.0.5249.7',
     '107.0.5304.14',
     '108.0.5359.12',
+    '109.0.5414.8',
 ]
 
 
@@ -123,6 +124,8 @@ def _EnumerateReports():
       versions = [v for v in versions if _VersionMajor(v) >= 71]
     elif apk == 'TrichromeGoogle':
       versions = [v for v in versions if _VersionMajor(v) >= 88]
+    elif apk == 'ChromeModern.apk':
+      versions = [v for v in versions if _VersionMajor(v) <= 108]
 
     for version in versions:
       yield Report(cpu, apk, version)
