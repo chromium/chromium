@@ -11,6 +11,7 @@ namespace content {
 
 class NavigationRequest;
 class Navigator;
+class RenderFrameHostManager;
 
 // An interface for RenderFrameHostImpl to communicate with FrameTreeNode owning
 // it (e.g. to initiate or cancel a navigation in the frame).
@@ -33,6 +34,8 @@ class RenderFrameHostOwner {
       std::unique_ptr<NavigationRequest> navigation_request) = 0;
 
   virtual Navigator& GetCurrentNavigator() = 0;
+
+  virtual RenderFrameHostManager& GetRenderFrameHostManager() = 0;
 
   virtual void SetFocusedFrame(SiteInstanceGroup* source) = 0;
 

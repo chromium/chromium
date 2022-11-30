@@ -591,6 +591,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   void RestartNavigationAsCrossDocument(
       std::unique_ptr<NavigationRequest> navigation_request) override;
   Navigator& GetCurrentNavigator() override;
+  RenderFrameHostManager& GetRenderFrameHostManager() override;
   void SetFocusedFrame(SiteInstanceGroup* source) override;
 
   // Updates the user activation state in the browser frame tree and in the

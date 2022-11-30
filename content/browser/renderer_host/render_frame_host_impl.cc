@@ -5686,7 +5686,8 @@ void RenderFrameHostImpl::FlushNetworkAndNavigationInterfacesForTesting(
 
 void RenderFrameHostImpl::PrepareForInnerWebContentsAttach(
     PrepareForInnerWebContentsAttachCallback callback) {
-  frame_tree_node_->render_manager()->PrepareForInnerDelegateAttach(
+  CHECK(owner_);
+  owner_->GetRenderFrameHostManager().PrepareForInnerDelegateAttach(
       std::move(callback));
 }
 

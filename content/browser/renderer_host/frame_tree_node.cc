@@ -985,6 +985,10 @@ Navigator& FrameTreeNode::GetCurrentNavigator() {
   return navigator();
 }
 
+RenderFrameHostManager& FrameTreeNode::GetRenderFrameHostManager() {
+  return render_manager_;
+}
+
 void FrameTreeNode::SetFocusedFrame(SiteInstanceGroup* source) {
   frame_tree_->delegate()->SetFocusedFrame(this, source);
 }
