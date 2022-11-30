@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
@@ -17,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_confirmation_reason.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
@@ -64,6 +66,12 @@
 #include "ui/shell_dialogs/select_file_utils_win.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#endif
+
 using content::BrowserThread;
 using download::DownloadItem;
 using download::DownloadPathReservationTracker;
@@ -107,8 +115,7 @@ void GenerateSafeFileName(base::FilePath* new_path,
 
 }  // namespace
 
-DownloadTargetDeterminerDelegate::~DownloadTargetDeterminerDelegate() {
-}
+DownloadTargetDeterminerDelegate::~DownloadTargetDeterminerDelegate() = default;
 
 DownloadTargetDeterminer::DownloadTargetDeterminer(
     DownloadItem* download,
@@ -265,7 +272,8 @@ DownloadTargetDeterminer::Result
     confirmation_reason_ = NeedsConfirmation(generated_filename);
     base::FilePath target_directory;
     if (confirmation_reason_ != DownloadConfirmationReason::NONE) {
-      DCHECK(!download_prefs_->IsDownloadPathManaged());
+      if (download_prefs_->IsDownloadPathManaged())
+        DCHECK(confirmation_reason_ == DownloadConfirmationReason::DLP_BLOCKED);
       // If the user is going to be prompted and the user has been prompted
       // before, then always prefer the last directory that the user selected.
       target_directory = download_prefs_->SaveFilePath();
@@ -1166,10 +1174,15 @@ DownloadConfirmationReason DownloadTargetDeterminer::NeedsConfirmation(
     return DownloadConfirmationReason::NONE;
   }
 
+  // If the download path is blocked by DLP, the user should be prompted even if
+  // the path is managed or PromptForDownload is false.
+  bool isDefaultPathDlpBlocked =
+      IsDownloadDlpBlocked(download_prefs_->DownloadPath());
+
   // Don't ask where to save if the download path is managed. Even if the user
   // wanted to be prompted for "all" downloads, or if this was a 'Save As'
-  // download.
-  if (download_prefs_->IsDownloadPathManaged())
+  // download. Ask if the default path is blocked by DLP.
+  if (download_prefs_->IsDownloadPathManaged() && !isDefaultPathDlpBlocked)
     return DownloadConfirmationReason::NONE;
 
   // Prompt if this is a 'Save As' download.
@@ -1191,10 +1204,39 @@ DownloadConfirmationReason DownloadTargetDeterminer::NeedsConfirmation(
   // For everything else, prompting is controlled by the PromptForDownload pref.
   // The user may still be prompted even if this pref is disabled due to, for
   // example, there being an unresolvable filename conflict or the target path
-  // is not writeable.
-  return download_prefs_->PromptForDownload()
-             ? DownloadConfirmationReason::PREFERENCE
-             : DownloadConfirmationReason::NONE;
+  // is not writeable, or if the path is blocked by DLP.
+  if (download_prefs_->PromptForDownload()) {
+    return DownloadConfirmationReason::PREFERENCE;
+  } else {
+    return isDefaultPathDlpBlocked ? DownloadConfirmationReason::DLP_BLOCKED
+                                   : DownloadConfirmationReason::NONE;
+  }
+}
+
+bool DownloadTargetDeterminer::IsDownloadDlpBlocked(
+    const base::FilePath& download_path) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* web_contents =
+      download_ ? content::DownloadItemUtils::GetWebContents(download_)
+                : nullptr;
+  if (!web_contents)
+    return false;
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!rules_manager)
+    return false;
+  policy::DlpFilesController* files_controller =
+      rules_manager->GetDlpFilesController();
+  if (!files_controller)
+    return false;
+  const GURL authority_url = download::BaseFile::GetEffectiveAuthorityURL(
+      download_->GetURL(), download_->GetReferrerUrl());
+  return files_controller->ShouldPromptBeforeDownload(
+      policy::DlpFilesController::DlpFileDestination(authority_url.spec()),
+      download_path);
+#else
+  return false;
+#endif
 }
 
 bool DownloadTargetDeterminer::HasPromptedForPath() const {

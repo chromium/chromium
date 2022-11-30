@@ -629,6 +629,29 @@ void DlpFilesController::CheckIfDownloadAllowed(
           std::move(result_callback)));
 }
 
+bool DlpFilesController::ShouldPromptBeforeDownload(
+    const DlpFileDestination& download_src,
+    const base::FilePath& file_path) {
+  if (!download_src.url_or_path.has_value()) {
+    return false;
+  }
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
+  auto dst_component =
+      MapFilePathtoPolicyComponent(profile, base::FilePath(file_path));
+  if (!dst_component.has_value()) {
+    // We may block downloads only if saved to external component, otherwise
+    // downloads should be allowed.
+    return false;
+  }
+
+  DlpRulesManager::Level level = rules_manager_.IsRestrictedComponent(
+      GURL(download_src.url_or_path.value()), dst_component.value(),
+      DlpRulesManager::Restriction::kFiles, nullptr);
+  return level == DlpRulesManager::Level::kBlock ||
+         level == DlpRulesManager::Level::kWarn;
+}
+
 void DlpFilesController::CheckIfLaunchAllowed(
     const apps::AppUpdate& app_update,
     apps::IntentPtr intent,
@@ -689,12 +712,6 @@ void DlpFilesController::IsFilesTransferRestricted(
     const DlpFileDestination& destination,
     FileAction files_action,
     IsFilesTransferRestrictedCallback result_callback) {
-  policy::DlpRulesManager* dlp_rules_manager =
-      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!dlp_rules_manager) {
-    std::move(result_callback).Run(std::vector<FileDaemonInfo>());
-    return;
-  }
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
   absl::optional<DlpRulesManager::Component> dst_component =

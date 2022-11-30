@@ -200,6 +200,12 @@ class DlpFilesController {
       const base::FilePath& file_path,
       CheckIfDownloadAllowedCallback result_callback);
 
+  // Returns whether downloads from `download_src` to `file_path` might be
+  // blocked by DLP, and so a picker should be shown.
+  virtual bool ShouldPromptBeforeDownload(
+      const DlpFileDestination& download_src,
+      const base::FilePath& file_path);
+
   // Checks whether launching `app_update` with `intent` is allowed.
   void CheckIfLaunchAllowed(const apps::AppUpdate& app_update,
                             apps::IntentPtr intent,

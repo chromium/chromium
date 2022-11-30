@@ -1536,6 +1536,21 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
       display_service_tester.GetNotification(kDownloadBlockedNotificationId));
 }
 
+TEST_P(DlpFilesExternalDestinationTest, FilePromptForDownload) {
+  auto [mount_name, path, expected_component] = GetParam();
+
+  EXPECT_CALL(*rules_manager_,
+              IsRestrictedComponent(_, expected_component, _, _))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+
+  auto dst_url = mount_points_->CreateExternalFileSystemURL(
+      blink::StorageKey(), mount_name, base::FilePath(path));
+  ASSERT_TRUE(dst_url.is_valid());
+
+  EXPECT_TRUE(files_controller_->ShouldPromptBeforeDownload(
+      DlpFilesController::DlpFileDestination(kExampleUrl1), dst_url.path()));
+}
+
 class DlpFilesUrlDestinationTest
     : public DlpFilesControllerTest,
       public ::testing::WithParamInterface<DlpFilesUrlDestinationTestInfo> {};

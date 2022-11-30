@@ -332,6 +332,11 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   DownloadConfirmationReason NeedsConfirmation(
       const base::FilePath& filename) const;
 
+  // Returns true if the DLP feature is enabled and downloading the item to
+  // `download_path` is blocked, in which case the user should be prompted
+  // regardless of the preferences.
+  bool IsDownloadDlpBlocked(const base::FilePath& download_path) const;
+
   // Returns true if the user has been prompted for this download at least once
   // prior to this target determination operation. This method is only expected
   // to return true for a resuming interrupted download that has prompted the
