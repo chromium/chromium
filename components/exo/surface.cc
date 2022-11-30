@@ -1688,6 +1688,17 @@ void Surface::OnDeskChanged(int state) {
     observer.OnDeskChanged(this, state);
 }
 
+void Surface::OnTooltipShown(const std::u16string& text,
+                             const gfx::Rect& bounds) {
+  for (SurfaceObserver& observer : observers_)
+    observer.OnTooltipShown(this, text, bounds);
+}
+
+void Surface::OnTooltipHidden() {
+  for (SurfaceObserver& observer : observers_)
+    observer.OnTooltipHidden(this);
+}
+
 void Surface::MoveToDesk(int desk_index) {
   if (delegate_)
     delegate_->MoveToDesk(desk_index);

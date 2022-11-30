@@ -26,6 +26,7 @@ class FocusChangeObserver;
 
 namespace wm {
 class ActivationChangeObserver;
+class TooltipObserver;
 }
 
 namespace display {
@@ -137,6 +138,8 @@ class WMHelper : public aura::client::DragDropDelegate {
       wm::ActivationChangeObserver* observer) = 0;
   virtual void RemoveActivationObserver(
       wm::ActivationChangeObserver* observer) = 0;
+  virtual void AddTooltipObserver(wm::TooltipObserver* observer) = 0;
+  virtual void RemoveTooltipObserver(wm::TooltipObserver* observer) = 0;
   virtual void AddFocusObserver(
       aura::client::FocusChangeObserver* observer) = 0;
   virtual void RemoveFocusObserver(

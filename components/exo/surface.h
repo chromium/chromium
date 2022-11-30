@@ -419,6 +419,12 @@ class Surface final : public ui::PropertyHandler {
   // Starts or ends throttling on the surface.
   void ThrottleFrameRate(bool on);
 
+  // Informs tooltip is shown.
+  void OnTooltipShown(const std::u16string& text, const gfx::Rect& bounds);
+
+  // Informs tooltip is hidden.
+  void OnTooltipHidden();
+
   // If true is set, if this window has a focus, key events should be sent to
   // the app, even if it is an ash shortcut (with some exceptions).
   // See exo::Keyboard for more details.

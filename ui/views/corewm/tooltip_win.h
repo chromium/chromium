@@ -15,6 +15,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
 
+namespace wm {
+class TooltipObserver;
+}
+
 namespace views::corewm {
 
 // Implementation of Tooltip that uses the native win32 control for showing the
@@ -27,6 +31,9 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   TooltipWin& operator=(const TooltipWin&) = delete;
 
   ~TooltipWin() override;
+
+  void AddObserver(wm::TooltipObserver* observer) override {}
+  void RemoveObserver(wm::TooltipObserver* observer) override {}
 
   // HandleNotify() is forwarded from DesktopWindowTreeHostWin to keep the
   // native tooltip in sync.

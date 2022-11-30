@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "ui/views/corewm/tooltip.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/wm/public/tooltip_observer.h"
 
 namespace gfx {
 class RenderText;
@@ -38,12 +40,15 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   static constexpr int kCursorOffsetX = 10;
   static constexpr int kCursorOffsetY = 15;
 
-  TooltipAura() = default;
+  TooltipAura();
 
   TooltipAura(const TooltipAura&) = delete;
   TooltipAura& operator=(const TooltipAura&) = delete;
 
   ~TooltipAura() override;
+
+  void AddObserver(wm::TooltipObserver* observer) override;
+  void RemoveObserver(wm::TooltipObserver* observer) override;
 
  private:
   class TooltipWidget;
@@ -88,6 +93,9 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   // The window we're showing the tooltip for. Never NULL and valid while
   // showing.
   raw_ptr<aura::Window> tooltip_window_ = nullptr;
+
+  // Observers tooltip state change.
+  base::ObserverList<wm::TooltipObserver>::Unchecked observers_;
 };
 
 }  // namespace corewm

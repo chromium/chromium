@@ -21,6 +21,10 @@ namespace aura {
 class Window;
 }
 
+namespace wm {
+class TooltipObserver;
+}
+
 namespace views::corewm {
 
 namespace test {
@@ -36,6 +40,9 @@ class VIEWS_EXPORT TooltipStateManager {
   TooltipStateManager(const TooltipStateManager&) = delete;
   TooltipStateManager& operator=(const TooltipStateManager&) = delete;
   ~TooltipStateManager();
+
+  void AddObserver(wm::TooltipObserver* observer);
+  void RemoveObserver(wm::TooltipObserver* observer);
 
   int GetMaxWidth(const gfx::Point& location) const;
 

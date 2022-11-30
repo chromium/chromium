@@ -14,6 +14,10 @@ namespace aura {
 class Window;
 }
 
+namespace wm {
+class TooltipObserver;
+}
+
 namespace views::corewm {
 
 enum class TooltipTrigger {
@@ -26,6 +30,9 @@ enum class TooltipTrigger {
 class VIEWS_EXPORT Tooltip {
  public:
   virtual ~Tooltip() = default;
+
+  virtual void AddObserver(wm::TooltipObserver* observer) = 0;
+  virtual void RemoveObserver(wm::TooltipObserver* observer) = 0;
 
   // Returns the max width of the tooltip when shown at the specified location.
   virtual int GetMaxWidth(const gfx::Point& location) const = 0;

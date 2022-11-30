@@ -19,6 +19,10 @@
 struct wl_client;
 struct wl_resource;
 
+namespace base {
+class TimeDelta;
+}
+
 namespace exo {
 
 class ShellSurface;
@@ -27,7 +31,7 @@ class ShellSurfaceBase;
 namespace wayland {
 class SerialTracker;
 
-constexpr uint32_t kZAuraShellVersion = 46;
+constexpr uint32_t kZAuraShellVersion = 47;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -73,6 +77,12 @@ class AuraSurface : public SurfaceObserver,
   void Pin(bool trusted);
   void Unpin();
   void SetOrientationLock(uint32_t orientation_lock);
+  void ShowTooltip(const char* text,
+                   const gfx::Point& position,
+                   uint32_t trigger,
+                   const base::TimeDelta& show_delay,
+                   const base::TimeDelta& hide_delay);
+  void HideTooltip();
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
@@ -80,6 +90,10 @@ class AuraSurface : public SurfaceObserver,
   void OnFrameLockingChanged(Surface* surface, bool lock) override;
   void OnDeskChanged(Surface* surface, int state) override;
   void ThrottleFrameRate(bool on) override;
+  void OnTooltipShown(Surface* surface,
+                      const std::u16string& text,
+                      const gfx::Rect& bounds) override;
+  void OnTooltipHidden(Surface* surface) override;
 
   // Overridden from ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,
@@ -97,6 +111,10 @@ class AuraSurface : public SurfaceObserver,
  private:
   Surface* surface_;
   wl_resource* const resource_;
+
+  // Tooltip text sent from Lacros.
+  // This is kept here since it should out-live ShowTooltip() scope.
+  std::u16string tooltip_text_;
 
   void ComputeAndSendOcclusion(
       const aura::Window::OcclusionState occlusion_state,

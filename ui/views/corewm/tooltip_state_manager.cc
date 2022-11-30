@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/wm/public/tooltip_client.h"
+#include "ui/wm/public/tooltip_observer.h"
 
 namespace views::corewm {
 namespace {
@@ -32,6 +33,16 @@ TooltipStateManager::TooltipStateManager(std::unique_ptr<Tooltip> tooltip)
     : tooltip_(std::move(tooltip)) {}
 
 TooltipStateManager::~TooltipStateManager() = default;
+
+void TooltipStateManager::AddObserver(wm::TooltipObserver* observer) {
+  DCHECK(tooltip_);
+  tooltip_->AddObserver(observer);
+}
+
+void TooltipStateManager::RemoveObserver(wm::TooltipObserver* observer) {
+  DCHECK(tooltip_);
+  tooltip_->RemoveObserver(observer);
+}
 
 int TooltipStateManager::GetMaxWidth(const gfx::Point& location) const {
   return tooltip_->GetMaxWidth(location);

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="46">
+  <interface name="zaura_shell" version="47">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -160,7 +160,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_surface" version="38">
+  <interface name="zaura_surface" version="47">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -535,6 +535,55 @@
   See zaura_shell.release for destructor naming.
       </description>
     </request>
+
+    <!-- Version 47 additions -->
+    <request name="show_tooltip" since="47">
+      <description summary="show tooltip window">
+        Show tooltip on server side.
+        `x` and `y` specifies the location of tooltip in surface local coordinates.
+        `hide_delay` and `show_delay` specify the time to wait until showing/hiding tooltip.
+        The unit is millisecond.
+      </description>
+      <arg name="text" type="string"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="tooltip_trigger" type="uint" summary="tooltip_trigger enum"/>
+      <arg name="show_delay" type="uint" summary="delay to show tooltip in millisecond"/>
+      <arg name="hide_delay" type="uint" summary="delay to hide tooltip in millisecond"/>
+    </request>
+
+    <enum name="tooltip_trigger">
+      <description summary="type of tooltip trigger">
+        Describes what triggered tooltip
+      </description>
+      <entry name="cursor" value="0" summary="triggered by cursor"/>
+      <entry name="keyboard" value="1" summary="triggered by keyboard"/>
+    </enum>
+
+    <request name="hide_tooltip" since="47">
+      <description summary="hide tooltip window">
+        Hide tooltip created by the same client on server side.
+        This may be called even when there is no tooltip window to hide.
+      </description>
+    </request>
+
+    <event name="tooltip_shown" since="47">
+      <description summary="tooltip is shown by server side">
+        Informs the client that the tooltip is shown with states.
+        `x` and `y` specifies the location of tooltip in surface local coordinates.
+      </description>
+      <arg name="text" type="string"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </event>
+
+    <event name="tooltip_hidden" since="47">
+      <description summary="tooltip is hidden by server side">
+        Informs the client that the tooltip is hidden.
+      </description>
+    </event>
   </interface>
 
   <interface name="zaura_output" version="45">

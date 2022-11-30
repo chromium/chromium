@@ -141,7 +141,7 @@ class TooltipView : public views::View {
     ResetDisplayRect();
   }
 
-  gfx::RenderText* render_text_for_test() { return render_text_.get(); }
+  gfx::RenderText* render_text() { return render_text_.get(); }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kTooltip;
@@ -167,9 +167,19 @@ namespace views::corewm {
 // static
 const char TooltipAura::kWidgetName[] = "TooltipAura";
 
+TooltipAura::TooltipAura() = default;
+
 TooltipAura::~TooltipAura() {
   DestroyWidget();
   CHECK(!IsInObserverList());
+}
+
+void TooltipAura::AddObserver(wm::TooltipObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TooltipAura::RemoveObserver(wm::TooltipObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 class TooltipAura::TooltipWidget : public Widget {
@@ -189,7 +199,7 @@ class TooltipAura::TooltipWidget : public Widget {
 
 gfx::RenderText* TooltipAura::GetRenderTextForTest() {
   DCHECK(widget_);
-  return widget_->GetTooltipView()->render_text_for_test();
+  return widget_->GetTooltipView()->render_text();
 }
 
 void TooltipAura::GetAccessibleNodeDataForTest(ui::AXNodeData* node_data) {
@@ -341,11 +351,28 @@ void TooltipAura::Show() {
 
     widget_->GetTooltipView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTooltipOpened, true);
+
+    // Add distance between `tooltip_window_` and its toplevel window to bounds
+    // to pass via NotifyTooltipShown() since client will use this bounds as
+    // relative to wayland toplevel window.
+    // TODO(crbug.com/1385219): Use `tooltip_window_` instead of its toplevel
+    // window when WaylandWindow on ozone becomes available.
+    aura::Window* toplevel_window = tooltip_window_->GetToplevelWindow();
+    // `tooltip_window_`'s toplevel window may be null for testing.
+    if (toplevel_window) {
+      gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
+      aura::Window::ConvertRectToTarget(tooltip_window_, toplevel_window,
+                                        &bounds);
+      for (auto& observer : observers_) {
+        observer.OnTooltipShown(
+            toplevel_window, widget_->GetTooltipView()->render_text()->text(),
+            bounds);
+      }
+    }
   }
 }
 
 void TooltipAura::Hide() {
-  tooltip_window_ = nullptr;
   if (widget_) {
     // If we simply hide the widget there's a chance to briefly show outdated
     // information on the next Show() because the text isn't updated until
@@ -356,8 +383,18 @@ void TooltipAura::Hide() {
     // displayed despite the size change.
     widget_->GetTooltipView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTooltipClosed, true);
+
+    // TODO(crbug.com/1385219): Use `tooltip_window_` instead of its toplevel
+    // window when WaylandWindow on ozone becomes available.
+    aura::Window* toplevel_window = tooltip_window_->GetToplevelWindow();
+    // `tooltip_window_`'s toplevel window may be null for testing.
+    if (toplevel_window) {
+      for (auto& observer : observers_)
+        observer.OnTooltipHidden(toplevel_window);
+    }
     DestroyWidget();
   }
+  tooltip_window_ = nullptr;
 }
 
 bool TooltipAura::IsVisible() {

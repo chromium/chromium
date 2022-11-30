@@ -27,8 +27,10 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/display_util.h"
+#include "ui/views/corewm/tooltip_controller.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/public/activation_client.h"
+#include "ui/wm/public/tooltip_observer.h"
 
 namespace exo {
 namespace {
@@ -109,6 +111,14 @@ void WMHelperChromeOS::AddActivationObserver(
 void WMHelperChromeOS::RemoveActivationObserver(
     wm::ActivationChangeObserver* observer) {
   ash::Shell::Get()->activation_client()->RemoveObserver(observer);
+}
+
+void WMHelperChromeOS::AddTooltipObserver(wm::TooltipObserver* observer) {
+  ash::Shell::Get()->tooltip_controller()->AddObserver(observer);
+}
+
+void WMHelperChromeOS::RemoveTooltipObserver(wm::TooltipObserver* observer) {
+  ash::Shell::Get()->tooltip_controller()->RemoveObserver(observer);
 }
 
 void WMHelperChromeOS::AddFocusObserver(

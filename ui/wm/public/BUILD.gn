@@ -16,6 +16,7 @@ component("public") {
     "animation_host.h",
     "scoped_tooltip_disabler.h",
     "tooltip_client.h",
+    "tooltip_observer.h",
     "window_move_client.h",
   ]
 

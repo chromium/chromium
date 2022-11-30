@@ -6,6 +6,11 @@
 #define COMPONENTS_EXO_SURFACE_OBSERVER_H_
 
 #include <cstdint>
+#include <string>
+
+namespace gfx {
+class Rect;
+}
 
 namespace exo {
 class Surface;
@@ -44,6 +49,15 @@ class SurfaceObserver {
 
   // Starts or ends throttling.
   virtual void ThrottleFrameRate(bool on) {}
+
+  // Called when tooltip is shown.
+  // `bounds` is relative to `surface`.
+  virtual void OnTooltipShown(Surface* surface,
+                              const std::u16string& text,
+                              const gfx::Rect& bounds) {}
+
+  // Called when tooltip is hidden.
+  virtual void OnTooltipHidden(Surface* surface) {}
 
  protected:
   virtual ~SurfaceObserver() {}

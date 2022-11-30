@@ -925,9 +925,9 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
       SetAuraSurface(zaura_shell_get_aura_surface(
           connection()->zaura_shell()->wl_object(), root_surface()->surface()));
       static constexpr zaura_surface_listener zaura_surface_listener = {
-          &OcclusionChanged,      &LockFrame,   &UnlockFrame,
-          &OcclusionStateChanged, &DeskChanged, &StartThrottle,
-          &EndThrottle,
+          &OcclusionChanged,      &LockFrame,    &UnlockFrame,
+          &OcclusionStateChanged, &DeskChanged,  &StartThrottle,
+          &EndThrottle,           &TooltipShown, &TooltipHidden,
       };
       zaura_surface_add_listener(aura_surface(), &zaura_surface_listener, this);
     }

@@ -51,6 +51,8 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_util.h"
 #include "ui/display/screen.h"
+#include "ui/views/corewm/tooltip.h"
+#include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
@@ -118,6 +120,18 @@ zaura_surface_occlusion_state WaylandOcclusionState(
       return ZAURA_SURFACE_OCCLUSION_STATE_HIDDEN;
   }
   return ZAURA_SURFACE_OCCLUSION_STATE_UNKNOWN;
+}
+
+views::corewm::TooltipTrigger TooltipTrigger(uint32_t tooltip_trigger) {
+  switch (tooltip_trigger) {
+    case ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR:
+      return views::corewm::TooltipTrigger::kCursor;
+    case ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD:
+      return views::corewm::TooltipTrigger::kKeyboard;
+    default:
+      VLOG(2) << "Unknown aura-shell tooltip trigger: " << tooltip_trigger;
+      return views::corewm::TooltipTrigger::kCursor;
+  }
 }
 
 void aura_surface_set_frame(wl_client* client,
@@ -274,6 +288,23 @@ void aura_surface_release(wl_client* client, wl_resource* resource) {
   wl_resource_destroy(resource);
 }
 
+void aura_surface_show_tooltip(wl_client* client,
+                               wl_resource* resource,
+                               const char* text,
+                               int32_t x,
+                               int32_t y,
+                               uint32_t trigger,
+                               uint32_t show_delay,
+                               uint32_t hide_delay) {
+  GetUserDataAs<AuraSurface>(resource)->ShowTooltip(
+      text, gfx::Point(x, y), trigger, base::Milliseconds((uint64_t)show_delay),
+      base::Milliseconds((uint64_t)hide_delay));
+}
+
+void aura_surface_hide_tooltip(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraSurface>(resource)->HideTooltip();
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
@@ -303,6 +334,8 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_pin,
     aura_surface_unset_pin,
     aura_surface_release,
+    aura_surface_show_tooltip,
+    aura_surface_hide_tooltip,
 };
 
 }  // namespace
@@ -608,6 +641,26 @@ void AuraSurface::ThrottleFrameRate(bool on) {
   wl_client_flush(wl_resource_get_client(resource_));
 }
 
+void AuraSurface::OnTooltipShown(Surface* surface,
+                                 const std::u16string& text,
+                                 const gfx::Rect& bounds) {
+  if (wl_resource_get_version(resource_) <
+      ZAURA_SURFACE_TOOLTIP_SHOWN_SINCE_VERSION) {
+    return;
+  }
+  zaura_surface_send_tooltip_shown(resource_, base::UTF16ToUTF8(text).c_str(),
+                                   bounds.x(), bounds.y(), bounds.width(),
+                                   bounds.height());
+}
+
+void AuraSurface::OnTooltipHidden(Surface* surface) {
+  if (wl_resource_get_version(resource_) <
+      ZAURA_SURFACE_TOOLTIP_HIDDEN_SINCE_VERSION) {
+    return;
+  }
+  zaura_surface_send_tooltip_hidden(resource_);
+}
+
 void AuraSurface::MoveToDesk(int desk_index) {
   constexpr int kToggleVisibleOnAllWorkspacesValue = -1;
   if (desk_index == kToggleVisibleOnAllWorkspacesValue) {
@@ -627,6 +680,24 @@ void AuraSurface::Pin(bool trusted) {
 
 void AuraSurface::Unpin() {
   surface_->Unpin();
+}
+
+void AuraSurface::ShowTooltip(const char* text,
+                              const gfx::Point& position,
+                              uint32_t trigger,
+                              const base::TimeDelta& show_delay,
+                              const base::TimeDelta& hide_delay) {
+  tooltip_text_ = base::UTF8ToUTF16(text);
+  wm::SetTooltipText(surface_->window(), &tooltip_text_);
+  wm::SetTooltipId(surface_->window(), surface_);
+  ash::Shell::Get()->tooltip_controller()->UpdateAndShow(
+      surface_->window(), tooltip_text_, position, TooltipTrigger(trigger),
+      show_delay, hide_delay);
+}
+
+void AuraSurface::HideTooltip() {
+  tooltip_text_ = std::u16string();
+  ash::Shell::Get()->tooltip_controller()->HideAndReset();
 }
 
 chromeos::OrientationType OrientationLock(uint32_t orientation_lock) {

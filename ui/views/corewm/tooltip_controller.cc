@@ -9,17 +9,21 @@
 #include <utility>
 #include <vector>
 
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/wm/public/activation_client.h"
+#include "ui/wm/public/tooltip_observer.h"
 
 namespace views::corewm {
 namespace {
@@ -33,6 +37,13 @@ constexpr auto kDefaultHideTooltipDelay = base::Seconds(10);
 bool IsValidTarget(aura::Window* event_target, aura::Window* target) {
   if (!target || (event_target == target))
     return true;
+
+  // If `target` is contained in `event_target`, it's valid.
+  // This case may happen on exo surfaces.
+  if (event_target->Contains(target) &&
+      event_target->GetBoundsInScreen().Contains(target->GetBoundsInScreen())) {
+    return true;
+  }
 
   void* event_target_grouping_id = event_target->GetNativeWindowProperty(
       TooltipManager::kGroupingPropertyKey);
@@ -124,6 +135,29 @@ TooltipController::~TooltipController() {
     observed_window_->RemoveObserver(this);
   if (activation_client_)
     activation_client_->RemoveObserver(this);
+}
+
+void TooltipController::AddObserver(wm::TooltipObserver* observer) {
+  state_manager_->AddObserver(observer);
+}
+
+void TooltipController::RemoveObserver(wm::TooltipObserver* observer) {
+  state_manager_->RemoveObserver(observer);
+}
+
+void TooltipController::UpdateAndShow(aura::Window* window,
+                                      const std::u16string& text,
+                                      const gfx::Point& position,
+                                      const TooltipTrigger trigger,
+                                      const base::TimeDelta& show_delay,
+                                      const base::TimeDelta& hide_delay) {
+  // Use passed `show_delay` value regardless of `show_delay_enabled_` state.
+  state_manager_->Show(window, text, position, trigger, show_delay, hide_delay);
+}
+
+void TooltipController::HideAndReset() {
+  state_manager_->HideAndReset();
+  SetObservedWindow(nullptr);
 }
 
 int TooltipController::GetMaxWidth(const gfx::Point& location) const {
@@ -295,7 +329,8 @@ void TooltipController::OnCursorVisibilityChanged(bool is_visible) {
 
 void TooltipController::OnWindowVisibilityChanged(aura::Window* window,
                                                   bool visible) {
-  if (!visible)
+  // If window is not drawn, skip modifying tooltip.
+  if (!visible && window->layer()->type() != ui::LAYER_NOT_DRAWN)
     HideAndReset();
 }
 
@@ -329,11 +364,6 @@ void TooltipController::OnWindowActivated(ActivationReason reason,
 
 ////////////////////////////////////////////////////////////////////////////////
 // TooltipController private:
-
-void TooltipController::HideAndReset() {
-  state_manager_->HideAndReset();
-  SetObservedWindow(nullptr);
-}
 
 void TooltipController::UpdateIfRequired(TooltipTrigger trigger) {
   if (!tooltips_enabled_ || aura::Env::GetInstance()->IsMouseButtonDown() ||
@@ -454,6 +484,15 @@ void TooltipController::ResetWindowAtMousePressedIfNeeded(aura::Window* target,
 // identifier of the renderer side element that triggered the tooltip. Could we
 // pass a renderer element unique id alongside the tooltip text?
 bool TooltipController::ShouldHideBecauseMouseWasOncePressed() {
+  // Skip hiding when tootlip text is empty as no need to hide again.
+  // This is required since client side tooltip appears as empty text on sever
+  // side so that the tooltip is overridden by empty text regardless of the
+  // actual text to show.
+  // TODO(crbug.com/1383844): Remove or update this special path when tooltip
+  // idetifier is implemented.
+  if (wm::GetTooltipText(observed_window_).empty())
+    return false;
+
   return tooltip_window_at_mouse_press_ &&
          observed_window_ == tooltip_window_at_mouse_press_ &&
          wm::GetTooltipText(observed_window_) == tooltip_text_at_mouse_press_;

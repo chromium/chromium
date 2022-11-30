@@ -74,6 +74,8 @@ class WMHelperChromeOS : public WMHelper,
   void AddActivationObserver(wm::ActivationChangeObserver* observer) override;
   void RemoveActivationObserver(
       wm::ActivationChangeObserver* observer) override;
+  void AddTooltipObserver(wm::TooltipObserver* observer) override;
+  void RemoveTooltipObserver(wm::TooltipObserver* observer) override;
   void AddFocusObserver(aura::client::FocusChangeObserver* observer) override;
   void RemoveFocusObserver(
       aura::client::FocusChangeObserver* observer) override;

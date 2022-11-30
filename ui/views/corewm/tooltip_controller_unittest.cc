@@ -41,6 +41,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
 #include "ui/wm/public/tooltip_client.h"
+#include "ui/wm/public/tooltip_observer.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
@@ -935,6 +936,9 @@ class TestTooltip : public Tooltip {
   TestTooltip& operator=(const TestTooltip&) = delete;
 
   ~TestTooltip() override = default;
+
+  void AddObserver(wm::TooltipObserver* observer) override {}
+  void RemoveObserver(wm::TooltipObserver* observer) override {}
 
   const std::u16string& tooltip_text() const { return tooltip_text_; }
 

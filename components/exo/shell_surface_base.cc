@@ -301,6 +301,7 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
       container_(container),
       can_minimize_(can_minimize) {
   WMHelper::GetInstance()->AddActivationObserver(this);
+  WMHelper::GetInstance()->AddTooltipObserver(this);
   surface->AddSurfaceObserver(this);
   SetRootSurface(surface);
   host_window()->Show();
@@ -348,6 +349,7 @@ ShellSurfaceBase::~ShellSurfaceBase() {
     root_surface()->RemoveSurfaceObserver(this);
   if (has_grab_)
     WMHelper::GetInstance()->GetCaptureClient()->RemoveObserver(this);
+  WMHelper::GetInstance()->RemoveTooltipObserver(this);
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
@@ -1287,6 +1289,19 @@ void ShellSurfaceBase::OnWindowActivated(ActivationReason reason,
     DCHECK(gained_active != widget_->GetNativeWindow() || CanActivate());
     UpdateShadow();
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// wm::TooltipObserver overrides:
+
+void ShellSurfaceBase::OnTooltipShown(aura::Window* target,
+                                      const std::u16string& text,
+                                      const gfx::Rect& bounds) {
+  root_surface()->OnTooltipShown(text, bounds);
+}
+
+void ShellSurfaceBase::OnTooltipHidden(aura::Window* target) {
+  root_surface()->OnTooltipHidden();
 }
 
 // Returns true if surface is currently being resized.

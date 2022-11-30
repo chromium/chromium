@@ -28,6 +28,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/tooltip_observer.h"
 
 namespace ash {
 class WindowState;
@@ -52,7 +53,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
                          public views::WidgetDelegate,
                          public views::WidgetObserver,
                          public views::View,
-                         public wm::ActivationChangeObserver {
+                         public wm::ActivationChangeObserver,
+                         public wm::TooltipObserver {
  public:
   // The |origin| is the initial position in screen coordinates. The position
   // specified as part of the geometry is relative to the shell surface.
@@ -251,6 +253,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnContentSizeChanged(Surface*) override {}
   void OnFrameLockingChanged(Surface*, bool) override {}
   void OnDeskChanged(Surface*, int) override {}
+  void OnTooltipShown(Surface* surface,
+                      const std::u16string& text,
+                      const gfx::Rect& bounds) override {}
+  void OnTooltipHidden(Surface* surface) override {}
 
   // CaptureClientObserver:
   void OnCaptureChanged(aura::Window* lost_capture,
@@ -294,6 +300,12 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
+
+  // wm::TooltipObserver:
+  void OnTooltipShown(aura::Window* target,
+                      const std::u16string& text,
+                      const gfx::Rect& bounds) override;
+  void OnTooltipHidden(aura::Window* target) override;
 
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
