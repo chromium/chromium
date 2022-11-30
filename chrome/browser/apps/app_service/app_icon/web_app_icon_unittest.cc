@@ -64,7 +64,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   WebAppIconFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+        {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
   }
 #else
   WebAppIconFactoryTest() = default;

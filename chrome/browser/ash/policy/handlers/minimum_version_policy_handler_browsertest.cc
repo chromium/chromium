@@ -139,7 +139,7 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
 };
 
 MinimumVersionPolicyTestBase::MinimumVersionPolicyTestBase() {
-  feature_list_.InitAndEnableFeature(chromeos::features::kMinimumChromeVersion);
+  feature_list_.InitAndEnableFeature(ash::features::kMinimumChromeVersion);
 }
 
 void MinimumVersionPolicyTestBase::SetMinimumChromeVersionPolicy(

@@ -109,7 +109,7 @@ void RecordCandidatesGenerated(AssistiveSuggestionMode suggestion_mode) {
 
 SuggestionsServiceClient::SuggestionsServiceClient() {
   std::string field_trial = base::GetFieldTrialParamValueByFeature(
-      chromeos::features::kAssistMultiWord, "group");
+      features::kAssistMultiWord, "group");
   auto spec = TextSuggesterSpec::New(GetExperimentGroup(field_trial));
 
   chromeos::machine_learning::ServiceConnection::GetInstance()

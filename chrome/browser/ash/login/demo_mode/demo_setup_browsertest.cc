@@ -373,7 +373,7 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     test::LockDemoDeviceInstallAttributes();
     // TODO(b/246012796): If possible, re-enable waiting on the setup screen to
     // be shown
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    if (features::IsOobeConsolidatedConsentEnabled()) {
       WaitForConsolidatedConsentScreen();
 
       test::TapConsolidatedConsentAccept();
@@ -390,7 +390,7 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   }
 
   void AcceptTermsAndExpectDemoSetupFailure() {
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    if (features::IsOobeConsolidatedConsentEnabled()) {
       WaitForConsolidatedConsentScreen();
       test::TapConsolidatedConsentAccept();
     } else {
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   AcceptTermsAndExpectDemoSetupProgress();
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     histogram_tester_.ExpectTotalCount(
         "OOBE.StepCompletionTime.Consolidated-consent", 1);
     histogram_tester_.ExpectTotalCount(
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickNetworkOnNetworkScreen) {
   OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     test::WaitForConsolidatedConsentScreen();
   } else {
     test::WaitForEulaScreen();
@@ -875,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     test::WaitForConsolidatedConsentScreen();
   } else {
     test::WaitForEulaScreen();
@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnTermsScreen) {
 
   TriggerDemoModeOnWelcomeScreen();
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     UseOnlineModeOnNetworkScreen();
     OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
     test::OobeJS().ClickOnPath(kDemoPreferencesNext);

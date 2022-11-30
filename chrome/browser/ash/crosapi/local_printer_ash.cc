@@ -330,7 +330,7 @@ void LocalPrinterAsh::GetCapability(const std::string& printer_id,
   std::unique_ptr<ash::PrinterConfigurer> printer_configurer =
       CreatePrinterConfigurer(profile);
 
-  if (chromeos::features::IsOAuthIppEnabled()) {
+  if (ash::features::IsOAuthIppEnabled()) {
     ash::printing::oauth2::AuthorizationZonesManager* auth_manager =
         ash::printing::oauth2::AuthorizationZonesManagerFactory::
             GetForBrowserContext(profile);
@@ -592,7 +592,7 @@ void LocalPrinterAsh::AddPrintJobObserver(
 void LocalPrinterAsh::GetOAuthAccessToken(
     const std::string& printer_id,
     GetOAuthAccessTokenCallback callback) {
-  if (!chromeos::features::IsOAuthIppEnabled()) {
+  if (!ash::features::IsOAuthIppEnabled()) {
     std::move(callback).Run(mojom::GetOAuthAccessTokenResult::NewNone(
         mojom::OAuthNotNeeded::New()));
     return;

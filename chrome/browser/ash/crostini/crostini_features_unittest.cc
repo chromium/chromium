@@ -155,10 +155,10 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
   void SetFeatureFlag(bool is_enabled) {
     if (is_enabled) {
       scoped_feature_list_.InitWithFeatures(
-          {chromeos::features::kArcManagedAdbSideloadingSupport}, {});
+          {ash::features::kArcManagedAdbSideloadingSupport}, {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {}, {chromeos::features::kArcManagedAdbSideloadingSupport});
+          {}, {ash::features::kArcManagedAdbSideloadingSupport});
     }
   }
 

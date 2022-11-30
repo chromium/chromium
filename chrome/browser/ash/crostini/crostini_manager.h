@@ -220,9 +220,8 @@ class CrostiniManager : public KeyedService,
   // Returns true if concierge allows termina VM to be launched.
   static bool IsVmLaunchAllowed();
 
-  // Upgrades cros-termina component if the current version is not
-  // compatible. This is a no-op if chromeos::features::kCrostiniUseDlc is
-  // enabled.
+  // Upgrades cros-termina component if the current version is not compatible.
+  // This is a no-op if `ash::features::kCrostiniUseDlc` is enabled.
   void MaybeUpdateCrostini();
 
   // Installs termina using the DLC service.

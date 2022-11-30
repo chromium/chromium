@@ -131,7 +131,7 @@ TEST_F(ArcDocumentsProviderRootMapTest, UnregisterRoot) {
 TEST(ArcDocumentsProviderRootMapStaticTest,
      IsDocumentProviderRootReadOnly_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({chromeos::features::kFiltersInRecentsV2}, {});
+  feature_list.InitWithFeatures({ash::features::kFiltersInRecentsV2}, {});
 
   EXPECT_FALSE(ArcDocumentsProviderRootMap::IsDocumentProviderRootReadOnly());
 }
@@ -139,7 +139,7 @@ TEST(ArcDocumentsProviderRootMapStaticTest,
 TEST(ArcDocumentsProviderRootMapStaticTest,
      IsDocumentProviderRootReadOnly_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {chromeos::features::kFiltersInRecentsV2});
+  feature_list.InitWithFeatures({}, {ash::features::kFiltersInRecentsV2});
 
   EXPECT_TRUE(ArcDocumentsProviderRootMap::IsDocumentProviderRootReadOnly());
 }

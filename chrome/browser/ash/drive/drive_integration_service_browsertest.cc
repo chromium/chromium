@@ -325,8 +325,8 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
     : public DriveIntegrationServiceBrowserTest {
  public:
   DriveIntegrationBrowserTestWithMirrorSyncEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kDriveFsMirroring}, {});
+    scoped_feature_list_.InitWithFeatures({ash::features::kDriveFsMirroring},
+                                          {});
   }
 
   DriveIntegrationBrowserTestWithMirrorSyncEnabled(

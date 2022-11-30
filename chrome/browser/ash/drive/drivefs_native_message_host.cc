@@ -142,7 +142,7 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
 
   bool UseBidirectionalNativeMessaging() {
     return base::FeatureList::IsEnabled(
-        chromeos::features::kDriveFsBidirectionalNativeMessaging);
+        ash::features::kDriveFsBidirectionalNativeMessaging);
   }
 
   DriveIntegrationService* drive_service_ = nullptr;
@@ -173,7 +173,7 @@ CreateDriveFsInitiatedNativeMessageHost(
         extension_receiver,
     mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> drivefs_remote) {
   if (!base::FeatureList::IsEnabled(
-          chromeos::features::kDriveFsBidirectionalNativeMessaging)) {
+          ash::features::kDriveFsBidirectionalNativeMessaging)) {
     return nullptr;
   }
   return std::make_unique<DriveFsNativeMessageHost>(

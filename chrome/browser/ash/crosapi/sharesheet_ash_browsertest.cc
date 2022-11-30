@@ -117,7 +117,7 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
  public:
   SharesheetAshBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
+        {ash::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
   }
   ~SharesheetAshBrowserTest() override = default;
 

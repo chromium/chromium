@@ -65,7 +65,7 @@ void ReadFile(const base::FilePath downloads,
 
   // If chrome://flags#terminal-dev set on dev channel, check Downloads.
   if (chrome::GetChannel() <= version_info::Channel::DEV &&
-      base::FeatureList::IsEnabled(chromeos::features::kTerminalDev)) {
+      base::FeatureList::IsEnabled(ash::features::kTerminalDev)) {
     path = downloads.Append("crosh_builtin").Append(relative_path);
     result = ReadUncompressedOrGzip(path, &content);
   }

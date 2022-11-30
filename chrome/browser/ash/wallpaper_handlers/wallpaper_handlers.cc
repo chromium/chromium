@@ -179,7 +179,7 @@ std::string MaybeConvertToTestUrl(std::string url) {
           ash::switches::kTestWallpaperServer)) {
     base::ReplaceFirstSubstringAfterOffset(&url, 0, "clients3", "clients1");
   } else if (base::FeatureList::IsEnabled(
-                 chromeos::features::kUseWallpaperStagingUrl)) {
+                 ash::features::kUseWallpaperStagingUrl)) {
     base::ReplaceFirstSubstringAfterOffset(&url, 0, "clients3", "clients2");
   }
   return url;

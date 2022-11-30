@@ -500,7 +500,7 @@ class AutotestPrivateLacrosTest : public AutotestPrivateApiTest {
 
  protected:
   AutotestPrivateLacrosTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
     crosapi::BrowserManager::DisableForTesting();
   }
   ~AutotestPrivateLacrosTest() override {

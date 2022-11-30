@@ -614,7 +614,7 @@ bool IsPlayStoreAvailable() {
   if (!ash::DemoSession::IsDeviceInDemoMode())
     return false;
 
-  return chromeos::features::ShouldShowPlayStoreInDemoMode();
+  return ash::features::ShouldShowPlayStoreInDemoMode();
 }
 
 bool ShouldStartArcSilentlyForManagedProfile(const Profile* profile) {

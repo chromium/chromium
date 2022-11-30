@@ -272,7 +272,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
 
   void SetUp() override {
     if (IsArcAccountRestrictionsEnabled()) {
-      feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+      feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
     }
     InProcessBrowserTest::SetUp();
   }

@@ -222,7 +222,7 @@ AccountAppsAvailability::~AccountAppsAvailability() = default;
 
 // static
 bool AccountAppsAvailability::IsArcAccountRestrictionsEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
+  return base::FeatureList::IsEnabled(features::kLacrosSupport);
 }
 
 // static

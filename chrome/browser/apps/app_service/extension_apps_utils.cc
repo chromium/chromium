@@ -56,7 +56,7 @@ bool ShouldMuxExtensionIds() {
   bool keeplist_enabled =
       crosapi::browser_util::IsLacrosPrimaryBrowser() &&
       base::FeatureList::IsEnabled(
-          chromeos::features::kEnforceAshExtensionKeeplist) &&
+          ash::features::kEnforceAshExtensionKeeplist) &&
       base::FeatureList::IsEnabled(kStopMuxingLacrosExtensionAppIds);
   // Muxing is only necessary if the keeplist is disabled.
   return !keeplist_enabled;

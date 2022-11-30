@@ -24,7 +24,7 @@ class EcheAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   EcheAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheSWA},
+        /*enabled_features=*/{ash::features::kEcheSWA},
         /*disabled_features=*/{});
   }
 

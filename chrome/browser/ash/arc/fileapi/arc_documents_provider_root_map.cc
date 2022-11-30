@@ -60,7 +60,7 @@ ArcDocumentsProviderRootMap::GetForArcBrowserContext() {
 // TODO(crbug.com/1327496): can be removed once this flag is on by default.
 bool ArcDocumentsProviderRootMap::IsDocumentProviderRootReadOnly() {
   // All roots are read-only unless this flag is on.
-  return !base::FeatureList::IsEnabled(chromeos::features::kFiltersInRecentsV2);
+  return !base::FeatureList::IsEnabled(ash::features::kFiltersInRecentsV2);
 }
 
 ArcDocumentsProviderRootMap::ArcDocumentsProviderRootMap(Profile* profile)

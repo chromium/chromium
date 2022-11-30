@@ -399,7 +399,7 @@ bool IsLacrosEnabled() {
       return true;
   }
 
-  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
+  return base::FeatureList::IsEnabled(ash::features::kLacrosSupport);
 }
 
 bool IsProfileMigrationEnabled(const AccountId& account_id) {
@@ -454,7 +454,7 @@ bool IsLacrosEnabledForMigration(const User* user,
       return true;
   }
 
-  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
+  return base::FeatureList::IsEnabled(ash::features::kLacrosSupport);
 }
 
 bool IsProfileMigrationAvailable() {
@@ -499,7 +499,7 @@ bool IsAshWebBrowserEnabled() {
       // Google rollout, in the short term Finch will override policy if Finch
       // is enabling this feature.
       if (IsGoogleInternal() &&
-          base::FeatureList::IsEnabled(chromeos::features::kLacrosOnly)) {
+          base::FeatureList::IsEnabled(ash::features::kLacrosOnly)) {
         return false;
       }
       return true;
@@ -507,7 +507,7 @@ bool IsAshWebBrowserEnabled() {
       return false;
   }
 
-  return !base::FeatureList::IsEnabled(chromeos::features::kLacrosOnly);
+  return !base::FeatureList::IsEnabled(ash::features::kLacrosOnly);
 }
 
 bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
@@ -543,7 +543,7 @@ bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
       // override policy if Finch is enabling this feature.
       if (gaia::IsGoogleInternalAccountEmail(
               user->GetAccountId().GetUserEmail()) &&
-          base::FeatureList::IsEnabled(chromeos::features::kLacrosOnly)) {
+          base::FeatureList::IsEnabled(ash::features::kLacrosOnly)) {
         return false;
       }
       return true;
@@ -551,7 +551,7 @@ bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
       return false;
   }
 
-  return !base::FeatureList::IsEnabled(chromeos::features::kLacrosOnly);
+  return !base::FeatureList::IsEnabled(ash::features::kLacrosOnly);
 }
 
 bool IsLacrosPrimaryBrowser() {
@@ -585,7 +585,7 @@ bool IsLacrosPrimaryBrowser() {
       return true;
   }
 
-  return base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
+  return base::FeatureList::IsEnabled(ash::features::kLacrosPrimary);
 }
 
 bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
@@ -632,7 +632,7 @@ bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
       return true;
   }
 
-  return base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
+  return base::FeatureList::IsEnabled(ash::features::kLacrosPrimary);
 }
 
 LacrosMode GetLacrosMode() {
@@ -1109,7 +1109,7 @@ bool WasGotoFilesClicked(PrefService* local_state,
 bool ShouldEnforceAshExtensionKeepList() {
   return IsLacrosPrimaryBrowser() &&
          base::FeatureList::IsEnabled(
-             chromeos::features::kEnforceAshExtensionKeeplist);
+             ash::features::kEnforceAshExtensionKeeplist);
 }
 
 base::AutoReset<bool> SetLacrosEnabledForTest(bool force_enabled) {

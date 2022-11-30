@@ -171,7 +171,7 @@ void AdbSideloadingAllowanceModePolicyHandler::CheckSideloadingStatus(
     base::OnceCallback<void(bool)> callback) {
   // If the feature is not enabled, never show a notification
   if (!base::FeatureList::IsEnabled(
-          chromeos::features::kArcManagedAdbSideloadingSupport)) {
+          ash::features::kArcManagedAdbSideloadingSupport)) {
     std::move(callback).Run(false);
     return;
   }

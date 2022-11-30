@@ -63,8 +63,8 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
   // and the migration flag is turned on. Note that we do not call
   // `RegisterInPrefs` because these VMs are currently outside of enterprise
   // policy.
-  if (!registered_guests && base::FeatureList::IsEnabled(
-                                chromeos::features::kBruschettaAlphaMigrate)) {
+  if (!registered_guests &&
+      base::FeatureList::IsEnabled(ash::features::kBruschettaAlphaMigrate)) {
     auto guest_id = GetBruschettaAlphaId();
     guest_os::AddContainerToPrefs(profile_, guest_id, {});
     RegisterWithTerminal(std::move(guest_id));

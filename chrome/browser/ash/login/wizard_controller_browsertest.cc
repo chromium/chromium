@@ -740,7 +740,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     InitNetworkPortalDetector();
 
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    if (features::IsOobeConsolidatedConsentEnabled()) {
       // EULA screen is skipped when OobeConsolidatedConsent is enabled.
       mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
     } else {
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -898,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -938,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowSkipUpdateEnroll) {
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     WizardController::default_controller()
         ->wizard_context_->enrollment_triggered_early = true;
@@ -1101,7 +1101,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerUpdateAfterCompletedOobeTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -1225,7 +1225,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -1266,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
                                             std::move(device_state));
 
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
-  if (!chromeos::features::IsOobeConsolidatedConsentEnabled())
+  if (!features::IsOobeConsolidatedConsentEnabled())
     EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(1);
@@ -1274,7 +1274,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
 
   mock_welcome_screen_->ExitScreen(WelcomeScreen::Result::NEXT);
   mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  if (!chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (!features::IsOobeConsolidatedConsentEnabled()) {
     mock_eula_screen_->ExitScreen(
         EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
   }
@@ -1306,7 +1306,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -1408,7 +1408,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -1500,7 +1500,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -1645,7 +1645,7 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    if (features::IsOobeConsolidatedConsentEnabled()) {
       // EULA screen is skipped when OobeConsolidatedConsent is enabled.
       mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
     } else {
@@ -1762,7 +1762,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -1853,7 +1853,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -1897,7 +1897,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -1955,7 +1955,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -2014,7 +2014,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -2101,7 +2101,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerScreenPriorityOOBETest,
       NetworkScreenView::kScreenId);
   CheckCurrentScreen(NetworkScreenView::kScreenId);
 
-  if (!chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (!features::IsOobeConsolidatedConsentEnabled()) {
     // Showing eula screen should pass it has default priority which is same as
     // network screen.
     WizardController::default_controller()->AdvanceToScreen(
@@ -2297,7 +2297,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -2346,7 +2346,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // EULA screen is skipped when OobeConsolidatedConsent is enabled.
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
   } else {
@@ -2535,7 +2535,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
   EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // If OobeConsolidatedConsent is enabled, the flow will be updated to:
     // Network -> Update -> Consolidated Consent -> Auto Enrollment.
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
@@ -2631,7 +2631,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoSetupCanceled) {
   EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // If OobeConsolidatedConsent is enabled, the flow will be updated to:
     // Network -> Update -> Consolidated Consent -> Auto Enrollment.
     mock_demo_preferences_screen_->ExitScreen(
@@ -2749,9 +2749,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, NetworkBackPressed) {
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, EulaBackPressed) {
   // EULA screen will be skipped if the OobeConsolidatedConsent is enabled.
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled())
     return;
-  }
 
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2771,9 +2770,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, EulaBackPressed) {
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, ArcTosBackPressed) {
   // ARC ToS screen will be skipped if the OobeConsolidatedConsent is enabled.
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled())
     return;
-  }
 
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2864,7 +2862,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // If OobeConsolidatedConsent is enabled, the flow will be updated to:
     // Network -> Update -> Consolidated Consent -> Auto Enrollment.
 

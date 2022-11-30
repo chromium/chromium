@@ -151,7 +151,7 @@ class BrowserManagerTest : public testing::Test {
 
   void SetUp() override {
     // Enable Lacros by setting the appropriate flag.
-    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
 
     fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

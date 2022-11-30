@@ -18,7 +18,7 @@ class FaceMLAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   FaceMLAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kFaceMLApp},
+        /*enabled_features=*/{ash::features::kFaceMLApp},
         /*disabled_features=*/{});
   }
 

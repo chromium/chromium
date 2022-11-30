@@ -826,7 +826,7 @@ FileManagerPrivateGetDriveConnectionStateFunction::Run() {
           ->enabled_extensions();
   result.can_pin_hosted_files =
       base::FeatureList::IsEnabled(
-          chromeos::features::kDriveFsBidirectionalNativeMessaging) &&
+          ash::features::kDriveFsBidirectionalNativeMessaging) &&
       enabled_extensions.Contains(extension_misc::kDocsOfflineExtensionId) &&
       enabled_extensions.Contains(
           GURL(drive::kDriveFsNativeMessageHostOrigins[0]).host());

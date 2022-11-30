@@ -17,7 +17,7 @@ void AllowBorealis(Profile* profile,
                    ash::FakeChromeUserManager* user_manager,
                    bool also_enable) {
   features->InitWithFeatures(
-      {features::kBorealis, chromeos::features::kBorealisPermitted}, {});
+      {features::kBorealis, ash::features::kBorealisPermitted}, {});
   AccountId account_id =
       AccountId::FromUserEmail(profile->GetProfileUserName());
   user_manager->AddUserWithAffiliation(account_id, /*is_affiliated=*/false);

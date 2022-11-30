@@ -640,7 +640,7 @@ WizardController::CreateScreens() {
   append(std::make_unique<RecoveryEligibilityScreen>(
       base::BindRepeating(&WizardController::OnRecoveryEligibilityScreenExit,
                           weak_factory_.GetWeakPtr())));
-  if (chromeos::features::IsCryptohomeRecoverySetupEnabled()) {
+  if (features::IsCryptohomeRecoverySetupEnabled()) {
     append(std::make_unique<CryptohomeRecoverySetupScreen>(
         oobe_ui->GetView<CryptohomeRecoverySetupScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(
@@ -794,7 +794,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnParentalHandoffScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     append(std::make_unique<ConsolidatedConsentScreen>(
         oobe_ui->GetView<ConsolidatedConsentScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
@@ -834,7 +834,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnThemeSelectionScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (chromeos::features::IsCryptohomeRecoveryFlowUIEnabled()) {
+  if (features::IsCryptohomeRecoveryFlowUIEnabled()) {
     append(std::make_unique<CryptohomeRecoveryScreen>(
         oobe_ui->GetView<CryptohomeRecoveryScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnCryptohomeRecoveryScreenExit,
@@ -1069,12 +1069,12 @@ void WizardController::ShowConsolidatedConsentScreen() {
 }
 
 void WizardController::ShowCryptohomeRecoverySetupScreen() {
-  CHECK(chromeos::features::IsCryptohomeRecoverySetupEnabled());
+  CHECK(features::IsCryptohomeRecoverySetupEnabled());
   SetCurrentScreen(GetScreen(CryptohomeRecoverySetupScreenView::kScreenId));
 }
 
 void WizardController::ShowAuthenticationSetupScreen() {
-  if (chromeos::features::IsCryptohomeRecoverySetupEnabled())
+  if (features::IsCryptohomeRecoverySetupEnabled())
     ShowCryptohomeRecoverySetupScreen();
   else
     ShowFingerprintSetupScreen();
@@ -1095,13 +1095,13 @@ void WizardController::ShowLacrosDataBackwardMigrationScreen() {
 }
 
 void WizardController::ShowGuestTosScreen() {
-  DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
+  DCHECK(features::IsOobeConsolidatedConsentEnabled());
   SetCurrentScreen(GetScreen(GuestTosScreenView::kScreenId));
 }
 
 void WizardController::ShowCryptohomeRecoveryScreen(
     const AccountId& account_id) {
-  DCHECK(chromeos::features::IsCryptohomeRecoveryFlowUIEnabled());
+  DCHECK(features::IsCryptohomeRecoveryFlowUIEnabled());
   CryptohomeRecoveryScreen* screen = GetScreen<CryptohomeRecoveryScreen>();
   screen->Configure(account_id);
   SetCurrentScreen(GetScreen(CryptohomeRecoveryScreenView::kScreenId));
@@ -1224,7 +1224,7 @@ void WizardController::OnEduCoexistenceLoginScreenExit(
                EduCoexistenceLoginScreen::GetResultString(result));
   // TODO(crbug.com/1248063): Handle the case when the feature flag is disabled
   // after being enabled during OOBE.
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     ShowConsolidatedConsentScreen();
   } else {
     ShowSyncConsentScreen();
@@ -1374,7 +1374,7 @@ void WizardController::SkipToLoginForTesting() {
     return;
   wizard_context_->skip_to_login_for_tests = true;
 
-  if (!chromeos::features::IsOobeConsolidatedConsentEnabled())
+  if (!features::IsOobeConsolidatedConsentEnabled())
     StartupUtils::MarkEulaAccepted();
 
   PerformPostNetworkScreenActions();
@@ -1478,7 +1478,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
 
   // OS Install flow.
   bool is_consolidated_consent_enabled =
-      chromeos::features::IsOobeConsolidatedConsentEnabled();
+      features::IsOobeConsolidatedConsentEnabled();
   if (switches::IsOsInstallAllowed()) {
     switch (result) {
       case NetworkScreen::Result::CONNECTED:
@@ -1592,8 +1592,7 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
 }
 
 void WizardController::OnUpdateCompleted() {
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled() &&
-      demo_setup_controller_) {
+  if (features::IsOobeConsolidatedConsentEnabled() && demo_setup_controller_) {
     ShowConsolidatedConsentScreen();
     return;
   }
@@ -2668,7 +2667,7 @@ void WizardController::MaybeTakeTPMOwnership() {
   if (wizard_context_->is_branded_build || switches::IsTpmDynamic())
     return;
 
-  DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
+  DCHECK(features::IsOobeConsolidatedConsentEnabled());
   chromeos::TpmManagerClient::Get()->TakeOwnership(
       ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
 }

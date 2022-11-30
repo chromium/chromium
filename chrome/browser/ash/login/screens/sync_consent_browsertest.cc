@@ -209,8 +209,7 @@ class SyncConsentTest
     // Although, sync consent screen is not the first screen in the onboarding
     // flow when OobeConsolidatedConsent feature is enabled, it can be reached
     // and skipped after its predecessors are skipped.
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled() &&
-        !screen_exited_)
+    if (features::IsOobeConsolidatedConsentEnabled() && !screen_exited_)
       LoginDisplayHost::default_host()->StartWizard(
           SyncConsentScreenView::kScreenId);
 
@@ -413,10 +412,8 @@ class SyncConsentTestWithModesParams
  public:
   SyncConsentTestWithModesParams() {
     std::tie(is_minor_user_, is_arc_restricted_) = GetParam();
-    if (is_arc_restricted_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          chromeos::features::kLacrosSupport);
-    }
+    if (is_arc_restricted_)
+      scoped_feature_list_.InitAndEnableFeature(features::kLacrosSupport);
   }
 
   SyncConsentTestWithModesParams(const SyncConsentTestWithModesParams&) =

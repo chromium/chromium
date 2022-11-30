@@ -27,7 +27,7 @@ BruschettaFeatures::BruschettaFeatures() = default;
 BruschettaFeatures::~BruschettaFeatures() = default;
 
 bool BruschettaFeatures::IsEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kBruschetta);
+  return base::FeatureList::IsEnabled(ash::features::kBruschetta);
 }
 
 }  // namespace bruschetta

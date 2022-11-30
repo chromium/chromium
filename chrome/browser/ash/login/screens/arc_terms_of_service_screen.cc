@@ -142,7 +142,7 @@ bool ArcTermsOfServiceScreen::MaybeSkip(WizardContext& context) {
     return true;
   }
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     // In demo mode, the ARC-ToS screen is skipped and shown later in the
     // consolidated consent screen,
     const auto* const demo_setup_controller =

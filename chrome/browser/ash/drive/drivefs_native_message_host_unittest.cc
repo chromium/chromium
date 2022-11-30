@@ -50,7 +50,7 @@ class DriveFsNativeMessageHostTest
  public:
   DriveFsNativeMessageHostTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kDriveFsBidirectionalNativeMessaging);
+        ash::features::kDriveFsBidirectionalNativeMessaging);
   }
 
   DriveFsNativeMessageHostTest(const DriveFsNativeMessageHostTest&) = delete;
@@ -171,7 +171,7 @@ class DriveFsNativeMessageHostTestWithoutFlag
  public:
   DriveFsNativeMessageHostTestWithoutFlag() {
     scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kDriveFsBidirectionalNativeMessaging);
+        ash::features::kDriveFsBidirectionalNativeMessaging);
   }
 
   DriveFsNativeMessageHostTestWithoutFlag(

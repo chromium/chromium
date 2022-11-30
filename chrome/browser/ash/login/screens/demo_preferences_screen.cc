@@ -74,7 +74,7 @@ void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
     // what action take when it is invalid.
     const std::string& retailer_store_id_input = args[1].GetString();
     SetDemoModeRetailerAndStoreIdInput(retailer_store_id_input);
-    exit_callback_.Run(chromeos::features::IsOobeConsolidatedConsentEnabled()
+    exit_callback_.Run(features::IsOobeConsolidatedConsentEnabled()
                            ? Result::COMPLETED_CONSOLIDATED_CONSENT
                            : Result::COMPLETED);
   } else if (action_id == kUserActionClose) {

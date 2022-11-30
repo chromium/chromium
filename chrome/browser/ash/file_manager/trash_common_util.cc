@@ -44,7 +44,7 @@ bool IsTrashEnabledForProfile(Profile* profile) {
   if (!profile || !profile->GetPrefs()) {
     return false;
   }
-  return base::FeatureList::IsEnabled(chromeos::features::kFilesTrash) &&
+  return base::FeatureList::IsEnabled(ash::features::kFilesTrash) &&
          profile->GetPrefs()->GetBoolean(ash::prefs::kFilesAppTrashEnabled);
 }
 

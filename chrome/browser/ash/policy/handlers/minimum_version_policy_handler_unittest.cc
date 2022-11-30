@@ -103,7 +103,7 @@ class MinimumVersionPolicyHandlerTest
 
 MinimumVersionPolicyHandlerTest::MinimumVersionPolicyHandlerTest()
     : local_state_(TestingBrowserProcess::GetGlobal()) {
-  feature_list_.InitAndEnableFeature(chromeos::features::kMinimumChromeVersion);
+  feature_list_.InitAndEnableFeature(ash::features::kMinimumChromeVersion);
 }
 
 void MinimumVersionPolicyHandlerTest::SetUp() {

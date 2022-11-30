@@ -33,6 +33,7 @@
 
 namespace ash {
 namespace test {
+
 namespace {
 
 void WaitFor(OobeScreenId screen_id) {
@@ -124,7 +125,7 @@ void SkipToEnrollmentOnRecovery() {
   WaitForNetworkSelectionScreen();
   TapNetworkSelectionNext();
 
-  if (!chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (!features::IsOobeConsolidatedConsentEnabled()) {
     WaitForEulaScreen();
     TapEulaAccept();
   }

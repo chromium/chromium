@@ -19,8 +19,8 @@ class ShimlessRMAIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   ShimlessRMAIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kShimlessRMAFlow,
-         chromeos::features::kShimlessRMAEnableStandalone},
+        {ash::features::kShimlessRMAFlow,
+         ash::features::kShimlessRMAEnableStandalone},
         {});
   }
 

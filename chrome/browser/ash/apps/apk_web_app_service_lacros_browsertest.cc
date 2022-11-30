@@ -63,9 +63,8 @@ class ApkWebAppServiceLacrosBrowserTest : public InProcessBrowserTest,
                                           public ApkWebAppService::Delegate {
  public:
   ApkWebAppServiceLacrosBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kLacrosSupport,
-                                           chromeos::features::kLacrosPrimary},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kLacrosSupport, features::kLacrosPrimary}, {});
     dependency_manager_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(

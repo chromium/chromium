@@ -1552,7 +1552,7 @@ void CrostiniManager::StartTerminaVm(std::string name,
   request.set_owner_id(owner_id_);
   request.set_timeout(static_cast<uint32_t>(kStartVmTimeout.InSeconds()));
   request.mutable_vm()->set_wayland_server(wayland_path.AsUTF8Unsafe());
-  if (base::FeatureList::IsEnabled(chromeos::features::kCrostiniGpuSupport))
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniGpuSupport))
     request.set_enable_gpu(true);
   if (profile_->GetPrefs()->GetBoolean(prefs::kCrostiniMicAllowed) &&
       profile_->GetPrefs()->GetBoolean(::prefs::kAudioCaptureAllowed)) {
@@ -1622,7 +1622,7 @@ void CrostiniManager::StartLxd(std::string vm_name,
   request.set_vm_name(std::move(vm_name));
   request.set_owner_id(owner_id_);
   request.set_reset_lxd_db(
-      base::FeatureList::IsEnabled(chromeos::features::kCrostiniResetLxdDb));
+      base::FeatureList::IsEnabled(ash::features::kCrostiniResetLxdDb));
   GetCiceroneClient()->StartLxd(
       std::move(request),
       base::BindOnce(&CrostiniManager::OnStartLxd,

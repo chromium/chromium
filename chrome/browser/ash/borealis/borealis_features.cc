@@ -248,7 +248,7 @@ AllowStatus BorealisFeatures::MightBeAllowed() {
   if (c == version_info::Channel::STABLE)
     return AllowStatus::kBlockedOnStable;
 
-  if (!base::FeatureList::IsEnabled(chromeos::features::kBorealisPermitted))
+  if (!base::FeatureList::IsEnabled(ash::features::kBorealisPermitted))
     return AllowStatus::kBlockedByFlag;
 
   return AllowStatus::kAllowed;

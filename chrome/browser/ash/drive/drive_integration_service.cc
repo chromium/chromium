@@ -367,7 +367,7 @@ class DriveIntegrationService::PreferenceWatcher
         prefs::kDisableDriveOverCellular,
         base::BindRepeating(&PreferenceWatcher::UpdateSyncPauseState,
                             weak_ptr_factory_.GetWeakPtr()));
-    if (chromeos::features::IsDriveFsMirroringEnabled()) {
+    if (ash::features::IsDriveFsMirroringEnabled()) {
       pref_change_registrar_.Add(
           prefs::kDriveFsEnableMirrorSync,
           base::BindRepeating(&PreferenceWatcher::ToggleLocalMirroring,
@@ -426,7 +426,7 @@ class DriveIntegrationService::PreferenceWatcher
 
   void ToggleLocalMirroring() {
     DCHECK(integration_service_);
-    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+    if (!ash::features::IsDriveFsMirroringEnabled()) {
       return;
     }
 
@@ -619,7 +619,7 @@ class DriveIntegrationService::DriveFsHolder
   }
 
   const std::string GetMachineRootID() override {
-    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+    if (!ash::features::IsDriveFsMirroringEnabled()) {
       return "";
     }
     return profile_->GetPrefs()->GetString(
@@ -627,7 +627,7 @@ class DriveIntegrationService::DriveFsHolder
   }
 
   void PersistMachineRootID(const std::string& id) override {
-    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+    if (!ash::features::IsDriveFsMirroringEnabled()) {
       return;
     }
     profile_->GetPrefs()->SetString(prefs::kDriveFsMirrorSyncMachineRootId, id);
@@ -1011,7 +1011,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   }
 
   // Enable MirrorSync if the feature is enabled.
-  if (chromeos::features::IsDriveFsMirroringEnabled() &&
+  if (ash::features::IsDriveFsMirroringEnabled() &&
       profile_->GetPrefs()->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
     ToggleMirroring(
         true,
@@ -1347,7 +1347,7 @@ void DriveIntegrationService::GetThumbnail(const base::FilePath& path,
 void DriveIntegrationService::ToggleMirroring(
     bool enabled,
     drivefs::mojom::DriveFs::ToggleMirroringCallback callback) {
-  if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+  if (!ash::features::IsDriveFsMirroringEnabled()) {
     std::move(callback).Run(
         drivefs::mojom::MirrorSyncStatus::kFeatureNotEnabled);
     return;
@@ -1362,8 +1362,7 @@ void DriveIntegrationService::ToggleSyncForPath(
     const base::FilePath& path,
     drivefs::mojom::MirrorPathStatus status,
     drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback) {
-  if (!chromeos::features::IsDriveFsMirroringEnabled() ||
-      !IsMirroringEnabled()) {
+  if (!ash::features::IsDriveFsMirroringEnabled() || !IsMirroringEnabled()) {
     std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
     return;
   }
@@ -1399,8 +1398,7 @@ void DriveIntegrationService::ToggleSyncForPathIfDirectoryExists(
 
 void DriveIntegrationService::GetSyncingPaths(
     drivefs::mojom::DriveFs::GetSyncingPathsCallback callback) {
-  if (!chromeos::features::IsDriveFsMirroringEnabled() ||
-      !IsMirroringEnabled()) {
+  if (!ash::features::IsDriveFsMirroringEnabled() || !IsMirroringEnabled()) {
     std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE, {});
     return;
   }

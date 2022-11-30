@@ -60,7 +60,7 @@ void FloatingWorkspaceService::Init() {
   }
 
   if (saved_desk_util::AreDesksTemplatesEnabled() &&
-      chromeos::features::IsDeskTemplateSyncEnabled() &&
+      features::IsDeskTemplateSyncEnabled() &&
       floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
     InitForV2();
   }

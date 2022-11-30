@@ -247,8 +247,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
 class ChromeSessionManagerRmaTest : public ChromeSessionManagerTest {
  public:
   ChromeSessionManagerRmaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kShimlessRMAFlow}, {});
+    scoped_feature_list_.InitWithFeatures({features::kShimlessRMAFlow}, {});
   }
 
   // LoginManagerTest:

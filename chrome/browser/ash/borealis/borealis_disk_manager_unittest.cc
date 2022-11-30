@@ -118,7 +118,7 @@ class BorealisDiskManagerTest : public testing::Test,
 
     context_ = BorealisContext::CreateBorealisContextForTesting(profile_.get());
     context_->set_vm_name("vm_name1");
-    features_.InitAndEnableFeature(chromeos::features::kBorealisDiskManagement);
+    features_.InitAndEnableFeature(ash::features::kBorealisDiskManagement);
     disk_manager_ = std::make_unique<BorealisDiskManagerImpl>(context_.get());
     auto free_space_provider = std::make_unique<FreeSpaceProviderMock>();
     free_space_provider_ = free_space_provider.get();
@@ -1633,7 +1633,7 @@ TEST_F(BorealisDiskManagerTest, RequestsRecordedOnDestruction) {
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsWhenFeatureDisabled) {
   features_.Reset();
-  features_.InitAndDisableFeature(chromeos::features::kBorealisDiskManagement);
+  features_.InitAndDisableFeature(ash::features::kBorealisDiskManagement);
   DiskInfoCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
@@ -1649,7 +1649,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsWhenFeatureDisabled) {
 
 TEST_F(BorealisDiskManagerTest, RequestSpaceFailsWhenFeatureDisabled) {
   features_.Reset();
-  features_.InitAndDisableFeature(chromeos::features::kBorealisDiskManagement);
+  features_.InitAndDisableFeature(ash::features::kBorealisDiskManagement);
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
@@ -1665,7 +1665,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceFailsWhenFeatureDisabled) {
 
 TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsWhenFeatureDisabled) {
   features_.Reset();
-  features_.InitAndDisableFeature(chromeos::features::kBorealisDiskManagement);
+  features_.InitAndDisableFeature(ash::features::kBorealisDiskManagement);
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
@@ -1681,7 +1681,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsWhenFeatureDisabled) {
 
 TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsWhenFeatureDisabled) {
   features_.Reset();
-  features_.InitAndDisableFeature(chromeos::features::kBorealisDiskManagement);
+  features_.InitAndDisableFeature(ash::features::kBorealisDiskManagement);
   SyncDiskCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(

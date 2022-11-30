@@ -698,7 +698,7 @@ TEST_F(ChromeArcUtilTest, ArcStartModeDefaultDemoMode) {
 
 TEST_F(ChromeArcUtilTest, ArcStartModeDefaultDemoModeWithoutPlayStore) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(chromeos::features::kShowPlayInDemoMode,
+  feature_list.InitWithFeatureState(ash::features::kShowPlayInDemoMode,
                                     false /* disabled */);
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--arc-availability=installed"});

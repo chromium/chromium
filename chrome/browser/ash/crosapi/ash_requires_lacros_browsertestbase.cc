@@ -17,7 +17,7 @@ namespace crosapi {
 
 AshRequiresLacrosBrowserTestBase::AshRequiresLacrosBrowserTestBase() {
   scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
+      {ash::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
 }
 
 AshRequiresLacrosBrowserTestBase::~AshRequiresLacrosBrowserTestBase() = default;

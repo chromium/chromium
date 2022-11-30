@@ -666,8 +666,7 @@ class LegacyPackagedAppLacorsNotPrimaryPublisherTest : public PublisherTest {
   LegacyPackagedAppLacorsNotPrimaryPublisherTest() {
     crosapi::browser_util::SetLacrosEnabledForTest(true);
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kLacrosPrimary);
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kLacrosPrimary);
   }
 
   LegacyPackagedAppLacorsNotPrimaryPublisherTest(
@@ -711,8 +710,7 @@ class LegacyPackagedAppLacorsPrimaryPublisherTest : public PublisherTest {
  public:
   LegacyPackagedAppLacorsPrimaryPublisherTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kLacrosPrimary);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kLacrosPrimary);
   }
 
   LegacyPackagedAppLacorsPrimaryPublisherTest(
@@ -750,7 +748,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
   StandaloneBrowserPublisherTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary}, {});
+        {features::kWebAppsCrosapi, ash::features::kLacrosPrimary}, {});
   }
 
   StandaloneBrowserPublisherTest(const StandaloneBrowserPublisherTest&) =
@@ -1288,7 +1286,7 @@ class BorealisPublisherTest : public StandaloneBrowserPublisherTest {
   BorealisPublisherTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kBorealis, chromeos::features::kBorealisPermitted}, {});
+        {features::kBorealis, ash::features::kBorealisPermitted}, {});
   }
 };
 

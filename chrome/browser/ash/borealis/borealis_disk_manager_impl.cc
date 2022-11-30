@@ -50,14 +50,10 @@ enum class DiskManagementVersion {
 
 // Helper function to evaluate which disk management settings to use.
 DiskManagementVersion DiskManagementVersion() {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kBorealisStorageBallooning)) {
+  if (base::FeatureList::IsEnabled(ash::features::kBorealisStorageBallooning))
     return DiskManagementVersion::BALLOON;
-  }
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kBorealisDiskManagement)) {
+  if (base::FeatureList::IsEnabled(ash::features::kBorealisDiskManagement))
     return DiskManagementVersion::CROSDISK;
-  }
   return DiskManagementVersion::UNMANAGED;
 }
 
@@ -99,10 +95,8 @@ BorealisDiskManagerImpl::BorealisDiskManagerImpl(const BorealisContext* context)
 }
 
 BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kBorealisDiskManagement)) {
+  if (base::FeatureList::IsEnabled(ash::features::kBorealisDiskManagement))
     RecordBorealisDiskClientNumRequestsPerSessionHistogram(request_count_);
-  }
   service_->DiskManagerDispatcher().RemoveDiskManagerDelegate(this);
 }
 
@@ -526,8 +520,7 @@ void BorealisDiskManagerImpl::GetDiskInfo(
     base::OnceCallback<void(
         Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
         callback) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kBorealisDiskManagement)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kBorealisDiskManagement)) {
     std::move(callback).Run(
         Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>::
             Unexpected(Described<BorealisGetDiskInfoResult>(
@@ -575,8 +568,7 @@ void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
   // disable it (after their disk has been converted to a fixed size). The
   // workaround for this is to reinstall the VM or use VMC to manually manage
   // the disk.
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kBorealisDiskManagement)) {
+  if (base::FeatureList::IsEnabled(ash::features::kBorealisDiskManagement)) {
     if (disk_info_or_error.Value()->has_fixed_size) {
       response.available_bytes =
           ExcludeBufferBytes(disk_info_or_error.Value()->available_space);
@@ -697,8 +689,7 @@ void BorealisDiskManagerImpl::RequestSpace(
     uint64_t bytes_requested,
     base::OnceCallback<void(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kBorealisDiskManagement)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kBorealisDiskManagement)) {
     std::move(callback).Run(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
             Described<BorealisResizeDiskResult>(
@@ -725,8 +716,7 @@ void BorealisDiskManagerImpl::ReleaseSpace(
     uint64_t bytes_to_release,
     base::OnceCallback<void(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kBorealisDiskManagement)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kBorealisDiskManagement)) {
     std::move(callback).Run(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
             Described<BorealisResizeDiskResult>(
@@ -763,8 +753,7 @@ void BorealisDiskManagerImpl::SyncDiskSize(
     base::OnceCallback<void(Expected<BorealisSyncDiskSizeResult,
                                      Described<BorealisSyncDiskSizeResult>>)>
         callback) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kBorealisDiskManagement)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kBorealisDiskManagement)) {
     std::move(callback).Run(Expected<BorealisSyncDiskSizeResult,
                                      Described<BorealisSyncDiskSizeResult>>(
         BorealisSyncDiskSizeResult::kNoActionNeeded));

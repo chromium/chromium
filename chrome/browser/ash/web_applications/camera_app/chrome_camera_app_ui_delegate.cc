@@ -308,9 +308,9 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
-  source->AddBoolean("multiPageDocScan",
-                     base::FeatureList::IsEnabled(
-                         chromeos::features::kCameraAppMultiPageDocScan));
+  source->AddBoolean(
+      "multiPageDocScan",
+      base::FeatureList::IsEnabled(ash::features::kCameraAppMultiPageDocScan));
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {

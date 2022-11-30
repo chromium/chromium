@@ -63,7 +63,7 @@ ArcTermsOfServiceOobeNegotiator::~ArcTermsOfServiceOobeNegotiator() {
 }
 
 void ArcTermsOfServiceOobeNegotiator::StartNegotiationImpl() {
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (ash::features::IsOobeConsolidatedConsentEnabled()) {
     consolidated_consent_observation_.Observe(GetConsolidatedConsentScreen());
   } else {
     DCHECK(!screen_view_);
@@ -74,7 +74,7 @@ void ArcTermsOfServiceOobeNegotiator::StartNegotiationImpl() {
 }
 
 void ArcTermsOfServiceOobeNegotiator::HandleTermsAccepted(bool accepted) {
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (ash::features::IsOobeConsolidatedConsentEnabled()) {
     consolidated_consent_observation_.Reset();
   } else {
     DCHECK(screen_view_);
@@ -95,12 +95,12 @@ void ArcTermsOfServiceOobeNegotiator::OnViewDestroyed(
 }
 
 void ArcTermsOfServiceOobeNegotiator::OnConsolidatedConsentAccept() {
-  DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
+  DCHECK(ash::features::IsOobeConsolidatedConsentEnabled());
   HandleTermsAccepted(true);
 }
 
 void ArcTermsOfServiceOobeNegotiator::OnConsolidatedConsentScreenDestroyed() {
-  DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
+  DCHECK(ash::features::IsOobeConsolidatedConsentEnabled());
   HandleTermsAccepted(false);
 }
 

@@ -730,7 +730,7 @@ void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
   RunNetworkSelectionScreenChecks();
   test::TapNetworkSelectionNext();
 
-  if (!chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (!features::IsOobeConsolidatedConsentEnabled()) {
     test::WaitForEulaScreen();
     RunEulaScreenChecks();
     test::TapEulaAccept();
@@ -760,7 +760,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
         ->Wait();
   }
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     test::WaitForConsolidatedConsentScreen();
     RunConsolidatedConsentScreenChecks();
     test::TapConsolidatedConsentAccept();
@@ -782,7 +782,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
     test::ExitPinSetupScreen();
   }
 
-  if (!chromeos::features::IsOobeConsolidatedConsentEnabled() &&
+  if (!features::IsOobeConsolidatedConsentEnabled() &&
       test_setup()->arc_state() != ArcState::kNotAvailable) {
     HandleArcTermsOfServiceScreen();
   }

@@ -20,8 +20,8 @@ class FirmwareUpdateAppIntegrationTest
     : public ash::SystemWebAppIntegrationTest {
  public:
   FirmwareUpdateAppIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kFirmwareUpdaterApp}, {});
+    scoped_feature_list_.InitWithFeatures({ash::features::kFirmwareUpdaterApp},
+                                          {});
   }
 
  protected:

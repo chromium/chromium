@@ -78,7 +78,7 @@ bool EcheSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
 bool EcheSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   // For debug purposes, we do not allow closing windows via script under the
   // debug mode.
-  return !base::FeatureList::IsEnabled(chromeos::features::kEcheSWADebugMode);
+  return !base::FeatureList::IsEnabled(ash::features::kEcheSWADebugMode);
 }
 
 gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
@@ -86,7 +86,7 @@ gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
 }
 
 bool EcheSystemAppDelegate::IsAppEnabled() const {
-  return base::FeatureList::IsEnabled(chromeos::features::kEcheSWA);
+  return base::FeatureList::IsEnabled(ash::features::kEcheSWA);
 }
 
 // TODO(nayebi): Remove this after migrating completely from SWA to bubble.

@@ -770,7 +770,7 @@ TEST_F(TetherServiceTest, TestGet_PrimaryUser_FeatureFlagDisabled) {
 
 TEST_F(TetherServiceTest, TestGet_NotPrimaryUser_FeatureFlagEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kInstantTethering);
+  feature_list.InitAndEnableFeature(features::kInstantTethering);
 
   EXPECT_FALSE(TetherService::Get(profile_.get()));
 }
@@ -781,7 +781,7 @@ TEST_F(TetherServiceTest, DISABLED_TestGet_PrimaryUser_FeatureFlagEnabled) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {chromeos::features::kInstantTethering} /* enabled_features */,
+      {features::kInstantTethering} /* enabled_features */,
       {} /* disabled_features */);
 
   TetherService* tether_service = TetherService::Get(profile_.get());
@@ -801,7 +801,7 @@ TEST_F(
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {chromeos::features::kInstantTethering} /* enabled_features */,
+      {features::kInstantTethering} /* enabled_features */,
       {} /* disabled_features */);
 
   TetherService* tether_service = TetherService::Get(profile_.get());
@@ -821,7 +821,7 @@ TEST_F(
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {chromeos::features::kInstantTethering} /* enabled_features */,
+      {features::kInstantTethering} /* enabled_features */,
       {} /* disabled_features */);
 
   TetherService* tether_service = TetherService::Get(profile_.get());

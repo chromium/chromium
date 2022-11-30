@@ -1090,34 +1090,30 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("ARC_ENABLE_VIRTIO_BLK_FOR_DATA",
             base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData));
   dict->Set("FILES_SEARCH_V2",
-            base::FeatureList::IsEnabled(chromeos::features::kFilesSearchV2));
+            base::FeatureList::IsEnabled(ash::features::kFilesSearchV2));
   dict->Set("FILES_TRASH_ENABLED",
-            base::FeatureList::IsEnabled(chromeos::features::kFilesTrash));
+            base::FeatureList::IsEnabled(ash::features::kFilesTrash));
   dict->Set("DRIVE_DSS_PIN_ENABLED",
             base::FeatureList::IsEnabled(
-                chromeos::features::kDriveFsBidirectionalNativeMessaging));
+                ash::features::kDriveFsBidirectionalNativeMessaging));
+  dict->Set("FILTERS_IN_RECENTS_V2_ENABLED",
+            base::FeatureList::IsEnabled(ash::features::kFiltersInRecentsV2));
   dict->Set(
-      "FILTERS_IN_RECENTS_V2_ENABLED",
-      base::FeatureList::IsEnabled(chromeos::features::kFiltersInRecentsV2));
-  dict->Set("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
-            base::FeatureList::IsEnabled(
-                chromeos::features::kFilesSinglePartitionFormat));
-  dict->Set(
-      "FILES_APP_EXPERIMENTAL",
-      base::FeatureList::IsEnabled(chromeos::features::kFilesAppExperimental));
+      "FILES_SINGLE_PARTITION_FORMAT_ENABLED",
+      base::FeatureList::IsEnabled(ash::features::kFilesSinglePartitionFormat));
+  dict->Set("FILES_APP_EXPERIMENTAL",
+            base::FeatureList::IsEnabled(ash::features::kFilesAppExperimental));
 
   dict->Set("FUSEBOX_DEBUG",
-            base::FeatureList::IsEnabled(chromeos::features::kFuseBoxDebug));
+            base::FeatureList::IsEnabled(ash::features::kFuseBoxDebug));
 
-  dict->Set("DRIVEFS_MIRRORING",
-            chromeos::features::IsDriveFsMirroringEnabled());
+  dict->Set("DRIVEFS_MIRRORING", ash::features::IsDriveFsMirroringEnabled());
 
-  dict->Set("INLINE_SYNC_STATUS",
-            chromeos::features::IsInlineSyncStatusEnabled());
+  dict->Set("INLINE_SYNC_STATUS", ash::features::IsInlineSyncStatusEnabled());
 
   dict->Set("GUEST_OS", true);
 
-  dict->Set("JELLY", base::FeatureList::IsEnabled(chromeos::features::kJelly));
+  dict->Set("JELLY", base::FeatureList::IsEnabled(ash::features::kJelly));
 
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(
