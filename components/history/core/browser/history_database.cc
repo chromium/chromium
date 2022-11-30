@@ -42,6 +42,7 @@ const int kCurrentVersionNumber = 59;
 const int kCompatibleVersionNumber = 16;
 
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
+const char kMayContainForeignVisits[] = "may_contain_foreign_visits";
 const char kDeleteForeignVisitsUntilId[] = "delete_foreign_visits_until_id";
 
 // Logs a migration failure to UMA and logging. The return value will be
@@ -446,6 +447,18 @@ void HistoryDatabase::UpdateEarlyExpirationThreshold(base::Time threshold) {
   meta_table_.SetValue(kEarlyExpirationThresholdKey,
                        threshold.ToInternalValue());
   cached_early_expiration_threshold_ = threshold;
+}
+
+bool HistoryDatabase::MayContainForeignVisits() {
+  int may_contain_foreign_visits = false;
+  meta_table_.GetValue(kMayContainForeignVisits, &may_contain_foreign_visits);
+  return may_contain_foreign_visits != 0;
+}
+
+void HistoryDatabase::SetMayContainForeignVisits(
+    bool may_contain_foreign_visits) {
+  meta_table_.SetValue(kMayContainForeignVisits,
+                       may_contain_foreign_visits ? 1 : 0);
 }
 
 VisitID HistoryDatabase::GetDeleteForeignVisitsUntilId() {
