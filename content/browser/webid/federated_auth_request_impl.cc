@@ -17,7 +17,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
-#include "content/browser/webid/federated_auth_request_web_contents_data.h"
+#include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -316,12 +316,9 @@ bool ShouldFailBecauseNotSignedInWithIdp(
   return !idp_signin_status.value_or(true);
 }
 
-FederatedAuthRequestWebContentsData* GetWebContentsData(
-    RenderFrameHost* render_frame_host) {
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  FederatedAuthRequestWebContentsData::CreateForWebContents(web_contents);
-  return FederatedAuthRequestWebContentsData::FromWebContents(web_contents);
+FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
+  return FederatedAuthRequestPageData::GetOrCreateForPage(
+      render_frame_host->GetPage());
 }
 
 }  // namespace
@@ -364,11 +361,10 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   }
   if (logout_callback_) {
     // We do not complete the logout request, so unset the
-    // PendingWebIdentityRequest on the WebContents so that other frames in the
-    // same WebContents may still trigger new requests after the current
+    // PendingWebIdentityRequest on the Page so that other frames in the
+    // same Page may still trigger new requests after the current
     // RenderFrameHost is destroyed.
-    GetWebContentsData(&render_frame_host())
-        ->SetHasPendingWebIdentityRequest(false);
+    GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(false);
   }
 }
 
@@ -457,8 +453,7 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   auth_request_callback_ = std::move(callback);
-  GetWebContentsData(&render_frame_host())
-      ->SetHasPendingWebIdentityRequest(true);
+  GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(true);
   network_manager_ = CreateNetworkManager();
   request_dialog_controller_ = CreateDialogController();
   start_time_ = base::TimeTicks::Now();
@@ -600,8 +595,7 @@ void FederatedAuthRequestImpl::LogoutRps(
   DCHECK(logout_requests_.empty());
 
   logout_callback_ = std::move(callback);
-  GetWebContentsData(&render_frame_host())
-      ->SetHasPendingWebIdentityRequest(true);
+  GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(true);
 
   if (logout_requests.empty()) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
@@ -660,7 +654,7 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
 
 bool FederatedAuthRequestImpl::HasPendingRequest() const {
   bool has_pending_request =
-      GetWebContentsData(&render_frame_host())->HasPendingWebIdentityRequest();
+      GetPageData(&render_frame_host())->HasPendingWebIdentityRequest();
   DCHECK(has_pending_request || (!auth_request_callback_ && !logout_callback_));
   return has_pending_request;
 }
@@ -1249,8 +1243,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
   CleanUp();
 
   if (!should_delay_callback || ShouldCompleteRequestImmediately()) {
-    GetWebContentsData(&render_frame_host())
-        ->SetHasPendingWebIdentityRequest(false);
+    GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(false);
     errors_logged_to_console_ = false;
 
     RequestTokenStatus status =
@@ -1334,8 +1327,7 @@ void FederatedAuthRequestImpl::CompleteLogoutRequest(
   if (logout_callback_) {
     std::move(logout_callback_).Run(status);
     logout_callback_.Reset();
-    GetWebContentsData(&render_frame_host())
-        ->SetHasPendingWebIdentityRequest(false);
+    GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(false);
   }
 }
 
