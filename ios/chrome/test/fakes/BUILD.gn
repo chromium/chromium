@@ -23,8 +23,6 @@ source_set("fakes") {
     "fake_pass_kit_tab_helper_delegate.mm",
     "fake_password_auto_fill_status_manager.h",
     "fake_password_auto_fill_status_manager.mm",
-    "fake_store_kit_launcher.h",
-    "fake_store_kit_launcher.mm",
     "fake_ui_view_controller.h",
     "fake_ui_view_controller.mm",
     "fake_web_state_list_observing_delegate.h",

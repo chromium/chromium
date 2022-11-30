@@ -8,6 +8,8 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 
+@protocol WebContentCommands;
+
 // Enum for the IOS.StoreKit.ITunesURLsHandlingResult UMA histogram to report
 // the results of the StoreKit handling.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -52,11 +54,16 @@ class ITunesUrlsHandlerTabHelper
       web::WebStatePolicyDecider::RequestInfo request_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
+  // Sets the command handler for opening content-related UI.
+  void SetWebContentsHandler(id<WebContentCommands> handler);
+
  private:
   friend class web::WebStateUserData<ITunesUrlsHandlerTabHelper>;
 
   // Opens the StoreKit for the given iTunes app `url`.
   void HandleITunesUrl(const GURL& url);
+
+  __weak id<WebContentCommands> web_content_handler_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

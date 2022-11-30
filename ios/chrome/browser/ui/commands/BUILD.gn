@@ -52,6 +52,7 @@ source_set("commands") {
     "thumb_strip_commands.h",
     "toolbar_commands.h",
     "tos_commands.h",
+    "web_content_commands.h",
     "whats_new_commands.h",
   ]
 

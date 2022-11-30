@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
-#import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -83,6 +82,7 @@
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/ui/commands/web_content_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
@@ -224,6 +224,7 @@ enum class ToolbarKind {
                                   SnapshotGeneratorDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
+                                  WebContentCommands,
                                   WebStateListObserving,
                                   WebNavigationNTPDelegate>
 
@@ -637,6 +638,7 @@ enum class ToolbarKind {
     @protocol(PolicyChangeCommands),
     @protocol(PriceNotificationsCommands),
     @protocol(TextZoomCommands),
+    @protocol(WebContentCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -944,10 +946,6 @@ enum class ToolbarKind {
   [self.sadTabCoordinator setOverscrollDelegate:self.viewController];
 
   /* SharingCoordinator is created and started by an ActivityServiceCommand */
-
-  self.storeKitCoordinator = [[StoreKitCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
 
   self.addCreditCardCoordinator = [[AutofillAddCreditCardCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -1782,10 +1780,6 @@ enum class ToolbarKind {
   DCHECK(self.passKitCoordinator);
   PassKitTabHelper::FromWebState(webState)->SetDelegate(
       self.passKitCoordinator);
-
-  DCHECK(self.storeKitCoordinator);
-  StoreKitTabHelper::FromWebState(webState)->SetLauncher(
-      self.storeKitCoordinator);
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -1859,10 +1853,6 @@ enum class ToolbarKind {
     DCHECK(self.passKitCoordinator);
     PassKitTabHelper::FromWebState(webState)->SetDelegate(
         self.passKitCoordinator);
-
-    DCHECK(self.storeKitCoordinator);
-    StoreKitTabHelper::FromWebState(webState)->SetLauncher(
-        self.storeKitCoordinator);
   }
 }
 
@@ -2012,10 +2002,6 @@ enum class ToolbarKind {
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(nil);
 
-  if (StoreKitTabHelper::FromWebState(webState)) {
-    StoreKitTabHelper::FromWebState(webState)->SetLauncher(nil);
-  }
-
   FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
   if (followTabHelper) {
     followTabHelper->set_follow_iph_presenter(nil);
@@ -2150,6 +2136,16 @@ enum class ToolbarKind {
                      [weakSelf showRestrictAccountSignedOutPrompt];
                    });
   }
+}
+
+#pragma mark - WebContentCommands
+
+- (void)showAppStoreWithParameters:(NSDictionary*)productParameters {
+  self.storeKitCoordinator = [[StoreKitCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.storeKitCoordinator.iTunesProductParameters = productParameters;
+  [self.storeKitCoordinator start];
 }
 
 #pragma mark - DefaultBrowserPromoNonModalCommands

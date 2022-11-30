@@ -15,7 +15,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
+#import "ios/chrome/browser/ui/commands/web_content_commands.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -132,17 +132,22 @@ void ITunesUrlsHandlerTabHelper::ShouldAllowRequest(
   std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 }
 
-// private
+void ITunesUrlsHandlerTabHelper::SetWebContentsHandler(
+    id<WebContentCommands> handler) {
+  web_content_handler_ = handler;
+}
+
+#pragma mark - Private
+
 void ITunesUrlsHandlerTabHelper::HandleITunesUrl(const GURL& url) {
   ITunesUrlsStoreKitHandlingResult handling_result =
-      ITunesUrlsStoreKitHandlingResult::kSingleAppUrlHandled;
-  StoreKitTabHelper* tab_helper = StoreKitTabHelper::FromWebState(web_state());
-  if (tab_helper) {
+      ITunesUrlsStoreKitHandlingResult::kUrlHandlingFailed;
+  if (web_content_handler_) {
     base::RecordAction(
         base::UserMetricsAction("ITunesLinksHandler_StoreKitLaunched"));
-    tab_helper->OpenAppStore(ExtractITunesProductParameters(url));
-  } else {
-    handling_result = ITunesUrlsStoreKitHandlingResult::kUrlHandlingFailed;
+    handling_result = ITunesUrlsStoreKitHandlingResult::kSingleAppUrlHandled;
+    [web_content_handler_
+        showAppStoreWithParameters:ExtractITunesProductParameters(url)];
   }
   RecordStoreKitHandlingResult(handling_result);
 }

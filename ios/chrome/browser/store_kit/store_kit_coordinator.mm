@@ -67,19 +67,6 @@
   self.viewController = nil;
 }
 
-#pragma mark - StoreKitLauncher
-
-- (void)openAppStore:(NSString*)iTunesItemIdentifier {
-  [self openAppStoreWithParameters:@{
-    SKStoreProductParameterITunesItemIdentifier : iTunesItemIdentifier
-  }];
-}
-
-- (void)openAppStoreWithParameters:(NSDictionary*)productParameters {
-  self.iTunesProductParameters = productParameters;
-  [self start];
-}
-
 #pragma mark - SKStoreProductViewControllerDelegate
 
 - (void)productViewControllerDidFinish:

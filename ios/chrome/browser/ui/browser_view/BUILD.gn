@@ -58,6 +58,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/follow:tab_helper",
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/itunes_urls",
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/main",

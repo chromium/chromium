@@ -7,9 +7,6 @@ source_set("store_kit") {
   sources = [
     "store_kit_coordinator.h",
     "store_kit_coordinator.mm",
-    "store_kit_launcher.h",
-    "store_kit_tab_helper.h",
-    "store_kit_tab_helper.mm",
   ]
   deps = [
     "//base",
@@ -25,10 +22,7 @@ source_set("store_kit") {
 source_set("unit_tests") {
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "store_kit_coordinator_unittest.mm",
-    "store_kit_tab_helper_unittest.mm",
-  ]
+  sources = [ "store_kit_coordinator_unittest.mm" ]
   deps = [
     ":store_kit",
     "//base",

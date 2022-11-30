@@ -58,13 +58,14 @@ class StoreKitCoordinatorTest : public PlatformTest {
 };
 
 // Tests that StoreKitCoordinator presents SKStoreProductViewController when
-// openAppStoreWithParameters is called.
+// product parameters are set and the coordinator is started.
 TEST_F(StoreKitCoordinatorTest, OpenStoreWithParamsPresentViewController) {
   NSDictionary* product_params = @{
     SKStoreProductParameterITunesItemIdentifier : @"TestITunesItemIdentifier",
     SKStoreProductParameterAffiliateToken : @"TestToken"
   };
-  [coordinator_ openAppStoreWithParameters:product_params];
+  coordinator_.iTunesProductParameters = product_params;
+  [coordinator_ start];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^bool {
         return base_view_controller_.presentedViewController;
@@ -74,33 +75,6 @@ TEST_F(StoreKitCoordinatorTest, OpenStoreWithParamsPresentViewController) {
 
   EXPECT_EQ([SKStoreProductViewController class],
             [base_view_controller_.presentedViewController class]);
-  [coordinator_ stop];
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForActionTimeout, ^bool {
-        return !base_view_controller_.presentedViewController;
-      }));
-
-  EXPECT_FALSE(base_view_controller_.presentedViewController);
-}
-
-// Tests that StoreKitCoordinator presents SKStoreProductViewController when
-// openAppStore is called.
-TEST_F(StoreKitCoordinatorTest, OpenStorePresentViewController) {
-  NSString* kTestITunesItemIdentifier = @"TestITunesItemIdentifier";
-  NSDictionary* product_params = @{
-    SKStoreProductParameterITunesItemIdentifier : kTestITunesItemIdentifier,
-  };
-  [coordinator_ openAppStore:kTestITunesItemIdentifier];
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForActionTimeout, ^bool {
-        return base_view_controller_.presentedViewController;
-      }));
-
-  EXPECT_NSEQ(product_params, coordinator_.iTunesProductParameters);
-
-  EXPECT_EQ([SKStoreProductViewController class],
-            [base_view_controller_.presentedViewController class]);
-
   [coordinator_ stop];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^bool {
@@ -216,10 +190,10 @@ TEST_F(StoreKitCoordinatorTest, MAYBE_NoOverlappingPresentedViewControllers) {
 // iOS 13 dismisses SKStoreProductViewController when user taps "Done". This
 // test makes sure that StoreKitCoordinator gracefully handles the situation.
 TEST_F(StoreKitCoordinatorTest, StopAfterDismissingPresentedViewController) {
-  NSDictionary* product_params = @{
+  coordinator_.iTunesProductParameters = @{
     SKStoreProductParameterITunesItemIdentifier : @"TestITunesItemIdentifier",
   };
-  [coordinator_ openAppStoreWithParameters:product_params];
+  [coordinator_ start];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
         return base_view_controller_.presentedViewController;

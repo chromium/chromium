@@ -7,11 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/store_kit/store_kit_launcher.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 // Coordinates presentation of SKStoreProductViewController.
-@interface StoreKitCoordinator : ChromeCoordinator<StoreKitLauncher>
+@interface StoreKitCoordinator : ChromeCoordinator
 
 // iTunes store item product parameters dictionary. At least
 // SKStoreProductParameterITunesItemIdentifier key needs to be specified, all
