@@ -7,6 +7,7 @@
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -19,11 +20,6 @@ ParentExecutionContextTaskRunners::ParentExecutionContextTaskRunners(
     ExecutionContext& context)
     : ExecutionContextLifecycleObserver(&context) {
   DCHECK(context.IsContextThread());
-  InitializeTaskRunnersForContext(context);
-}
-
-void ParentExecutionContextTaskRunners::InitializeTaskRunnersForContext(
-    ExecutionContext& context) {
   // For now we only support very limited task types. Sort in the TaskType enum
   // value order.
   for (auto type : {TaskType::kNetworking, TaskType::kPostedMessage,
@@ -46,9 +42,8 @@ void ParentExecutionContextTaskRunners::Trace(Visitor* visitor) const {
 
 void ParentExecutionContextTaskRunners::ContextDestroyed() {
   base::AutoLock locker(lock_);
-  // When an ExecutionContext is destroyed we can still get task runners for it
-  // but they might be changed.
-  InitializeTaskRunnersForContext(*GetExecutionContext());
+  for (auto& entry : task_runners_)
+    entry.value = ThreadScheduler::Current()->CleanupTaskRunner();
 }
 
 }  // namespace blink
