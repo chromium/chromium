@@ -51,20 +51,21 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
       const MLNamedOperands& named_outputs);
 
  private:
-  // Post the XNNPACK subgraph building to a background thread.
+  // Post the XNNPACK Subgraph and Runtime building to a background thread.
   void BuildAsyncImpl(const MLNamedOperands& named_outputs,
                       ScriptPromiseResolver* resolver) override;
 
-  // Build the XNNPACK subgraph off the main thread.
+  // Build the XNNPACK Subgraph and Runtime off the main thread.
   static void BuildOnBackgroundThread(
       CrossThreadPersistent<MLGraphXnnpack> graph,
+      CrossThreadPersistent<MLNamedOperands> named_outputs,
       CrossThreadPersistent<HeapVector<Member<const MLOperator>>>
           toposorted_operators,
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner);
 
   // Resolve the promise on the main thread after finish building the XNNPACK
-  // subgraph.
+  // Subgraph and Runtime.
   void OnBuildFinished(CrossThreadPersistent<ScriptPromiseResolver> resolver,
                        xnn_status status,
                        String error_message = String());
@@ -86,10 +87,27 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
                        const MLNamedArrayBufferViews& outputs,
                        ExceptionState& exception_state) override;
 
+  // This method firstly creates an XNNPACK Subgraph object and defines Subgraph
+  // Nodes and Values for the operators and operands of a WebNN graph. Then it
+  // creates an XNNPACK Runtime object from the Subgraph object. The Runtime
+  // object is a combination of an execution plan for Subgraph Nodes and a
+  // memory manager for Subgraph Values and will be used for the accelerated
+  // executions. This method can run either in a background thread for
+  // asynchronous graph building or in the caller's thread for synchronous graph
+  // building.
+  xnn_status CreateXnnSubgraphAndRuntime(
+      const MLNamedOperands& named_outputs,
+      const HeapVector<Member<const MLOperator>>& toposorted_operators,
+      String& error_message);
+
   // The SharedXnnpackContext is shared and reference-counted by all instances
   // of MLGraphXnnpack. It initializes (and also deinitializes) the XNNPACK
   // library for graph building and execution.
   scoped_refptr<SharedXnnpackContext> xnn_context_;
+
+  // The XNNPACK Runtime object for the accelerated executions.
+  std::unique_ptr<xnn_runtime, decltype(&xnn_delete_runtime)> xnn_runtime_{
+      nullptr, &xnn_delete_runtime};
 };
 
 }  // namespace blink
