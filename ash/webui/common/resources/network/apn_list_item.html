@@ -14,9 +14,13 @@
     padding: 0 var(--cr-section-padding);
   }
 
+  :host([is-disabled_]) #apnName {
+    opacity: var(--cr-disabled-opacity);
+  }
+
   #labelWrapper {
-    flex-basis: 0.000000001px;
     flex: 1;
+    flex-basis: 0.000000001px;
     padding-bottom: var(--cr-section-vertical-padding);
     padding-top: var(--cr-section-vertical-padding);
     text-align: start;
@@ -32,15 +36,15 @@
   }
 
   #autoDetected {
-    margin-inline-start: 10px;
     color: var(--cr-secondary-text-color);
+    margin-inline-start: 10px;
   }
 </style>
 
   <!-- TODO(b/162365553): Implement accessibility attributes. -->
 <div id="labelWrapper">
   <div id="label" aria-hidden="true">
-    <div>[[apn.name]]</div>
+    <div id="apnName">[[apn.name]]</div>
     <div id="autoDetected" hidden="[[!isAutoDetected]]">
       [[i18n('apnAutoDetected')]]
     </div>

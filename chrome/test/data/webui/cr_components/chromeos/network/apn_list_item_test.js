@@ -6,19 +6,18 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/apn_list_item.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
+import {ApnState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('ApnListItemTest', function() {
   /** @type {ApnListItemElement} */
   let apnListItem = null;
 
-  setup(function() {
+  setup(async function() {
     apnListItem = document.createElement('apn-list-item');
     document.body.appendChild(apnListItem);
-    flush();
+    await flushTasks();
   });
 
   test('Check if APN list item exists', async function() {
@@ -66,5 +65,19 @@ suite('ApnListItemTest', function() {
     menuButton.click();
     await flushTasks();
     assertTrue(apnListItem.$.dotsMenu.open);
+  });
+
+  test('Check disabled state.', async function() {
+    apnListItem.apn = {state: ApnState.kDisabled, name: 'apn'};
+    await flushTasks();
+    assertFalse(apnListItem.hasAttribute('is-disabled_'));
+
+    apnListItem.apn = {state: ApnState.kEnabled, name: 'apn', id: '1'};
+    await flushTasks();
+    assertFalse(apnListItem.hasAttribute('is-disabled_'));
+
+    apnListItem.apn = {state: ApnState.kDisabled, name: 'apn', id: '1'};
+    await flushTasks();
+    assertTrue(apnListItem.hasAttribute('is-disabled_'));
   });
 });

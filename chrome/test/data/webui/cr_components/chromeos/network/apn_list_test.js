@@ -7,7 +7,6 @@ import 'chrome://resources/ash/common/network/apn_list.js';
 
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ApnProperties, ApnState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -32,10 +31,10 @@ suite('ApnListTest', function() {
     name: 'AP-name-2',
   };
 
-  setup(function() {
+  setup(async function() {
     apnList = document.createElement('apn-list');
     document.body.appendChild(apnList);
-    flush();
+    await flushTasks();
   });
 
   test('Check if APN description exists', async function() {

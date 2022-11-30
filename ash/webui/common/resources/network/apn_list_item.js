@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ApnProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, ApnState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {getTemplate} from './apn_list_item.html.js';
 
@@ -40,6 +40,14 @@ Polymer({
         return false;
       },
     },
+
+    /** @private */
+    isDisabled_: {
+      reflectToAttribute: true,
+      type: Boolean,
+      computed: 'computeIsDisabled_(apn)',
+    },
+
     /**
      * TODO(b/162365553): Implement.
      *  @private
@@ -103,4 +111,13 @@ Polymer({
    * @private
    */
   onRemoveClicked_() {},
+
+  /**
+   * Returns true if the apn is disabled.
+   * @return {boolean}
+   * @private
+   */
+  computeIsDisabled_() {
+    return !!this.apn.id && this.apn.state === ApnState.kDisabled;
+  },
 });
