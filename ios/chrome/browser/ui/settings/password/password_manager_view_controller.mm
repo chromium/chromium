@@ -404,11 +404,6 @@ NSInteger kTrailingSymbolSize = 18;
   searchBar.delegate = self;
   searchBar.backgroundColor = UIColor.clearColor;
   searchBar.accessibilityIdentifier = kPasswordsSearchBarId;
-  // Center search bar and cancel button vertically so it looks centered
-  // in the header when searching.
-  UIOffset offset =
-      UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
-  searchBar.searchFieldBackgroundPositionAdjustment = offset;
 
   // TODO(crbug.com/1268684): Explicitly set the background color for the search
   // bar to match with the color of navigation bar in iOS 13/14 to work around

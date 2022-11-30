@@ -366,14 +366,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.navigationItem.searchController = self.searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
 
-  // Center search bar vertically so it looks centered in the header when
-  // searching.  The cancel button is centered / decentered on
-  // viewWillAppear and viewDidDisappear.
-  UIOffset offset =
-      UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
-  self.searchController.searchBar.searchFieldBackgroundPositionAdjustment =
-      offset;
-
   self.searchTerm = @"";
 
   if (self.bookmarks->loaded()) {

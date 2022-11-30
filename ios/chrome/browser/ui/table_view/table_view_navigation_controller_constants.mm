@@ -8,7 +8,6 @@
 #error "This file requires ARC support."
 #endif
 
-const float kTableViewNavigationVerticalOffsetForSearchHeader = 6.0f;
 const float kTableViewNavigationAlphaForDisabledSearchBar = 0.5f;
 const NSTimeInterval kTableViewNavigationScrimFadeDuration = 0.2;
 

@@ -103,10 +103,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Place the search bar in the navigation bar.
   self.navigationItem.searchController = self.searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
-  // Center the search bar vertically so it looks centered in the header when
-  // searching in iPad and in landscape mode.
-  self.searchController.searchBar.searchFieldBackgroundPositionAdjustment =
-      UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
 
   // Scrim.
   self.scrimView = [[UIControl alloc] init];

@@ -211,13 +211,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   // Place the search bar in the navigation bar.
   [self updateNavigationBar];
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
-
-  // Center search bar and cancel button vertically so it looks centered
-  // in the header when searching.
-  UIOffset offset =
-      UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
-  self.searchController.searchBar.searchFieldBackgroundPositionAdjustment =
-      offset;
 }
 
 #pragma mark - TableViewModel
