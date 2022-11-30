@@ -82,9 +82,6 @@ std::u16string GetLeakDetectionTooltip();
 // Checks whether the leak dialog should prompt user to password checkup.
 bool ShouldCheckPasswords(CredentialLeakType leak_type);
 
-// Checks whether the leak dialog should show automatic change password button.
-bool ShouldShowAutomaticChangePasswordButton(CredentialLeakType leak_type);
-
 // Checks whether the leak dialog should show cancel button.
 bool ShouldShowCancelButton(CredentialLeakType leak_type);
 
@@ -265,40 +262,6 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckupAndChange>
   }
 
   bool ShouldCheckPasswords() const override { return true; }
-
-  bool ShouldShowCancelButton() const override { return true; }
-};
-
-// Implementation of a leak automatic change dialog.
-template <>
-class LeakDialogTraitsImp<metrics_util::LeakDialogType::kChangeAutomatically>
-    : public LeakDialogTraits {
- public:
-  LeakDialogTraitsImp() = default;
-  LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
-  LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
-
-  std::u16string GetAcceptButtonLabel() const override {
-    return l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY);
-  }
-
-  std::u16string GetCancelButtonLabel() const override {
-    return l10n_util::GetStringUTF16(IDS_CLOSE);
-  }
-
-  std::u16string GetDescription() const override {
-    return l10n_util::GetStringUTF16(
-        UsesPasswordManagerUpdatedNaming()
-            ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE_GPM
-            : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE);
-  }
-
-  std::u16string GetTitle() const override {
-    return l10n_util::GetStringUTF16(
-        IDS_CREDENTIAL_LEAK_TITLE_CHANGE_AUTOMATICALLY);
-  }
-
-  bool ShouldCheckPasswords() const override { return false; }
 
   bool ShouldShowCancelButton() const override { return true; }
 };

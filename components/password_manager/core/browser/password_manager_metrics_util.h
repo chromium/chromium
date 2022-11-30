@@ -77,6 +77,7 @@ enum UIDismissalReason {
 // and PasswordLeakDetectionDialogType in enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// In case of adding a new type, NEXT VALUE: 4.
 enum class LeakDialogType {
   // The user is asked to visit the Password Checkup.
   kCheckup = 0,
@@ -85,11 +86,9 @@ enum class LeakDialogType {
   // The user is asked to visit the Password Checkup and change the password for
   // the current site.
   kCheckupAndChange = 2,
-  // TODO(crbug.com/1386065): Deprecate this entry as part of APC clean up.
-  // The user is asked to let Chrome automatically change their password for the
-  // current site.
-  kChangeAutomatically = 3,
-  kMaxValue = kChangeAutomatically,
+  // This value has been deprecated as part of APC removal.
+  // kChangeAutomatically = 3,
+  kMaxValue = kCheckupAndChange,
 };
 
 // Enum recording the dismissal reason of the data breach dialog which is shown
@@ -98,13 +97,15 @@ enum class LeakDialogType {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// In case of adding a new type, NEXT VALUE: 5.
 enum class LeakDialogDismissalReason {
   kNoDirectInteraction = 0,
   kClickedClose = 1,
   kClickedCheckPasswords = 2,
   kClickedOk = 3,
-  kClickedChangePasswordAutomatically = 4,
-  kMaxValue = kClickedChangePasswordAutomatically,
+  // This type has been deprecated as part of APC removal.
+  // kClickedChangePasswordAutomatically = 4,
+  kMaxValue = kClickedOk,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

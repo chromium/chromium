@@ -53,7 +53,6 @@ void CredentialLeakControllerAndroid::OnCancelDialog() {
 
 void CredentialLeakControllerAndroid::OnAcceptDialog() {
   LeakDialogType dialog_type = password_manager::GetLeakDialogType(leak_type_);
-  DCHECK(dialog_type != LeakDialogType::kChangeAutomatically);
   LeakDialogDismissalReason dismissal_reason =
       LeakDialogDismissalReason::kClickedOk;
   switch (dialog_type) {
@@ -63,8 +62,6 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
     case LeakDialogType::kCheckup:
     case LeakDialogType::kCheckupAndChange:
       dismissal_reason = LeakDialogDismissalReason::kClickedCheckPasswords;
-      break;
-    case LeakDialogType::kChangeAutomatically:
       break;
   }
 
@@ -80,9 +77,6 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
 
   switch (dialog_type) {
     case LeakDialogType::kChange:
-    case LeakDialogType::kChangeAutomatically:
-      // No-op.
-      break;
     case LeakDialogType::kCheckup:
     case LeakDialogType::kCheckupAndChange:
       PasswordCheckupLauncherHelper::LaunchLocalCheckup(
@@ -118,9 +112,4 @@ std::u16string CredentialLeakControllerAndroid::GetTitle() const {
 
 bool CredentialLeakControllerAndroid::ShouldShowCancelButton() const {
   return leak_dialog_traits_->ShouldShowCancelButton();
-}
-
-bool CredentialLeakControllerAndroid::ShouldShowAutomaticChangePasswordButton()
-    const {
-  return password_manager::ShouldShowAutomaticChangePasswordButton(leak_type_);
 }

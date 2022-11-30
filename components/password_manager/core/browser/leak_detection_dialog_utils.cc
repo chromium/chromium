@@ -66,12 +66,6 @@ std::u16string GetFormattedUrl(const GURL& origin) {
 }
 
 std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type) {
-  // `ShouldShowAutomaticChangePasswordButton()` and `ShouldCheckPasswords()`
-  // are not both true at the same time.
-  if (ShouldShowAutomaticChangePasswordButton(leak_type)) {
-    return l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY);
-  }
-
   if (ShouldCheckPasswords(leak_type)) {
     return l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS);
   }
@@ -85,10 +79,6 @@ std::u16string GetCancelButtonLabel(CredentialLeakType leak_type) {
 
 std::u16string GetDescription(CredentialLeakType leak_type) {
   if (UsesPasswordManagerUpdatedNaming()) {
-    if (ShouldShowAutomaticChangePasswordButton(leak_type)) {
-      return l10n_util::GetStringUTF16(
-          IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE_GPM);
-    }
     if (!ShouldCheckPasswords(leak_type)) {
       return l10n_util::GetStringUTF16(
           UsesPasswordManagerGoogleBranding()
@@ -106,10 +96,6 @@ std::u16string GetDescription(CredentialLeakType leak_type) {
             ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
             : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
   } else {
-    if (ShouldShowAutomaticChangePasswordButton(leak_type)) {
-      return l10n_util::GetStringUTF16(
-          IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE);
-    }
     if (!ShouldCheckPasswords(leak_type)) {
       return l10n_util::GetStringUTF16(
           IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE);
@@ -124,10 +110,6 @@ std::u16string GetDescription(CredentialLeakType leak_type) {
 }
 
 std::u16string GetTitle(CredentialLeakType leak_type) {
-  if (ShouldShowAutomaticChangePasswordButton(leak_type)) {
-    return l10n_util::GetStringUTF16(
-        IDS_CREDENTIAL_LEAK_TITLE_CHANGE_AUTOMATICALLY);
-  }
   if (UsesPasswordManagerUpdatedNaming()) {
     return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)
                                          ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
@@ -144,25 +126,14 @@ std::u16string GetLeakDetectionTooltip() {
 }
 
 bool ShouldCheckPasswords(CredentialLeakType leak_type) {
-  return password_manager::IsPasswordUsedOnOtherSites(leak_type) &&
-         !ShouldShowAutomaticChangePasswordButton(leak_type);
-}
-
-bool ShouldShowAutomaticChangePasswordButton(CredentialLeakType leak_type) {
-  // TODO (https://crbug.com/1386065): Remove this function and its usages
-  // as part of all APC-related removals.
-  return false;
+  return password_manager::IsPasswordUsedOnOtherSites(leak_type);
 }
 
 bool ShouldShowCancelButton(CredentialLeakType leak_type) {
-  return ShouldCheckPasswords(leak_type) ||
-         ShouldShowAutomaticChangePasswordButton(leak_type);
+  return ShouldCheckPasswords(leak_type);
 }
 
 LeakDialogType GetLeakDialogType(CredentialLeakType leak_type) {
-  if (ShouldShowAutomaticChangePasswordButton(leak_type))
-    return LeakDialogType::kChangeAutomatically;
-
   if (!ShouldCheckPasswords(leak_type))
     return LeakDialogType::kChange;
 
@@ -213,9 +184,6 @@ std::unique_ptr<LeakDialogTraits> CreateDialogTraits(
     case LeakDialogType::kCheckupAndChange:
       return std::make_unique<
           LeakDialogTraitsImp<LeakDialogType::kCheckupAndChange>>();
-    case LeakDialogType::kChangeAutomatically:
-      return std::make_unique<
-          LeakDialogTraitsImp<LeakDialogType::kChangeAutomatically>>();
   }
 }
 

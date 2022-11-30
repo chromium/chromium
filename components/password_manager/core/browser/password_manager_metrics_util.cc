@@ -88,8 +88,6 @@ const char* LeakDialogMetricsRecorder::GetUMASuffix() const {
       return "Change";
     case LeakDialogType::kCheckupAndChange:
       return "CheckupAndChange";
-    case LeakDialogType::kChangeAutomatically:
-      return "ChangeAutomatically";
   }
 }
 
