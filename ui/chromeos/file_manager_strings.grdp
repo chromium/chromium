@@ -819,6 +819,48 @@
   <message name="IDS_FILE_BROWSER_SEARCH_A11Y_CLEAR_SEARCH" desc="Text spoken by ChromeVox/screen reader when a search term has been cleared">
     Search text cleared, showing all files and folders.
   </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_LOCATION_EVERYWHERE" desc="Text shown in search options if search is run in all locations">
+    Everywhere
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_LOCATION_THIS_CHROMEBOOK" desc="Text shown in search options if search is run on the local chromebook only">
+    This Chromebook
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_LOCATION_THIS_FOLDER" desc="Text shown in search options if search is run in the current folder only">
+    This folder
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_RECENCY_ALL_TIME" desc="Text shown in search options if search results are not limited by time">
+    All time
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_RECENCY_TODAY" desc="Text shown in search options if search results are limited to files modified today">
+    Today
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_RECENCY_YESTERDAY" desc="Text shown in search options if search results are limited to files modified the previous day">
+    Yesterday
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_RECENCY_LAST_WEEK" desc="Text shown in search options if search results are limited to files modified in the last 7 days">
+    Last week
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_RECENCY_LAST_MONTH" desc="Text shown in search options if search results are limited to files modified in the last 30 days">
+    Last month
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_RECENCY_LAST_YEAR" desc="Text shown in search options if search results are limited to files modified in the last 365 days">
+    Last year
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_TYPES_ALL_TYPES" desc="Text shown in search options if search results are not limited by file type">
+    All types
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_TYPES_AUDIO" desc="Text shown in search options if search results are limited to audio files">
+    Audio
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_TYPES_DOCUMENTS" desc="Text shown in search options if search results are limited to document files">
+    Documents
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_TYPES_IMAGES" desc="Text shown in search options if search results are limited to images">
+    Images
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_TYPES_VIDEOS" desc="Text shown in search options if search results are limited to videos">
+    Videos
+  </message>
 
   <message name="IDS_FILE_BROWSER_DEFAULT_NEW_FOLDER_NAME" desc="The default name for a newly created folder.">
     New folder
