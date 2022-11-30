@@ -342,8 +342,8 @@ base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log) {
 
   // Try to rotate the log.
   if (!RotateLogFile(bare_path)) {
-    DPLOG(ERROR) << "Failed to rotate the log file: " << bare_path.value()
-                 << ". Keeping using the same log file without rotating.";
+    PLOG(ERROR) << "Failed to rotate the log file: " << bare_path.value()
+                << ". Keeping using the same log file without rotating.";
   }
 
   return bare_path;
