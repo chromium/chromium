@@ -243,6 +243,7 @@ ts_library("build_ts") {
   deps = [
     "//chrome/test/data/webui:build_ts",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
