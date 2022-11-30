@@ -333,8 +333,6 @@ void AppListClientImpl::ActivateItem(int profile_id,
     }
   }
 
-  // TODO(crbug.com/1258415): All fields here except the ID are only relevant
-  // to the old launcher, and can be cleaned up.
   // Send a training signal to the search controller.
   const auto* item = current_model_updater_->FindItem(id);
   if (item) {
