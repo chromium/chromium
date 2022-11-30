@@ -276,6 +276,11 @@ void Combobox::SetBackgroundColorId(ui::ColorId color_id) {
                     : FocusableBorder::kCornerRadiusDp));
 }
 
+void Combobox::SetForegroundColorId(ui::ColorId color_id) {
+  foreground_color_id_ = color_id;
+  SchedulePaint();
+}
+
 void Combobox::SetEventHighlighting(bool should_highlight) {
   should_highlight_ = should_highlight;
   AsViewClass<TransparentButton>(arrow_button_)
@@ -571,7 +576,10 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   }
 
   // Draw the text.
-  SkColor text_color = GetTextColorForEnableState(*this, GetEnabled());
+  SkColor text_color =
+      foreground_color_id_.has_value()
+          ? GetColorProvider()->GetColor(foreground_color_id_.value())
+          : GetTextColorForEnableState(*this, GetEnabled());
   std::u16string text = GetModel()->GetItemAt(selected_index_.value());
   const gfx::FontList& font_list = GetFontList();
 

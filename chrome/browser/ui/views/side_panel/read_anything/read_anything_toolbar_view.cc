@@ -190,6 +190,7 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   }
 
   delegate_->SetIconColorIds(foreground_color_id);
+  font_combobox_->SetForegroundColorId(foreground_color_id);
 }
 
 std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
