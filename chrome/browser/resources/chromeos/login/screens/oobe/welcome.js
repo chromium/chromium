@@ -22,8 +22,8 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {getSelectedTitle, SelectListType} from '../../components/oobe_select.m.js';
-import {OobeTypes} from '../../components/oobe_types.m.js';
+import {getSelectedTitle, SelectListType} from '../../components/oobe_select.js';
+import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 
 import {OobeWelcomeDialog} from './welcome_dialog.js';

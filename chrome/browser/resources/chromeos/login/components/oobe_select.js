@@ -16,7 +16,7 @@
  *   }>
  * }
  */
-/* #export */ var SelectListType;
+export let SelectListType;
 
 /**
  * Sets up given "select" element using the list and adds callback.
@@ -30,17 +30,17 @@
  * Note: do not forget to update getSelectedTitle() below if this is
  * updated!
  */
-/* #export */ var setupSelect = function(select, list, callback) {
+export function setupSelect(select, list, callback) {
   select.innerHTML = '';
-  var optgroup = select;
-  for (var i = 0; i < list.length; ++i) {
-    var item = list[i];
+  let optgroup = select;
+  for (let i = 0; i < list.length; ++i) {
+    const item = list[i];
     if (item.optionGroupName) {
       optgroup = document.createElement('optgroup');
       optgroup.label = item.optionGroupName;
       select.appendChild(optgroup);
     } else {
-      var option =
+      const option =
           new Option(item.title, item.value, item.selected, item.selected);
       optgroup.appendChild(option);
     }
@@ -51,17 +51,17 @@
     };
     select.addEventListener('input', runCallback);
   }
-};
+}
 
 /**
  * Returns title of the selected option (see setupSelect() above).
  * @param {!SelectListType} list The same as in setupSelect() above.
  * @return {string}
  */
-/* #export */ var getSelectedTitle = function(list) {
-  var firstTitle = '';
-  for (var i = 0; i < list.length; ++i) {
-    var item = list[i];
+export function getSelectedTitle(list) {
+  let firstTitle = '';
+  for (let i = 0; i < list.length; ++i) {
+    const item = list[i];
     if (item.optionGroupName) {
       continue;
     }
@@ -75,16 +75,16 @@
     }
   }
   return firstTitle;
-};
+}
 
 /**
  * Returns value of the selected option (see setupSelect() above).
  * @param {!SelectListType} list The same as in setupSelect() above.
  * @return {?string}
  */
-/* #export */ var getSelectedValue = function(list) {
-  for (var i = 0; i < list.length; ++i) {
-    var item = list[i];
+export function getSelectedValue(list) {
+  for (let i = 0; i < list.length; ++i) {
+    const item = list[i];
     if (item.optionGroupName) {
       continue;
     }
@@ -93,4 +93,4 @@
     }
   }
   return null;
-};
+}

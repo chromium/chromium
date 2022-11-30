@@ -37,9 +37,9 @@ group("closure_compile") {
     ":oobe_icons.m",
     ":oobe_network_icons.m",
     ":oobe_screens_list",
-    ":oobe_select.m",
+    ":oobe_select",
     ":oobe_slide",
-    ":oobe_types.m",
+    ":oobe_types",
     ":progress_list_item",
     ":security_token_pin",
     ":test_util.m",
@@ -84,7 +84,7 @@ js_library("gaia_button") {
 js_library("gaia_dialog") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_dialog.js" ]
   deps = [
-    ":oobe_types.m",
+    ":oobe_types",
     "./behaviors:oobe_dialog_host_behavior.m",
     "./behaviors:oobe_i18n_behavior.m",
     "./buttons:oobe_back_button",
@@ -172,8 +172,8 @@ js_library("oobe_icons.m") {
 js_library("oobe_i18n_dropdown") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.js" ]
   deps = [
-    ":oobe_select.m",
-    ":oobe_types.m",
+    ":oobe_select",
+    ":oobe_types",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -213,10 +213,10 @@ js_library("oobe_screens_list") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("oobe_select.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_select.m.js" ]
+js_library("oobe_select") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_select.js" ]
   deps = []
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":copy_js" ]
 }
 
 js_library("oobe_slide") {
@@ -227,10 +227,10 @@ js_library("oobe_slide") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("oobe_types.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_types.m.js" ]
+js_library("oobe_types") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_types.js" ]
   deps = []
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":copy_js" ]
 }
 
 js_library("progress_list_item") {
@@ -245,7 +245,7 @@ js_library("progress_list_item") {
 js_library("security_token_pin") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.js" ]
   deps = [
-    ":oobe_types.m",
+    ":oobe_types",
     "./behaviors:oobe_i18n_behavior.m",
   ]
   extra_deps = [ ":web_components" ]
@@ -290,8 +290,6 @@ polymer_modulizer("oobe_network_icons") {
 js_modulizer("modulize") {
   input_files = [
     "long_touch_detector.js",
-    "oobe_select.js",
-    "oobe_types.js",
     "test_util.js",
   ]
   namespace_rewrites = []
@@ -301,6 +299,8 @@ js_modulizer("modulize") {
 copy("copy_js") {
   sources = [
     "display_manager_types.js",
+    "oobe_select.js",
+    "oobe_types.js",
     "web_view_helper.js",
     "web_view_loader.js",
   ]

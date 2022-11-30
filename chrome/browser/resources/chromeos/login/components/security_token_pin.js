@@ -21,7 +21,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {OobeDialogHostBehavior} from './behaviors/oobe_dialog_host_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.m.js';
-import {OobeTypes} from './oobe_types.m.js';
+import {OobeTypes} from './oobe_types.js';
 
 
 /**

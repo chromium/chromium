@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // #import {OOBE_UI_STATE} from '../display_manager_types.js';
-// #import {OobeTypes} from '../oobe_types.m.js';
+// #import {OobeTypes} from '../oobe_types.js';
 // #import {Oobe} from '../../cr_ui.js';
 
 /**

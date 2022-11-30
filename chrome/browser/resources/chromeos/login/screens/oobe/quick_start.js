@@ -15,7 +15,7 @@ import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerEleme
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
-import {OobeTypes} from '../../components/oobe_types.m.js';
+import {OobeTypes} from '../../components/oobe_types.js';
 
 
 /**

@@ -121,7 +121,7 @@ js_library("arc_terms_of_service") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/arc_terms_of_service.js" ]
   deps = [
     "../../:display_manager",
-    "../../components:oobe_select.m",
+    "../../components:oobe_select",
     "../../components:web_view_helper",
     "../../components:web_view_loader",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -163,8 +163,8 @@ js_library("consolidated_consent") {
   deps = [
     "../..:display_manager",
     "../../components:display_manager_types",
-    "../../components:oobe_select.m",
-    "../../components:oobe_types.m",
+    "../../components:oobe_select",
+    "../../components:oobe_types",
     "../../components:web_view_helper",
     "../../components:web_view_loader",
     "../../components/behaviors:login_screen_behavior.m",
@@ -276,7 +276,7 @@ js_library("gaia_signin") {
     "../../../../gaia_auth_host:authenticator",
     "../../components:gaia_dialog",
     "../../components:notification_card",
-    "../../components:oobe_types.m",
+    "../../components:oobe_types",
     "../../components:security_token_pin",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -396,7 +396,7 @@ js_library("offline_ad_login") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.js" ]
   deps = [
     "../../components:oobe_a11y_option",
-    "../../components:oobe_select.m",
+    "../../components:oobe_select",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
@@ -506,7 +506,7 @@ js_library("os_trial") {
 js_library("pin_setup") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/pin_setup.js" ]
   deps = [
-    "../../components:oobe_types.m",
+    "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -526,7 +526,7 @@ js_library("recommend_apps") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps.js" ]
   deps = [
     "../../components:oobe_apps_list",
-    "../../components:oobe_types.m",
+    "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -559,7 +559,7 @@ js_library("signin_fatal_error") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/signin_fatal_error.js" ]
   deps = [
     "../../components:display_manager_types",
-    "../../components:oobe_types.m",
+    "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",

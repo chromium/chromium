@@ -6,7 +6,7 @@ import '//resources/cr_elements/md_select.css.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {setupSelect} from './oobe_select.m.js';
+import {setupSelect} from './oobe_select.js';
 
 
 /**

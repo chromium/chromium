@@ -28,8 +28,8 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
-import {getSelectedTitle, getSelectedValue, SelectListType, setupSelect} from '../../components/oobe_select.m.js';
-import {OobeTypes} from '../../components/oobe_types.m.js';
+import {getSelectedTitle, getSelectedValue, SelectListType, setupSelect} from '../../components/oobe_select.js';
+import {OobeTypes} from '../../components/oobe_types.js';
 import {ContentType, WebViewHelper} from '../../components/web_view_helper.js';
 import {CLEAR_ANCHORS_CONTENT_SCRIPT, WebViewLoader} from '../../components/web_view_loader.js';
 import {Oobe} from '../../cr_ui.js';

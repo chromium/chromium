@@ -22,7 +22,7 @@ js_library("login_screen_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/behaviors/login_screen_behavior.m.js" ]
   deps = [
     "..:display_manager_types",
-    "..:oobe_types.m",
+    "..:oobe_types",
   ]
   extra_deps = [ ":modulize" ]
 }

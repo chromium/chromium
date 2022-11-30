@@ -27,7 +27,7 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeA11yOption} from '../../components/oobe_a11y_option.js';
-import {getSelectedTitle, getSelectedValue, SelectListType, setupSelect} from '../../components/oobe_select.m.js';
+import {getSelectedTitle, getSelectedValue, SelectListType, setupSelect} from '../../components/oobe_select.js';
 
 
 // The definitions below (JoinConfigType, ActiveDirectoryErrorState) are
