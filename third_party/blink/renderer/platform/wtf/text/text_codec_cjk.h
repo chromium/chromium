@@ -49,25 +49,7 @@ namespace WTF {
 // specification by using TextCodecICU.
 class TextCodecCJK final : public TextCodec {
  public:
-  // TODO(1378183): move the class details inside the .cc file and hide them
-  // from the .h users.
-  class Decoder {
-   public:
-    virtual ~Decoder() = default;
-    virtual String Decode(const uint8_t* bytes,
-                          wtf_size_t length,
-                          bool flush,
-                          bool stop_on_error,
-                          bool& saw_error);
-
-   protected:
-    enum class SawError { kNo, kYes };
-    virtual SawError ParseByte(uint8_t byte, StringBuilder& result) = 0;
-    virtual void Finalize(bool flush, StringBuilder& result) {}
-
-    uint8_t lead_ = 0x00;
-    absl::optional<uint8_t> prepended_byte_;
-  };
+  class Decoder;
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
   // Returns true if the given `name` is supported.

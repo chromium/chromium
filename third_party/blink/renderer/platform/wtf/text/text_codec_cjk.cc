@@ -37,6 +37,24 @@
 
 namespace WTF {
 
+class TextCodecCJK::Decoder {
+ public:
+  virtual ~Decoder() = default;
+  virtual String Decode(const uint8_t* bytes,
+                        wtf_size_t length,
+                        bool flush,
+                        bool stop_on_error,
+                        bool& saw_error);
+
+ protected:
+  enum class SawError { kNo, kYes };
+  virtual SawError ParseByte(uint8_t byte, StringBuilder& result) = 0;
+  virtual void Finalize(bool flush, StringBuilder& result) {}
+
+  uint8_t lead_ = 0x00;
+  absl::optional<uint8_t> prepended_byte_;
+};
+
 namespace {
 
 constexpr char kCanonicalNameEucJp[] = "EUC-JP";
