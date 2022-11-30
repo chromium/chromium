@@ -10871,12 +10871,12 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
   // last committed navigation.
   bool is_overriding_user_agent = is_same_document && is_overriding_user_agent_;
 
-  return NavigationRequest::CreateForSynchronousRendererCommit(
-      frame_tree_node_, this, is_same_document, url, origin, isolation_info,
-      std::move(referrer), transition, should_replace_current_entry, method,
-      has_user_gesture, is_overriding_user_agent, redirects,
-      original_request_url, std::move(coep_reporter),
-      std::move(web_bundle_navigation_info),
+  CHECK(owner_);
+  return owner_->CreateNavigationRequestForSynchronousRendererCommit(
+      this, is_same_document, url, origin, isolation_info, std::move(referrer),
+      transition, should_replace_current_entry, method, has_user_gesture,
+      is_overriding_user_agent, redirects, original_request_url,
+      std::move(coep_reporter), std::move(web_bundle_navigation_info),
       std::move(subresource_web_bundle_navigation_info), http_status_code);
 }
 

@@ -5,13 +5,32 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_OWNER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_OWNER_H_
 
+#include <memory>
+#include <vector>
+
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
+#include "ui/base/page_transition_types.h"
+
+class GURL;
+
+namespace net {
+class IsolationInfo;
+}  // namespace net
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
+class CrossOriginEmbedderPolicyReporter;
 class NavigationRequest;
 class Navigator;
 class RenderFrameHostManager;
+class RenderFrameHostImpl;
+class SubresourceWebBundleNavigationInfo;
+class WebBundleNavigationInfo;
 
 // An interface for RenderFrameHostImpl to communicate with FrameTreeNode owning
 // it (e.g. to initiate or cancel a navigation in the frame).
@@ -42,6 +61,31 @@ class RenderFrameHostOwner {
   virtual bool UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type) = 0;
+
+  // Creates a NavigationRequest  for a synchronous navigation that has
+  // committed in the renderer process. Those are:
+  // - same-document renderer-initiated navigations.
+  // - synchronous about:blank navigations.
+  virtual std::unique_ptr<NavigationRequest>
+  CreateNavigationRequestForSynchronousRendererCommit(
+      RenderFrameHostImpl* render_frame_host,
+      bool is_same_document,
+      const GURL& url,
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info_for_subresources,
+      blink::mojom::ReferrerPtr referrer,
+      const ui::PageTransition& transition,
+      bool should_replace_current_entry,
+      const std::string& method,
+      bool has_transient_activation,
+      bool is_overriding_user_agent,
+      const std::vector<GURL>& redirects,
+      const GURL& original_url,
+      std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
+      std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+      std::unique_ptr<SubresourceWebBundleNavigationInfo>
+          subresource_web_bundle_navigation_info,
+      int http_response_code) = 0;
 };
 
 }  // namespace content

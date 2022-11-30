@@ -606,6 +606,27 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type) override;
 
+  std::unique_ptr<NavigationRequest>
+  CreateNavigationRequestForSynchronousRendererCommit(
+      RenderFrameHostImpl* render_frame_host,
+      bool is_same_document,
+      const GURL& url,
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info_for_subresources,
+      blink::mojom::ReferrerPtr referrer,
+      const ui::PageTransition& transition,
+      bool should_replace_current_entry,
+      const std::string& method,
+      bool has_transient_activation,
+      bool is_overriding_user_agent,
+      const std::vector<GURL>& redirects,
+      const GURL& original_url,
+      std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
+      std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+      std::unique_ptr<SubresourceWebBundleNavigationInfo>
+          subresource_web_bundle_navigation_info,
+      int http_response_code) override;
+
  private:
   friend class CSPEmbeddedEnforcementUnitTest;
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
