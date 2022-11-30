@@ -53,7 +53,8 @@ bool IsTextField(const FormFieldData& field) {
 // totally different purpose.
 bool IsMeaningfulFieldName(const std::u16string& name) {
   static constexpr char16_t kRegex[] =
-      u"^(((field|input)(_|-)?\\d+)|title|otp|tan)$|(cvc|cvn|cvv|captcha)";
+      u"^(((field|input|mat-input)(_|-)?\\d+)|title|otp|tan)$|"
+      u"(cvc|cvn|cvv|captcha)";
   return !MatchesRegex<kRegex>(name);
 }
 
