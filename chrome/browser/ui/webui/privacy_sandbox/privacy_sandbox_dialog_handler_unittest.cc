@@ -59,8 +59,8 @@ class PrivacySandboxDialogHandlerTest : public testing::Test {
     EXPECT_CALL(*dialog_mock(), ShowNativeView());
     EXPECT_CALL(*mock_privacy_sandbox_service(),
                 PromptActionOccurred(expected_action));
-    base::Value args(base::Value::Type::LIST);
-    handler()->HandleShowDialog(args.GetList());
+    base::Value::List args;
+    handler()->HandleShowDialog(args);
   }
 
   void IdempotentPromptActionOccurred(const base::Value::List& args) {
@@ -121,10 +121,10 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleResizeDialog) {
       PromptActionOccurred(
           PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kCallbackId);
   args.Append(kDefaultDialogHeight);
-  handler()->HandleResizeDialog(args.GetList());
+  handler()->HandleResizeDialog(args);
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(kCallbackId, data.arg1()->GetString());
@@ -156,17 +156,17 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleClickLearnMore) {
       PromptActionOccurred(
           PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
 
-  base::Value more_info_opened_args(base::Value::Type::LIST);
+  base::Value::List more_info_opened_args;
   more_info_opened_args.Append(static_cast<int>(
       PrivacySandboxService::PromptAction::kConsentMoreInfoOpened));
-  handler()->HandlePromptActionOccurred(more_info_opened_args.GetList());
+  handler()->HandlePromptActionOccurred(more_info_opened_args);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 
-  base::Value more_info_closed_args(base::Value::Type::LIST);
+  base::Value::List more_info_closed_args;
   more_info_closed_args.Append(static_cast<int>(
       PrivacySandboxService::PromptAction::kConsentMoreInfoClosed));
-  handler()->HandlePromptActionOccurred(more_info_closed_args.GetList());
+  handler()->HandlePromptActionOccurred(more_info_closed_args);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -183,10 +183,10 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentAccepted) {
           PrivacySandboxService::PromptAction::kConsentClosedNoDecision))
       .Times(0);
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(
       static_cast<int>(PrivacySandboxService::PromptAction::kConsentAccepted));
-  IdempotentPromptActionOccurred(args.GetList());
+  IdempotentPromptActionOccurred(args);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -203,10 +203,10 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentDeclined) {
           PrivacySandboxService::PromptAction::kConsentClosedNoDecision))
       .Times(0);
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(
       static_cast<int>(PrivacySandboxService::PromptAction::kConsentDeclined));
-  IdempotentPromptActionOccurred(args.GetList());
+  IdempotentPromptActionOccurred(args);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -239,10 +239,10 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleResizeDialog) {
       PromptActionOccurred(
           PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kCallbackId);
   args.Append(kDefaultDialogHeight);
-  handler()->HandleResizeDialog(args.GetList());
+  handler()->HandleResizeDialog(args);
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(kCallbackId, data.arg1()->GetString());
@@ -273,10 +273,10 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleOpenSettings) {
           PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
       .Times(0);
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(static_cast<int>(
       PrivacySandboxService::PromptAction::kNoticeOpenSettings));
-  IdempotentPromptActionOccurred(args.GetList());
+  IdempotentPromptActionOccurred(args);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -293,10 +293,10 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleNoticeAcknowledge) {
           PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
       .Times(0);
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(static_cast<int>(
       PrivacySandboxService::PromptAction::kNoticeAcknowledge));
-  IdempotentPromptActionOccurred(args.GetList());
+  IdempotentPromptActionOccurred(args);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
