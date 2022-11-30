@@ -675,6 +675,22 @@ const Report = {
   },
 
   printRebaseline: (test, path, traversal) => {
+    if (!traversal.html.length) {
+      traversal.html.push(`<pre class="warn">
+# The following script doesn't properly handle fallbacks. For example, if the
+# script changes a baseline that is in the fallback path of a test variant, the
+# test variant may be broken. Also this script will stop working when we finish
+# migrating results.html to ResultDB (https://crbug.com/1382949). Please use
+# blink_tool.py rebaseline-cl instead. You can use --builders=<builder> to
+# rebaseline for one builder, which can achieve basically the same result as
+# this script (but with correct fallback handling).
+</pre>`);
+      traversal.html.push(`<pre>
+# Before running this script, you should cd into the proper baseline directory.
+# For example, if you are rebaselining using the results on mac-rel, you should
+# cd into third_party/blink/web_tests/platform/mac.
+</pre>`);
+    }
     let parser = new PathParser(path);
     let actualNames = [];
     let expectedNames = [];
