@@ -5,6 +5,7 @@
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
 import("//build/buildflag_header.gni")
+import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/ios/extension_bundle_data.gni")
@@ -616,16 +617,21 @@ source_set("main") {
     ]
   }
 
-  if (ios_chrome_links_with_lottie_framework) {
-    deps += [
-      "//ios/third_party/lottie:lottie+bundle",
-      "//ios/third_party/lottie:lottie+link",
-    ]
-  } else {
-    assert_no_deps += [
-      "//ios/third_party/lottie:lottie+bundle",
-      "//ios/third_party/lottie:lottie+link",
-    ]
+  # Lottie links with GLKit which does not support macCatalyst environment
+  # (see https://crbug.com/1394553 for details of the build failure). This
+  # is a stop-gap solution.
+  if (target_environment != "catalyst") {
+    if (ios_chrome_links_with_lottie_framework) {
+      deps += [
+        "//ios/third_party/lottie:lottie+bundle",
+        "//ios/third_party/lottie:lottie+link",
+      ]
+    } else {
+      assert_no_deps += [
+        "//ios/third_party/lottie:lottie+bundle",
+        "//ios/third_party/lottie:lottie+link",
+      ]
+    }
   }
 }
 
