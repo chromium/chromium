@@ -841,7 +841,6 @@ TEST_F(
  ['PaymentsSection', 'payments_section_test.js'],
  ['PeoplePage', 'people_page_test.js'],
  ['PeoplePageSyncControls', 'people_page_sync_controls_test.js'],
- ['PeoplePageSyncPage', 'people_page_sync_page_test.js'],
  ['Prefs', 'prefs_tests.js'],
  ['PrefUtil', 'pref_util_tests.js'],
  ['ProtocolHandlers', 'protocol_handlers_tests.js'],
@@ -879,6 +878,12 @@ GEN('#endif');
 // Timeout on Linux dbg bots: https://crbug.com/1311163
 GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
 [['AllSites', 'all_sites_tests.js']].forEach(test => registerTest(...test));
+GEN('#endif');
+
+// Timeout on Linux dbg bots: https://crbug.com/1394737
+GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
+[['PeoplePageSyncPage', 'people_page_sync_page_test.js']].forEach(
+    test => registerTest(...test));
 GEN('#endif');
 
 GEN('#if BUILDFLAG(IS_CHROMEOS)');
