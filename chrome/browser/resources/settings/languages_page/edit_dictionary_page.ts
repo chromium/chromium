@@ -99,7 +99,7 @@ export class SettingsEditDictionaryPageElement extends
     this.languageSettingsPrivate_ =
         LanguagesBrowserProxyImpl.getInstance().getLanguageSettingsPrivate();
 
-    this.languageSettingsPrivate_!.getSpellcheckWords(words => {
+    this.languageSettingsPrivate_!.getSpellcheckWords().then(words => {
       this.hasWords_ = words.length > 0;
       this.words_ = words;
     });

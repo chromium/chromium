@@ -11,8 +11,6 @@ import {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-type StringArrayCallback = (strings: string[]) => void;
-
 /**
  * Fake of the chrome.languageSettingsPrivate API.
  */
@@ -203,23 +201,17 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   /**
    * Gets languages available for translate, spell checking, input and locale.
    */
-  getLanguageList(
-      callback:
-          (languages: chrome.languageSettingsPrivate.Language[]) => void) {
-    setTimeout(() => {
-      callback(JSON.parse(JSON.stringify(this.languages)));
-    });
+  getLanguageList() {
+    return Promise.resolve(JSON.parse(JSON.stringify(this.languages)));
   }
 
   /**
    * Gets languages that should always be automatically translated.
    */
-  getAlwaysTranslateLanguages(callback: StringArrayCallback) {
-    setTimeout(() => {
-      const alwaysTranslateMap =
-          this.settingsPrefs_!.get('prefs.translate_allowlists.value');
-      callback(Object.keys(alwaysTranslateMap));
-    });
+  getAlwaysTranslateLanguages() {
+    const alwaysTranslateMap =
+        this.settingsPrefs_!.get('prefs.translate_allowlists.value');
+    return Promise.resolve(Object.keys(alwaysTranslateMap));
   }
 
   /**
@@ -244,11 +236,9 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   /**
    * Gets languages that should never be offered to translate.
    */
-  getNeverTranslateLanguages(callback: StringArrayCallback) {
-    setTimeout(() => {
-      callback(
-          this.settingsPrefs_!.get('prefs.translate_blocked_languages.value'));
-    });
+  getNeverTranslateLanguages() {
+    return Promise.resolve(
+        this.settingsPrefs_!.get('prefs.translate_blocked_languages.value'));
   }
 
   /**
@@ -353,8 +343,8 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   /**
    * Gets the translate target language (in most cases, the display locale).
    */
-  getTranslateTargetLanguage(callback: (languageCode: string) => void) {
-    callback('en');
+  getTranslateTargetLanguage() {
+    return Promise.resolve('en');
   }
 
   /**
@@ -368,18 +358,16 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   /**
    * Gets the current status of the chosen spell check dictionaries.
    */
-  getSpellcheckDictionaryStatuses(
-      callback: (statuses: chrome.languageSettingsPrivate
-                     .SpellcheckDictionaryStatus[]) => void) {
-    callback([]);
+  getSpellcheckDictionaryStatuses() {
+    return Promise.resolve([]);
   }
 
   /**
    * Gets the custom spell check words, in sorted order.
    */
-  getSpellcheckWords(callback: StringArrayCallback) {
-    callback([]);
+  getSpellcheckWords() {
     this.methodCalled('getSpellcheckWords');
+    return Promise.resolve([]);
   }
 
   /**

@@ -51,30 +51,25 @@ declare global {
 
       type StringArrayCallback = (strings: string[]) => void;
 
-      export function getLanguageList(
-          callback: (languages: Language[]) => void): void;
+      export function getLanguageList(): Promise<Language[]>;
       export function enableLanguage(languageCode: string): void;
       export function disableLanguage(languageCode: string): void;
       export function setEnableTranslationForLanguage(
           languageCode: string, enable: boolean): void;
       export function moveLanguage(languageCode: string, moveType: MoveType):
           void;
-      export function getAlwaysTranslateLanguages(
-          callback: StringArrayCallback): void;
+      export function getAlwaysTranslateLanguages(): Promise<string[]>;
       export function setLanguageAlwaysTranslateState(
           languageCode: string, alwaysTranslate: boolean): void;
-      export function getNeverTranslateLanguages(callback: StringArrayCallback):
-          void;
-      export function getSpellcheckDictionaryStatuses(
-          callback: (statuses: SpellcheckDictionaryStatus[]) => void): void;
-      export function getSpellcheckWords(callback: StringArrayCallback): void;
+      export function getNeverTranslateLanguages(): Promise<string[]>;
+      export function getSpellcheckDictionaryStatuses():
+          Promise<SpellcheckDictionaryStatus[]>;
+      export function getSpellcheckWords(): Promise<string[]>;
       export function addSpellcheckWord(word: string): void;
       export function removeSpellcheckWord(word: string): void;
-      export function getTranslateTargetLanguage(
-          callback: (languageCode: string) => void): void;
+      export function getTranslateTargetLanguage(): Promise<string>;
       export function setTranslateTargetLanguage(languageCode: string): void;
-      export function getInputMethodLists(
-          callback: (lists: InputMethodLists) => void): void;
+      export function getInputMethodLists(): Promise<InputMethodLists>;
       export function addInputMethod(inputMethodId: string): void;
       export function removeInputMethod(inputMethodId: string): void;
       export function retryDownloadDictionary(languageCode: string): void;
