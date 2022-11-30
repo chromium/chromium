@@ -233,11 +233,4 @@ public interface ManualFillingComponent extends BackPressHandler {
      * i.e. The height of any accessories to be shown on top of the keyboard.
      */
     int getKeyboardExtensionHeight();
-
-    /**
-     * Will force the accessory to show when the keyboard is shown.
-     * TODO(crbug.com/1385400): Ideally this would live in a test utility like
-     * ManualFillingTestHelper.
-     */
-    void forceShowForTesting();
 }

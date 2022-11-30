@@ -1527,7 +1527,6 @@ if (current_toolchain == default_toolchain) {
       "//base/test:test_support_java",
       "//cc:cc_java",
       "//chrome/android:chrome_java",
-      "//chrome/android/features/keyboard_accessory/public:public_java",
       "//chrome/android/features/start_surface:java_resources",
       "//chrome/android/features/start_surface:public_java",
       "//chrome/android/features/tab_ui:java",
