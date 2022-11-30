@@ -7,6 +7,8 @@
 #include <functional>
 #include <type_traits>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
@@ -177,13 +179,6 @@ TEST(RawRef, CopyConstruct) {
   }
 }
 
-TEST(RawRefDeathTest, CopyConstructAfterMove) {
-  int i = 1;
-  auto r = raw_ref<int>(i);
-  auto r2 = std::move(r);
-  EXPECT_CHECK_DEATH({ [[maybe_unused]] auto r3 = r; });
-}
-
 TEST(RawRef, MoveConstruct) {
   {
     int i = 1;
@@ -199,13 +194,6 @@ TEST(RawRef, MoveConstruct) {
     auto r2 = raw_ref<const int>(std::move(r));
     EXPECT_EQ(&*r2, &i);
   }
-}
-
-TEST(RawRefDeathTest, MoveConstructAfterMove) {
-  int i = 1;
-  auto r = raw_ref<int>(i);
-  auto r2 = std::move(r);
-  EXPECT_CHECK_DEATH({ [[maybe_unused]] auto r3 = std::move(r); });
 }
 
 TEST(RawRef, CopyAssign) {
@@ -236,13 +224,6 @@ TEST(RawRef, CopyAssign) {
     r = rj;
     EXPECT_EQ(&*r, &j);
   }
-}
-
-TEST(RawRefDeathTest, CopyAssignAfterMove) {
-  int i = 1;
-  auto r = raw_ref<int>(i);
-  auto r2 = std::move(r);
-  EXPECT_CHECK_DEATH({ r2 = r; });
 }
 
 TEST(RawRef, CopyReassignAfterMove) {
@@ -283,13 +264,6 @@ TEST(RawRef, MoveAssign) {
   }
 }
 
-TEST(RawRefDeathTest, MoveAssignAfterMove) {
-  int i = 1;
-  auto r = raw_ref<int>(i);
-  auto r2 = std::move(r);
-  EXPECT_CHECK_DEATH({ r2 = std::move(r); });
-}
-
 TEST(RawRef, MoveReassignAfterMove) {
   int i = 1;
   auto r = raw_ref<int>(i);
@@ -317,13 +291,6 @@ TEST(RawRef, CopyConstructUpCast) {
   }
 }
 
-TEST(RawRefDeathTest, CopyConstructAfterMoveUpCast) {
-  auto s = SubClass();
-  auto r = raw_ref<SubClass>(s);
-  auto moved = std::move(r);
-  EXPECT_CHECK_DEATH({ [[maybe_unused]] auto r2 = raw_ref<BaseClass>(r); });
-}
-
 TEST(RawRef, MoveConstructUpCast) {
   {
     auto s = SubClass();
@@ -341,22 +308,10 @@ TEST(RawRef, MoveConstructUpCast) {
   }
 }
 
-TEST(RawRefDeathTest, MoveConstructAfterMoveUpCast) {
-  auto s = SubClass();
-  auto r = raw_ref<SubClass>(s);
-  auto moved = std::move(r);
-  EXPECT_CHECK_DEATH(
-      { [[maybe_unused]] auto r2 = raw_ref<BaseClass>(std::move(r)); });
-}
-
 TEST(RawRef, FromPtr) {
   int i = 42;
   auto ref = raw_ref<int>::from_ptr(&i);
   EXPECT_EQ(&i, &*ref);
-}
-
-TEST(RawRefDeathTest, FromPtrWithNullptr) {
-  EXPECT_CHECK_DEATH({ raw_ref<int>::from_ptr(nullptr); });
 }
 
 TEST(RawRef, CopyAssignUpCast) {
@@ -386,15 +341,6 @@ TEST(RawRef, CopyAssignUpCast) {
   }
 }
 
-TEST(RawRefDeathTest, CopyAssignAfterMoveUpCast) {
-  auto s = SubClass();
-  auto r = raw_ref<const SubClass>(s);
-  auto t = BaseClass();
-  auto rt = raw_ref<const BaseClass>(t);
-  auto moved = std::move(r);
-  EXPECT_CHECK_DEATH({ rt = r; });
-}
-
 TEST(RawRef, MoveAssignUpCast) {
   {
     auto s = SubClass();
@@ -422,39 +368,16 @@ TEST(RawRef, MoveAssignUpCast) {
   }
 }
 
-TEST(RawRefDeathTest, MoveAssignAfterMoveUpCast) {
-  auto s = SubClass();
-  auto r = raw_ref<const SubClass>(s);
-  auto t = BaseClass();
-  auto rt = raw_ref<const BaseClass>(t);
-  auto moved = std::move(r);
-  EXPECT_CHECK_DEATH({ rt = std::move(r); });
-}
-
 TEST(RawRef, Deref) {
   int i;
   auto r = raw_ref<int>(i);
   EXPECT_EQ(&*r, &i);
 }
 
-TEST(RawRefDeathTest, DerefAfterMove) {
-  int i;
-  auto r = raw_ref<int>(i);
-  auto moved = std::move(r);
-  EXPECT_CHECK_DEATH({ r.operator*(); });
-}
-
 TEST(RawRef, Arrow) {
   int i;
   auto r = raw_ref<int>(i);
   EXPECT_EQ(r.operator->(), &i);
-}
-
-TEST(RawRefDeathTest, ArrowAfterMove) {
-  int i;
-  auto r = raw_ref<int>(i);
-  auto moved = std::move(r);
-  EXPECT_CHECK_DEATH({ r.operator->(); });
 }
 
 TEST(RawRef, Swap) {
@@ -465,6 +388,186 @@ TEST(RawRef, Swap) {
   swap(ri, rj);
   EXPECT_EQ(&*ri, &j);
   EXPECT_EQ(&*rj, &i);
+}
+
+TEST(RawRef, Equals) {
+  int i = 1;
+  auto r1 = raw_ref<int>(i);
+  auto r2 = raw_ref<int>(i);
+  EXPECT_TRUE(r1 == r1);
+  EXPECT_TRUE(r1 == r2);
+  EXPECT_TRUE(r1 == i);
+  EXPECT_TRUE(i == r1);
+  int j = 1;
+  auto r3 = raw_ref<int>(j);
+  EXPECT_FALSE(r1 == r3);
+  EXPECT_FALSE(r1 == j);
+  EXPECT_FALSE(j == r1);
+}
+
+TEST(RawRef, NotEquals) {
+  int i = 1;
+  auto r1 = raw_ref<int>(i);
+  int j = 1;
+  auto r2 = raw_ref<int>(j);
+  EXPECT_TRUE(r1 != r2);
+  EXPECT_TRUE(r1 != j);
+  EXPECT_TRUE(j != r1);
+  EXPECT_FALSE(r1 != r1);
+  EXPECT_FALSE(r2 != j);
+  EXPECT_FALSE(j != r2);
+}
+
+TEST(RawRef, LessThan) {
+  int i[] = {1, 1};
+  auto r1 = raw_ref<int>(i[0]);
+  auto r2 = raw_ref<int>(i[1]);
+  EXPECT_TRUE(r1 < r2);
+  EXPECT_TRUE(r1 < i[1]);
+  EXPECT_FALSE(i[1] < r1);
+  EXPECT_FALSE(r2 < r1);
+  EXPECT_FALSE(r2 < i[0]);
+  EXPECT_TRUE(i[0] < r2);
+  EXPECT_FALSE(r1 < r1);
+  EXPECT_FALSE(r1 < i[0]);
+  EXPECT_FALSE(i[0] < r1);
+}
+
+TEST(RawRef, GreaterThan) {
+  int i[] = {1, 1};
+  auto r1 = raw_ref<int>(i[0]);
+  auto r2 = raw_ref<int>(i[1]);
+  EXPECT_TRUE(r2 > r1);
+  EXPECT_FALSE(r1 > r2);
+  EXPECT_FALSE(r1 > i[1]);
+  EXPECT_TRUE(i[1] > r1);
+  EXPECT_FALSE(r2 > r2);
+  EXPECT_FALSE(r2 > i[1]);
+  EXPECT_FALSE(i[1] > r2);
+}
+
+TEST(RawRef, LessThanOrEqual) {
+  int i[] = {1, 1};
+  auto r1 = raw_ref<int>(i[0]);
+  auto r2 = raw_ref<int>(i[1]);
+  EXPECT_TRUE(r1 <= r2);
+  EXPECT_TRUE(r1 <= r1);
+  EXPECT_TRUE(r2 <= r2);
+  EXPECT_FALSE(r2 <= r1);
+  EXPECT_TRUE(r1 <= i[1]);
+  EXPECT_TRUE(r1 <= i[0]);
+  EXPECT_TRUE(r2 <= i[1]);
+  EXPECT_FALSE(r2 <= i[0]);
+  EXPECT_FALSE(i[1] <= r1);
+  EXPECT_TRUE(i[0] <= r1);
+  EXPECT_TRUE(i[1] <= r2);
+  EXPECT_TRUE(i[0] <= r2);
+}
+
+TEST(RawRef, GreaterThanOrEqual) {
+  int i[] = {1, 1};
+  auto r1 = raw_ref<int>(i[0]);
+  auto r2 = raw_ref<int>(i[1]);
+  EXPECT_TRUE(r2 >= r1);
+  EXPECT_TRUE(r1 >= r1);
+  EXPECT_TRUE(r2 >= r2);
+  EXPECT_FALSE(r1 >= r2);
+  EXPECT_TRUE(r2 >= i[0]);
+  EXPECT_TRUE(r1 >= i[0]);
+  EXPECT_TRUE(r2 >= i[1]);
+  EXPECT_FALSE(r1 >= i[1]);
+  EXPECT_FALSE(i[0] >= r2);
+  EXPECT_TRUE(i[0] >= r1);
+  EXPECT_TRUE(i[1] >= r2);
+  EXPECT_TRUE(i[1] >= r1);
+}
+
+// Death Tests: If we're only using the no-op version of `raw_ptr` and
+// have `!BUILDFLAG(PA_DCHECK_IS_ON)`, the `PA_RAW_PTR_CHECK()`s used in
+// `raw_ref` evaluate to nothing. Therefore, death tests relying on
+// these CHECKs firing are disabled in their absence.
+
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||       \
+    defined(RAW_PTR_USE_MTE_CHECKED_PTR) || BUILDFLAG(PA_DCHECK_IS_ON)
+
+TEST(RawRefDeathTest, CopyConstructAfterMove) {
+  int i = 1;
+  auto r = raw_ref<int>(i);
+  auto r2 = std::move(r);
+  EXPECT_CHECK_DEATH({ [[maybe_unused]] auto r3 = r; });
+}
+
+TEST(RawRefDeathTest, MoveConstructAfterMove) {
+  int i = 1;
+  auto r = raw_ref<int>(i);
+  auto r2 = std::move(r);
+  EXPECT_CHECK_DEATH({ [[maybe_unused]] auto r3 = std::move(r); });
+}
+
+TEST(RawRefDeathTest, CopyAssignAfterMove) {
+  int i = 1;
+  auto r = raw_ref<int>(i);
+  auto r2 = std::move(r);
+  EXPECT_CHECK_DEATH({ r2 = r; });
+}
+
+TEST(RawRefDeathTest, MoveAssignAfterMove) {
+  int i = 1;
+  auto r = raw_ref<int>(i);
+  auto r2 = std::move(r);
+  EXPECT_CHECK_DEATH({ r2 = std::move(r); });
+}
+
+TEST(RawRefDeathTest, CopyConstructAfterMoveUpCast) {
+  auto s = SubClass();
+  auto r = raw_ref<SubClass>(s);
+  auto moved = std::move(r);
+  EXPECT_CHECK_DEATH({ [[maybe_unused]] auto r2 = raw_ref<BaseClass>(r); });
+}
+
+TEST(RawRefDeathTest, MoveConstructAfterMoveUpCast) {
+  auto s = SubClass();
+  auto r = raw_ref<SubClass>(s);
+  auto moved = std::move(r);
+  EXPECT_CHECK_DEATH(
+      { [[maybe_unused]] auto r2 = raw_ref<BaseClass>(std::move(r)); });
+}
+
+TEST(RawRefDeathTest, FromPtrWithNullptr) {
+  EXPECT_CHECK_DEATH({ raw_ref<int>::from_ptr(nullptr); });
+}
+
+TEST(RawRefDeathTest, CopyAssignAfterMoveUpCast) {
+  auto s = SubClass();
+  auto r = raw_ref<const SubClass>(s);
+  auto t = BaseClass();
+  auto rt = raw_ref<const BaseClass>(t);
+  auto moved = std::move(r);
+  EXPECT_CHECK_DEATH({ rt = r; });
+}
+
+TEST(RawRefDeathTest, MoveAssignAfterMoveUpCast) {
+  auto s = SubClass();
+  auto r = raw_ref<const SubClass>(s);
+  auto t = BaseClass();
+  auto rt = raw_ref<const BaseClass>(t);
+  auto moved = std::move(r);
+  EXPECT_CHECK_DEATH({ rt = std::move(r); });
+}
+
+TEST(RawRefDeathTest, DerefAfterMove) {
+  int i;
+  auto r = raw_ref<int>(i);
+  auto moved = std::move(r);
+  EXPECT_CHECK_DEATH({ r.operator*(); });
+}
+
+TEST(RawRefDeathTest, ArrowAfterMove) {
+  int i;
+  auto r = raw_ref<int>(i);
+  auto moved = std::move(r);
+  EXPECT_CHECK_DEATH({ r.operator->(); });
 }
 
 TEST(RawRefDeathTest, SwapAfterMove) {
@@ -486,21 +589,6 @@ TEST(RawRefDeathTest, SwapAfterMove) {
     auto moved = std::move(rj);
     EXPECT_CHECK_DEATH({ swap(ri, rj); });
   }
-}
-
-TEST(RawRef, Equals) {
-  int i = 1;
-  auto r1 = raw_ref<int>(i);
-  auto r2 = raw_ref<int>(i);
-  EXPECT_TRUE(r1 == r1);
-  EXPECT_TRUE(r1 == r2);
-  EXPECT_TRUE(r1 == i);
-  EXPECT_TRUE(i == r1);
-  int j = 1;
-  auto r3 = raw_ref<int>(j);
-  EXPECT_FALSE(r1 == r3);
-  EXPECT_FALSE(r1 == j);
-  EXPECT_FALSE(j == r1);
 }
 
 TEST(RawRefDeathTest, EqualsAfterMove) {
@@ -526,19 +614,6 @@ TEST(RawRefDeathTest, EqualsAfterMove) {
   }
 }
 
-TEST(RawRef, NotEquals) {
-  int i = 1;
-  auto r1 = raw_ref<int>(i);
-  int j = 1;
-  auto r2 = raw_ref<int>(j);
-  EXPECT_TRUE(r1 != r2);
-  EXPECT_TRUE(r1 != j);
-  EXPECT_TRUE(j != r1);
-  EXPECT_FALSE(r1 != r1);
-  EXPECT_FALSE(r2 != j);
-  EXPECT_FALSE(j != r2);
-}
-
 TEST(RawRefDeathTest, NotEqualsAfterMove) {
   {
     int i = 1;
@@ -560,21 +635,6 @@ TEST(RawRefDeathTest, NotEqualsAfterMove) {
     auto moved = std::move(r1);
     EXPECT_CHECK_DEATH({ [[maybe_unused]] bool b = r1 != r1; });
   }
-}
-
-TEST(RawRef, LessThan) {
-  int i[] = {1, 1};
-  auto r1 = raw_ref<int>(i[0]);
-  auto r2 = raw_ref<int>(i[1]);
-  EXPECT_TRUE(r1 < r2);
-  EXPECT_TRUE(r1 < i[1]);
-  EXPECT_FALSE(i[1] < r1);
-  EXPECT_FALSE(r2 < r1);
-  EXPECT_FALSE(r2 < i[0]);
-  EXPECT_TRUE(i[0] < r2);
-  EXPECT_FALSE(r1 < r1);
-  EXPECT_FALSE(r1 < i[0]);
-  EXPECT_FALSE(i[0] < r1);
 }
 
 TEST(RawRefDeathTest, LessThanAfterMove) {
@@ -600,19 +660,6 @@ TEST(RawRefDeathTest, LessThanAfterMove) {
   }
 }
 
-TEST(RawRef, GreaterThan) {
-  int i[] = {1, 1};
-  auto r1 = raw_ref<int>(i[0]);
-  auto r2 = raw_ref<int>(i[1]);
-  EXPECT_TRUE(r2 > r1);
-  EXPECT_FALSE(r1 > r2);
-  EXPECT_FALSE(r1 > i[1]);
-  EXPECT_TRUE(i[1] > r1);
-  EXPECT_FALSE(r2 > r2);
-  EXPECT_FALSE(r2 > i[1]);
-  EXPECT_FALSE(i[1] > r2);
-}
-
 TEST(RawRefDeathTest, GreaterThanAfterMove) {
   {
     int i = 1;
@@ -634,24 +681,6 @@ TEST(RawRefDeathTest, GreaterThanAfterMove) {
     auto moved = std::move(r1);
     EXPECT_CHECK_DEATH({ [[maybe_unused]] bool b = r1 > r1; });
   }
-}
-
-TEST(RawRef, LessThanOrEqual) {
-  int i[] = {1, 1};
-  auto r1 = raw_ref<int>(i[0]);
-  auto r2 = raw_ref<int>(i[1]);
-  EXPECT_TRUE(r1 <= r2);
-  EXPECT_TRUE(r1 <= r1);
-  EXPECT_TRUE(r2 <= r2);
-  EXPECT_FALSE(r2 <= r1);
-  EXPECT_TRUE(r1 <= i[1]);
-  EXPECT_TRUE(r1 <= i[0]);
-  EXPECT_TRUE(r2 <= i[1]);
-  EXPECT_FALSE(r2 <= i[0]);
-  EXPECT_FALSE(i[1] <= r1);
-  EXPECT_TRUE(i[0] <= r1);
-  EXPECT_TRUE(i[1] <= r2);
-  EXPECT_TRUE(i[0] <= r2);
 }
 
 TEST(RawRefDeathTest, LessThanOrEqualAfterMove) {
@@ -677,24 +706,6 @@ TEST(RawRefDeathTest, LessThanOrEqualAfterMove) {
   }
 }
 
-TEST(RawRef, GreaterThanOrEqual) {
-  int i[] = {1, 1};
-  auto r1 = raw_ref<int>(i[0]);
-  auto r2 = raw_ref<int>(i[1]);
-  EXPECT_TRUE(r2 >= r1);
-  EXPECT_TRUE(r1 >= r1);
-  EXPECT_TRUE(r2 >= r2);
-  EXPECT_FALSE(r1 >= r2);
-  EXPECT_TRUE(r2 >= i[0]);
-  EXPECT_TRUE(r1 >= i[0]);
-  EXPECT_TRUE(r2 >= i[1]);
-  EXPECT_FALSE(r1 >= i[1]);
-  EXPECT_FALSE(i[0] >= r2);
-  EXPECT_TRUE(i[0] >= r1);
-  EXPECT_TRUE(i[1] >= r2);
-  EXPECT_TRUE(i[1] >= r1);
-}
-
 TEST(RawRefDeathTest, GreaterThanOrEqualAfterMove) {
   {
     int i = 1;
@@ -717,6 +728,10 @@ TEST(RawRefDeathTest, GreaterThanOrEqualAfterMove) {
     EXPECT_CHECK_DEATH({ [[maybe_unused]] bool b = r1 >= r1; });
   }
 }
+
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||
+        // defined(RAW_PTR_USE_MTE_CHECKED_PTR) || BUILDFLAG(PA_DCHECK_IS_ON)
 
 TEST(RawRef, CTAD) {
   int i = 1;
