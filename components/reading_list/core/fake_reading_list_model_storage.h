@@ -24,6 +24,22 @@ class FakeReadingListModelStorage
     virtual void FakeStorageDidRemoveEntry() = 0;
   };
 
+  class FakeScopedBatchUpdate : public ScopedBatchUpdate {
+   public:
+    explicit FakeScopedBatchUpdate(Observer* observer);
+
+    FakeScopedBatchUpdate(const FakeScopedBatchUpdate&) = delete;
+    FakeScopedBatchUpdate& operator=(const FakeScopedBatchUpdate&) = delete;
+
+    ~FakeScopedBatchUpdate() override;
+
+    void SaveEntry(const ReadingListEntry& entry) override;
+    void RemoveEntry(const GURL& entry_url) override;
+
+   private:
+    const raw_ptr<Observer> observer_ = nullptr;
+  };
+
   FakeReadingListModelStorage();
   explicit FakeReadingListModelStorage(Observer* observer);
   ~FakeReadingListModelStorage() override;
@@ -37,10 +53,8 @@ class FakeReadingListModelStorage
   bool TriggerLoadCompletion();
 
   // ReadingListModelStorage implementation.
-  void Load(LoadCallback load_cb) override;
+  void Load(base::Clock* clock, LoadCallback load_cb) override;
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
-  void SaveEntry(const ReadingListEntry& entry) override;
-  void RemoveEntry(const ReadingListEntry& entry) override;
   ReadingListSyncBridge* GetSyncBridge() override;
 
  private:

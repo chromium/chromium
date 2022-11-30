@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

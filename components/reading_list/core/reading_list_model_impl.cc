@@ -57,7 +57,8 @@ ReadingListModelImpl::ReadingListModelImpl(
     if (storage_layer_->GetSyncBridge()) {
       storage_layer_->GetSyncBridge()->SetReadingListModel(this, this, clock_);
     }
-    storage_layer_->Load(base::BindOnce(&ReadingListModelImpl::StoreLoaded,
+    storage_layer_->Load(clock_,
+                         base::BindOnce(&ReadingListModelImpl::StoreLoaded,
                                         weak_ptr_factory_.GetWeakPtr()));
   } else {
     loaded_ = true;
@@ -173,7 +174,13 @@ void ReadingListModelImpl::MarkAllSeen() {
     entry.SetRead(false, clock_->Now());
     UpdateEntryStateCountersOnEntryInsertion(entry);
     if (storage_layer_) {
-      storage_layer_->SaveEntry(entry);
+      // TODO(crbug.com/1386158): Reuse same batch.
+      std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+          storage_layer_->EnsureBatchCreated();
+      batch->SaveEntry(entry);
+      if (storage_layer_->GetSyncBridge()) {
+        storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
+      }
     }
     for (auto& observer : observers_) {
       observer.ReadingListDidApplyChanges(this);
@@ -346,8 +353,15 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
     observer.ReadingListWillRemoveEntry(this, url);
 
   if (storage_layer_ && !from_sync) {
-    storage_layer_->RemoveEntry(*entry);
+    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+        storage_layer_->EnsureBatchCreated();
+    batch->RemoveEntry(url);
+
+    if (storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->DidRemoveEntry(*entry);
+    }
   }
+
   UpdateEntryStateCountersOnEntryRemoval(*entry);
 
   entries_.erase(url);
@@ -384,10 +398,17 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
     observer.ReadingListWillAddEntry(this, entry);
   UpdateEntryStateCountersOnEntryInsertion(entry);
   SetUnseenFlag();
-  entries_.emplace(url, std::move(entry));
+
+  auto it = entries_.emplace(url, std::move(entry)).first;
+  const ReadingListEntry* entry_ptr = &it->second;
 
   if (storage_layer_) {
-    storage_layer_->SaveEntry(*GetEntryByURL(url));
+    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+        storage_layer_->EnsureBatchCreated();
+    batch->SaveEntry(*GetEntryByURL(url));
+    if (storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(*entry_ptr);
+    }
   }
 
   for (auto& observer : observers_) {
@@ -425,8 +446,14 @@ void ReadingListModelImpl::SetReadStatus(const GURL& url, bool read) {
   UpdateEntryStateCountersOnEntryInsertion(entry);
 
   if (storage_layer_) {
-    storage_layer_->SaveEntry(entry);
+    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+        storage_layer_->EnsureBatchCreated();
+    batch->SaveEntry(entry);
+    if (storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
+    }
   }
+
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidMoveEntry(this, url);
     observer.ReadingListDidApplyChanges(this);
@@ -452,7 +479,12 @@ void ReadingListModelImpl::SetEntryTitle(const GURL& url,
   }
   entry.SetTitle(trimmed_title, clock_->Now());
   if (storage_layer_) {
-    storage_layer_->SaveEntry(entry);
+    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+        storage_layer_->EnsureBatchCreated();
+    batch->SaveEntry(entry);
+    if (storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
+    }
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
@@ -477,7 +509,12 @@ void ReadingListModelImpl::SetEstimatedReadTime(
   }
   entry.SetEstimatedReadTime(estimated_read_time);
   if (storage_layer_) {
-    storage_layer_->SaveEntry(entry);
+    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+        storage_layer_->EnsureBatchCreated();
+    batch->SaveEntry(entry);
+    if (storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
+    }
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
@@ -508,7 +545,12 @@ void ReadingListModelImpl::SetEntryDistilledInfo(
   entry.SetDistilledInfo(distilled_path, distilled_url, distillation_size,
                          distillation_date);
   if (storage_layer_) {
-    storage_layer_->SaveEntry(entry);
+    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+        storage_layer_->EnsureBatchCreated();
+    batch->SaveEntry(entry);
+    if (storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
+    }
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
@@ -534,7 +576,12 @@ void ReadingListModelImpl::SetEntryDistilledState(
   }
   entry.SetDistilledState(state);
   if (storage_layer_) {
-    storage_layer_->SaveEntry(entry);
+    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+        storage_layer_->EnsureBatchCreated();
+    batch->SaveEntry(entry);
+    if (storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
+    }
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
@@ -554,9 +601,15 @@ void ReadingListModelImpl::SetContentSuggestionsExtra(
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListWillUpdateEntry(this, url);
   }
+
   entry->SetContentSuggestionsExtra(extra);
   if (storage_layer_) {
-    storage_layer_->SaveEntry(*entry);
+    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+        storage_layer_->EnsureBatchCreated();
+    batch->SaveEntry(*entry);
+    if (storage_layer_->GetSyncBridge()) {
+      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(*entry);
+    }
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);

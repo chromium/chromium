@@ -4,6 +4,27 @@
 
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 
+FakeReadingListModelStorage::FakeScopedBatchUpdate::FakeScopedBatchUpdate(
+    Observer* observer)
+    : observer_(observer) {}
+
+FakeReadingListModelStorage::FakeScopedBatchUpdate::~FakeScopedBatchUpdate() =
+    default;
+
+void FakeReadingListModelStorage::FakeScopedBatchUpdate::SaveEntry(
+    const ReadingListEntry& entry) {
+  if (observer_) {
+    observer_->FakeStorageDidSaveEntry();
+  }
+}
+
+void FakeReadingListModelStorage::FakeScopedBatchUpdate::RemoveEntry(
+    const GURL& entry_url) {
+  if (observer_) {
+    observer_->FakeStorageDidRemoveEntry();
+  }
+}
+
 FakeReadingListModelStorage::FakeReadingListModelStorage()
     : FakeReadingListModelStorage(/*observer=*/nullptr) {}
 
@@ -26,25 +47,14 @@ bool FakeReadingListModelStorage::TriggerLoadCompletion() {
   return TriggerLoadCompletion(LoadResult());
 }
 
-void FakeReadingListModelStorage::Load(LoadCallback load_cb) {
+void FakeReadingListModelStorage::Load(base::Clock* clock,
+                                       LoadCallback load_cb) {
   load_callback_ = std::move(load_cb);
 }
 
 std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate>
 FakeReadingListModelStorage::EnsureBatchCreated() {
-  return nullptr;
-}
-
-void FakeReadingListModelStorage::SaveEntry(const ReadingListEntry& entry) {
-  if (observer_) {
-    observer_->FakeStorageDidSaveEntry();
-  }
-}
-
-void FakeReadingListModelStorage::RemoveEntry(const ReadingListEntry& entry) {
-  if (observer_) {
-    observer_->FakeStorageDidRemoveEntry();
-  }
+  return std::make_unique<FakeScopedBatchUpdate>(observer_);
 }
 
 ReadingListSyncBridge* FakeReadingListModelStorage::GetSyncBridge() {

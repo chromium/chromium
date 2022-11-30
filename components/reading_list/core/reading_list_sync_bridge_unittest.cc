@@ -121,8 +121,11 @@ class ReadingListSyncBridgeTest : public testing::Test {
     reading_list_sync_bridge_->SetReadingListModel(model_.get(), &delegate_,
                                                    &clock_);
     base::RunLoop loop;
-    reading_list_sync_bridge_->Load(base::BindLambdaForTesting(
-        [&loop](ReadingListModelStorage::LoadResultOrError) { loop.Quit(); }));
+    reading_list_sync_bridge_->Load(
+        &clock_, base::BindLambdaForTesting(
+                     [&loop](ReadingListModelStorage::LoadResultOrError) {
+                       loop.Quit();
+                     }));
     loop.Run();
   }
 
@@ -154,7 +157,10 @@ TEST_F(ReadingListSyncBridgeTest, SaveOneRead) {
                   MatchesSpecifics("read title", "http://read.example.com/",
                                    sync_pb::ReadingListSpecifics::READ),
                   _));
-  reading_list_sync_bridge_->SaveEntry(entry);
+  // TODO(crbug.com/1386158): Currently the bridge assumes the caller starts
+  // a transaction.
+  auto token = reading_list_sync_bridge_->EnsureBatchCreated();
+  reading_list_sync_bridge_->DidAddOrUpdateEntry(entry);
 }
 
 TEST_F(ReadingListSyncBridgeTest, SaveOneUnread) {
@@ -169,7 +175,24 @@ TEST_F(ReadingListSyncBridgeTest, SaveOneUnread) {
                   MatchesSpecifics("unread title", "http://unread.example.com/",
                                    sync_pb::ReadingListSpecifics::UNSEEN),
                   _));
-  reading_list_sync_bridge_->SaveEntry(entry);
+  // TODO(crbug.com/1386158): Currently the bridge assumes the caller starts
+  // a transaction.
+  auto token = reading_list_sync_bridge_->EnsureBatchCreated();
+  reading_list_sync_bridge_->DidAddOrUpdateEntry(entry);
+}
+
+TEST_F(ReadingListSyncBridgeTest, DeleteOneEntry) {
+  EXPECT_CALL(delegate_, SyncAddEntry).Times(0);
+  EXPECT_CALL(delegate_, SyncMergeEntry).Times(0);
+  EXPECT_CALL(delegate_, SyncRemoveEntry).Times(0);
+
+  ReadingListEntry entry(GURL("http://unread.example.com/"), "unread title",
+                         AdvanceAndGetTime(&clock_));
+  EXPECT_CALL(processor_, Delete("http://unread.example.com/", _));
+  // TODO(crbug.com/1386158): Currently the bridge assumes the caller starts
+  // a transaction.
+  auto token = reading_list_sync_bridge_->EnsureBatchCreated();
+  reading_list_sync_bridge_->DidRemoveEntry(entry);
 }
 
 TEST_F(ReadingListSyncBridgeTest, SyncMergeOneEntry) {
