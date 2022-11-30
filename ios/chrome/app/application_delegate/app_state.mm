@@ -15,6 +15,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
+#import "base/task/bind_post_task.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
@@ -64,12 +65,7 @@
 #endif
 
 namespace {
-// Helper method to post `closure` on the UI thread.
-void PostTaskOnUIThread(base::OnceClosure closure) {
-  web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(closure));
-}
 NSString* const kStartupAttemptReset = @"StartupAttemptReset";
-
 }  // namespace
 
 #pragma mark - AppStateObserverList
@@ -286,8 +282,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
           net::CookieStore* store =
               getter->GetURLRequestContext()->cookie_store();
           // FlushStore() runs its callback on any thread. Jump back to UI.
-          store->FlushStore(
-              base::BindOnce(&PostTaskOnUIThread, std::move(criticalClosure)));
+          store->FlushStore(base::BindPostTask(web::GetUIThreadTaskRunner({}),
+                                               std::move(criticalClosure)));
         }));
   }
 
