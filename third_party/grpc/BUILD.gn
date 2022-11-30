@@ -98,6 +98,11 @@ config("grpc_config_private") {
     "-Wno-unused-variable",
     "-Wno-unused-result",
   ]
+
+  # TODO(b/260740023): Remove when gRPC has CFI checks enabled.
+  if (is_chromeos) {
+    cflags += [ "-fno-sanitize=cfi-derived-cast,cfi-unrelated-cast" ]
+  }
 }
 
 template("grpc_so") {
