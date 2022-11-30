@@ -585,13 +585,21 @@ const blink::Color BackgroundColor::ColorIncludingFallback(
     const ComputedStyle& style,
     bool* is_current_color) const {
   DCHECK(!visited_link);
-  StyleColor background_color = style.BackgroundColor();
-  if (style.ShouldForceColor(background_color)) {
-    return To<Longhand>(GetCSSPropertyInternalForcedBackgroundColor())
-        .ColorIncludingFallback(false, style, is_current_color);
+  const StyleColor& background_color = style.BackgroundColor();
+  if (!style.InForcedColorsMode() && !background_color.HasColorKeyword()) {
+    // Fast path.
+    if (is_current_color) {
+      *is_current_color = false;
+    }
+    return background_color.GetColor();
+  } else {
+    if (style.ShouldForceColor(background_color)) {
+      return To<Longhand>(GetCSSPropertyInternalForcedBackgroundColor())
+          .ColorIncludingFallback(false, style, is_current_color);
+    }
+    return background_color.Resolve(style.GetCurrentColor(),
+                                    style.UsedColorScheme(), is_current_color);
   }
-  return background_color.Resolve(style.GetCurrentColor(),
-                                  style.UsedColorScheme(), is_current_color);
 }
 
 const CSSValue* BackgroundColor::CSSValueFromComputedStyleInternal(

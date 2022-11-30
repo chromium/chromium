@@ -2123,7 +2123,12 @@ StyleColor ComputedStyle::DecorationColorIncludingFallback(
 }
 
 bool ComputedStyle::HasBackground() const {
-  blink::Color color = VisitedDependentColor(GetCSSPropertyBackgroundColor());
+  // Ostensibly, we should call VisitedDependentColor() here,
+  // but visited does not affect alpha (see VisitedDependentColor()
+  // implementation).
+  blink::Color color = GetCSSPropertyBackgroundColor().ColorIncludingFallback(
+      false, *this,
+      /*is_current_color=*/nullptr);
   if (color.Alpha())
     return true;
   // When background color animation is running on the compositor thread, we
