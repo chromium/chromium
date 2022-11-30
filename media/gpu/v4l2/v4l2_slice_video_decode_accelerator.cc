@@ -1457,7 +1457,7 @@ void V4L2SliceVideoDecodeAccelerator::CreateGLImageFor(
     return;
   }
   ret = bind_image_cb_.Run(client_texture_id, gl_device->GetTextureTarget(),
-                           gl_image, true);
+                           gl_image);
   if (!ret) {
     LOG(ERROR) << "Error while running bind image callback";
     NOTIFY_ERROR(PLATFORM_FAILURE);

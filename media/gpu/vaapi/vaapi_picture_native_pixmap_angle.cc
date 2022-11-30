@@ -119,8 +119,7 @@ VaapiStatus VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
   gl_image_ = image;
 
   DCHECK(bind_image_cb_);
-  if (!bind_image_cb_.Run(client_texture_id_, texture_target_, gl_image_,
-                          /*can_bind_to_sampler=*/true)) {
+  if (!bind_image_cb_.Run(client_texture_id_, texture_target_, gl_image_)) {
     return VaapiStatus::Codes::kFailedToBindImage;
   }
 

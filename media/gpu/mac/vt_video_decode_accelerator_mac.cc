@@ -1957,8 +1957,7 @@ void VTVideoDecodeAccelerator::ReusePictureBuffer(int32_t picture_id) {
     picture_info->scoped_shared_images.clear();
   } else {
     gl_client_.bind_image.Run(picture_info->client_texture_id,
-                              gpu::GetPlatformSpecificTextureTarget(), nullptr,
-                              false);
+                              gpu::GetPlatformSpecificTextureTarget(), nullptr);
   }
   picture_info->gl_images.clear();
   picture_info->bitstream_id = 0;
@@ -2281,7 +2280,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
 
       if (!gl_client_.bind_image.Run(picture_info->client_texture_id,
                                      gpu::GetPlatformSpecificTextureTarget(),
-                                     gl_image, false)) {
+                                     gl_image)) {
         DLOG(ERROR) << "Failed to bind image";
         NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
         return false;

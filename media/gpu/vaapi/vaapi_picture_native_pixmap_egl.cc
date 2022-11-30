@@ -71,8 +71,7 @@ VaapiStatus VaapiPictureNativePixmapEgl::Initialize(
   }
 
   if (bind_image_cb_ &&
-      !bind_image_cb_.Run(client_texture_id_, texture_target_, gl_image_,
-                          true /* can_bind_to_sampler */)) {
+      !bind_image_cb_.Run(client_texture_id_, texture_target_, gl_image_)) {
     LOG(ERROR) << "Failed to bind client_texture_id";
     return VaapiStatus::Codes::kFailedToBindImage;
   }

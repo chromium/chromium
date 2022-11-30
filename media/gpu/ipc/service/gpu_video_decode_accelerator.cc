@@ -59,11 +59,12 @@ static bool MakeDecoderContextCurrent(
   return true;
 }
 
-static bool BindImage(const base::WeakPtr<gpu::CommandBufferStub>& stub,
-                      uint32_t client_texture_id,
-                      uint32_t texture_target,
-                      const scoped_refptr<gl::GLImage>& image,
-                      bool can_bind_to_sampler) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+static bool BindDecoderManagedImage(
+    const base::WeakPtr<gpu::CommandBufferStub>& stub,
+    uint32_t client_texture_id,
+    uint32_t texture_target,
+    const scoped_refptr<gl::GLImage>& image) {
   if (!stub) {
     DLOG(ERROR) << "Stub is gone; won't BindImage().";
     return false;
@@ -71,9 +72,26 @@ static bool BindImage(const base::WeakPtr<gpu::CommandBufferStub>& stub,
 
   gpu::DecoderContext* command_decoder = stub->decoder_context();
   command_decoder->BindImage(client_texture_id, texture_target, image.get(),
-                             can_bind_to_sampler);
+                             /*can_bind_to_sampler=*/false);
   return true;
 }
+#else
+static bool BindClientManagedImage(
+    const base::WeakPtr<gpu::CommandBufferStub>& stub,
+    uint32_t client_texture_id,
+    uint32_t texture_target,
+    const scoped_refptr<gl::GLImage>& image) {
+  if (!stub) {
+    DLOG(ERROR) << "Stub is gone; won't BindImage().";
+    return false;
+  }
+
+  gpu::DecoderContext* command_decoder = stub->decoder_context();
+  command_decoder->BindImage(client_texture_id, texture_target, image.get(),
+                             /*can_bind_to_sampler=*/true);
+  return true;
+}
+#endif
 
 static gpu::gles2::ContextGroup* GetContextGroup(
     const base::WeakPtr<gpu::CommandBufferStub>& stub) {
@@ -279,7 +297,16 @@ GpuVideoDecodeAccelerator::GpuVideoDecodeAccelerator(
       base::BindRepeating(&GetGLContext, stub_->AsWeakPtr());
   gl_client_.make_context_current =
       base::BindRepeating(&MakeDecoderContextCurrent, stub_->AsWeakPtr());
-  gl_client_.bind_image = base::BindRepeating(&BindImage, stub_->AsWeakPtr());
+  // The semantics of |bind_image| vary per-platform: On Windows and Mac it must
+  // mark the image as needing binding by the decoder, while on other platforms
+  // it must mark the image as *not* needing binding by the decoder.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  gl_client_.bind_image =
+      base::BindRepeating(&BindDecoderManagedImage, stub_->AsWeakPtr());
+#else
+  gl_client_.bind_image =
+      base::BindRepeating(&BindClientManagedImage, stub_->AsWeakPtr());
+#endif
   gl_client_.get_context_group =
       base::BindRepeating(&GetContextGroup, stub_->AsWeakPtr());
   gl_client_.create_abstract_texture =

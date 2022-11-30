@@ -1169,7 +1169,7 @@ void DXVAVideoDecodeAccelerator::AssignPictureBuffers(
         // texture ids. This call just causes the texture manager to hold a
         // reference to the GLImage as long as either texture exists.
         bind_image_cb_.Run(client_id, GetTextureTarget(),
-                           picture_buffer->gl_image(), false);
+                           picture_buffer->gl_image());
       }
     }
 
@@ -1238,7 +1238,7 @@ void DXVAVideoDecodeAccelerator::ReusePictureBuffer(int32_t picture_buffer_id) {
       for (uint32_t client_id :
            it->second->picture_buffer().client_texture_ids()) {
         bind_image_cb_.Run(client_id, GetTextureTarget(),
-                           it->second->gl_image(), false);
+                           it->second->gl_image());
       }
     }
 
