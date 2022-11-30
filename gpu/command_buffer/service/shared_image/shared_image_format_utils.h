@@ -12,6 +12,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -41,6 +42,16 @@ GPU_GLES2_EXPORT int BitsPerPixel(viz::SharedImageFormat format);
 
 // Returns BufferFormat for given `format`.
 GPU_GLES2_EXPORT gfx::BufferFormat ToBufferFormat(
+    viz::SharedImageFormat format);
+
+// Returns SkYUVAInfo::PlaneConfig equivalent of
+// SharedImageFormat::PlaneConfig.
+GPU_GLES2_EXPORT SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(
+    viz::SharedImageFormat format);
+
+// Returns SkYUVAInfo::Subsampling equivalent of
+// SharedImageFormat::Subsampling.
+GPU_GLES2_EXPORT SkYUVAInfo::Subsampling ToSkYUVASubsampling(
     viz::SharedImageFormat format);
 
 // Following functions return the appropriate GL type/format for a

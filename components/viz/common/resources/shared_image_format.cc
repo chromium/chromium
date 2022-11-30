@@ -169,6 +169,20 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
   return 0;
 }
 
+int SharedImageFormat::MultiplanarBitDepth() const {
+  switch (channel_format()) {
+    case ChannelFormat::k8:
+      return 8;
+    case ChannelFormat::k10:
+      return 10;
+    case ChannelFormat::k16:
+    case ChannelFormat::k16F:
+      return 16;
+  }
+  NOTREACHED();
+  return 0;
+}
+
 std::string SharedImageFormat::ToString() const {
   switch (plane_type_) {
     case PlaneType::kUnknown:

@@ -26,6 +26,24 @@ gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   return viz::BufferFormat(format.resource_format());
 }
 
+SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {
+  switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+      return SkYUVAInfo::PlaneConfig::kY_V_U;
+    case viz::SharedImageFormat::PlaneConfig::kY_UV:
+      return SkYUVAInfo::PlaneConfig::kY_UV;
+    case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
+      return SkYUVAInfo::PlaneConfig::kY_UV_A;
+  }
+}
+
+SkYUVAInfo::Subsampling ToSkYUVASubsampling(viz::SharedImageFormat format) {
+  switch (format.subsampling()) {
+    case viz::SharedImageFormat::Subsampling::k420:
+      return SkYUVAInfo::Subsampling::k420;
+  }
+}
+
 bool GLSupportsFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane())
     return viz::GLSupportsFormat(format.resource_format());
