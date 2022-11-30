@@ -573,42 +573,6 @@ get_ndk_toolchain_prebuilt () {
   echo "$FILE"
 }
 
-# Find the path to an NDK's toolchain full prefix for a given architecture
-# $1: NDK install path
-# $2: NDK target architecture name
-# Out: install path + binary prefix (e.g.
-#      ".../path/to/bin/arm-linux-androideabi-")
-get_ndk_toolchain_fullprefix () {
-  local NDK_DIR="$1"
-  local ARCH="$2"
-  local TARGET NAME HOST_OS HOST_ARCH LD CONFIG
-
-  # NOTE: This will need to be updated if the NDK changes the names or moves
-  #        the location of its prebuilt toolchains.
-  #
-  LD=
-  HOST_OS=$(get_ndk_host_system)
-  HOST_ARCH=$(get_ndk_host_arch)
-  CONFIG=$(get_arch_gnu_config $ARCH)
-  LD=$(get_ndk_toolchain_prebuilt \
-        "$NDK_DIR" "$ARCH" "$HOST_OS-$HOST_ARCH/bin/$CONFIG-ld")
-  if [ -z "$LD" -a "$HOST_ARCH" = "x86_64" ]; then
-    LD=$(get_ndk_toolchain_prebuilt \
-         "$NDK_DIR" "$ARCH" "$HOST_OS-x86/bin/$CONFIG-ld")
-  fi
-  if [ ! -f "$LD" -a "$ARCH" = "x86" ]; then
-    # Special case, the x86 toolchain used to be incorrectly
-    # named i686-android-linux-gcc!
-    LD=$(get_ndk_toolchain_prebuilt \
-         "$NDK_DIR" "$ARCH" "$HOST_OS-x86/bin/i686-android-linux-ld")
-  fi
-  if [ -z "$LD" ]; then
-    panic "Cannot find Android NDK toolchain for '$ARCH' architecture. \
-Please verify your NDK installation!"
-  fi
-  echo "${LD%%ld}"
-}
-
 # $1: NDK install path
 get_ndk_host_gdb_client() {
   local NDK_DIR="$1"
@@ -633,28 +597,6 @@ get_ndk_gdbserver () {
   fi
   echo "$BINARY"
 }
-
-# Check/probe the path to the Android toolchain installation. Always
-# use the NDK versions of gdb and gdbserver. They must match to avoid
-# issues when both binaries do not speak the same wire protocol.
-#
-if [ -z "$TOOLCHAIN" ]; then
-  ANDROID_TOOLCHAIN=$(get_ndk_toolchain_fullprefix \
-                      "$ANDROID_NDK_ROOT" "$TARGET_ARCH")
-  ANDROID_TOOLCHAIN=$(dirname "$ANDROID_TOOLCHAIN")
-  log "Auto-config: --toolchain=$ANDROID_TOOLCHAIN"
-else
-  # Be flexible, allow one to specify either the install path or the bin
-  # sub-directory in --toolchain:
-  #
-  if [ -d "$TOOLCHAIN/bin" ]; then
-    TOOLCHAIN=$TOOLCHAIN/bin
-  fi
-  ANDROID_TOOLCHAIN=$TOOLCHAIN
-fi
-
-# Cosmetic: Remove trailing directory separator.
-ANDROID_TOOLCHAIN=${ANDROID_TOOLCHAIN%/}
 
 # Find host GDB client binary
 if [ -z "$GDB" ]; then
