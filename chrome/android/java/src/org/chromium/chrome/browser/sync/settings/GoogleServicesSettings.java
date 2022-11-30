@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
-import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -82,7 +81,6 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mUsageAndCrashReporting;
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
     private ChromeSwitchPreference mPriceTrackingAnnotations;
-    private @Nullable ChromeSwitchPreference mAutofillAssistant;
     private @Nullable Preference mContextualSearch;
     private Preference mPriceNotificationSection;
 
@@ -123,21 +121,10 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
         mUrlKeyedAnonymizedData.setOnPreferenceChangeListener(this);
         mUrlKeyedAnonymizedData.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
-        mAutofillAssistant = (ChromeSwitchPreference) findPreference(PREF_AUTOFILL_ASSISTANT);
         Preference autofillAssistantSubsection = findPreference(PREF_AUTOFILL_ASSISTANT_SUBSECTION);
-        // Assistant autofill/voicesearch both live in the sub-section. If either one of them is
-        // enabled, then the subsection should show.
-        if (AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP.isEnabled()
-                || shouldShowAssistantVoiceSearchSetting()) {
-            removePreference(getPreferenceScreen(), mAutofillAssistant);
-            mAutofillAssistant = null;
+
+        if (shouldShowAssistantVoiceSearchSetting()) {
             autofillAssistantSubsection.setVisible(true);
-        } else if (shouldShowAutofillAssistantPreference()) {
-            mAutofillAssistant.setOnPreferenceChangeListener(this);
-            mAutofillAssistant.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
-        } else {
-            removePreference(getPreferenceScreen(), mAutofillAssistant);
-            mAutofillAssistant = null;
         }
 
         mContextualSearch = findPreference(PREF_CONTEXTUAL_SEARCH);
@@ -233,8 +220,6 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
         } else if (PREF_URL_KEYED_ANONYMIZED_DATA.equals(key)) {
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                     Profile.getLastUsedRegularProfile(), (boolean) newValue);
-        } else if (PREF_AUTOFILL_ASSISTANT.equals(key)) {
-            mPrefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, (boolean) newValue);
         } else if (PREF_PRICE_TRACKING_ANNOTATIONS.equals(key)) {
             PriceTrackingUtilities.setTrackPricesOnTabsEnabled((boolean) newValue);
         }
@@ -254,9 +239,6 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
                 UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
                         Profile.getLastUsedRegularProfile()));
 
-        if (mAutofillAssistant != null) {
-            mAutofillAssistant.setChecked(mPrefService.getBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED));
-        }
         if (mContextualSearch != null) {
             boolean isContextualSearchEnabled =
                     !ContextualSearchManager.isContextualSearchDisabled();
@@ -288,15 +270,6 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
             }
             return false;
         };
-    }
-
-    /**
-     *  This checks whether Autofill Assistant is enabled and was shown at least once (only then
-     *  will the Autofill Assistant switch be assigned a value).
-     */
-    private boolean shouldShowAutofillAssistantPreference() {
-        return AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
-                && !mPrefService.isDefaultValuePreference(Pref.AUTOFILL_ASSISTANT_ENABLED);
     }
 
     /**
