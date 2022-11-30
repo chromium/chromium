@@ -32,20 +32,22 @@ export class ScriptEvaluator {
   /**
    * Serializes a given CDP object into BiDi, keeping references in the
    * target's `globalThis`.
-   * @param cdpObject CDP remote object to be serialized.
+   * @param cdpRemoteObject CDP remote object to be serialized.
    * @param resultOwnership indicates desired OwnershipModel.
    * @param realm
    */
   public static async serializeCdpObject(
-    cdpObject: Protocol.Runtime.RemoteObject,
+    cdpRemoteObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.OwnershipModel,
     realm: Realm
   ): Promise<CommonDataTypes.RemoteValue> {
+    const arg = this.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
+
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
       await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
         functionDeclaration: String((obj: unknown) => obj),
         awaitPromise: false,
-        arguments: [cdpObject],
+        arguments: [arg],
         generateWebDriverValue: true,
         executionContextId: realm.executionContextId,
       });
@@ -54,6 +56,18 @@ export class ScriptEvaluator {
       realm,
       resultOwnership
     );
+  }
+
+  static #cdpRemoteObjectToCallArgument(
+    cdpRemoteObject: Protocol.Runtime.RemoteObject
+  ): Protocol.Runtime.CallArgument {
+    if (cdpRemoteObject.objectId !== undefined) {
+      return {objectId: cdpRemoteObject.objectId};
+    }
+    if (cdpRemoteObject.unserializableValue !== undefined) {
+      return {unserializableValue: cdpRemoteObject.unserializableValue};
+    }
+    return {value: cdpRemoteObject.value};
   }
 
   /**
