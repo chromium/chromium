@@ -94,6 +94,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main:scene_state_observer",
     "//ios/chrome/browser/ui/ntp/feed_management",
+    "//ios/chrome/browser/ui/ntp/feed_promos",
     "//ios/chrome/browser/ui/ntp/feed_top_section",
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/overscroll_actions",

@@ -36,6 +36,7 @@ group("features") {
     "//ios/showcase/credential_provider",
     "//ios/showcase/default_browser",
     "//ios/showcase/discover_feed_preview",
+    "//ios/showcase/feed_sign_in_promo",
     "//ios/showcase/first_run",
     "//ios/showcase/follow",
     "//ios/showcase/incognito_reauth",
