@@ -1497,7 +1497,7 @@
 <translation id="2446244536806499267">音訊播放時不要將使用者狀態視為閒置</translation>
 <translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
 
-       如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
+       如果未設定這項政策，系統會在非受管裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
 <translation id="2452225615952836461">一律使用大寫字母要求方法</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>
@@ -2025,7 +2025,7 @@
 <translation id="2957506574938329824">不允許任何網站透過 Web Bluetooth API 要求存取藍牙裝置</translation>
 <translation id="2957513448235202597"><ph name="HTTP_NEGOTIATE" /> 驗證模式的帳戶類型</translation>
 <translation id="2959469725686993410">解析時區時一律將 Wi-Fi 存取點傳送至伺服器</translation>
-<translation id="2959527429632925933">如果這項政策不存在 (例如，對於未受管理的使用者來說)，系統會啟用 Terminal System App 中的 SSH (安全殼層) 外送用戶端連線功能 (預設為 True)。
+<translation id="2959527429632925933">如果這項政策不存在 (例如，對於非受管使用者來說)，系統會啟用 Terminal System App 中的 SSH (安全殼層) 外送用戶端連線功能 (預設為 True)。
       如果是受管理的使用者，且這項政策設為停用或未設定，則系統會在 Terminal 中停用這項功能。
       如果將這項政策設為啟用，受管理的使用者就能在 Terminal 中建立外送用戶端 SSH 連線。</translation>
 <translation id="2959898425599642200">Proxy 略過規則</translation>
@@ -3877,7 +3877,7 @@
 
       如果停用這項設定，使用者就無法使用這項功能。如果停用 PhoneHubAllowed 政策，使用者也會無法使用這項功能。
 
-      如果不設定這項政策，預設值是允許受企業管理以及未受管理的使用者執行這項功能。</translation>
+      如果不設定這項政策，預設值是允許受企業管理以及非受管使用者執行這項功能。</translation>
 <translation id="487460824085252184">自動遷移，不要求使用者同意。</translation>
 <translation id="4874982543810021567">在這些網站上封鎖 WebUSB</translation>
 <translation id="4876805738539874299">已啟用 SSL 最高版本</translation>
@@ -4145,7 +4145,7 @@
 
       如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise Connector 的配置政策</translation>
-<translation id="5178479074002209469">布林值標記，表示這項政策要求進行更新時，是否要讓未受管理的使用者工作階段接收通知並強制登出。</translation>
+<translation id="5178479074002209469">布林值標記，表示這項政策要求進行更新時，是否要讓非受管使用者工作階段接收通知並強制登出。</translation>
 <translation id="5179853299156742425">可下載桌面範本的網址。</translation>
 <translation id="5182055907976889880">設定在 <ph name="PRODUCT_OS_NAME" /> 中使用 Google 雲端硬碟。</translation>
 <translation id="5182483318861266793">將檔案櫃放在畫面的右側</translation>
@@ -4496,7 +4496,7 @@
 
       如果停用這項設定，使用者就無法使用這項功能。如果停用 PhoneHubAllowed 政策，使用者也會無法使用這項功能。
 
-      如果不設定這項政策，預設值是允許受企業管理以及未受管理的使用者執行這項功能。</translation>
+      如果不設定這項政策，預設值是允許受企業管理以及非受管使用者執行這項功能。</translation>
 <translation id="5494322570831642650">指定使用者是否可在 <ph name="PRODUCT_NAME" /> 中以無痕模式開啟網頁。
 
       如果將這項政策設為「Enabled」或不予設定，使用者能夠以無痕模式開啟網頁。
@@ -4811,7 +4811,7 @@
       如果目前版本在使用者工作階段期間成為過時版本，且裝置的自動更新期限已結束，系統會在畫面上顯示通知，要求使用者在 <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> 期限內退還裝置。
       如果使用者登入時已超過 <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> 的期限，且裝置的自動更新期限已結束，則系統會禁止任何使用者登入裝置。
 
-      如果將 <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> 設為 False 或不設定，未受管理的使用者工作階段就不會收到通知，並且會強制登出。
+      如果將 <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> 設為 False 或不設定，非受管使用者工作階段就不會收到通知，並且會強制登出。
 
       如果不設定這項政策或設為空白，系統不會套用任何限制，並會撤銷現有限制；不論使用哪種 <ph name="PRODUCT_OS_NAME" />版本，使用者皆可登入。
 
@@ -5347,7 +5347,7 @@
 <translation id="6398489342702562818">設定這項政策會導致系統強制啟用/停用快速配對功能。
       「快速配對」是全新的藍牙配對流程，可連結配對的周邊裝置和 GAIA 帳戶。
       用同一個 GAIA 帳戶登入的其他 Chrome OS (和 Android) 裝置便能自動進行配對。
-      如果不設定，系統會為企業版使用者停用預設值，為未受管理的帳戶啟用預設值。</translation>
+      如果不設定，系統會為企業版使用者停用預設值，為非受管帳戶啟用預設值。</translation>
 <translation id="6401669939808766804">登出使用者</translation>
 <translation id="640244877779556713">啟用表情符號建議功能</translation>
 <translation id="6404064917675764807">不回報 CRD 工作階段事件</translation>
@@ -5609,7 +5609,7 @@
 
       如果停用這項設定，使用者就無法啟動 Eche 應用程式。
 
-      如果不設定這項政策，預設值是允許受企業管理以及未受管理的使用者執行這項功能。</translation>
+      如果不設定這項政策，預設值是允許受企業管理以及非受管使用者執行這項功能。</translation>
 <translation id="6640748114867542396">不允許受管理的擴充功能使用 Enterprise Hardware Platform API</translation>
 <translation id="6641981670621198190">停止支援 3D 圖形 API</translation>
 <translation id="6646912445796087001">啟用或停用螢幕小鍵盤上的多項功能。這項政策只有在「VirtualKeyboardEnabled」政策已啟用時才會生效。
@@ -5750,7 +5750,7 @@
 <translation id="6782331708811245959">啟用裝置啟動模式回報功能</translation>
 <translation id="6782977971207381602">如果將這項政策設為啟用，裝置即可在 <ph name="PRODUCT_OS_NAME" />上執行虛擬機器。必須啟用 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" />，才能使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，裝置將無法執行虛擬機器。變更為停用後，系統會開始將這項政策套用到新的虛擬機器，不會套用到已經在執行的虛擬機器。
 
-      如果受管理的裝置上沒有設定這項政策，該裝置就無法執行虛擬機器。未受管理的裝置可以執行虛擬機器。</translation>
+      如果受管理的裝置上沒有設定這項政策，該裝置就無法執行虛擬機器。非受管裝置可以執行虛擬機器。</translation>
 <translation id="6786666051053129545">啟用 Google 助理 Voice Match 流程</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6786967369487349613">設定漫遊設定檔目錄</translation>
@@ -6234,7 +6234,7 @@
 
       如果停用這項設定，使用者就無法使用這項功能。如果停用 <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> 政策，使用者也將無法使用這項功能。
 
-      如果不設定這項政策，預設值是允許受企業管理以及未受管理的使用者執行這項功能。</translation>
+      如果不設定這項政策，預設值是允許受企業管理以及非受管使用者執行這項功能。</translation>
 <translation id="7246767840750730334">允許啟用 Phone Hub 通知。</translation>
 <translation id="7249828445670652637">允許 ARC 應用程式使用「<ph name="PRODUCT_OS_NAME" />」CA 憑證</translation>
 <translation id="7251825257294351251">允許系統通知</translation>
@@ -8134,7 +8134,7 @@
       如果設為 True，裝置將共用並試圖消耗 LAN 上的更新酬載，這可能降低網際網路頻寬用量並減輕壅塞。如果 LAN 上沒有更新酬載，裝置將回到更新伺服器進行下載。
       如果設為 False，系統就不會使用 P2P。
 
-      注意：消費者專用裝置與企業專用裝置的預設行為有所不同；受管理的裝置預設會啟用 P2P，未受管理的裝置則不會。</translation>
+      注意：消費者專用裝置與企業專用裝置的預設行為有所不同；受管理的裝置預設會啟用 P2P，非受管裝置則不會。</translation>
 <translation id="9164656078867027374">定義可存取 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 的網域</translation>
 <translation id="9165128017344777105">允許這些網站上的本機字型權限</translation>
 <translation id="9166670902476893480">這項政策用於控管當 <ph name="PRODUCT_NAME" /> 提出不安全的 DNS 要求時，是否能夠查詢其他 DNS 記錄類型。這項政策不會影響透過安全 DNS 提出的 DNS 查詢；換句話說，透過安全 DNS 依然一律可以查詢其他 DNS 類型。
