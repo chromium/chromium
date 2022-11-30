@@ -42,10 +42,18 @@ class MEDIA_EXPORT AudioToolboxAudioDecoder : public AudioDecoder {
   bool NeedsBitstreamConversion() const override;
 
  private:
+  struct ScopedAudioConverterRefTraits {
+    static AudioConverterRef InvalidValue() { return nullptr; }
+    static AudioConverterRef Retain(AudioConverterRef converter);
+    static void Release(AudioConverterRef converter);
+  };
+  using ScopedAudioConverterRef =
+      base::ScopedTypeRef<AudioConverterRef, ScopedAudioConverterRefTraits>;
+
   bool CreateAACDecoder(const AudioDecoderConfig& config);
 
   // "Converter" for turning encoded samples into raw audio.
-  AudioConverterRef decoder_;
+  ScopedAudioConverterRef decoder_;
 
   // Actual channel count and layout from decoder, may be different than config.
   uint32_t channel_count_ = 0u;
