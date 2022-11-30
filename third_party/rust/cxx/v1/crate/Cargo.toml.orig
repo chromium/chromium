@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.48"
 name = "cxx"
-version = "1.0.81"
+version = "1.0.82"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 links = "cxxbridge1"
 exclude = [
@@ -46,13 +46,13 @@ rustdoc-args = [
 ]
 
 [dependencies.cxxbridge-macro]
-version = "=1.0.81"
+version = "=1.0.82"
 
 [dependencies.link-cplusplus]
 version = "1.0"
 
 [dev-dependencies.cxx-build]
-version = "=1.0.81"
+version = "=1.0.82"
 
 [dev-dependencies.cxx-gen]
 version = "0.7"
@@ -67,12 +67,11 @@ version = "1.0"
 version = "1.0.66"
 features = ["diff"]
 
-# Removed for chromium
-# [build-dependencies.cc]
-# version = "1.0.49"
+[build-dependencies.cc]
+version = "1.0.49"
 
 [build-dependencies.cxxbridge-flags]
-version = "=1.0.81"
+version = "=1.0.82"
 default-features = false
 
 [features]

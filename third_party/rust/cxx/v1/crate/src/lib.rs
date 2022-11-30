@@ -364,7 +364,7 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.81")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.82")]
 #![deny(improper_ctypes, improper_ctypes_definitions, missing_docs)]
 #![cfg_attr(not(no_unsafe_op_in_unsafe_fn_lint), deny(unsafe_op_in_unsafe_fn))]
 #![cfg_attr(no_unsafe_op_in_unsafe_fn_lint, allow(unused_unsafe))]

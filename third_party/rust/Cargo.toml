@@ -153,8 +153,16 @@ package = "clang-sys"
 path = "clap_lex/v0_1/crate"
 package = "clap_lex"
 
+[patch.crates-io.clap_lex_v0_3]
+path = "clap_lex/v0_3/crate"
+package = "clap_lex"
+
 [patch.crates-io.clap_v3]
 path = "clap/v3/crate"
+package = "clap"
+
+[patch.crates-io.clap_v4]
+path = "clap/v4/crate"
 package = "clap"
 
 [patch.crates-io.codespan-reporting_v0_11]

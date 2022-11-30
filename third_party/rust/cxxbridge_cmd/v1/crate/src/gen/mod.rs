@@ -59,6 +59,7 @@ pub struct Opt {
     pub(super) gen_implementation: bool,
     pub(super) allow_dot_includes: bool,
     pub(super) cfg_evaluator: Box<dyn CfgEvaluator>,
+    pub(super) doxygen: bool,
 }
 
 pub(super) trait CfgEvaluator {
@@ -89,6 +90,7 @@ impl Default for Opt {
             gen_implementation: true,
             allow_dot_includes: true,
             cfg_evaluator: Box::new(UnsupportedCfgEvaluator),
+            doxygen: false,
         }
     }
 }

@@ -1,0 +1,378 @@
+[workspace]
+members = [
+  "clap_bench",
+  "clap_derive",
+  "clap_lex",
+  "clap_complete",
+  "clap_complete_fig",
+  "clap_mangen",
+]
+
+[package]
+name = "clap"
+version = "4.0.26"
+description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
+repository = "https://github.com/clap-rs/clap"
+categories = ["command-line-interface"]
+keywords = [
+  "argument",
+  "cli",
+  "arg",
+  "parser",
+  "parse"
+]
+license = "MIT OR Apache-2.0"
+edition = "2021"
+rust-version = "1.60.0"  # MSRV
+include = [
+  "build.rs",
+  "src/**/*",
+  "Cargo.toml",
+  "LICENSE*",
+  "README.md",
+  "benches/**/*",
+  "examples/**/*"
+]
+
+[package.metadata.docs.rs]
+features = ["unstable-doc"]
+rustdoc-args = ["--cfg", "docsrs"]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples=examples"]
+
+[package.metadata.playground]
+features = ["unstable-doc"]
+
+[package.metadata.release]
+shared-version = true
+tag-name = "v{{version}}"
+pre-release-replacements = [
+  {file="CHANGELOG.md", search="Unreleased", replace="{{version}}", min=1},
+  {file="CHANGELOG.md", search="\\.\\.\\.HEAD", replace="...{{tag_name}}", exactly=1},
+  {file="CHANGELOG.md", search="ReleaseDate", replace="{{date}}", min=1},
+  {file="CHANGELOG.md", search="<!-- next-header -->", replace="<!-- next-header -->\n## [Unreleased] - ReleaseDate\n", exactly=1},
+  {file="CHANGELOG.md", search="<!-- next-url -->", replace="<!-- next-url -->\n[Unreleased]: https://github.com/clap-rs/clap/compare/{{tag_name}}...HEAD", exactly=1},
+]
+
+[features]
+default = [
+  "std",
+  "color",
+  "help",
+  "usage",
+  "error-context",
+  "suggestions",
+]
+debug = ["clap_derive?/debug", "dep:backtrace"] # Enables debug messages
+unstable-doc = ["derive", "cargo", "wrap_help", "env", "unicode", "string", "unstable-replace", "unstable-grouped"] # for docs.rs
+
+# Used in default
+std = [] # support for no_std in a backwards-compatible way
+color = ["dep:atty", "dep:termcolor"]
+help = []
+usage = []
+error-context = []
+suggestions = ["dep:strsim", "error-context"]
+
+# Optional
+deprecated = ["clap_derive?/deprecated"] # Guided experience to prepare for next breaking release (at different stages of development, this may become default)
+derive = ["dep:clap_derive", "dep:once_cell"]
+cargo = ["dep:once_cell"] # Disable if you're not using Cargo, enables Cargo-env-var-dependent macros
+wrap_help = ["help", "dep:terminal_size"]
+env = [] # Use environment variables during arg parsing
+unicode = ["dep:unicode-width", "dep:unicase"]  # Support for unicode characters in arguments and help messages
+string = []  # Allow runtime generated strings
+
+# In-work features
+unstable-replace = []
+unstable-grouped = []
+unstable-v5 = ["clap_derive?/unstable-v5", "deprecated"]
+
+[lib]
+bench = false
+
+[dependencies]
+clap_derive = { path = "./clap_derive", version = "=4.0.21", optional = true }
+clap_lex = { path = "./clap_lex", version = "0.3.0" }
+bitflags = "1.2"
+unicase = { version = "2.6", optional = true }
+strsim = { version = "0.10",  optional = true }
+atty = { version = "0.2",  optional = true }
+termcolor = { version = "1.1.1", optional = true }
+terminal_size = { version = "0.2.1", optional = true }
+backtrace = { version = "0.3", optional = true }
+unicode-width = { version = "0.1.9", optional = true }
+once_cell = { version = "1.12.0", optional = true }
+
+[dev-dependencies]
+trybuild = "1.0.71"
+rustversion = "1"
+# Cutting out `filesystem` feature
+trycmd = { version = "0.14.3", default-features = false, features = ["color-auto", "diff", "examples"] }
+humantime = "2"
+snapbox = "0.4"
+shlex = "1.1.0"
+static_assertions = "1.1.0"
+unic-emoji-char = "0.9.0"
+
+[[example]]
+name = "demo"
+required-features = ["derive"]
+
+[[example]]
+name = "cargo-example"
+required-features = ["cargo"]
+
+[[example]]
+name = "cargo-example-derive"
+required-features = ["derive"]
+
+[[example]]
+name = "escaped-positional"
+required-features = ["cargo"]
+
+[[example]]
+name = "escaped-positional-derive"
+required-features = ["derive"]
+
+[[example]]
+name = "find"
+required-features = ["cargo"]
+
+[[example]]
+name = "git-derive"
+required-features = ["derive"]
+
+[[example]]
+name = "typed-derive"
+required-features = ["derive"]
+
+[[example]]
+name = "busybox"
+path = "examples/multicall-busybox.rs"
+
+[[example]]
+name = "hostname"
+path = "examples/multicall-hostname.rs"
+
+[[example]]
+name = "repl"
+path = "examples/repl.rs"
+required-features = ["help"]
+
+[[example]]
+name = "01_quick"
+path = "examples/tutorial_builder/01_quick.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "02_apps"
+path = "examples/tutorial_builder/02_apps.rs"
+
+[[example]]
+name = "02_crate"
+path = "examples/tutorial_builder/02_crate.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "02_app_settings"
+path = "examples/tutorial_builder/02_app_settings.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "03_01_flag_bool"
+path = "examples/tutorial_builder/03_01_flag_bool.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "03_01_flag_count"
+path = "examples/tutorial_builder/03_01_flag_count.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "03_02_option"
+path = "examples/tutorial_builder/03_02_option.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "03_02_option_mult"
+path = "examples/tutorial_builder/03_02_option_mult.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "03_03_positional"
+path = "examples/tutorial_builder/03_03_positional.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "03_03_positional_mult"
+path = "examples/tutorial_builder/03_03_positional_mult.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "03_04_subcommands"
+path = "examples/tutorial_builder/03_04_subcommands.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "03_05_default_values"
+path = "examples/tutorial_builder/03_05_default_values.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "04_01_possible"
+path = "examples/tutorial_builder/04_01_possible.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "04_01_enum"
+path = "examples/tutorial_builder/04_01_enum.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "04_02_parse"
+path = "examples/tutorial_builder/04_02_parse.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "04_02_validate"
+path = "examples/tutorial_builder/04_02_validate.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "04_03_relations"
+path = "examples/tutorial_builder/04_03_relations.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "04_04_custom"
+path = "examples/tutorial_builder/04_04_custom.rs"
+required-features = ["cargo"]
+
+[[example]]
+name = "05_01_assert"
+path = "examples/tutorial_builder/05_01_assert.rs"
+required-features = ["cargo"]
+test = true
+
+[[example]]
+name = "01_quick_derive"
+path = "examples/tutorial_derive/01_quick.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "02_apps_derive"
+path = "examples/tutorial_derive/02_apps.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "02_crate_derive"
+path = "examples/tutorial_derive/02_crate.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "02_app_settings_derive"
+path = "examples/tutorial_derive/02_app_settings.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "03_01_flag_bool_derive"
+path = "examples/tutorial_derive/03_01_flag_bool.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "03_01_flag_count_derive"
+path = "examples/tutorial_derive/03_01_flag_count.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "03_02_option_derive"
+path = "examples/tutorial_derive/03_02_option.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "03_02_option_mult_derive"
+path = "examples/tutorial_derive/03_02_option_mult.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "03_03_positional_derive"
+path = "examples/tutorial_derive/03_03_positional.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "03_03_positional_mult_derive"
+path = "examples/tutorial_derive/03_03_positional_mult.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "03_04_subcommands_derive"
+path = "examples/tutorial_derive/03_04_subcommands.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "03_04_subcommands_alt_derive"
+path = "examples/tutorial_derive/03_04_subcommands_alt.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "03_05_default_values_derive"
+path = "examples/tutorial_derive/03_05_default_values.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "04_01_enum_derive"
+path = "examples/tutorial_derive/04_01_enum.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "04_02_parse_derive"
+path = "examples/tutorial_derive/04_02_parse.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "04_02_validate_derive"
+path = "examples/tutorial_derive/04_02_validate.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "04_03_relations_derive"
+path = "examples/tutorial_derive/04_03_relations.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "04_04_custom_derive"
+path = "examples/tutorial_derive/04_04_custom.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "05_01_assert_derive"
+path = "examples/tutorial_derive/05_01_assert.rs"
+required-features = ["derive"]
+test = true
+
+[[example]]
+name = "interop_augment_args"
+path = "examples/derive_ref/augment_args.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "interop_augment_subcommands"
+path = "examples/derive_ref/augment_subcommands.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "interop_hand_subcommand"
+path = "examples/derive_ref/hand_subcommand.rs"
+required-features = ["derive"]
+
+[[example]]
+name = "interop_flatten_hand_args"
+path = "examples/derive_ref/flatten_hand_args.rs"
+required-features = ["derive"]
+
+[profile.test]
+opt-level = 1
+
+[profile.bench]
+lto = true
+codegen-units = 1

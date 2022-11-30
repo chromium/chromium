@@ -603,10 +603,15 @@ third_party/rust/clap/v2/crate/src/app 8 3
 third_party/rust/clap/v2/crate/src/args 7 2
 third_party/rust/clap/v2/crate/src/args/arg_builder 7 4
 third_party/rust/clap/v2/crate/src/completions 1 1
+third_party/rust/clap_lex/v0_3/crate 2 2
 third_party/rust/clap/v3/crate 2 1
 third_party/rust/clap/v3/crate/src 1 1
 third_party/rust/clap/v3/crate/src/build 9 3
 third_party/rust/clap/v3/crate/src/parse 1 1
+third_party/rust/clap/v4/crate 1 1
+third_party/rust/clap/v4/crate/src 2 1
+third_party/rust/clap/v4/crate/src/builder 10 3
+third_party/rust/clap/v4/crate/src/parser 1 1
 third_party/rust/codespan_reporting/v0_11/crate 2 1
 third_party/rust/codespan_reporting/v0_11/crate/examples 1 1
 third_party/rust/cxx/v1/crate 1 1

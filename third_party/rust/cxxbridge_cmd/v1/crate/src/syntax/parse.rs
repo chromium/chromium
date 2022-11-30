@@ -360,7 +360,7 @@ fn parse_foreign_mod(
 
     let mut cfg = CfgExpr::Unconditional;
     let mut namespace = namespace.clone();
-    attrs::parse(
+    let attrs = attrs::parse(
         cx,
         foreign_mod.attrs,
         attrs::Parser {
@@ -374,11 +374,11 @@ fn parse_foreign_mod(
     for foreign in foreign_mod.items {
         match foreign {
             ForeignItem::Type(foreign) => {
-                let ety = parse_extern_type(cx, foreign, lang, trusted, &cfg, &namespace);
+                let ety = parse_extern_type(cx, foreign, lang, trusted, &cfg, &namespace, &attrs);
                 items.push(ety);
             }
             ForeignItem::Fn(foreign) => {
-                match parse_extern_fn(cx, foreign, lang, trusted, &cfg, &namespace) {
+                match parse_extern_fn(cx, foreign, lang, trusted, &cfg, &namespace, &attrs) {
                     Ok(efn) => items.push(efn),
                     Err(err) => cx.push(err),
                 }
@@ -393,7 +393,7 @@ fn parse_foreign_mod(
                 }
             }
             ForeignItem::Verbatim(tokens) => {
-                match parse_extern_verbatim(cx, tokens, lang, trusted, &cfg, &namespace) {
+                match parse_extern_verbatim(cx, tokens, lang, trusted, &cfg, &namespace, &attrs) {
                     Ok(api) => items.push(api),
                     Err(err) => cx.push(err),
                 }
@@ -463,6 +463,7 @@ fn parse_extern_type(
     trusted: bool,
     extern_block_cfg: &CfgExpr,
     namespace: &Namespace,
+    attrs: &OtherAttrs,
 ) -> Api {
     let mut cfg = extern_block_cfg.clone();
     let mut doc = Doc::new();
@@ -470,7 +471,8 @@ fn parse_extern_type(
     let mut namespace = namespace.clone();
     let mut cxx_name = None;
     let mut rust_name = None;
-    let attrs = attrs::parse(
+    let mut attrs = attrs.clone();
+    attrs.extend(attrs::parse(
         cx,
         foreign_type.attrs,
         attrs::Parser {
@@ -482,7 +484,7 @@ fn parse_extern_type(
             rust_name: Some(&mut rust_name),
             ..Default::default()
         },
-    );
+    ));
 
     let type_token = foreign_type.type_token;
     let visibility = visibility_pub(&foreign_type.vis, type_token.span);
@@ -523,13 +525,15 @@ fn parse_extern_fn(
     trusted: bool,
     extern_block_cfg: &CfgExpr,
     namespace: &Namespace,
+    attrs: &OtherAttrs,
 ) -> Result<Api> {
     let mut cfg = extern_block_cfg.clone();
     let mut doc = Doc::new();
     let mut namespace = namespace.clone();
     let mut cxx_name = None;
     let mut rust_name = None;
-    let attrs = attrs::parse(
+    let mut attrs = attrs.clone();
+    attrs.extend(attrs::parse(
         cx,
         mem::take(&mut foreign_fn.attrs),
         attrs::Parser {
@@ -540,7 +544,7 @@ fn parse_extern_fn(
             rust_name: Some(&mut rust_name),
             ..Default::default()
         },
-    );
+    ));
 
     let generics = &foreign_fn.sig.generics;
     if generics.where_clause.is_some()
@@ -708,20 +712,22 @@ fn parse_extern_verbatim(
     trusted: bool,
     extern_block_cfg: &CfgExpr,
     namespace: &Namespace,
+    attrs: &OtherAttrs,
 ) -> Result<Api> {
     |input: ParseStream| -> Result<Api> {
-        let attrs = input.call(Attribute::parse_outer)?;
+        let unparsed_attrs = input.call(Attribute::parse_outer)?;
         let visibility: Visibility = input.parse()?;
         if input.peek(Token![type]) {
             parse_extern_verbatim_type(
                 cx,
-                attrs,
+                unparsed_attrs,
                 visibility,
                 input,
                 lang,
                 trusted,
                 extern_block_cfg,
                 namespace,
+                attrs,
             )
         } else if input.peek(Token![fn]) {
             parse_extern_verbatim_fn(input)
@@ -738,13 +744,14 @@ fn parse_extern_verbatim(
 
 fn parse_extern_verbatim_type(
     cx: &mut Errors,
-    attrs: Vec<Attribute>,
+    unparsed_attrs: Vec<Attribute>,
     visibility: Visibility,
     input: ParseStream,
     lang: Lang,
     trusted: bool,
     extern_block_cfg: &CfgExpr,
     namespace: &Namespace,
+    attrs: &OtherAttrs,
 ) -> Result<Api> {
     let type_token: Token![type] = input.parse()?;
     let ident: Ident = input.parse()?;
@@ -791,7 +798,7 @@ fn parse_extern_verbatim_type(
         // type Alias = crate::path::to::Type;
         parse_type_alias(
             cx,
-            attrs,
+            unparsed_attrs,
             visibility,
             type_token,
             ident,
@@ -800,12 +807,13 @@ fn parse_extern_verbatim_type(
             lang,
             extern_block_cfg,
             namespace,
+            attrs,
         )
     } else if lookahead.peek(Token![:]) || lookahead.peek(Token![;]) {
         // type Opaque: Bound2 + Bound2;
         parse_extern_type_bounded(
             cx,
-            attrs,
+            unparsed_attrs,
             visibility,
             type_token,
             ident,
@@ -815,6 +823,7 @@ fn parse_extern_verbatim_type(
             trusted,
             extern_block_cfg,
             namespace,
+            attrs,
         )
     } else {
         Err(lookahead.error())
@@ -829,7 +838,7 @@ fn parse_extern_verbatim_fn(input: ParseStream) -> Result<Api> {
 
 fn parse_type_alias(
     cx: &mut Errors,
-    attrs: Vec<Attribute>,
+    unparsed_attrs: Vec<Attribute>,
     visibility: Visibility,
     type_token: Token![type],
     ident: Ident,
@@ -838,6 +847,7 @@ fn parse_type_alias(
     lang: Lang,
     extern_block_cfg: &CfgExpr,
     namespace: &Namespace,
+    attrs: &OtherAttrs,
 ) -> Result<Api> {
     let eq_token: Token![=] = input.parse()?;
     let ty: RustType = input.parse()?;
@@ -849,9 +859,10 @@ fn parse_type_alias(
     let mut namespace = namespace.clone();
     let mut cxx_name = None;
     let mut rust_name = None;
-    let attrs = attrs::parse(
+    let mut attrs = attrs.clone();
+    attrs.extend(attrs::parse(
         cx,
-        attrs,
+        unparsed_attrs,
         attrs::Parser {
             cfg: Some(&mut cfg),
             doc: Some(&mut doc),
@@ -861,7 +872,7 @@ fn parse_type_alias(
             rust_name: Some(&mut rust_name),
             ..Default::default()
         },
-    );
+    ));
 
     if lang == Lang::Rust {
         let span = quote!(#type_token #semi_token);
@@ -889,7 +900,7 @@ fn parse_type_alias(
 
 fn parse_extern_type_bounded(
     cx: &mut Errors,
-    attrs: Vec<Attribute>,
+    unparsed_attrs: Vec<Attribute>,
     visibility: Visibility,
     type_token: Token![type],
     ident: Ident,
@@ -899,6 +910,7 @@ fn parse_extern_type_bounded(
     trusted: bool,
     extern_block_cfg: &CfgExpr,
     namespace: &Namespace,
+    attrs: &OtherAttrs,
 ) -> Result<Api> {
     let mut bounds = Vec::new();
     let colon_token: Option<Token![:]> = input.parse()?;
@@ -939,9 +951,10 @@ fn parse_extern_type_bounded(
     let mut namespace = namespace.clone();
     let mut cxx_name = None;
     let mut rust_name = None;
-    let attrs = attrs::parse(
+    let mut attrs = attrs.clone();
+    attrs.extend(attrs::parse(
         cx,
-        attrs,
+        unparsed_attrs,
         attrs::Parser {
             cfg: Some(&mut cfg),
             doc: Some(&mut doc),
@@ -951,7 +964,7 @@ fn parse_extern_type_bounded(
             rust_name: Some(&mut rust_name),
             ..Default::default()
         },
-    );
+    ));
 
     let visibility = visibility_pub(&visibility, type_token.span);
     let name = pair(namespace, &ident, cxx_name, rust_name);

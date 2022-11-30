@@ -11,15 +11,18 @@
 
 [package]
 edition = "2018"
-rust-version = "1.54"
+rust-version = "1.56"
 name = "cxxbridge-cmd"
-version = "1.0.68"
+version = "1.0.82"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 exclude = ["build.rs"]
 description = "C++ code generator for integrating `cxx` crate into a non-Cargo build."
 homepage = "https://cxx.rs"
 keywords = ["ffi"]
-categories = ["development-tools::ffi"]
+categories = [
+    "development-tools::build-utils",
+    "development-tools::ffi",
+]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/cxx"
 
@@ -31,10 +34,13 @@ name = "cxxbridge"
 path = "src/main.rs"
 
 [dependencies.clap]
-version = "3.1"
+version = "4"
 features = [
+    "error-context",
+    "help",
     "std",
     "suggestions",
+    "usage",
 ]
 default-features = false
 
@@ -42,7 +48,7 @@ default-features = false
 version = "0.11"
 
 [dependencies.proc-macro2]
-version = "1.0.26"
+version = "1.0.39"
 features = ["span-locations"]
 default-features = false
 
@@ -51,7 +57,7 @@ version = "1.0"
 default-features = false
 
 [dependencies.syn]
-version = "1.0.70"
+version = "1.0.95"
 features = [
     "parsing",
     "printing",

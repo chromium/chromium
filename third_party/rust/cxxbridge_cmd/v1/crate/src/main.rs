@@ -2,6 +2,7 @@
     clippy::cast_sign_loss,
     clippy::cognitive_complexity,
     clippy::default_trait_access,
+    clippy::derive_partial_eq_without_eq,
     clippy::enum_glob_use,
     clippy::if_same_then_else,
     clippy::inherent_to_string,

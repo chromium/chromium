@@ -107,7 +107,7 @@ name = "autocxx-gen"
 version = "0.23.1"
 dependencies = [
  "autocxx-engine",
- "clap",
+ "clap 3.1.12",
  "env_logger",
  "indexmap",
  "miette",
@@ -161,7 +161,7 @@ dependencies = [
  "bitflags",
  "cexpr",
  "clang-sys",
- "clap",
+ "clap 3.1.12",
  "env_logger",
  "lazy_static",
  "lazycell",
@@ -226,7 +226,7 @@ dependencies = [
  "bitflags",
  "cargo-platform",
  "cargo_metadata",
- "clap",
+ "clap 3.1.12",
  "cxx",
  "cxxbridge-cmd",
  "lazy_static",
@@ -263,7 +263,7 @@ version = "3.1.12"
 dependencies = [
  "atty",
  "bitflags",
- "clap_lex",
+ "clap_lex 0.1.1",
  "indexmap",
  "lazy_static",
  "strsim",
@@ -272,8 +272,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "clap"
+version = "4.0.26"
+dependencies = [
+ "bitflags",
+ "clap_lex 0.3.0",
+ "strsim",
+]
+
+[[package]]
 name = "clap_lex"
 version = "0.1.1"
+dependencies = [
+ "os_str_bytes",
+]
+
+[[package]]
+name = "clap_lex"
+version = "0.3.0"
 dependencies = [
  "os_str_bytes",
 ]
@@ -288,7 +304,7 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.81"
+version = "1.0.82"
 dependencies = [
  "cxxbridge-macro",
  "link-cplusplus",
@@ -306,9 +322,9 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.68"
+version = "1.0.82"
 dependencies = [
- "clap",
+ "clap 4.0.26",
  "codespan-reporting",
  "proc-macro2",
  "quote",
@@ -317,7 +333,7 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.81"
+version = "1.0.82"
 dependencies = [
  "proc-macro2",
  "quote",

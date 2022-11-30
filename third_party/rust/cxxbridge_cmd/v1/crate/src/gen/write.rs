@@ -227,6 +227,25 @@ fn pick_includes_and_builtins(out: &mut OutFile, apis: &[Api]) {
     }
 }
 
+fn write_doc(out: &mut OutFile, indent: &str, doc: &Doc) {
+    let mut lines = 0;
+    for line in doc.to_string().lines() {
+        if out.opt.doxygen {
+            writeln!(out, "{}///{}", indent, line);
+        } else {
+            writeln!(out, "{}//{}", indent, line);
+        }
+        lines += 1;
+    }
+    // According to https://www.doxygen.nl/manual/docblocks.html, Doxygen only
+    // interprets `///` as a Doxygen comment block if there are at least 2 of
+    // them. In Rust, a single `///` is definitely still documentation so we
+    // make sure to propagate that as a Doxygen comment.
+    if out.opt.doxygen && lines == 1 {
+        writeln!(out, "{}///", indent);
+    }
+}
+
 fn write_struct<'a>(out: &mut OutFile<'a>, strct: &'a Struct, methods: &[&ExternFn]) {
     let operator_eq = derive::contains(&strct.derives, Trait::PartialEq);
     let operator_ord = derive::contains(&strct.derives, Trait::PartialOrd);
@@ -235,15 +254,11 @@ fn write_struct<'a>(out: &mut OutFile<'a>, strct: &'a Struct, methods: &[&Extern
     let guard = format!("CXXBRIDGE1_STRUCT_{}", strct.name.to_symbol());
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
-    for line in strct.doc.to_string().lines() {
-        writeln!(out, "//{}", line);
-    }
+    write_doc(out, "", &strct.doc);
     writeln!(out, "struct {} final {{", strct.name.cxx);
 
     for field in &strct.fields {
-        for line in field.doc.to_string().lines() {
-            writeln!(out, "  //{}", line);
-        }
+        write_doc(out, "  ", &field.doc);
         write!(out, "  ");
         write_type_space(out, &field.ty);
         writeln!(out, "{};", field.name.cxx);
@@ -255,9 +270,7 @@ fn write_struct<'a>(out: &mut OutFile<'a>, strct: &'a Struct, methods: &[&Extern
         if !method.doc.is_empty() {
             out.next_section();
         }
-        for line in method.doc.to_string().lines() {
-            writeln!(out, "  //{}", line);
-        }
+        write_doc(out, "  ", &method.doc);
         write!(out, "  ");
         let sig = &method.sig;
         let local_name = method.name.cxx.to_string();
@@ -336,9 +349,7 @@ fn write_opaque_type<'a>(out: &mut OutFile<'a>, ety: &'a ExternType, methods: &[
     let guard = format!("CXXBRIDGE1_STRUCT_{}", ety.name.to_symbol());
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
-    for line in ety.doc.to_string().lines() {
-        writeln!(out, "//{}", line);
-    }
+    write_doc(out, "", &ety.doc);
 
     out.builtin.opaque = true;
     writeln!(
@@ -351,9 +362,7 @@ fn write_opaque_type<'a>(out: &mut OutFile<'a>, ety: &'a ExternType, methods: &[
         if i > 0 && !method.doc.is_empty() {
             out.next_section();
         }
-        for line in method.doc.to_string().lines() {
-            writeln!(out, "  //{}", line);
-        }
+        write_doc(out, "  ", &method.doc);
         write!(out, "  ");
         let sig = &method.sig;
         let local_name = method.name.cxx.to_string();
@@ -390,16 +399,12 @@ fn write_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
     let guard = format!("CXXBRIDGE1_ENUM_{}", enm.name.to_symbol());
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
-    for line in enm.doc.to_string().lines() {
-        writeln!(out, "//{}", line);
-    }
+    write_doc(out, "", &enm.doc);
     write!(out, "enum class {} : ", enm.name.cxx);
     write_atom(out, repr);
     writeln!(out, " {{");
     for variant in &enm.variants {
-        for line in variant.doc.to_string().lines() {
-            writeln!(out, "  //{}", line);
-        }
+        write_doc(out, "  ", &variant.doc);
         writeln!(out, "  {} = {},", variant.name.cxx, variant.discriminant);
     }
     writeln!(out, "}};");
@@ -472,10 +477,10 @@ fn check_trivial_extern_type(out: &mut OutFile, alias: &TypeAlias, reasons: &[Tr
     writeln!(out, "static_assert(");
     if reasons
         .iter()
-        .all(|r| matches!(r, TrivialReason::StructField(_)))
+        .all(|r| matches!(r, TrivialReason::StructField(_) | TrivialReason::VecElement))
     {
-        // If the type is only used as a struct field and not as by-value
-        // function argument or any other use, then C array of trivially
+        // If the type is only used as a struct field or Vec element, not as
+        // by-value function argument or return value, then C array of trivially
         // relocatable type is also permissible.
         //
         //     --- means something sane:
@@ -847,17 +852,9 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
     }
     writeln!(out, ";");
     if efn.throws {
-        out.include.cstring = true;
-        out.builtin.exception = true;
         writeln!(out, "        throw$.ptr = nullptr;");
         writeln!(out, "      }},");
-        writeln!(out, "      [&](const char *catch$) noexcept {{");
-        writeln!(out, "        throw$.len = ::std::strlen(catch$);");
-        writeln!(
-            out,
-            "        throw$.ptr = const_cast<char *>(::cxxbridge1$exception(catch$, throw$.len));",
-        );
-        writeln!(out, "      }});");
+        writeln!(out, "      ::rust::detail::Fail(throw$));");
         writeln!(out, "  return throw$;");
     }
     writeln!(out, "}}");
@@ -1009,9 +1006,7 @@ fn write_rust_function_shim_impl(
     }
     if sig.receiver.is_none() {
         // Member functions already documented at their declaration.
-        for line in doc.to_string().lines() {
-            writeln!(out, "//{}", line);
-        }
+        write_doc(out, "", doc);
     }
     write_rust_function_shim_decl(out, local_name, sig, indirect_call);
     if out.header {

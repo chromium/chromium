@@ -68,6 +68,13 @@ pub(crate) fn current_dir() -> Result<PathBuf> {
     }
 }
 
+pub(crate) fn exists(path: impl AsRef<Path>) -> bool {
+    let path = path.as_ref();
+    // If path is a symlink, this returns true, regardless of whether the
+    // symlink points to a path that exists.
+    std::fs::symlink_metadata(path).is_ok()
+}
+
 pub(crate) fn read(path: impl AsRef<Path>) -> Result<Vec<u8>> {
     let path = path.as_ref();
     match std::fs::read(path) {

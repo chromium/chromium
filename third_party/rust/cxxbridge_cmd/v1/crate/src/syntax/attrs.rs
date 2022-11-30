@@ -268,11 +268,16 @@ fn parse_rust_name_attribute(input: ParseStream) -> Result<Ident> {
     }
 }
 
+#[derive(Clone)]
 pub struct OtherAttrs(Vec<Attribute>);
 
 impl OtherAttrs {
     pub fn none() -> Self {
         OtherAttrs(Vec::new())
+    }
+
+    pub fn extend(&mut self, other: Self) {
+        self.0.extend(other.0);
     }
 }
 

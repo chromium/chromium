@@ -1,0 +1,69 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("stdio_fixture") {
+  crate_type = "bin"
+  crate_root = "crate/src/bin/stdio-fixture.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  build_native_rust_unit_tests = false
+  sources = [ "crate/src/bin/stdio-fixture.rs" ]
+  edition = "2021"
+  cargo_pkg_version = "4.0.26"
+  cargo_pkg_name = "clap"
+  cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    ":lib",
+    "//third_party/rust/bitflags/v1:lib",
+    "//third_party/rust/clap_lex/v0_3:lib",
+    "//third_party/rust/strsim/v0_10:lib",
+  ]
+  features = [
+    "error-context",
+    "help",
+    "std",
+    "suggestions",
+    "usage",
+  ]
+}
+cargo_crate("lib") {
+  crate_name = "clap"
+  epoch = "4"
+  crate_type = "rlib"
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  crate_root = "crate/src/lib.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  build_native_rust_unit_tests = false
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2021"
+  cargo_pkg_version = "4.0.26"
+  cargo_pkg_name = "clap"
+  cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/bitflags/v1:lib",
+    "//third_party/rust/clap_lex/v0_3:lib",
+    "//third_party/rust/strsim/v0_10:lib",
+  ]
+  features = [
+    "error-context",
+    "help",
+    "std",
+    "suggestions",
+    "usage",
+  ]
+}
