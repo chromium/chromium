@@ -16,7 +16,9 @@
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
+#include "base/process/current_process.h"
 #include "base/process/process_handle.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/typed_macros.h"
@@ -950,6 +952,7 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
                                            read_buffer_->num_occupied_bytes()),
                            next_read_size_hint);
     if (result == DispatchResult::kOK) {
+      MaybeLogHistogramForIPCMetrics(MessageType::kReceive);
       read_buffer_->Discard(*next_read_size_hint);
       *next_read_size_hint = 0;
     } else if (result == DispatchResult::kNotEnoughData) {
@@ -1094,6 +1097,24 @@ bool Channel::OnControlMessage(Message::MessageType message_type,
                                size_t payload_size,
                                std::vector<PlatformHandle> handles) {
   return false;
+}
+
+void Channel::MaybeLogHistogramForIPCMetrics(MessageType type) {
+  {
+    base::AutoLock hold(lock_);
+    if (!sub_sampler_.ShouldSample(0.001))
+      return;
+  }
+  if (type == MessageType::kSent) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Mojo.Channel.WriteSendMessageProcessType",
+        base::CurrentProcess::GetInstance().GetShortType({}));
+  }
+  if (type == MessageType::kReceive) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Mojo.Channel.WriteReceiveMessageProcessType",
+        base::CurrentProcess::GetInstance().GetShortType({}));
+  }
 }
 
 // Currently only Non-nacl CrOs, Linux, and Android support upgrades.

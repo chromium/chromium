@@ -101,6 +101,68 @@ const char* GetNameForProcessType(CurrentProcessType process_type) {
 
 }  // namespace
 
+// Used for logging histograms for IPC metrics based on their process type.
+ShortProcessType CurrentProcess::GetShortType(TypeKey key) {
+  CurrentProcessType process = static_cast<CurrentProcessType>(
+      process_type_.load(std::memory_order_relaxed));
+  switch (process) {
+    case CurrentProcessType::PROCESS_UNSPECIFIED:
+      return ShortProcessType::kUnspecified;
+    case CurrentProcessType::PROCESS_BROWSER:
+      return ShortProcessType::kBrowser;
+    case CurrentProcessType::PROCESS_RENDERER:
+      return ShortProcessType::kRenderer;
+    case CurrentProcessType::PROCESS_UTILITY:
+      return ShortProcessType::kUtility;
+    case CurrentProcessType::PROCESS_ZYGOTE:
+      return ShortProcessType::kZygote;
+    case CurrentProcessType::PROCESS_SANDBOX_HELPER:
+      return ShortProcessType::kSandboxHelper;
+    case CurrentProcessType::PROCESS_GPU:
+      return ShortProcessType::kGpu;
+    case CurrentProcessType::PROCESS_PPAPI_PLUGIN:
+      return ShortProcessType::kPpapiPlugin;
+    case CurrentProcessType::PROCESS_PPAPI_BROKER:
+      return ShortProcessType::kPpapiBroker;
+    case CurrentProcessType::PROCESS_SERVICE_NETWORK:
+      return ShortProcessType::kServiceNetwork;
+    case CurrentProcessType::PROCESS_SERVICE_STORAGE:
+      return ShortProcessType::kServiceStorage;
+    case CurrentProcessType::PROCESS_RENDERER_EXTENSION:
+      return ShortProcessType::kRendererExtension;
+    case CurrentProcessType::PROCESS_SERVICE_TRACING:
+    case CurrentProcessType::PROCESS_SERVICE_AUDIO:
+    case CurrentProcessType::PROCESS_SERVICE_DATA_DECODER:
+    case CurrentProcessType::PROCESS_SERVICE_UTIL_WIN:
+    case CurrentProcessType::PROCESS_SERVICE_PROXY_RESOLVER:
+    case CurrentProcessType::PROCESS_SERVICE_CDM:
+    case CurrentProcessType::PROCESS_SERVICE_VIDEO_CAPTURE:
+    case CurrentProcessType::PROCESS_SERVICE_UNZIPPER:
+    case CurrentProcessType::PROCESS_SERVICE_MIRRORING:
+    case CurrentProcessType::PROCESS_SERVICE_FILEPATCHER:
+    case CurrentProcessType::PROCESS_SERVICE_TTS:
+    case CurrentProcessType::PROCESS_SERVICE_PRINTING:
+    case CurrentProcessType::PROCESS_SERVICE_QUARANTINE:
+    case CurrentProcessType::PROCESS_SERVICE_CROS_LOCALSEARCH:
+    case CurrentProcessType::PROCESS_SERVICE_CROS_ASSISTANT_AUDIO_DECODER:
+    case CurrentProcessType::PROCESS_SERVICE_FILEUTIL:
+    case CurrentProcessType::PROCESS_SERVICE_PRINTCOMPOSITOR:
+    case CurrentProcessType::PROCESS_SERVICE_PAINTPREVIEW:
+    case CurrentProcessType::PROCESS_SERVICE_SPEECHRECOGNITION:
+    case CurrentProcessType::PROCESS_SERVICE_XRDEVICE:
+    case CurrentProcessType::PROCESS_SERVICE_READICON:
+    case CurrentProcessType::PROCESS_SERVICE_LANGUAGEDETECTION:
+    case CurrentProcessType::PROCESS_SERVICE_SHARING:
+    case CurrentProcessType::PROCESS_SERVICE_MEDIAPARSER:
+    case CurrentProcessType::PROCESS_SERVICE_QRCODEGENERATOR:
+    case CurrentProcessType::PROCESS_SERVICE_PROFILEIMPORT:
+    case CurrentProcessType::PROCESS_SERVICE_IME:
+    case CurrentProcessType::PROCESS_SERVICE_RECORDING:
+    case CurrentProcessType::PROCESS_SERVICE_SHAPEDETECTION:
+      return ShortProcessType::kService;
+  }
+}
+
 // static
 CurrentProcess& CurrentProcess::GetInstance() {
   static base::NoDestructor<CurrentProcess> instance;

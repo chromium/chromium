@@ -92368,6 +92368,22 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Failed to DeleteJumpList"/>
 </enum>
 
+<enum name="ShortProcessType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Browser"/>
+  <int value="2" label="Renderer"/>
+  <int value="3" label="Utility"/>
+  <int value="4" label="Zygote"/>
+  <int value="5" label="Sandbox Helper"/>
+  <int value="6" label="Gpu"/>
+  <int value="7" label="PPAPI Plugin"/>
+  <int value="8" label="PPAPI Broker"/>
+  <int value="9" label="Network Service"/>
+  <int value="10" label="Storage Service"/>
+  <int value="11" label="Service*"/>
+  <int value="12" label="Extension Renderer"/>
+</enum>
+
 <enum name="ShortReportReason">
   <int value="1" label="No create time"/>
   <int value="2" label="Not full"/>

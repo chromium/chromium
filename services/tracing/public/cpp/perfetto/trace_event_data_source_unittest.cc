@@ -1113,7 +1113,8 @@ TEST_F(TraceEventDataSourceTest, DISABLED_TimestampedTraceEvent) {
 
   // Thread track for the overridden tid.
   auto* tt_packet = GetFinalizedPacket(packet_index++);
-  ExpectThreadTrack(tt_packet, /*thread_id=*/perfetto::ThreadTrack::Current().tid);
+  ExpectThreadTrack(tt_packet,
+                    /*thread_id=*/perfetto::ThreadTrack::Current().tid);
 
   auto* e_packet = GetFinalizedPacket(packet_index++);
   ExpectTraceEvent(
@@ -1197,9 +1198,8 @@ TEST_F(TraceEventDataSourceTest, EventWithStringArgs) {
 TEST_F(TraceEventDataSourceTest, EventWithCopiedStrings) {
   StartTraceEventDataSource();
 
-  TRACE_EVENT_COPY_INSTANT2(kCategoryGroup, "bar",
-                       TRACE_EVENT_SCOPE_THREAD,
-                       "arg1_name", "arg1_val", "arg2_name", "arg2_val");
+  TRACE_EVENT_COPY_INSTANT2(kCategoryGroup, "bar", TRACE_EVENT_SCOPE_THREAD,
+                            "arg1_name", "arg1_val", "arg2_name", "arg2_val");
 
   size_t packet_index = ExpectStandardPreamble();
 
@@ -2008,20 +2008,19 @@ TEST_F(TraceEventDataSourceTest, FilteringEventWithFlagCopy) {
   // 2). To include dynamic event names despite privacy filtering, we need to
   //     manually `set event()->set_name()`. Java names are a valid use case of
   //     this.
-  TRACE_EVENT_INSTANT(kCategoryGroup, TRACE_STR_COPY(std::string("bar")), "arg1_name",
-                      "arg1_val", "arg2_name", "arg2_val");
+  TRACE_EVENT_INSTANT(kCategoryGroup, TRACE_STR_COPY(std::string("bar")),
+                      "arg1_name", "arg1_val", "arg2_name", "arg2_val");
   TRACE_EVENT_INSTANT(
       kCategoryGroup, nullptr,
       [](perfetto::EventContext& ev) { ev.event()->set_name("javaName"); },
       "arg1_name", "arg1_val", "arg2_name", "arg2_val");
 #else
-  TRACE_EVENT_COPY_INSTANT2(kCategoryGroup, "bar",
-                       TRACE_EVENT_SCOPE_THREAD,
-                       "arg1_name", "arg1_val", "arg2_name", "arg2_val");
-  TRACE_EVENT_COPY_INSTANT2(kCategoryGroup, "javaName",
-                       TRACE_EVENT_SCOPE_THREAD |
-                           TRACE_EVENT_FLAG_JAVA_STRING_LITERALS,
-                       "arg1_name", "arg1_val", "arg2_name", "arg2_val");
+  TRACE_EVENT_COPY_INSTANT2(kCategoryGroup, "bar", TRACE_EVENT_SCOPE_THREAD,
+                            "arg1_name", "arg1_val", "arg2_name", "arg2_val");
+  TRACE_EVENT_COPY_INSTANT2(
+      kCategoryGroup, "javaName",
+      TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_JAVA_STRING_LITERALS,
+      "arg1_name", "arg1_val", "arg2_name", "arg2_val");
 #endif
 
   size_t packet_index = ExpectStandardPreamble(
@@ -2641,8 +2640,8 @@ TEST_F(TraceEventDataSourceTest, EmptyPacket) {
 TEST_F(TraceEventDataSourceTest, SupportNullptrEventName) {
   StartTraceEventDataSource();
   TRACE_EVENT_INSTANT("browser", nullptr, [&](::perfetto::EventContext& ctx) {
-                          ctx.event()->set_name(std::string("EventName"));
-                        });
+    ctx.event()->set_name(std::string("EventName"));
+  });
   const auto& packets = GetFinalizedPackets();
   ASSERT_GT(packets.size(), 0u);
 

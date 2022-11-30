@@ -9,7 +9,6 @@
 #include "base/base_export.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
-#include "base/synchronization/lock.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/buildflag.h"
 
@@ -19,13 +18,37 @@ class CustomEventRecorder;
 void SetProcessTrackDescriptor(int64_t process_start_timestamp);
 }  // namespace tracing
 
+namespace mojo::core {
+class Channel;
+}
+
 namespace base {
 namespace test {
 class CurrentProcessForTest;
-}
+}  // namespace test
 
 using CurrentProcessType =
     perfetto::protos::pbzero::ChromeProcessDescriptor::ProcessType;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Use coalesced service process for recording histograms.
+enum class ShortProcessType {
+  kUnspecified = 0,
+  kBrowser = 1,
+  kRenderer = 2,
+  kUtility = 3,
+  kZygote = 4,
+  kSandboxHelper = 5,
+  kGpu = 6,
+  kPpapiPlugin = 7,
+  kPpapiBroker = 8,
+  kServiceNetwork = 9,
+  kServiceStorage = 10,
+  kService = 11,
+  kRendererExtension = 12,
+  kMaxValue = kRendererExtension,
+};
 
 // CurrentProcess class provides access to set of current process properties
 // which are accessible only from the process itself (e.g. ProcessType,
@@ -51,6 +74,7 @@ class BASE_EXPORT CurrentProcess {
     friend class ::tracing::CustomEventRecorder;
     friend void ::tracing::SetProcessTrackDescriptor(
         int64_t process_start_timestamp);
+    friend class ::mojo::core::Channel;
   };
   // Returns an enum corresponding to the type of the current process (e.g.
   // browser / renderer / utility / etc). It can be used in metrics or tracing
@@ -65,6 +89,8 @@ class BASE_EXPORT CurrentProcess {
     return static_cast<CurrentProcessType>(
         process_type_.load(std::memory_order_relaxed));
   }
+
+  ShortProcessType GetShortType(TypeKey key);
 
   class NameKey {
    private:

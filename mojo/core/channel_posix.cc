@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/process/current_process.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
@@ -164,6 +165,8 @@ void ChannelPosix::Write(MessagePtr message) {
     UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
                              message->NumHandlesForTransit());
   }
+
+  MaybeLogHistogramForIPCMetrics(MessageType::kSent);
 
   bool write_error = false;
   {
