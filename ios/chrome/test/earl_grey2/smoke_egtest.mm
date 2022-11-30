@@ -269,13 +269,33 @@
 
 // Tests hard kill(crash) through AppLaunchManager.
 - (void)testAppLaunchManagerForceRelaunchByKilling {
+  [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey openNewTab];
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
-      disabled:{}
-      relaunchPolicy:ForceRelaunchByKilling];
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithFeaturesEnabled:{}
+                                  disabled:{kRemoveCrashInfobar}
+                            relaunchPolicy:ForceRelaunchByKilling];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:grey_text(@"Restore")];
   [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGrey waitForIncognitoTabCount:0];
+}
+
+// Tests hard kill(crash) through AppLaunchManager.
+- (void)testAppLaunchManagerForceRelaunchByKillingNoRestoreInfobar {
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://about")];
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithFeaturesEnabled:{kRemoveCrashInfobar}
+                                  disabled:{}
+                            relaunchPolicy:ForceRelaunchByKilling];
+  [ChromeEarlGrey waitForMainTabCount:2];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+  [[EarlGrey selectElementWithMatcher:grey_text(@"Restore")]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests running resets after relaunch through AppLaunchManager.

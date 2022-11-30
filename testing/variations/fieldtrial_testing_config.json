@@ -5745,6 +5745,21 @@
             ]
         }
     ],
+    "IOSRemoveCrashInfobar": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveCrashInfobar"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSRestoreSessionFromCache": [
         {
             "platforms": [

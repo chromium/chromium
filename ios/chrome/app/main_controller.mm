@@ -325,8 +325,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // Handles collecting metrics on user triggered screenshots
 @property(nonatomic, strong)
     ScreenshotMetricsRecorder* screenshotMetricsRecorder;
-// Returns whether the restore infobar should be displayed.
-- (bool)mustShowRestoreInfobar;
 // Cleanup snapshots on disk.
 - (void)cleanupSnapshots;
 // Cleanup discarded sessions on disk.
@@ -521,7 +519,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // This initialization must happen before any windows are created.
 // Returns YES iff there's a session restore available.
 - (BOOL)startUpBeforeFirstWindowCreatedAndPrepareForRestorationPostCrash:
-    (BOOL)isPostCrashLaunch {
+    (BOOL)showPostCrashLaunchInfobar {
   GetApplicationContext()->OnAppEnterForeground();
 
   // Although this duplicates some metrics_service startup logic also in
@@ -556,7 +554,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // `self.restoreHelper` must be kept alive until the BVC receives the
   // browser state.
   BOOL needRestoration = NO;
-  if (isPostCrashLaunch) {
+  if (showPostCrashLaunchInfobar) {
     NSSet<NSString*>* sessions =
         [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs];
     needRestoration =
@@ -630,14 +628,38 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self.screenshotMetricsRecorder startRecordingMetrics];
 }
 
+- (PostCrashAction)postCrashAction {
+  if (self.appState.resumingFromSafeMode)
+    return PostCrashAction::kShowSafeMode;
+
+  if (GetApplicationContext()->WasLastShutdownClean())
+    return PostCrashAction::kRestoreTabsCleanShutdown;
+
+  bool show_crash_infobar = !base::FeatureList::IsEnabled(kRemoveCrashInfobar);
+  // When `kRemoveCrashInfobar` launches, remove the isFirstLaunchAfterUpgrade
+  // check entirely.
+  if (show_crash_infobar && ![self isFirstLaunchAfterUpgrade]) {
+    return PostCrashAction::kStashTabsAndShowNTP;
+  }
+
+  if (!show_crash_infobar && crash_util::GetFailedStartupAttemptCount() >= 2) {
+    return PostCrashAction::kShowNTPWithReturnToTab;
+  }
+
+  return PostCrashAction::kRestoreTabsUncleanShutdown;
+}
+
 - (void)startUpBrowserForegroundInitialization {
   // TODO(crbug/1232027): Determine whether Chrome needs to resume watching for
   // crashes.
 
-  self.appState.postCrashLaunch = [self mustShowRestoreInfobar];
+  self.appState.postCrashAction = [self postCrashAction];
   self.appState.sessionRestorationRequired =
       [self startUpBeforeFirstWindowCreatedAndPrepareForRestorationPostCrash:
-                self.appState.postCrashLaunch];
+                self.appState.postCrashAction ==
+                PostCrashAction::kStashTabsAndShowNTP];
+  base::UmaHistogramEnumeration("Stability.IOS.PostCrashAction",
+                                self.appState.postCrashAction);
 }
 
 - (void)initializeBrowserState:(ChromeBrowserState*)browserState {
@@ -1011,7 +1033,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // If the user chooses to restore their session, some cached snapshots and
   // session states may be needed. Otherwise, cleanup the snapshots and session
   // states
-  if (![self mustShowRestoreInfobar]) {
+  if (self.appState.postCrashAction != PostCrashAction::kStashTabsAndShowNTP) {
     [self scheduleSnapshotsCleanup];
     [self scheduleSessionStateCacheCleanup];
   }
@@ -1280,12 +1302,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     return nullptr;
   }
   return self.interfaceProvider.currentInterface.browser->GetBrowserState();
-}
-
-- (bool)mustShowRestoreInfobar {
-  if ([self isFirstLaunchAfterUpgrade])
-    return false;
-  return !GetApplicationContext()->WasLastShutdownClean();
 }
 
 - (void)cleanupSnapshots {

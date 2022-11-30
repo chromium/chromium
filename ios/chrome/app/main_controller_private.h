@@ -15,14 +15,6 @@ class GURL;
 @protocol TabSwitcher;
 @class FirstRunAppAgent;
 
-// Private methods and protocols that are made visible here for tests.
-@interface MainController ()
-
-// YES if the last time the app was launched was with a previous version.
-@property(nonatomic, readonly) BOOL isFirstLaunchAfterUpgrade;
-
-@end
-
 // Methods that only exist for tests.
 @interface MainController (TestingOnly)
 

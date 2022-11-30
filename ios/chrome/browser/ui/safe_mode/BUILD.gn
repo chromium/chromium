@@ -71,10 +71,12 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base:base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing:block_swizzler",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

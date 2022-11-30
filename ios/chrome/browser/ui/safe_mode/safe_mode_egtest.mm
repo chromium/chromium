@@ -6,7 +6,9 @@
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_app_interface.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -15,6 +17,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/scoped_block_swizzler.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -136,6 +139,37 @@ void AssertTryAgainButtonOnPage() {
   AssertTryAgainButtonOnPage();
   AssertMessageNotOnPage(
       NSLocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT", @""));
+}
+
+// Tests that a start NTP is shown after 2 crashes.
+- (void)testPostCrashNTP {
+  [SafeModeAppInterface setFailedStartupAttemptCount:0];
+  [ChromeEarlGrey closeAllTabsInCurrentMode];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://about")];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://about")];
+  // The best way to ensure the session is synced to disk is by triggering a
+  // background (which forces an immediate session save) and a terminate (which
+  // waits for the session save disk write). Alternatively this test could just
+  // wait 2-4 seconds.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
+      disabled:{}
+      relaunchPolicy:ForceRelaunchByCleanShutdown];
+  [SafeModeAppInterface setFailedStartupAttemptCount:2];
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithFeaturesEnabled:{kRemoveCrashInfobar}
+                                  disabled:{}
+                            relaunchPolicy:ForceRelaunchByKilling];
+  [ChromeEarlGrey waitForMainTabCount:3];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_RETURN_TO_RECENT_TAB_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [SafeModeAppInterface setFailedStartupAttemptCount:0];
 }
 
 @end

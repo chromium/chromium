@@ -22,4 +22,9 @@
                  completion:nil];
 }
 
++ (void)setFailedStartupAttemptCount:(int)count {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setInteger:count forKey:@"AppStartupFailureCount"];
+}
+
 @end

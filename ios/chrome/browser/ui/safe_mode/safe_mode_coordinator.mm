@@ -15,7 +15,7 @@
 #endif
 
 namespace {
-const int kStartupCrashLoopThreshold = 2;
+const int kStartupCrashLoopThreshold = 3;
 }
 
 @interface SafeModeCoordinator ()<SafeModeViewControllerDelegate>

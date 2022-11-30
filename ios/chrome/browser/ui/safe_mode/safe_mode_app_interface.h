@@ -15,6 +15,9 @@
 // Presents the SafeModeViewController UI.
 + (void)presentSafeMode;
 
+//  Set the failed startup attempt counter to `count`.
++ (void)setFailedStartupAttemptCount:(int)count;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SAFE_MODE_SAFE_MODE_APP_INTERFACE_H_

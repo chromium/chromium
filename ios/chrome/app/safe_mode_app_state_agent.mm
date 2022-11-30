@@ -55,7 +55,9 @@
 - (void)coordinatorDidExitSafeMode:(SafeModeCoordinator*)coordinator {
   DCHECK(coordinator);
   [self stopSafeMode];
-  // Transition out of Safe Mode init stage to the next stage.
+  // Transition out of Safe Mode init stage to the next stage. Tell the appState
+  // that the app is resuming from safe mode.
+  self.appState.resumingFromSafeMode = YES;
   [self.appState queueTransitionToNextInitStage];
 }
 

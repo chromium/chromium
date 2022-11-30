@@ -171,6 +171,7 @@ source_set("scene") {
     "//ios/chrome/browser/mailto_handler",
     "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:policy_util",

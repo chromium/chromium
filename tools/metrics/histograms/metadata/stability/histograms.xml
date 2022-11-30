@@ -401,6 +401,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Stability.IOS.PostCrashAction" enum="IOSPostCrashAction"
+    expires_after="2023-10-04">
+  <owner>justincohen@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Recorded when the app is foregrounded. Records what action is taken after an
+    unclear shutdown (likely a crash).
+  </summary>
+</histogram>
+
 <histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
     expires_after="2023-04-27">
   <owner>djean@chromium.org</owner>

@@ -482,6 +482,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/start_surface:feature_flags",

@@ -52963,6 +52963,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Camera and Microphone permissions"/>
 </enum>
 
+<enum name="IOSPostCrashAction">
+  <int value="0" label="Restore tabs normally after a clean shutdown"/>
+  <int value="1" label="Restore tabs normally after an unclean shutdown"/>
+  <int value="2" label="Don't restore tabs, show crash infobar and NTP"/>
+  <int value="3" label="Restore tabs with return to previous tab NTP"/>
+  <int value="4" label="Show safe mode"/>
+</enum>
+
 <enum name="IOSPostRestoreSigninChoice">
   <int value="0" label="Continue"/>
   <int value="1" label="Dismiss"/>
