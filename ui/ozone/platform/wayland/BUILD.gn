@@ -5,7 +5,6 @@
 visibility = [ "//ui/ozone/*" ]
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -303,6 +302,10 @@ source_set("wayland") {
   ]
 
   if (is_linux) {
+    sources += [
+      "host/linux_ui_delegate_wayland.cc",
+      "host/linux_ui_delegate_wayland.h",
+    ]
     deps += [ "//ui/linux:linux_ui" ]
   }
 
@@ -313,13 +316,6 @@ source_set("wayland") {
     ]
     deps += [ "//dbus" ]
     defines += [ "USE_DBUS" ]
-  }
-
-  if (use_gtk) {
-    sources += [
-      "host/linux_ui_delegate_wayland.cc",
-      "host/linux_ui_delegate_wayland.h",
-    ]
   }
 
   if (is_chromeos_lacros) {

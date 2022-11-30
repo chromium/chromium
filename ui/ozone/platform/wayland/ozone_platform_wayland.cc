@@ -62,14 +62,14 @@
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #endif
 
-#if BUILDFLAG(USE_GTK)
-#include "ui/ozone/platform/wayland/host/linux_ui_delegate_wayland.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 #else
 #include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/ozone/platform/wayland/host/linux_ui_delegate_wayland.h"
 #endif
 
 #if defined(WAYLAND_GBM)
@@ -243,8 +243,8 @@ class OzonePlatformWayland : public OzonePlatform,
 
     supported_buffer_formats_ =
         connection_->buffer_manager_host()->GetSupportedBufferFormats();
-#if BUILDFLAG(USE_GTK)
-    gtk_ui_platform_ =
+#if BUILDFLAG(IS_LINUX)
+    linux_ui_delegate_ =
         std::make_unique<LinuxUiDelegateWayland>(connection_.get());
 #endif
 
@@ -441,8 +441,8 @@ class OzonePlatformWayland : public OzonePlatform,
   DrmRenderNodePathFinder path_finder_;
 #endif
 
-#if BUILDFLAG(USE_GTK)
-  std::unique_ptr<LinuxUiDelegateWayland> gtk_ui_platform_;
+#if BUILDFLAG(IS_LINUX)
+  std::unique_ptr<LinuxUiDelegateWayland> linux_ui_delegate_;
 #endif
 };
 
