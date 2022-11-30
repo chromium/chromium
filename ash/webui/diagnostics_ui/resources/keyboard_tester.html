@@ -23,12 +23,39 @@
     }
   }
 
+  :host {
+    --cr-dialog-body-padding-horizontal: 24px;
+  }
+
   [slot='title'] {
     font-family: var(--diagnostics-google-sans-font-family);
+    font-size: 16px;
+    font-weight: var(--diagnostics-medium-font-weight);
+    line-height: 24px;
+    padding-bottom: 4px;
+    padding-inline-end: var(--cr-dialog-body-padding-horizontal);
+    padding-inline-start: var(--cr-dialog-body-padding-horizontal);
+    padding-top: var(--cr-dialog-body-padding-horizontal);
+  }
+
+  [slot='button-container'] {
+    padding-bottom: 20px;
+    padding-inline-end: var(--cr-dialog-body-padding-horizontal);
+    padding-inline-start: var(--cr-dialog-body-padding-horizontal);
+    padding-top: 68px;
+  }
+
+  #description {
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 14px;
+    font-weight: var(--diagnostics-regular-font-weight);
+    line-height: 20px;
+    margin: 0;
+    padding-bottom: 24px;
   }
 
   #diagram-border {
-    border: 1px solid var(--google-blue-600);
+    border: 1px solid var(--cros-icon-color-prominent);
     border-radius: 8px;
     padding: 6px;
   }
@@ -36,6 +63,10 @@
   #help {
     align-self: center;
     flex-grow: 1;
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
+    line-height: 20px;
   }
 
   a[href] {
