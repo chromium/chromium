@@ -1990,6 +1990,21 @@
             ]
         }
     ],
+    "BufferQueueImageSetPurgeableMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BufferQueueImageSetPurgeable"
+                    ]
+                }
+            ]
+        }
+    ],
     "CPSS": [
         {
             "platforms": [
