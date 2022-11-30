@@ -11073,7 +11073,7 @@ bool RenderFrameHostImpl::IsNavigationSameSite(
   // TODO(peilinwang): remove when we've finished investigating BeginNavigation
   // jank (https://crbug.com/1380942).
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::IsNavigationSameSite");
-  SCOPED_UMA_HISTOGRAM_TIMER("RenderFrameHostImpl.IsNavigationSameSite");
+  SCOPED_UMA_HISTOGRAM_TIMER("Navigation.IsNavigationSameSite.Duration");
 
   if (!WebExposedIsolationInfo::AreCompatible(
           GetSiteInstance()->GetWebExposedIsolationInfo(),

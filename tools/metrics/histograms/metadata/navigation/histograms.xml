@@ -714,6 +714,18 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.GetFrameHostForNavigation.Duration" units="ms"
+    expires_after="2023-01-28">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-bugs+jank@google.com</owner>
+  <summary>
+    Measures the amount of time it takes to call
+    RenderFrameHostManager::GetFrameHostForNavigation(). Logged once per call to
+    RenderFrameHostManager::GetFrameHostForNavigation(), most often two times
+    per navigation.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Guest.IsHTTPOrHTTPS"
     enum="BooleanHttpBasedOrOtherScheme" expires_after="2023-05-14">
   <owner>alexmos@chromium.org</owner>
@@ -804,6 +816,18 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
     Whether the navigation commits in a process that is locked to an origin.
     Logged at ready-to-commit time for every navigation that commits with a HTTP
     or HTTPS URL scheme, excluding same-document navigations and errors.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.IsNavigationSameSite.Duration" units="ms"
+    expires_after="2023-01-28">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-bugs+jank@google.com</owner>
+  <summary>
+    Measures the amount of time it takes to call
+    RenderFrameHostImpl::IsNavigationSameSite(). Logged once per call to
+    RenderFrameHostImpl::IsNavigationSameSite(), potentially numerous times per
+    navigation.
   </summary>
 </histogram>
 
