@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/mrfu_ranker.h"
 
-#include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
@@ -15,7 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using testing::ElementsAre;
@@ -139,4 +136,4 @@ TEST_F(MrfuCategoryRankerTest, TrainAndRank) {
   EXPECT_GT(scores[1], scores[2]);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

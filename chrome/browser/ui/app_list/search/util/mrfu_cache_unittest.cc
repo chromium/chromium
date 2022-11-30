@@ -10,13 +10,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/app_list/search/util/mrfu_cache.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using testing::ElementsAre;
@@ -331,4 +330,4 @@ TEST_F(MrfuCacheTest, Delete) {
   EXPECT_FLOAT_EQ(proto.total_score(), 0.2f);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

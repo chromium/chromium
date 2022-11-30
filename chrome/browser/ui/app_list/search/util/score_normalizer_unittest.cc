@@ -5,12 +5,11 @@
 #include "chrome/browser/ui/app_list/search/util/score_normalizer.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 constexpr double kDefaultScore = 0.5;
@@ -336,4 +335,4 @@ TEST_F(ScoreNormalizerTest, NormalizeMiddleBins) {
   EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 4.0 + 1.0 / 3.0), 2.0 / 3.0);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

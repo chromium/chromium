@@ -14,7 +14,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/app_list/search/files/local_file_suggestion_provider.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
@@ -25,7 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using ::file_manager::file_tasks::FileTasksObserver;
@@ -148,4 +147,4 @@ TEST_F(ZeroStateFileProviderTest, FilterScreenshots) {
                                    Title(u"NotScreenshot.png")));
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

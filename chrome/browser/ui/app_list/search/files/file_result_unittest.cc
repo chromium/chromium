@@ -22,7 +22,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/skia_util.h"
 
-namespace app_list {
+namespace app_list::test {
 
 namespace {
 
@@ -138,4 +138,4 @@ TEST_F(FileResultTest, Icons) {
       *chromeos::GetIconFromType("shared", false).bitmap()));
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

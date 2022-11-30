@@ -8,7 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 TEST(AppListStringUtilTest, NormalizeId) {
@@ -51,4 +51,4 @@ TEST(AppListStringUtilTest, GetDriveId) {
 }
 
 }  // namespace
-}  // namespace app_list
+}  // namespace app_list::test

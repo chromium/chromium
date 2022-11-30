@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,7 +21,7 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 
 namespace {
 constexpr char kFakeAppPackageName[] = "FakeAppPackageName";
@@ -129,4 +128,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ArcAppShortcutsSearchProviderTest,
                          testing::Bool());
 
-}  // namespace app_list
+}  // namespace app_list::test

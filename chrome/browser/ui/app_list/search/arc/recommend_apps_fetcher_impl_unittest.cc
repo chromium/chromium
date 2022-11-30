@@ -12,7 +12,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 
 class AppListRecommendAppsFetcherImplTest : public testing::Test {
  public:
@@ -281,4 +281,4 @@ TEST_F(AppListRecommendAppsFetcherImplTest, AppListRequestFailure) {
             delegate_.WaitForResult());
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

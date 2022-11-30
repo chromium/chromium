@@ -11,10 +11,9 @@
 #include "chrome/browser/ui/app_list/search/files/file_suggest_test_util.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "content/public/test/browser_test.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 class MockObserver : public FileSuggestKeyedService::Observer {
@@ -193,4 +192,4 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
   }
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

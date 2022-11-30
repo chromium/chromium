@@ -23,12 +23,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/common/extension_builder.h"
 
-namespace app_list {
+namespace app_list::test {
 
 // Parameterized by feature ProductivityLauncher.
 class ArcPlayStoreSearchProviderTest : public AppListTestBase {
  public:
-  ArcPlayStoreSearchProviderTest() {}
+  ArcPlayStoreSearchProviderTest() = default;
 
   ArcPlayStoreSearchProviderTest(const ArcPlayStoreSearchProviderTest&) =
       delete;
@@ -282,4 +282,4 @@ TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
   }
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

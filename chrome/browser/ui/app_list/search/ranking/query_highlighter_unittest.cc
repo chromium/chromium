@@ -5,14 +5,12 @@
 #include "chrome/browser/ui/app_list/search/ranking/query_highlighter.h"
 
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/ranking/ranker.h"
-#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/browser/ui/app_list/search/test/test_result.h"
 #include "chrome/browser/ui/app_list/search/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using Tag = ash::SearchResultTag;
@@ -101,4 +99,4 @@ TEST(QueryHighlighterTest, AppendMatchTags) {
   }
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

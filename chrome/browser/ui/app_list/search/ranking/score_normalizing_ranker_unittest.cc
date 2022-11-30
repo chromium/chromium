@@ -4,19 +4,17 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/score_normalizing_ranker.h"
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/browser/ui/app_list/search/test/test_result.h"
 #include "chrome/browser/ui/app_list/search/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 Results MakeResults(const std::vector<std::string>& ids,
@@ -102,4 +100,4 @@ TEST_F(ScoreNormalizingRankerTest, UpdateResultRanks) {
   EXPECT_FLOAT_EQ(file_results[1]->scoring().normalized_relevance, 0.0);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

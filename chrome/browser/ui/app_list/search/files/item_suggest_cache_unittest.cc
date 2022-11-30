@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -21,7 +20,6 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_util.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -63,7 +61,7 @@ constexpr char kResponseSizeHistogramName[] =
     "Apps.AppList.ItemSuggestCache.ResponseSize";
 }  // namespace
 
-namespace app_list {
+namespace app_list::test {
 using base::test::ScopedFeatureList;
 
 class ItemSuggestCacheTest : public testing::Test {
@@ -508,4 +506,4 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSmallTimeBetweenUpdates) {
                {{"item id 1", "display text 1", absl::nullopt}});
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

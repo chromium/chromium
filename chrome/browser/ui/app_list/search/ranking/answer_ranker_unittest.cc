@@ -6,13 +6,12 @@
 
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
-#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/browser/ui/app_list/search/test/test_result.h"
 #include "chrome/browser/ui/app_list/search/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 Results MakeOmniboxCandidates(std::vector<double> relevances) {
@@ -156,4 +155,4 @@ TEST(AnswerRankerTest, SelectedAnswerNotChangedAfterBurnIn) {
   EXPECT_TRUE(omnibox_results[0]->scoring().filter);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

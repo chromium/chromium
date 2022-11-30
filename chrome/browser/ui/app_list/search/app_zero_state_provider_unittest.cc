@@ -19,7 +19,7 @@
 
 using extensions::mojom::ManifestLocation;
 
-namespace app_list {
+namespace app_list::test {
 
 namespace {
 
@@ -205,4 +205,4 @@ TEST_F(AppZeroStateProviderTest, HideNotShownInLauncher) {
   EXPECT_EQ(std::string(kNormalAppName), RunZeroStateSearch());
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

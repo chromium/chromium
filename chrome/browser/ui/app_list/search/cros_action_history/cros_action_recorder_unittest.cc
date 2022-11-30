@@ -6,8 +6,6 @@
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -17,7 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 constexpr int kSecondsPerDay = 86400;
@@ -312,4 +310,4 @@ TEST_F(CrOSActionRecorderTest, DisableRemovesEverything) {
   EXPECT_TRUE(GetCrOSActionHistory().actions().empty());
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

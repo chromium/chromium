@@ -21,6 +21,11 @@ class Profile;
 
 namespace app_list {
 
+namespace test {
+class CrOSActionRecorderTest;
+class CrOSActionRecorderTabTrackerTest;
+}  // namespace test
+
 class CrOSActionHistoryProto;
 
 // CrOSActionRecorder is a singleton that used to record any CrOSAction.
@@ -65,8 +70,8 @@ class CrOSActionRecorder {
     kStructuredMetricsDisabled = 5,
   };
 
-  friend class CrOSActionRecorderTest;
-  friend class CrOSActionRecorderTabTrackerTest;
+  friend class test::CrOSActionRecorderTest;
+  friend class test::CrOSActionRecorderTabTrackerTest;
 
   // kSaveInternal controls how often we save the action history to disk.
   static constexpr base::TimeDelta kSaveInternal = base::Hours(1);

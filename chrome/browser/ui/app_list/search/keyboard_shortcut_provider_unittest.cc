@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 
-namespace app_list {
+namespace app_list::test {
 
 namespace {
 constexpr double kResultRelevanceThreshold = 0.89;
@@ -145,4 +145,4 @@ TEST_F(KeyboardShortcutProviderTest, Search) {
             u"Open Emoji Picker, Shortcuts, Shift+ Search+ Space");
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

@@ -8,12 +8,15 @@
 #include <map>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/util/mrfu_cache.pb.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 
 namespace app_list {
+
+namespace test {
+class MrfuCacheTest;
+}
 
 // The most-recently-frequently-used cache stores a mapping from strings -
 // called items - to scores that is persisted to disk. The cache has two main
@@ -134,7 +137,7 @@ class MrfuCache {
   bool empty() const { return size() == 0; }
 
  private:
-  friend class MrfuCacheTest;
+  friend class test::MrfuCacheTest;
 
   using Score = MrfuCacheProto::Score;
 

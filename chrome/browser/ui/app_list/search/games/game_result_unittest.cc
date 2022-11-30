@@ -20,7 +20,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/skia_util.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 // Creates a 50x50 yellow test icon.
@@ -94,7 +94,7 @@ class GameResultTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<Profile> profile_;
-  test::TestAppListControllerDelegate list_controller_;
+  ::test::TestAppListControllerDelegate list_controller_;
   std::unique_ptr<TestAppDiscoveryService> app_discovery_service_;
 };
 
@@ -143,4 +143,4 @@ TEST_F(GameResultTest, Icons) {
   EXPECT_TRUE(no_icon_result.scoring().filter);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

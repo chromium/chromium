@@ -16,9 +16,7 @@
 
 #include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
-#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -31,7 +29,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/layout.h"
 
 class ArcDefaultAppList;
 class PrefService;
@@ -55,9 +52,9 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace app_list {
+namespace app_list::test {
 class ArcAppShortcutsSearchProviderTest;
-}  // namespace app_list
+}  // namespace app_list::test
 
 // Declares shareable ARC app specific preferences, that keep information
 // about app attributes (name, package_name, activity) and its state. This
@@ -458,7 +455,7 @@ class ArcAppListPrefs : public KeyedService,
  private:
   friend class ChromeShelfControllerTestBase;
   friend class ArcAppModelBuilderTest;
-  friend class app_list::ArcAppShortcutsSearchProviderTest;
+  friend class app_list::test::ArcAppShortcutsSearchProviderTest;
 
   // See the Create methods.
   ArcAppListPrefs(

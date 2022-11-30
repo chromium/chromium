@@ -32,7 +32,7 @@
 using web_app::test::CrosapiParam;
 using web_app::test::WithCrosapiParam;
 
-namespace app_list {
+namespace app_list::test {
 
 class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
  public:
@@ -369,4 +369,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            CrosapiParam::kEnabled),
                          WithCrosapiParam::ParamToString);
 
-}  // namespace app_list
+}  // namespace app_list::test

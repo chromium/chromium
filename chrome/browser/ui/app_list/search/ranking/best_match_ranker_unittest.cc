@@ -5,13 +5,12 @@
 #include "chrome/browser/ui/app_list/search/ranking/best_match_ranker.h"
 
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/browser/ui/app_list/search/test/test_result.h"
 #include "chrome/browser/ui/app_list/search/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 
 namespace {
 
@@ -27,9 +26,8 @@ std::unique_ptr<TestResult> MakeResult(const std::string& id,
 Results MakeAnswers(
     std::vector<std::pair<std::string, double>> ids_relevances) {
   Results results;
-  for (size_t i = 0; i < ids_relevances.size(); ++i) {
-    results.push_back(
-        MakeResult(ids_relevances[i].first, ids_relevances[i].second));
+  for (const auto& ids_relevance : ids_relevances) {
+    results.push_back(MakeResult(ids_relevance.first, ids_relevance.second));
   }
   return results;
 }
@@ -257,4 +255,4 @@ TEST_F(BestMatchRankerTest, RankerResetBetweenQueries) {
   ExpectBestMatchOrderAndRanks({{"files_2", 0}});
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_SCORE_NORMALIZER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_SCORE_NORMALIZER_H_
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 #include "chrome/browser/ui/app_list/search/util/score_normalizer.pb.h"
 
 namespace app_list {
+
+namespace test {
+class ScoreNormalizerTest;
+}
 
 // The score normalizer is a heuristic model that attempts to map a incoming
 // stream of numbers drawn from a fixed distribution into a uniform
@@ -51,7 +54,7 @@ class ScoreNormalizer {
   void Update(const std::string& name, double score);
 
  private:
-  friend class ScoreNormalizerTest;
+  friend class test::ScoreNormalizerTest;
 
   void OnProtoRead(ReadStatus status);
 

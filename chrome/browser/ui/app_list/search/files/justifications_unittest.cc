@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace app_list {
+namespace app_list::test {
 
 TEST(JustificationsTest, OpenedOrEdited) {
   base::Time now = base::Time::Now();
@@ -89,4 +89,4 @@ TEST(JustificationsTest, OpenTimes) {
             l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_PAST_MONTH));
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

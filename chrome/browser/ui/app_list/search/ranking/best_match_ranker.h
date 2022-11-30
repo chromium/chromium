@@ -11,6 +11,10 @@ namespace app_list {
 
 class BestMatchRankerTest;
 
+namespace test {
+class BestMatchRankerTest;
+}
+
 // A ranker that inspects the scores of incoming results and picks out some of
 // them to become 'best matches' to be moved to the top of the results list.
 //
@@ -41,7 +45,7 @@ class BestMatchRanker : public Ranker {
   void OnBurnInPeriodElapsed() override;
 
  private:
-  friend class BestMatchRankerTest;
+  friend class test::BestMatchRankerTest;
 
   // Whether the overall search session is within the pre-burn-in period.
   // Is unset via a callback from SearchControllerImplNew.

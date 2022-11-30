@@ -70,7 +70,7 @@ class FakeAppContextMenuDelegate : public AppContextMenuDelegate {
 };
 
 class FakeAppListControllerDelegate
-    : public test::TestAppListControllerDelegate {
+    : public ::test::TestAppListControllerDelegate {
  public:
   FakeAppListControllerDelegate() = default;
   FakeAppListControllerDelegate(const FakeAppListControllerDelegate&) = delete;

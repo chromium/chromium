@@ -14,7 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 
 namespace {
 
@@ -125,4 +125,4 @@ TEST_F(FilteringRankerTest, FilterOmniboxResults) {
   EXPECT_FALSE(results[web][4]->scoring().filter);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

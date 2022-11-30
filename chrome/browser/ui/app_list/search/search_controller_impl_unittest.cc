@@ -24,7 +24,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace app_list {
+namespace app_list::test {
 
 namespace {
 
@@ -143,7 +143,7 @@ class SearchControllerImplTest : public testing::Test {
   TestingProfile profile_;
   FakeAppListModelUpdater model_updater_{&profile_, /*order_delegate=*/nullptr};
   std::unique_ptr<SearchControllerImpl> search_controller_;
-  test::TestAppListControllerDelegate list_controller_{};
+  ::test::TestAppListControllerDelegate list_controller_{};
   // Owned by |search_controller_|.
   TestRankerManager* ranker_manager_{nullptr};
 };
@@ -802,4 +802,4 @@ TEST_F(SearchControllerImplTest, NotifyObserverWhenPublished) {
   EXPECT_FALSE(observer2.results_added());
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

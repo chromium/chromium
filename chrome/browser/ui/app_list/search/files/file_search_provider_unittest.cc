@@ -7,12 +7,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -28,7 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using ::testing::ElementsAre;
@@ -318,4 +316,4 @@ TEST_F(FileSearchProviderTrashTest, FilesInTrashArentIgnoredIfTrashDisabled) {
               UnorderedElementsAre(Title("file"), Title("trashed_file")));
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

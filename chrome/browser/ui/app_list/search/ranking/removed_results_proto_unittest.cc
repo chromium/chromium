@@ -10,7 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
@@ -96,4 +96,4 @@ TEST_F(RemovedResultsProtoTest, PersistDuplicateIds) {
   EXPECT_THAT(recorded_ids, UnorderedElementsAre("A", "B"));
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

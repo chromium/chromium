@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using file_manager::file_tasks::FileTasksObserver;
@@ -235,4 +235,4 @@ TEST_F(LocalFileSuggestionProviderTrashTest,
                                    FilePathMatcher(TrashPath("trashed_file"))));
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

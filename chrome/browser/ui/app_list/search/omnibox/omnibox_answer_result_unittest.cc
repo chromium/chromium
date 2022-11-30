@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using Tag = ash::SearchResultTag;
@@ -336,4 +336,4 @@ TEST_F(OmniboxAnswerResultTest, WhenIsResult) {
             crosapi::mojom::SearchResult::AnswerType::kWhenIs);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

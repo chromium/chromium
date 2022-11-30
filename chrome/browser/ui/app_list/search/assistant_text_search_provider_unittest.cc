@@ -17,7 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using ::ash::assistant::AssistantAllowedState;
@@ -122,4 +122,4 @@ TEST_F(AssistantTextSearchProviderTest, ShouldDeepLinkAssistantQuery) {
 }
 
 }  // namespace
-}  // namespace app_list
+}  // namespace app_list::test

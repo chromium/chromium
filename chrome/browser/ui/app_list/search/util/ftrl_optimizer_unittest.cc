@@ -14,7 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using testing::DoubleEq;
@@ -158,4 +158,4 @@ TEST_F(FtrlOptimizerTest, TrainSeveralTimes) {
   EXPECT_GT(proto.weights()[1], 0.9);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

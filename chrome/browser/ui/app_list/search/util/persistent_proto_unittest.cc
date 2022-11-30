@@ -10,13 +10,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto_test.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 // Populate |proto| with some test data.
@@ -245,4 +244,4 @@ TEST_F(PersistentProtoTest, QueueWrites) {
   EXPECT_EQ(write_count_, 1);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

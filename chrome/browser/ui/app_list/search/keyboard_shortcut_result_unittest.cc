@@ -6,18 +6,15 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
-namespace app_list {
+namespace app_list::test {
 
 using ::ash::string_matching::TokenizedString;
 using ::ui::KeyboardCode;
@@ -135,4 +132,4 @@ TEST_F(KeyboardShortcutResultTest,
   EXPECT_EQ(text_vector[4].GetText(), u", and release");
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

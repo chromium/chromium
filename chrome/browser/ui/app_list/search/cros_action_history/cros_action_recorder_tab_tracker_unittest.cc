@@ -14,12 +14,11 @@
 #include "third_party/blink/public/common/features.h"
 
 #include "base/strings/strcat.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
 
-namespace app_list {
+namespace app_list::test {
 
 const std::vector<GURL>& TestUrls() {
   static base::NoDestructor<std::vector<GURL>> test_urls{
@@ -157,4 +156,4 @@ TEST_F(CrOSActionRecorderTabTrackerPrerenderTest,
                    prerendering_url);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

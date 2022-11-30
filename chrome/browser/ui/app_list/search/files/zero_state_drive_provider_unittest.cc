@@ -24,7 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using ::ash::holding_space::ScopedTestMountPoint;
@@ -274,4 +274,4 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
   }
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

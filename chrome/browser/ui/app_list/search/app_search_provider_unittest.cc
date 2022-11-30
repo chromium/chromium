@@ -41,7 +41,7 @@
 
 using extensions::mojom::ManifestLocation;
 
-namespace app_list {
+namespace app_list::test {
 
 namespace {
 
@@ -639,4 +639,4 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn({TestArcAppInstallType::CONTROLLED_BY_POLICY,
                          TestArcAppInstallType::INSTALLED_BY_DEFAULT}));
 
-}  // namespace app_list
+}  // namespace app_list::test

@@ -15,6 +15,10 @@ class TokenizedString;
 
 namespace app_list {
 
+namespace test {
+class KeyboardShortcutResultTest;
+}
+
 class KeyboardShortcutResult : public ChromeSearchResult {
  public:
   explicit KeyboardShortcutResult(Profile* profile,
@@ -58,7 +62,7 @@ class KeyboardShortcutResult : public ChromeSearchResult {
   void UpdateIcon();
 
   Profile* profile_;
-  friend class KeyboardShortcutResultTest;
+  friend class test::KeyboardShortcutResultTest;
 };
 
 }  // namespace app_list

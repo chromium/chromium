@@ -44,8 +44,7 @@
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
-namespace app_list {
-namespace test {
+namespace app_list::test {
 
 namespace {
 
@@ -153,7 +152,7 @@ class OmniboxResultTest : public testing::Test {
   OmniboxResultTest(const OmniboxResultTest&) = delete;
   OmniboxResultTest& operator=(const OmniboxResultTest&) = delete;
 
-  ~OmniboxResultTest() override {}
+  ~OmniboxResultTest() override = default;
 
   void SetUp() override {
     // We need the bookmark and template URL services, and to create URL
@@ -471,5 +470,4 @@ TEST_F(OmniboxResultTest, SearchResultText) {
   EXPECT_TRUE(result->accessible_name().empty());
 }
 
-}  // namespace test
-}  // namespace app_list
+}  // namespace app_list::test

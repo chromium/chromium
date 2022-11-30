@@ -36,6 +36,10 @@ namespace app_list {
 class SearchMetricsManager;
 class SearchProvider;
 
+namespace test {
+class SearchControllerImplTest;
+}
+
 class SearchControllerImpl : public SearchController {
  public:
   using ResultsChangedCallback =
@@ -85,7 +89,7 @@ class SearchControllerImpl : public SearchController {
   }
 
  private:
-  friend class SearchControllerImplTest;
+  friend class test::SearchControllerImplTest;
 
   // Rank the results of |provider_type|.
   void Rank(ash::AppListSearchResultType provider_type);

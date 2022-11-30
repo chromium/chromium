@@ -19,7 +19,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 // TODO(https://crbug.com/1370774): move `ScopedTestMountPoint` out of holding
 // space to remove the dependency on holding space code.
 using ash::holding_space::ScopedTestMountPoint;
@@ -258,4 +258,4 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, RemoveMixedFileSuggestions) {
   EXPECT_TRUE(GetSuggestionsForType(FileSuggestionType::kLocalFile)->empty());
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

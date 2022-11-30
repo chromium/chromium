@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/test/app_list_search_test_helper.h"
 
-namespace app_list {
+namespace app_list::test {
 
 // This class contains additional logic to set up DriveFS and enable testing for
 // Drive file search in the launcher.
@@ -121,4 +119,4 @@ IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, ResultOrdering) {
   EXPECT_EQ(base::UTF16ToASCII(results[1]->title()), "ranking_older");
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

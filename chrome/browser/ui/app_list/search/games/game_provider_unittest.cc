@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/games/game_provider.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -23,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace app_list {
+namespace app_list::test {
 namespace {
 
 using ::testing::ElementsAre;
@@ -241,4 +239,4 @@ TEST_P(GameProviderTest, ProblematicCasesExcluded) {
   ASSERT_EQ(LastResults().size(), 0u);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

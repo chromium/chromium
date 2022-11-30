@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
@@ -13,7 +12,6 @@
 #include "chrome/browser/ui/app_list/search/files/file_suggest_test_util.h"
 #include "chrome/browser/ui/app_list/search/files/mock_file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/browser/ui/app_list/search/test/test_result.h"
 #include "chrome/browser/ui/app_list/search/types.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -22,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace app_list::test {
 
 namespace {
 
@@ -177,4 +175,4 @@ TEST_F(RemovedResultsRankerTest, RemoveFileSuggestions) {
   ranker_->Remove(&local_file_result);
 }
 
-}  // namespace app_list
+}  // namespace app_list::test

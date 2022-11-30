@@ -22,8 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace app_list {
-namespace test {
+namespace app_list::test {
 
 namespace {
 
@@ -210,5 +209,4 @@ TEST_F(HelpAppZeroStateProviderTest,
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
 }
 
-}  // namespace test
-}  // namespace app_list
+}  // namespace app_list::test
