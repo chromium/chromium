@@ -338,17 +338,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ChromeExtensionsClientInitTime2"
-    units="microseconds" expires_after="2019-12-01">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The amount of elapsed time taken to initialize the ChromeExtensionsClient.
-    Recorded once per client initialization, which happens once per instance of
-    Chrome. This is a new stat that has microsecond resolution.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ContentScripts.ContentScriptLength" units="KB"
     expires_after="2023-11-22">
   <owner>kelvinjiang@chromium.org</owner>
