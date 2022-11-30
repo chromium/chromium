@@ -88,7 +88,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/secure_origin_allowlist.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/certificate_transparency/pref_names.h"
@@ -760,6 +759,17 @@ const char kPrivacySandboxFirstPartySetsDataAccessAllowed[] =
 // Deprecated 09/2022.
 const char kFirstPartySetsEnabled[] = "first_party_sets.enabled";
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 09/2022.
+const char kDeprecatedAutofillAssistantConsent[] = "autofill_assistant_switch";
+const char kDeprecatedAutofillAssistantEnabled[] =
+    "AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED";
+const char kDeprecatedAutofillAssistantTriggerScriptsEnabled[] =
+    "Chrome.AutofillAssistant.ProactiveHelp";
+const char kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser[] =
+    "Chrome.AutofillAssistant.LiteScriptFirstTimeUser";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 10/2022.
 const char kSuggestedContentInfoShownInLauncher[] =
@@ -783,6 +793,14 @@ const char kPrimaryProfileFirstRunFinished[] =
 
 // Deprecated 11/2022.
 const char kLocalConsentsDictionary[] = "local_consents";
+
+// Deprecated 11/2022.
+const char kAutofillAssistantConsent[] = "autofill_assistant.consent";
+const char kAutofillAssistantEnabled[] = "autofill_assistant.enabled";
+const char kAutofillAssistantTriggerScriptsEnabled[] =
+    "autofill_assistant.trigger_scripts.enabled";
+const char kAutofillAssistantTriggerScriptsIsFirstTimeUser[] =
+    "autofill_assistant.trigger_scripts.is_first_time_user";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1040,6 +1058,13 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kSuggestedContentInfoDismissedInLauncher,
                                 false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 11/2022.
+  registry->RegisterBooleanPref(kAutofillAssistantEnabled, true);
+  registry->RegisterBooleanPref(kAutofillAssistantConsent, false);
+  registry->RegisterBooleanPref(kAutofillAssistantTriggerScriptsEnabled, true);
+  registry->RegisterBooleanPref(kAutofillAssistantTriggerScriptsIsFirstTimeUser,
+                                true);
 }
 
 }  // namespace
@@ -1292,7 +1317,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   AccessibilityUIMessageHandler::RegisterProfilePrefs(registry);
   AnnouncementNotificationService::RegisterProfilePrefs(registry);
   autofill::prefs::RegisterProfilePrefs(registry);
-  autofill_assistant::prefs::RegisterProfilePrefs(registry);
   browsing_data::prefs::RegisterBrowserUserPrefs(registry);
   certificate_transparency::prefs::RegisterPrefs(registry);
   ChromeContentBrowserClient::RegisterProfilePrefs(registry);
@@ -2006,7 +2030,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kClipboardHistoryNewFeatureBadgeCount);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Added 09/2022.
+// Added 09/2022.
 #if BUILDFLAG(IS_ANDROID)
   auto migrate_shared_pref = [profile_prefs](const std::string& source,
                                              const std::string& target) {
@@ -2017,21 +2041,14 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
     }
   };
 
-  migrate_shared_pref(
-      autofill_assistant::prefs::kDeprecatedAutofillAssistantConsent,
-      autofill_assistant::prefs::kAutofillAssistantConsent);
-  migrate_shared_pref(
-      autofill_assistant::prefs::kDeprecatedAutofillAssistantEnabled,
-      autofill_assistant::prefs::kAutofillAssistantEnabled);
-  migrate_shared_pref(
-      autofill_assistant::prefs::
-          kDeprecatedAutofillAssistantTriggerScriptsEnabled,
-      autofill_assistant::prefs::kAutofillAssistantTriggerScriptsEnabled);
-  migrate_shared_pref(
-      autofill_assistant::prefs::
-          kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser,
-      autofill_assistant::prefs::
-          kAutofillAssistantTriggerScriptsIsFirstTimeUser);
+  migrate_shared_pref(kDeprecatedAutofillAssistantConsent,
+                      kAutofillAssistantConsent);
+  migrate_shared_pref(kDeprecatedAutofillAssistantEnabled,
+                      kAutofillAssistantEnabled);
+  migrate_shared_pref(kDeprecatedAutofillAssistantTriggerScriptsEnabled,
+                      kAutofillAssistantTriggerScriptsEnabled);
+  migrate_shared_pref(kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser,
+                      kAutofillAssistantTriggerScriptsIsFirstTimeUser);
 #endif
 
   // Added 09/2022.
@@ -2065,6 +2082,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kSuggestedContentInfoShownInLauncher);
   profile_prefs->ClearPref(kSuggestedContentInfoDismissedInLauncher);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 11/2022.
+  profile_prefs->ClearPref(kAutofillAssistantEnabled);
+  profile_prefs->ClearPref(kAutofillAssistantConsent);
+  profile_prefs->ClearPref(kAutofillAssistantTriggerScriptsEnabled);
+  profile_prefs->ClearPref(kAutofillAssistantTriggerScriptsIsFirstTimeUser);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
