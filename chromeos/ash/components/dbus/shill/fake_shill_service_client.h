@@ -131,7 +131,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void SetHoldBackServicePropertyUpdates(bool hold_back) override;
   void SetRequireServiceToGetProperties(
       bool require_service_to_get_properties) override;
-  void SetFakeTrafficCounters(base::Value fake_traffic_counters) override;
+  void SetFakeTrafficCounters(base::Value::List fake_traffic_counters) override;
   void SetTimeGetterForTest(base::RepeatingCallback<base::Time()>) override;
 
  private:
@@ -179,7 +179,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   // unknown service.
   bool require_service_to_get_properties_ = false;
 
-  base::Value fake_traffic_counters_{base::Value::Type::LIST};
+  base::Value::List fake_traffic_counters_;
 
   // Gets the mocked time in tests.
   base::RepeatingCallback<base::Time()> time_getter_;

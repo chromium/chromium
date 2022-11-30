@@ -2793,27 +2793,26 @@ TEST_F(NetworkStateHandlerTest, GetNetworkListAfterUpdateManagedList) {
 
 TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
   // Set up the traffic counters.
-  base::Value traffic_counters(base::Value::Type::LIST);
+  base::Value::List traffic_counters;
 
-  base::Value chrome_dict(base::Value::Type::DICTIONARY);
-  chrome_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceChrome));
-  chrome_dict.SetKey("rx_bytes", base::Value(12));
-  chrome_dict.SetKey("tx_bytes", base::Value(32));
+  base::Value::Dict chrome_dict;
+  chrome_dict.Set("source", shill::kTrafficCounterSourceChrome);
+  chrome_dict.Set("rx_bytes", 12);
+  chrome_dict.Set("tx_bytes", 32);
   traffic_counters.Append(std::move(chrome_dict));
 
-  base::Value user_dict(base::Value::Type::DICTIONARY);
-  user_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceUser));
-  user_dict.SetKey("rx_bytes", base::Value(90));
-  user_dict.SetKey("tx_bytes", base::Value(87));
+  base::Value::Dict user_dict;
+  user_dict.Set("source", shill::kTrafficCounterSourceUser);
+  user_dict.Set("rx_bytes", 90);
+  user_dict.Set("tx_bytes", 87);
   traffic_counters.Append(std::move(user_dict));
 
   service_test_->SetFakeTrafficCounters(traffic_counters.Clone());
-  ASSERT_TRUE(traffic_counters.is_list());
 
   base::RunLoop run_loop;
   network_state_handler_->RequestTrafficCounters(
       kWifiName1, base::BindOnce(
-                      [](base::Value* expected_traffic_counters,
+                      [](base::Value::List* expected_traffic_counters,
                          base::OnceClosure quit_closure,
                          absl::optional<base::Value> actual_traffic_counters) {
                         ASSERT_TRUE(actual_traffic_counters);

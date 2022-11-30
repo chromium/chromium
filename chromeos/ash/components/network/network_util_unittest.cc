@@ -109,38 +109,38 @@ TEST_F(NetworkUtilTest, PrefixLengthToNetmask) {
 }
 
 TEST_F(NetworkUtilTest, ParseScanResults) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   std::vector<CellularScanResult> scan_results;
 
   // Empty list value.
-  EXPECT_TRUE(ParseCellularScanResults(list.GetList(), &scan_results));
+  EXPECT_TRUE(ParseCellularScanResults(list, &scan_results));
 
   // List contains invalid item.
   list.Append(0);
-  EXPECT_FALSE(ParseCellularScanResults(list.GetList(), &scan_results));
+  EXPECT_FALSE(ParseCellularScanResults(list, &scan_results));
 
   // Scan result has no network id.
-  list.ClearList();
-  base::Value dict_value_1(base::Value::Type::DICTIONARY);
-  dict_value_1.SetStringKey(shill::kStatusProperty, "available");
+  list.clear();
+  base::Value::Dict dict_value_1;
+  dict_value_1.Set(shill::kStatusProperty, "available");
   list.Append(std::move(dict_value_1));
-  EXPECT_TRUE(ParseCellularScanResults(list.GetList(), &scan_results));
+  EXPECT_TRUE(ParseCellularScanResults(list, &scan_results));
   EXPECT_TRUE(scan_results.empty());
 
   // Mixed parse results.
-  base::Value dict_value_2(base::Value::Type::DICTIONARY);
-  dict_value_2.SetStringKey(shill::kNetworkIdProperty, "000001");
-  dict_value_2.SetStringKey(shill::kStatusProperty, "unknown");
-  dict_value_2.SetStringKey(shill::kTechnologyProperty, "GSM");
+  base::Value::Dict dict_value_2;
+  dict_value_2.Set(shill::kNetworkIdProperty, "000001");
+  dict_value_2.Set(shill::kStatusProperty, "unknown");
+  dict_value_2.Set(shill::kTechnologyProperty, "GSM");
   list.Append(std::move(dict_value_2));
 
-  base::Value dict_value_3(base::Value::Type::DICTIONARY);
-  dict_value_3.SetStringKey(shill::kNetworkIdProperty, "000002");
-  dict_value_3.SetStringKey(shill::kStatusProperty, "available");
-  dict_value_3.SetStringKey(shill::kLongNameProperty, "Long Name");
+  base::Value::Dict dict_value_3;
+  dict_value_3.Set(shill::kNetworkIdProperty, "000002");
+  dict_value_3.Set(shill::kStatusProperty, "available");
+  dict_value_3.Set(shill::kLongNameProperty, "Long Name");
   list.Append(std::move(dict_value_3));
 
-  EXPECT_TRUE(ParseCellularScanResults(list.GetList(), &scan_results));
+  EXPECT_TRUE(ParseCellularScanResults(list, &scan_results));
   EXPECT_EQ(static_cast<size_t>(2), scan_results.size());
   EXPECT_EQ("000001", scan_results[0].network_id);
   EXPECT_EQ("unknown", scan_results[0].status);

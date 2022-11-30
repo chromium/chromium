@@ -10,10 +10,10 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
 
 namespace base {
-class Value;
 class Time;
 }
 
@@ -120,7 +120,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
         bool require_service_to_get_properties) = 0;
 
     // Sets a fake traffic counters that can be used in tests.
-    virtual void SetFakeTrafficCounters(base::Value fake_traffic_counters) = 0;
+    virtual void SetFakeTrafficCounters(
+        base::Value::List fake_traffic_counters) = 0;
 
     // Sets the callback used to get the mocked time in tests.
     virtual void SetTimeGetterForTest(

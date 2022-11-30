@@ -408,14 +408,14 @@ void FakeShillServiceClient::RequestPortalDetection(
 void FakeShillServiceClient::RequestTrafficCounters(
     const dbus::ObjectPath& service_path,
     chromeos::DBusMethodCallback<base::Value> callback) {
-  std::move(callback).Run(fake_traffic_counters_.Clone());
+  std::move(callback).Run(base::Value(fake_traffic_counters_.Clone()));
 }
 
 void FakeShillServiceClient::ResetTrafficCounters(
     const dbus::ObjectPath& service_path,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  fake_traffic_counters_.ClearList();
+  fake_traffic_counters_.clear();
   base::Time reset_time =
       !time_getter_.is_null() ? time_getter_.Run() : base::Time::Now();
   SetServiceProperty(
@@ -856,29 +856,25 @@ void FakeShillServiceClient::ContinueConnect(const std::string& service_path) {
 }
 
 void FakeShillServiceClient::SetDefaultFakeTrafficCounters() {
-  base::Value traffic_counters(base::Value::Type::LIST);
+  base::Value::List traffic_counters;
 
-  base::Value chrome_dict(base::Value::Type::DICTIONARY);
-  chrome_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceChrome));
-  chrome_dict.SetKey("rx_bytes", base::Value(1000));
-  chrome_dict.SetKey("tx_bytes", base::Value(2000.5));
+  base::Value::Dict chrome_dict;
+  chrome_dict.Set("source", shill::kTrafficCounterSourceChrome);
+  chrome_dict.Set("rx_bytes", 1000);
+  chrome_dict.Set("tx_bytes", 2000.5);
   traffic_counters.Append(std::move(chrome_dict));
 
-  base::Value user_dict(base::Value::Type::DICTIONARY);
-  user_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceUser));
-  user_dict.SetKey("rx_bytes", base::Value(45));
-  user_dict.SetKey("tx_bytes", base::Value(55));
+  base::Value::Dict user_dict;
+  user_dict.Set("source", shill::kTrafficCounterSourceUser);
+  user_dict.Set("rx_bytes", 45);
+  user_dict.Set("tx_bytes", 55);
   traffic_counters.Append(std::move(user_dict));
 
-  SetFakeTrafficCounters(traffic_counters.Clone());
+  SetFakeTrafficCounters(std::move(traffic_counters));
 }
 
 void FakeShillServiceClient::SetFakeTrafficCounters(
-    base::Value fake_traffic_counters) {
-  if (!fake_traffic_counters.is_list()) {
-    LOG(ERROR) << "Fake traffic counters must be a list";
-    return;
-  }
+    base::Value::List fake_traffic_counters) {
   fake_traffic_counters_ = std::move(fake_traffic_counters);
 }
 

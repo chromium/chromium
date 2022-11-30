@@ -128,26 +128,23 @@ enum ComparisonType {
 
 void CompareTrafficCounters(
     const std::vector<mojom::TrafficCounterPtr>& actual_traffic_counters,
-    const base::Value* expected_traffic_counters,
+    const base::Value::List& expected_traffic_counters,
     enum ComparisonType comparison_type) {
-  EXPECT_EQ(actual_traffic_counters.size(),
-            expected_traffic_counters->GetList().size());
+  EXPECT_EQ(actual_traffic_counters.size(), expected_traffic_counters.size());
   for (size_t i = 0; i < actual_traffic_counters.size(); i++) {
     const auto& actual_tc = actual_traffic_counters[i];
-    const auto& expected_tc = expected_traffic_counters->GetList()[i];
+    const auto& expected_tc = expected_traffic_counters[i].GetDict();
     EXPECT_EQ(actual_tc->source,
               CrosNetworkConfig::GetTrafficCounterEnumForTesting(
-                  expected_tc.FindKey("source")->GetString()));
+                  *expected_tc.FindString("source")));
     if (comparison_type == ComparisonType::INTEGER) {
-      EXPECT_EQ(actual_tc->rx_bytes,
-                (size_t)expected_tc.FindKey("rx_bytes")->GetInt());
-      EXPECT_EQ(actual_tc->tx_bytes,
-                (size_t)expected_tc.FindKey("tx_bytes")->GetInt());
+      EXPECT_EQ(actual_tc->rx_bytes, (size_t)*expected_tc.FindInt("rx_bytes"));
+      EXPECT_EQ(actual_tc->tx_bytes, (size_t)*expected_tc.FindInt("tx_bytes"));
     } else if (comparison_type == ComparisonType::DOUBLE) {
       EXPECT_EQ(actual_tc->rx_bytes,
-                (size_t)expected_tc.FindKey("rx_bytes")->GetDouble());
+                (size_t)*expected_tc.FindDouble("rx_bytes"));
       EXPECT_EQ(actual_tc->tx_bytes,
-                (size_t)expected_tc.FindKey("tx_bytes")->GetDouble());
+                (size_t)*expected_tc.FindDouble("tx_bytes"));
     }
   }
 }
@@ -272,8 +269,8 @@ class CrosNetworkConfigTest : public testing::Test {
     managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::ListValue(),
-        /*global_network_config=*/base::DictionaryValue());
+        /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
+        /*global_network_config=*/base::Value(base::Value::Type::DICT));
 
     const std::string user_policy_ssid = "wifi2";
     base::Value wifi2_onc = onc::ReadDictionaryFromJson(base::StringPrintf(
@@ -315,13 +312,14 @@ class CrosNetworkConfigTest : public testing::Test {
           "TLSAuthContents": "%s"}}})",
         kOpenVPNTLSAuthContents));
 
-    base::ListValue user_policy_onc;
+    base::Value::List user_policy_onc;
     user_policy_onc.Append(std::move(wifi2_onc));
     user_policy_onc.Append(std::move(wifi_eap_onc));
     user_policy_onc.Append(std::move(openvpn_onc));
     managed_network_configuration_handler->SetPolicy(
-        ::onc::ONC_SOURCE_USER_POLICY, helper()->UserHash(), user_policy_onc,
-        /*global_network_config=*/base::DictionaryValue());
+        ::onc::ONC_SOURCE_USER_POLICY, helper()->UserHash(),
+        base::Value(std::move(user_policy_onc)),
+        /*global_network_config=*/base::Value(base::Value::Type::DICT));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -333,14 +331,13 @@ class CrosNetworkConfigTest : public testing::Test {
                                             true /* enabled */);
     helper()->device_test()->AddDevice(
         kCellularDevicePath, shill::kTypeCellular, "stub_cellular_device");
-    base::Value sim_value(base::Value::Type::DICTIONARY);
-    sim_value.SetKey(shill::kSIMLockEnabledProperty, base::Value(true));
-    sim_value.SetKey(shill::kSIMLockTypeProperty,
-                     base::Value(shill::kSIMLockPin));
-    sim_value.SetKey(shill::kSIMLockRetriesLeftProperty,
-                     base::Value(kSimRetriesLeft));
+    base::Value::Dict sim_value;
+    sim_value.Set(shill::kSIMLockEnabledProperty, true);
+    sim_value.Set(shill::kSIMLockTypeProperty, shill::kSIMLockPin);
+    sim_value.Set(shill::kSIMLockRetriesLeftProperty, kSimRetriesLeft);
     helper()->device_test()->SetDeviceProperty(
-        kCellularDevicePath, shill::kSIMLockStatusProperty, sim_value,
+        kCellularDevicePath, shill::kSIMLockStatusProperty,
+        base::Value(std::move(sim_value)),
         /*notify_changed=*/false);
     helper()->device_test()->SetDeviceProperty(kCellularDevicePath,
                                                shill::kIccidProperty,
@@ -762,20 +759,20 @@ class CrosNetworkConfigTest : public testing::Test {
 
   void RequestTrafficCountersAndCompareTrafficCounters(
       const std::string& guid,
-      base::Value traffic_counters,
+      const base::Value::List& traffic_counters,
       ComparisonType comparison_type) {
     base::RunLoop run_loop;
     cros_network_config()->RequestTrafficCounters(
         guid,
         base::BindOnce(
-            [](base::Value* expected_traffic_counters, ComparisonType* type,
-               base::OnceClosure quit_closure,
+            [](const base::Value::List* expected_traffic_counters,
+               ComparisonType type, base::OnceClosure quit_closure,
                std::vector<mojom::TrafficCounterPtr> actual_traffic_counters) {
               CompareTrafficCounters(actual_traffic_counters,
-                                     expected_traffic_counters, *type);
+                                     *expected_traffic_counters, type);
               std::move(quit_closure).Run();
             },
-            &traffic_counters, &comparison_type, run_loop.QuitClosure()));
+            &traffic_counters, comparison_type, run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -2653,20 +2650,21 @@ TEST_F(CrosNetworkConfigTest, RequestNetworkScan) {
 }
 
 TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
-  base::DictionaryValue global_config;
-  global_config.SetBoolKey(
+  base::Value::Dict global_config;
+  global_config.Set(
       ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
       true);
-  global_config.SetBoolKey(
-      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect, false);
-  base::Value blocked(base::Value::Type::LIST);
-  blocked.Append(base::Value("blocked_ssid1"));
-  blocked.Append(base::Value("blocked_ssid2"));
-  global_config.SetKey(::onc::global_network_config::kBlockedHexSSIDs,
-                       std::move(blocked));
+  global_config.Set(::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
+                    false);
+  base::Value::List blocked;
+  blocked.Append("blocked_ssid1");
+  blocked.Append("blocked_ssid2");
+  global_config.Set(::onc::global_network_config::kBlockedHexSSIDs,
+                    std::move(blocked));
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      base::ListValue(), global_config);
+      base::Value(base::Value::Type::LIST),
+      base::Value(std::move(global_config)));
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
@@ -2685,16 +2683,16 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   SetupObserver();
   EXPECT_EQ(0, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
 
-  base::DictionaryValue global_config;
-  global_config.SetBoolKey(::onc::global_network_config::kAllowCellularSimLock,
-                           false);
-  global_config.SetBoolKey(
+  base::Value::Dict global_config;
+  global_config.Set(::onc::global_network_config::kAllowCellularSimLock, false);
+  global_config.Set(
       ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks, true);
-  global_config.SetBoolKey(
-      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect, false);
+  global_config.Set(::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
+                    false);
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      base::ListValue(), global_config);
+      base::Value(base::Value::Type::LIST),
+      base::Value(std::move(global_config)));
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
@@ -2988,49 +2986,47 @@ TEST_F(CrosNetworkConfigTest, SetAlwaysOnVpn) {
 }
 
 TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithIntegerType) {
-  base::Value traffic_counters(base::Value::Type::LIST);
+  base::Value::List traffic_counters;
 
-  base::Value chrome_dict(base::Value::Type::DICTIONARY);
-  chrome_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceChrome));
-  chrome_dict.SetKey("rx_bytes", base::Value(12));
-  chrome_dict.SetKey("tx_bytes", base::Value(32));
+  base::Value::Dict chrome_dict;
+  chrome_dict.Set("source", shill::kTrafficCounterSourceChrome);
+  chrome_dict.Set("rx_bytes", 12);
+  chrome_dict.Set("tx_bytes", 32);
   traffic_counters.Append(std::move(chrome_dict));
 
-  base::Value user_dict(base::Value::Type::DICTIONARY);
-  user_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceUser));
-  user_dict.SetKey("rx_bytes", base::Value(90));
-  user_dict.SetKey("tx_bytes", base::Value(87));
+  base::Value::Dict user_dict;
+  user_dict.Set("source", shill::kTrafficCounterSourceUser);
+  user_dict.Set("rx_bytes", 90);
+  user_dict.Set("tx_bytes", 87);
   traffic_counters.Append(std::move(user_dict));
 
-  ASSERT_TRUE(traffic_counters.is_list());
-  ASSERT_EQ(traffic_counters.GetList().size(), (size_t)2);
+  ASSERT_EQ(traffic_counters.size(), 2u);
   helper()->service_test()->SetFakeTrafficCounters(traffic_counters.Clone());
 
   RequestTrafficCountersAndCompareTrafficCounters(
-      "wifi1_guid", traffic_counters.Clone(), ComparisonType::INTEGER);
+      "wifi1_guid", traffic_counters, ComparisonType::INTEGER);
 }
 
 TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithDoubleType) {
-  base::Value traffic_counters(base::Value::Type::LIST);
+  base::Value::List traffic_counters;
 
-  base::Value chrome_dict(base::Value::Type::DICTIONARY);
-  chrome_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceChrome));
-  chrome_dict.SetKey("rx_bytes", base::Value(123456789987.0));
-  chrome_dict.SetKey("tx_bytes", base::Value(3211234567898.0));
+  base::Value::Dict chrome_dict;
+  chrome_dict.Set("source", shill::kTrafficCounterSourceChrome);
+  chrome_dict.Set("rx_bytes", 123456789987.0);
+  chrome_dict.Set("tx_bytes", 3211234567898.0);
   traffic_counters.Append(std::move(chrome_dict));
 
-  base::Value user_dict(base::Value::Type::DICTIONARY);
-  user_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceUser));
-  user_dict.SetKey("rx_bytes", base::Value(9000000000000000.0));
-  user_dict.SetKey("tx_bytes", base::Value(8765432112345.0));
+  base::Value::Dict user_dict;
+  user_dict.Set("source", shill::kTrafficCounterSourceUser);
+  user_dict.Set("rx_bytes", 9000000000000000.0);
+  user_dict.Set("tx_bytes", 8765432112345.0);
   traffic_counters.Append(std::move(user_dict));
 
-  ASSERT_TRUE(traffic_counters.is_list());
-  ASSERT_EQ(traffic_counters.GetList().size(), (size_t)2);
+  ASSERT_EQ(traffic_counters.size(), 2u);
   helper()->service_test()->SetFakeTrafficCounters(traffic_counters.Clone());
 
   RequestTrafficCountersAndCompareTrafficCounters(
-      "wifi1_guid", traffic_counters.Clone(), ComparisonType::DOUBLE);
+      "wifi1_guid", traffic_counters, ComparisonType::DOUBLE);
 }
 
 TEST_F(CrosNetworkConfigTest, GetSupportedVpnTypes) {
