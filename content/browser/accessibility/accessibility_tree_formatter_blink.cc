@@ -606,10 +606,11 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
 
   std::string line;
 
-  if (show_ids()) {
-    int id_value = dict.FindInt("id").value_or(0);
-    WriteAttribute(true, base::NumberToString(id_value), &line);
-  }
+  std::string id_value = base::NumberToString(dict.FindInt("id").value_or(0));
+  if (show_ids())  // Show id on every line.
+    WriteAttribute(true, id_value, &line);
+  else  // Show id if @BlINK-ALLOW:id=* specified.
+    WriteAttribute(false, std::string("id=") + id_value, &line);
 
   const std::string* role_value = dict.FindString("internalRole");
   if (role_value) {
