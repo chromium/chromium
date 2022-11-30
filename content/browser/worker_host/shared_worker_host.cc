@@ -259,7 +259,8 @@ void SharedWorkerHost::Start(
       worker_client_security_state_->private_network_request_policy =
           DerivePrivateNetworkRequestPolicy(
               worker_client_security_state_->ip_address_space,
-              worker_client_security_state_->is_web_secure_context);
+              worker_client_security_state_->is_web_secure_context,
+              PrivateNetworkRequestContext::kWorker);
     }
     switch (worker_client_security_state_->cross_origin_embedder_policy.value) {
       case network::mojom::CrossOriginEmbedderPolicyValue::kNone:

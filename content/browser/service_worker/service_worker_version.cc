@@ -2061,7 +2061,9 @@ void ServiceWorkerVersion::StartWorkerInternal() {
       client_security_state_->is_web_secure_context =
           policy_container_host_->policies().is_web_secure_context;
       client_security_state_->private_network_request_policy =
-          DerivePrivateNetworkRequestPolicy(policy_container_host_->policies());
+          DerivePrivateNetworkRequestPolicy(
+              policy_container_host_->policies(),
+              PrivateNetworkRequestContext::kWorker);
     }
   }
 

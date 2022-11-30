@@ -24,12 +24,20 @@ using Policy = network::mojom::PrivateNetworkRequestPolicy;
 using AddressSpace = network::mojom::IPAddressSpace;
 
 Policy DerivePrivateNetworkRequestPolicy(
-    const PolicyContainerPolicies& policies) {
+    const PolicyContainerPolicies& policies,
+    PrivateNetworkRequestContext private_network_request_context) {
   return DerivePrivateNetworkRequestPolicy(policies.ip_address_space,
-                                           policies.is_web_secure_context);
+                                           policies.is_web_secure_context,
+                                           private_network_request_context);
 }
 
-Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
+Policy DerivePolicyForNonSecureContext(
+    AddressSpace ip_address_space,
+    PrivateNetworkRequestContext private_network_request_context) {
+  bool warning_only = private_network_request_context ==
+                          PrivateNetworkRequestContext::kWorker &&
+                      base::FeatureList::IsEnabled(
+                          features::kPrivateNetworkAccessForWorkersWarningOnly);
   switch (ip_address_space) {
     case AddressSpace::kUnknown:
       // Requests from the `unknown` address space are controlled separately
@@ -44,8 +52,10 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
       // to localhost are blocked only if the right feature is enabled.
       // This is controlled separately because private network websites face
       // additional hurdles compared to public websites. See crbug.com/1234044.
-      return base::FeatureList::IsEnabled(
-                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate)
+      return !warning_only &&
+                     base::FeatureList::IsEnabled(
+                         features::
+                             kBlockInsecurePrivateNetworkRequestsFromPrivate)
                  ? Policy::kBlock
                  : Policy::kWarn;
     case AddressSpace::kPublic:
@@ -57,14 +67,21 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
       // has no effect. Indeed, requests initiated from the local address space
       // are never considered private network requests - they cannot target
       // more-private address spaces.
-      return base::FeatureList::IsEnabled(
-                 features::kBlockInsecurePrivateNetworkRequests)
+      return !warning_only &&
+                     base::FeatureList::IsEnabled(
+                         features::kBlockInsecurePrivateNetworkRequests)
                  ? Policy::kBlock
                  : Policy::kWarn;
   }
 }
 
-Policy DerivePolicyForSecureContext(AddressSpace ip_address_space) {
+Policy DerivePolicyForSecureContext(
+    AddressSpace ip_address_space,
+    PrivateNetworkRequestContext private_network_request_context) {
+  bool warning_only = private_network_request_context ==
+                          PrivateNetworkRequestContext::kWorker &&
+                      base::FeatureList::IsEnabled(
+                          features::kPrivateNetworkAccessForWorkersWarningOnly);
   // The goal is to eliminate occurrences of this case as much as possible,
   // before removing this special case.
   if (ip_address_space == AddressSpace::kUnknown) {
@@ -73,7 +90,7 @@ Policy DerivePolicyForSecureContext(AddressSpace ip_address_space) {
 
   if (base::FeatureList::IsEnabled(
           features::kPrivateNetworkAccessRespectPreflightResults)) {
-    return Policy::kPreflightBlock;
+    return warning_only ? Policy::kPreflightWarn : Policy::kPreflightBlock;
   }
 
   if (base::FeatureList::IsEnabled(
@@ -84,8 +101,10 @@ Policy DerivePolicyForSecureContext(AddressSpace ip_address_space) {
   return Policy::kAllow;
 }
 
-Policy DerivePrivateNetworkRequestPolicy(AddressSpace ip_address_space,
-                                         bool is_web_secure_context) {
+Policy DerivePrivateNetworkRequestPolicy(
+    AddressSpace ip_address_space,
+    bool is_web_secure_context,
+    PrivateNetworkRequestContext private_network_request_context) {
   // Disable PNA checks entirely when running with `--disable-web-security`.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity)) {
@@ -93,8 +112,10 @@ Policy DerivePrivateNetworkRequestPolicy(AddressSpace ip_address_space,
   }
 
   return is_web_secure_context
-             ? DerivePolicyForSecureContext(ip_address_space)
-             : DerivePolicyForNonSecureContext(ip_address_space);
+             ? DerivePolicyForSecureContext(ip_address_space,
+                                            private_network_request_context)
+             : DerivePolicyForNonSecureContext(ip_address_space,
+                                               private_network_request_context);
 }
 
 // Special chrome schemes cannot directly be categorized in public/private/local

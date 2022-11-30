@@ -801,6 +801,15 @@ BASE_FEATURE(kPrivateNetworkAccessForWorkers,
              "PrivateNetworkAccessForWorkers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Private Network Access checks in warning mode for all types of web
+// workers.
+//
+// Similar to `kPrivateNetworkAccessForWorkers`, except that it does not require
+// CORS preflight requests to succeed, and shows a warning in devtools instead.
+BASE_FEATURE(kPrivateNetworkAccessForWorkersWarningOnly,
+             "PrivateNetworkAccessForWorkersWarningOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Requires that CORS preflight requests succeed before sending private network
 // requests. This flag implies `kPrivateNetworkAccessSendPreflights`.
 // See: https://wicg.github.io/private-network-access/#cors-preflight

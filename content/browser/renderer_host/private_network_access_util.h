@@ -16,20 +16,31 @@ namespace content {
 class ContentBrowserClient;
 struct PolicyContainerPolicies;
 
+enum class PrivateNetworkRequestContext {
+  kSubresource,  // Subresource fetches initiated by documents
+  kWorker,  // Worker script fetches/updates or fetches within worker scripts
+};
+
 // Returns the policy to use for private network requests fetched by a client
 // with the given context properties.
 //
 // `ip_address_space` identifies the IP address space of the request client.
 // `is_web_secure_context` specifies whether the request client is a secure
 // context or not.
+// `private_network_request_context` specifies what this request is about. For
+// example, requests made from workers can have different policies from normal
+// subresource requests.
 network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
 DerivePrivateNetworkRequestPolicy(
     network::mojom::IPAddressSpace ip_address_space,
-    bool is_web_secure_context);
+    bool is_web_secure_context,
+    PrivateNetworkRequestContext private_network_request_context);
 
 // Convenience overload to directly compute this from the client's `policies`.
 network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
-DerivePrivateNetworkRequestPolicy(const PolicyContainerPolicies& policies);
+DerivePrivateNetworkRequestPolicy(
+    const PolicyContainerPolicies& policies,
+    PrivateNetworkRequestContext private_network_request_context);
 
 // Determines the IP address space that should be associated to execution
 // contexts instantiated from a resource loaded from this `url` and the given

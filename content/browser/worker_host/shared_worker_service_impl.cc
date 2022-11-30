@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
@@ -318,6 +319,9 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     return nullptr;
   }
 
+  network::mojom::ClientSecurityStatePtr client_security_state =
+      creator.BuildClientSecurityStateForWorkers();
+
   // Create the host. We need to do this even before starting the worker,
   // because we are about to bounce to the IO thread. If another ConnectToWorker
   // request arrives in the meantime, it finds and reuses the host instead of
@@ -327,7 +331,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
           this, instance, std::move(site_instance),
           std::move(content_security_policies),
           creator.policy_container_host()->Clone(),
-          creator.BuildClientSecurityState()));
+          client_security_state->Clone()));
   DCHECK(insertion_result.second);
   SharedWorkerHost* host = insertion_result.first->get();
   shared_worker_hosts_[host->token()] = host;
@@ -377,7 +381,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
           host->instance().storage_key().nonce().has_value()
               ? &host->instance().storage_key().nonce().value()
               : nullptr),
-      creator.BuildClientSecurityState(), credentials_mode,
+      std::move(client_security_state), credentials_mode,
       std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker,
       service_worker_context_, service_worker_handle_raw,

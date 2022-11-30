@@ -6503,7 +6503,8 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
     return;
   }
 
-  private_network_request_policy_ = DerivePrivateNetworkRequestPolicy(policies);
+  private_network_request_policy_ = DerivePrivateNetworkRequestPolicy(
+      policies, PrivateNetworkRequestContext::kSubresource);
 }
 
 std::vector<blink::mojom::WebFeature>

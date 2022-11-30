@@ -304,7 +304,7 @@ void DedicatedWorkerHost::StartScriptLoad(
   network::mojom::ClientSecurityStatePtr client_security_state;
   if (creator_render_frame_host) {
     client_security_state =
-        creator_render_frame_host->BuildClientSecurityState();
+        creator_render_frame_host->BuildClientSecurityStateForWorkers();
   } else {
     client_security_state = creator_worker->client_security_state()->Clone();
   }
@@ -403,7 +403,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       worker_client_security_state_->private_network_request_policy =
           DerivePrivateNetworkRequestPolicy(
               worker_client_security_state_->ip_address_space,
-              worker_client_security_state_->is_web_secure_context);
+              worker_client_security_state_->is_web_secure_context,
+              PrivateNetworkRequestContext::kWorker);
     } else {
       // Preserve incorrect functionality if PNA is not enabled.
       worker_client_security_state_ =

@@ -2991,8 +2991,9 @@ void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
     return;
   }
 
-  private_network_request_policy_ =
-      DerivePrivateNetworkRequestPolicy(policy_container_host_->policies());
+  private_network_request_policy_ = DerivePrivateNetworkRequestPolicy(
+      policy_container_host_->policies(),
+      PrivateNetworkRequestContext::kSubresource);
 }
 
 void RenderFrameHostImpl::RenderProcessGone(
@@ -11032,6 +11033,19 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
       private_network_request_policy_;
   client_security_state->cross_origin_embedder_policy =
       policies.cross_origin_embedder_policy;
+
+  return client_security_state;
+}
+
+network::mojom::ClientSecurityStatePtr
+RenderFrameHostImpl::BuildClientSecurityStateForWorkers() const {
+  auto client_security_state = BuildClientSecurityState();
+
+  client_security_state->private_network_request_policy =
+      DerivePrivateNetworkRequestPolicy(
+          client_security_state->ip_address_space,
+          client_security_state->is_web_secure_context,
+          PrivateNetworkRequestContext::kWorker);
 
   return client_security_state;
 }
