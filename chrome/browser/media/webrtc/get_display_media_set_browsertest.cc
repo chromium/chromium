@@ -26,7 +26,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/display/test/display_manager_test_api.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -51,6 +51,8 @@ bool RunGetDisplayMediaSet(content::WebContents* tab,
   return true;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 bool CheckScreenDetailedExists(content::WebContents* tab,
                                const std::string& track_id) {
   std::string result;
@@ -63,6 +65,8 @@ bool CheckScreenDetailedExists(content::WebContents* tab,
       &result));
   return result == "success-screen-detailed";
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ContentBrowserClientMock : public ChromeContentBrowserClient {
  public:
@@ -161,6 +165,9 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
   EXPECT_EQ(5u, track_ids.size());
 }
 
+// TODO(crbug.com/1392777): Enable these tests for lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        TrackContainsScreenDetailed) {
   SetScreens(/*screen_count=*/1u);
@@ -187,6 +194,8 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
   }
 }
 
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        AutoSelectAllScreensNotAllowed) {
   SetScreens(/*screen_count=*/1u);
@@ -199,4 +208,4 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
   EXPECT_EQ("NotAllowedError", error_name);
 }
 
-#endif
+#endif  // #if BUILDFLAG(IS_CHROMEOS)

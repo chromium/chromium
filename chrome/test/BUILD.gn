@@ -7737,6 +7737,7 @@ test("unit_tests") {
       "../browser/lacros/remote_apps/remote_apps_proxy_lacros_unittest.cc",
       "../browser/lacros/sync/sync_explicit_passphrase_client_lacros_unittest.cc",
       "../browser/lacros/sync/sync_user_settings_client_lacros_unittest.cc",
+      "../browser/media/webrtc/chrome_screen_enumerator_lacros_unittest.cc",
       "../browser/metrics/lacros_metrics_provider_unittest.cc",
       "../browser/notifications/notification_platform_bridge_lacros_unittest.cc",
       "../browser/performance_manager/policies/oom_score_policy_lacros_unittest.cc",
