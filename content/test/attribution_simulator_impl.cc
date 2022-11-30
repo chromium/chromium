@@ -195,6 +195,24 @@ struct AttributionReportJsonConverter {
     return value;
   }
 
+  base::Value::Dict ToJson(const AttributionDebugReport& report,
+                           base::Time time) const {
+    base::Value::List report_body = report.ReportBody();
+    if (remove_report_ids) {
+      for (auto& value : report_body) {
+        base::Value::Dict* dict = value.GetIfDict();
+        DCHECK(dict);
+        dict->RemoveByDottedPath("body.report_id");
+      }
+    }
+
+    base::Value::Dict value;
+    value.Set("report", std::move(report_body));
+    value.Set("report_url", report.ReportURL().spec());
+    value.Set("report_time", FormatTime(time));
+    return value;
+  }
+
   std::string FormatTime(base::Time time) const {
     base::TimeDelta time_delta = time - time_origin;
 
@@ -237,8 +255,6 @@ class FakeReportSender : public AttributionReportSender {
   void SendReport(AttributionDebugReport report,
                   DebugReportSentCallback done) override {
     std::move(done).Run(std::move(report), /*status=*/200);
-    // TODO(crbug.com/1371970): Consider supporting debug reports in the
-    // simulator.
   }
 };
 
@@ -343,6 +359,11 @@ class AttributionEventHandler : public AttributionObserver {
     if (!debug_aggregatable_reports_.empty()) {
       output.Set("debug_aggregatable_reports",
                  std::exchange(debug_aggregatable_reports_, {}));
+    }
+
+    if (!verbose_debug_reports_.empty()) {
+      output.Set("verbose_debug_reports",
+                 std::exchange(verbose_debug_reports_, {}));
     }
 
     if (!rejected_sources_.empty())
@@ -495,6 +516,13 @@ class AttributionEventHandler : public AttributionObserver {
     reports->Append(json_converter_.ToJson(report, is_debug_report));
   }
 
+  void OnDebugReportSent(const AttributionDebugReport& report,
+                         int status,
+                         base::Time time) override {
+    DCHECK_EQ(status, 200);
+    verbose_debug_reports_.Append(json_converter_.ToJson(report, time));
+  }
+
   base::ScopedObservation<AttributionManagerImpl, AttributionObserver>
       observation_{this};
 
@@ -511,6 +539,7 @@ class AttributionEventHandler : public AttributionObserver {
   base::Value::List debug_event_level_reports_;
   base::Value::List aggregatable_reports_;
   base::Value::List debug_aggregatable_reports_;
+  base::Value::List verbose_debug_reports_;
 
   base::circular_deque<base::Value> input_values_;
 };

@@ -1,0 +1,73 @@
+{
+  "cookies": [
+    {
+      "timestamp": "1643235571000",
+      "url": "https://r.test/cookie",
+      "Set-Cookie": "ar_debug=1; SameSite=None; Secure; HttpOnly"
+    }
+  ],
+  "sources": [
+    {
+      "timestamp": "1643235572000",
+      "source_origin": "https://s.test",
+      "reporting_origin": "https://r.test",
+      "source_type": "navigation",
+      "Attribution-Reporting-Register-Source": {
+        "destination": "https://d.test"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "timestamp": "1643235573000",
+      "reporting_origin": "https://r.test",
+      "destination_origin": "https://d.test",
+      "Attribution-Reporting-Register-Trigger": {
+        "event_trigger_data": [
+          {
+            "trigger_data": "1"
+          }
+        ]
+      }
+    },
+    {
+      "timestamp": "1643235574000",
+      "reporting_origin": "https://r.test",
+      "destination_origin": "https://d.test",
+      "Attribution-Reporting-Register-Trigger": {
+        "event_trigger_data": [
+          {
+            "trigger_data": "2",
+            "priority": "100"
+          }
+        ]
+      }
+    },
+    {
+      "timestamp": "1643235575000",
+      "reporting_origin": "https://r.test",
+      "destination_origin": "https://d.test",
+      "Attribution-Reporting-Register-Trigger": {
+        "event_trigger_data": [
+          {
+            "trigger_data": "3",
+            "priority": "100"
+          }
+        ]
+      }
+    },
+    {
+      "timestamp": "1643235576000",
+      "reporting_origin": "https://r.test",
+      "destination_origin": "https://d.test",
+      "Attribution-Reporting-Register-Trigger": {
+        "debug_reporting": true,
+        "event_trigger_data": [
+          {
+            "trigger_data": "4"
+          }
+        ]
+      }
+    }
+  ]
+}
