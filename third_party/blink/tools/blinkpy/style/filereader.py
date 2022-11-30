@@ -75,12 +75,7 @@ class TextFileReader(object):
                                              codecs.getwriter('utf8'),
                                              'replace')
         else:
-            # We do not open the file with universal newline support
-            # (codecs does not support it anyway), so the resulting
-            # lines contain trailing "\r" characters if we are reading
-            # a file with CRLF endings.
-            # FIXME: This should use self.filesystem
-            file = codecs.open(file_path, 'r', 'utf8', 'replace')
+            file = self.filesystem.open_text_file_for_reading(file_path)
 
         try:
             contents = file.read()

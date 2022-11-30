@@ -32,7 +32,6 @@ filesystem, and can be replaced with a MockFileSystem in tests.
 """
 from __future__ import unicode_literals
 
-import codecs
 import glob
 import hashlib
 import logging
@@ -265,20 +264,26 @@ class FileSystem(object):
         # Close the OS fd opened by mkstemp as we will reopen the file with an
         # explict encoding.
         os.close(temp_fd)
-        f = codecs.open(temp_name, 'w', 'utf8')
+        f = open(temp_name, 'w', encoding='utf8', newline='')
         return f, temp_name
 
     def open_text_file_for_reading(self, path):
-        # Note: There appears to be an issue with the returned file objects not
-        # being seekable. See:
-        # http://stackoverflow.com/questions/1510188/can-seek-and-tell-work-with-utf-8-encoded-documents-in-python
-        return codecs.open(self._path_for_access(path), 'r', 'utf8')
+        return open(self._path_for_access(path),
+                    'r',
+                    encoding='utf8',
+                    newline='')
 
     def open_text_file_for_writing(self, path):
-        return codecs.open(self._path_for_access(path), 'w', 'utf8')
+        return open(self._path_for_access(path),
+                    'w',
+                    encoding='utf8',
+                    newline='')
 
     def open_text_file_for_appending(self, path):
-        return codecs.open(self._path_for_access(path), 'a', 'utf8')
+        return open(self._path_for_access(path),
+                    'a',
+                    encoding='utf8',
+                    newline='')
 
     def read_text_file(self, path):
         """Returns the contents of the file as a Unicode string.
