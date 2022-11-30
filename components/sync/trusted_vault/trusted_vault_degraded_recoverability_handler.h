@@ -56,13 +56,12 @@ class TrustedVaultDegradedRecoverabilityHandler {
   // GetIsRecoverabilityDegraded().
   void GetIsRecoverabilityDegraded(base::OnceCallback<void(bool)> cb);
 
-  // TODO(crbug.com/1247990): The accessibility of the following three functions
-  // should be changed to be private.
-  void StartLongIntervalRefreshing();
-  void StartShortIntervalRefreshing();
+  // TODO(crbug.com/1247990): Should be inlined inside
+  // HintDegradedRecoverabilityChanged().
   void RefreshImmediately();
 
  private:
+  void UpdateCurrentRefreshPeriod();
   void Start();
   void Refresh();
   void OnRecoverabilityIsDegradedDownloaded(

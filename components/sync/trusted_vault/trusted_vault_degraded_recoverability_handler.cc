@@ -59,11 +59,6 @@ TrustedVaultDegradedRecoverabilityHandler::
     : connection_(connection),
       delegate_(delegate),
       account_info_(account_info) {
-  long_degraded_recoverability_refresh_period_ =
-      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
-  short_degraded_recoverability_refresh_period_ =
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
-  current_refresh_period_ = long_degraded_recoverability_refresh_period_;
   degraded_recoverability_value_ =
       degraded_recoverability_state.degraded_recoverability_value();
   base::UmaHistogramExactLinear("Sync.TrustedVaultDegradedRecoverabilityValue",
@@ -74,11 +69,17 @@ TrustedVaultDegradedRecoverabilityHandler::
     base::Time last_refresh_time =
         ProtoTimeToTime(degraded_recoverability_state
                             .last_refresh_time_millis_since_unix_epoch());
-    if (base::Time::Now() > last_refresh_time) {
+    if (base::Time::Now() >= last_refresh_time) {
       last_refresh_time_ =
           base::TimeTicks::Now() - (base::Time::Now() - last_refresh_time);
     }
   }
+
+  long_degraded_recoverability_refresh_period_ =
+      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
+  short_degraded_recoverability_refresh_period_ =
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
+  UpdateCurrentRefreshPeriod();
 }
 
 TrustedVaultDegradedRecoverabilityHandler::
@@ -89,16 +90,6 @@ void TrustedVaultDegradedRecoverabilityHandler::
         TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA reason) {
   RecordTrustedVaultHintDegradedRecoverabilityChangedReason(reason);
   RefreshImmediately();
-}
-
-void TrustedVaultDegradedRecoverabilityHandler::StartLongIntervalRefreshing() {
-  current_refresh_period_ = long_degraded_recoverability_refresh_period_;
-  Start();
-}
-
-void TrustedVaultDegradedRecoverabilityHandler::StartShortIntervalRefreshing() {
-  current_refresh_period_ = short_degraded_recoverability_refresh_period_;
-  Start();
 }
 
 void TrustedVaultDegradedRecoverabilityHandler::RefreshImmediately() {
@@ -119,6 +110,15 @@ void TrustedVaultDegradedRecoverabilityHandler::GetIsRecoverabilityDegraded(
   if (!next_refresh_timer_.IsRunning()) {
     Start();
   }
+}
+
+void TrustedVaultDegradedRecoverabilityHandler::UpdateCurrentRefreshPeriod() {
+  if (degraded_recoverability_value_ ==
+      sync_pb::DegradedRecoverabilityValue::kDegraded) {
+    current_refresh_period_ = short_degraded_recoverability_refresh_period_;
+    return;
+  }
+  current_refresh_period_ = long_degraded_recoverability_refresh_period_;
 }
 
 void TrustedVaultDegradedRecoverabilityHandler::Start() {
@@ -167,6 +167,7 @@ void TrustedVaultDegradedRecoverabilityHandler::
   }
   if (degraded_recoverability_value_ != old_degraded_recoverability_value) {
     delegate_->OnDegradedRecoverabilityChanged();
+    UpdateCurrentRefreshPeriod();
   }
   last_refresh_time_ = base::TimeTicks::Now();
   delegate_->WriteDegradedRecoverabilityState(MakeDegradedRecoverabilityState(
