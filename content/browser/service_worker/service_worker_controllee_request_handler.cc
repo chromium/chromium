@@ -494,6 +494,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
           "FetchHandlerType",
           FetchHandlerTypeToString(
               active_version->EffectiveFetchHandlerType()));
+      registration->active_version()->CountFeature(
+          blink::mojom::WebFeature::kServiceWorkerSkippedForEmptyFetchHandler);
       CompleteWithoutLoader();
       return;
     }
