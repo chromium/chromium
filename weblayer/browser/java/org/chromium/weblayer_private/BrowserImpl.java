@@ -229,26 +229,6 @@ public class BrowserImpl extends IBrowser.Stub {
     }
 
     @Override
-    public void setTopView(IObjectWrapper viewWrapper) {
-        StrictModeWorkaround.apply();
-        getViewController().setTopView(ObjectWrapper.unwrap(viewWrapper, View.class));
-    }
-
-    @Override
-    public void setTopViewAndScrollingBehavior(IObjectWrapper viewWrapper, int minHeight,
-            boolean onlyExpandControlsAtPageTop, boolean animate) {
-        StrictModeWorkaround.apply();
-        if (minHeight < 0) {
-            throw new IllegalArgumentException("Top view min height must be non-negative.");
-        }
-
-        getViewController().setTopControlsAnimationsEnabled(animate);
-        getViewController().setTopView(ObjectWrapper.unwrap(viewWrapper, View.class));
-        getViewController().setTopControlsMinHeight(minHeight);
-        getViewController().setOnlyExpandTopControlsAtPageTop(onlyExpandControlsAtPageTop);
-    }
-
-    @Override
     public void setBottomView(IObjectWrapper viewWrapper) {
         StrictModeWorkaround.apply();
         getViewController().setBottomView(ObjectWrapper.unwrap(viewWrapper, View.class));

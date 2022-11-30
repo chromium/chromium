@@ -339,50 +339,6 @@ class Browser {
     }
 
     /**
-     * Sets the View shown at the top of the browser. A value of null removes the view. The
-     * top-view is typically used to show the uri. The top-view scrolls with the page.
-     *
-     * @param view The new top-view.
-     */
-    public void setTopView(@Nullable View view) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            mImpl.setTopView(ObjectWrapper.wrap(view));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
-     * Sets the View shown at the top of the browser. The top-view is typically used to show the
-     * uri. This method also allows you to control the scrolling behavior of the top-view by setting
-     * a minimum height it will scroll to, and pinning the top-view to the top of the web contents.
-     *
-     * @param view The new top-view, or null to remove the view.
-     * @param minHeight The minimum height in pixels that the top controls can scoll up to. A value
-     *        of 0 means the top-view should scroll entirely off screen.
-     * @param onlyExpandControlsAtPageTop Whether the top-view should only be expanded when the web
-     *        content is scrolled to the top. A true value makes the top-view behave as though it
-     *        were inserted into the top of the page content. If true, the top-view should NOT be
-     *        used to display the URL, as this will prevent it from expanding in security-sensitive
-     *        contexts where the URL should be visible to the user.
-     * @param animate Whether or not any height/visibility changes that result from this call
-     *        should be animated.
-     */
-    public void setTopView(@Nullable View view, int minHeight, boolean onlyExpandControlsAtPageTop,
-            boolean animate) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            mImpl.setTopViewAndScrollingBehavior(
-                    ObjectWrapper.wrap(view), minHeight, onlyExpandControlsAtPageTop, animate);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
      * Sets the View shown at the bottom of the browser. A value of null removes the view.
      *
      * @param view The new bottom-view.

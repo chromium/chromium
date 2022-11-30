@@ -13,7 +13,6 @@ import java.util.List;
 
 interface IBrowser {
   IProfile getProfile() = 0;
-  void setTopView(in IObjectWrapper view) = 1;
 
   // Sets the active tab, returns false if tab is not attached to this fragment.
   boolean setActiveTab(in ITab tab) = 3;
@@ -29,10 +28,6 @@ interface IBrowser {
   void setBottomView(in IObjectWrapper view) = 10;
 
   ITab createTab() = 11;
-
-  void setTopViewAndScrollingBehavior(in IObjectWrapper view, in int minHeight,
-                                      in boolean onlyExpandControlsAtPageTop,
-                                      in boolean animate) = 12;
 
   boolean isRestoringPreviousState() = 14;
 
