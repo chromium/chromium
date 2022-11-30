@@ -839,8 +839,12 @@ std::u16string ContentAnalysisDialog::GetCustomMessage() const {
 void ContentAnalysisDialog::AddLearnMoreLinkToDialog() {
   DCHECK(contents_view_);
   DCHECK(contents_layout_);
-  DCHECK(!learn_more_link_);
   DCHECK(is_warning() || is_failure());
+
+  // There is only ever up to one link in the dialog, so return early instead of
+  // adding another one.
+  if (learn_more_link_)
+    return;
 
   // Add a row for the new element, and add an empty view to skip the first
   // column.
@@ -859,8 +863,12 @@ void ContentAnalysisDialog::AddLearnMoreLinkToDialog() {
 void ContentAnalysisDialog::AddJustificationTextLabelToDialog() {
   DCHECK(contents_view_);
   DCHECK(contents_layout_);
-  DCHECK(!justification_text_label_);
   DCHECK(is_warning());
+
+  // There is only ever up to one justification section in the dialog, so return
+  // early instead of adding another one.
+  if (justification_text_label_)
+    return;
 
   // Add a row for the new element, and add an empty view to skip the first
   // column.
@@ -881,9 +889,13 @@ void ContentAnalysisDialog::AddJustificationTextLabelToDialog() {
 void ContentAnalysisDialog::AddJustificationTextAreaToDialog() {
   DCHECK(contents_view_);
   DCHECK(contents_layout_);
-  DCHECK(!bypass_justification_);
   DCHECK(justification_text_label_);
   DCHECK(is_warning());
+
+  // There is only ever up to one justification text box in the dialog, so
+  // return early instead of adding another one.
+  if (bypass_justification_)
+    return;
 
   // Add a row for the new element, and add an empty view to skip the first
   // column.
@@ -899,8 +911,12 @@ void ContentAnalysisDialog::AddJustificationTextAreaToDialog() {
 void ContentAnalysisDialog::AddJustificationTextLengthToDialog() {
   DCHECK(contents_view_);
   DCHECK(contents_layout_);
-  DCHECK(!bypass_justification_text_length_);
   DCHECK(is_warning());
+
+  // There is only ever up to one justification text length indicator in the
+  // dialog, so return early instead of adding another one.
+  if (bypass_justification_text_length_)
+    return;
 
   // Add a row for the new element, and add an empty view to skip the first
   // column.
