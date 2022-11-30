@@ -5,35 +5,38 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:orientation="vertical">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/action_bar"
-        android:layout_gravity="center_horizontal"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:focusable="true"
-        android:titleTextAppearance="@style/TextAppearance.Headline"
-        style="@style/ModernToolbar" />
+        android:orientation="vertical">
 
-  <FrameLayout
-      android:id="@+id/sheet_item_list_container"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
-      <androidx.recyclerview.widget.RecyclerView
-          android:id="@+id/fast_checkout_detail_screen_recycler_view"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/action_bar"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:focusable="true"
+            android:titleTextAppearance="@style/TextAppearance.Headline"
+            style="@style/ModernToolbar" />
+
+      <FrameLayout
+          android:id="@+id/sheet_item_list_container"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:clipToPadding="false"
-          android:divider="@null"
-          android:paddingBottom="24dp"/>
-  </FrameLayout>
+          android:layout_height="match_parent">
+          <androidx.recyclerview.widget.RecyclerView
+              android:id="@+id/fast_checkout_detail_screen_recycler_view"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:clipToPadding="false"
+              android:divider="@null"
+              android:paddingBottom="24dp"/>
+      </FrameLayout>
 
-</LinearLayout>
-
+    </LinearLayout>
+</ScrollView>
