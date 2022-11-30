@@ -1784,11 +1784,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-chrome-management-page-android",
-    "owners": [ "ogastorga", "ftirelo" ],
-    "expiry_milestone": 107
-  },
-  {
     "name": "enable-close-tab-suggestions",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90
