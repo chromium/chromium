@@ -1101,7 +1101,7 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
   FlossDBusManager::Get()->GetLEScanClient()->StartScan(
       base::BindOnce(&BluetoothAdapterFloss::OnStartScan,
                      weak_ptr_factory_.GetWeakPtr(), uuid, scanner_id),
-      scanner_id, ScanSettings{}, ScanFilter{});
+      scanner_id, ScanSettings{}, absl::nullopt);
 }
 
 void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
@@ -1267,8 +1267,12 @@ void BluetoothAdapterFloss::OnStartScan(
 
   if (!ret.has_value() ||
       ret.value() != FlossDBusClient::BtifStatus::kSuccess) {
-    BLUETOOTH_LOG(ERROR) << "Failed StartScan: " << ret.error()
-                         << ", status: " << static_cast<uint32_t>(ret.value());
+    if (ret.has_value()) {
+      BLUETOOTH_LOG(ERROR) << "Failed StartScan, status: "
+                           << static_cast<uint32_t>(ret.value());
+    } else {
+      BLUETOOTH_LOG(ERROR) << "Failed StartScan, D-Bus error: " << ret.error();
+    }
     scanners_[uuid]->OnActivate(scanner_id, /*success=*/false);
     return;
   }

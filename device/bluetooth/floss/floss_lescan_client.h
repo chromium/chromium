@@ -110,7 +110,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
   virtual void StartScan(ResponseCallback<BtifStatus> callback,
                          uint8_t scanner_id,
                          const ScanSettings& scan_settings,
-                         const ScanFilter& filter);
+                         const absl::optional<ScanFilter>& filter);
   virtual void StopScan(ResponseCallback<BtifStatus> callback,
                         uint8_t scanner_id);
 

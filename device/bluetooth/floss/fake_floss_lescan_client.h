@@ -29,7 +29,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossLEScanClient : public FlossLEScanClient {
   void StartScan(ResponseCallback<BtifStatus> callback,
                  uint8_t scanner_id,
                  const ScanSettings& scan_settings,
-                 const ScanFilter& filters) override;
+                 const absl::optional<ScanFilter>& filters) override;
 
   // For test observation
   int scanners_registered_ = 0;

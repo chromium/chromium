@@ -133,7 +133,7 @@ void FlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
 void FlossLEScanClient::StartScan(ResponseCallback<BtifStatus> callback,
                                   uint8_t scanner_id,
                                   const ScanSettings& scan_settings,
-                                  const ScanFilter& filter) {
+                                  const absl::optional<ScanFilter>& filter) {
   CallLEScanMethod<>(std::move(callback), adapter::kStartScan, scanner_id,
                      scan_settings, filter);
 }
@@ -190,11 +190,11 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
   writer->OpenArray("{sv}", &array_writer);
 
   // TODO(b/217274013): Update fields here.
-  WriteDictEntry(&array_writer, "rssi_high_threshold", static_cast<int16_t>(3));
-  WriteDictEntry(&array_writer, "rssi_low_threshold", static_cast<int16_t>(3));
-  WriteDictEntry(&array_writer, "rssi_low_timeout", static_cast<uint16_t>(3));
+  WriteDictEntry(&array_writer, "rssi_high_threshold", static_cast<uint8_t>(3));
+  WriteDictEntry(&array_writer, "rssi_low_threshold", static_cast<uint8_t>(3));
+  WriteDictEntry(&array_writer, "rssi_low_timeout", static_cast<uint8_t>(3));
   WriteDictEntry(&array_writer, "rssi_sampling_period",
-                 static_cast<uint16_t>(3));
+                 static_cast<uint8_t>(3));
   WriteDictEntry(&array_writer, "condition", ScanFilterCondition{});
 
   writer->CloseContainer(&array_writer);
