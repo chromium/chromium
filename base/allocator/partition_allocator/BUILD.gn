@@ -372,8 +372,6 @@ buildflag_header("partition_alloc_buildflags") {
 
   # BackupRefPtr(BRP) build flags.
   _enable_backup_ref_ptr_support = enable_backup_ref_ptr_support && !is_nacl
-  _put_ref_count_in_previous_slot =
-      put_ref_count_in_previous_slot && _enable_backup_ref_ptr_support
   _enable_backup_ref_ptr_slow_checks =
       enable_backup_ref_ptr_slow_checks && _enable_backup_ref_ptr_support
   _enable_dangling_raw_ptr_checks =
@@ -387,17 +385,13 @@ buildflag_header("partition_alloc_buildflags") {
 
   _record_alloc_info = false
 
-  _enable_gwp_asan_support = _enable_backup_ref_ptr_support
+  # GWP-ASan is tied to BRP's "refcount in previous slot" mode, whose
+  # enablement is already gated on BRP enablement.
+  _enable_gwp_asan_support = put_ref_count_in_previous_slot
 
   # Shadow metadata only supports Linux now.
   _enable_shadow_metadata_for_64_bits_pointers =
       enable_shadow_metadata && is_linux
-
-  # The only BRP mode that GWP-ASan supports is the "previous slot" mode.
-  # This is because it requires out-of-line ref count storage for system
-  # page aligned allocations.
-  assert(_put_ref_count_in_previous_slot || !_enable_gwp_asan_support,
-         "It's unsafe to use BRP in a mode that doesn't support GWP-ASan")
 
   # TODO(crbug.com/1151236): Need to refactor the following buildflags.
   # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
@@ -413,7 +407,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
     "ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT=$_enable_dangling_raw_ptr_perf_experiment",
-    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
+    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$put_ref_count_in_previous_slot",
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
 
     # Not to be used directly - instead use
