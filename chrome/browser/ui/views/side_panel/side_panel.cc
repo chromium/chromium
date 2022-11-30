@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -31,6 +32,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 
 namespace {
@@ -187,6 +189,8 @@ SidePanel::SidePanel(BrowserView* browser_view,
   SetPanelWidth(GetMinimumSize().width());
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
+
+  SetProperty(views::kElementIdentifierKey, kSidePanelElementId);
 
   AddObserver(this);
 }

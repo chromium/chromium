@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/views/side_search/unified_side_search_controller.h"
 
 #include "base/callback_list.h"
@@ -21,13 +23,17 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_search/side_search_browsertest.h"
 #include "chrome/browser/ui/views/side_search/side_search_icon_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/test_tracker.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 // Fixture for testing side panel v2 only. Only instantiate tests for DSE
@@ -869,7 +875,8 @@ class SideSearchFeatureEngagementTest : public SideSearchBrowserTest {
 };
 
 class SideSearchAutoTriggeringBrowserTest
-    : public SideSearchFeatureEngagementTest {
+    : public SideSearchFeatureEngagementTest,
+      public InteractiveBrowserTestApi {
  public:
   SideSearchAutoTriggeringBrowserTest() {
     constexpr char kParam[] = "SideSearchAutoTriggeringReturnCount";
@@ -888,6 +895,37 @@ class SideSearchAutoTriggeringBrowserTest
         {});
   }
 
+  void SetUpOnMainThread() override {
+    SideSearchFeatureEngagementTest::SetUpOnMainThread();
+    private_test_impl().DoTestSetUp();
+    SetContextWidget(
+        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget());
+  }
+
+  void TearDownOnMainThread() override {
+    private_test_impl().DoTestTearDown();
+    SideSearchFeatureEngagementTest::TearDownOnMainThread();
+  }
+
+  auto CheckHistogramCounts(int expected_count) {
+    return Do(base::BindOnce(
+        [](base::HistogramTester* tester, int count) {
+          tester->ExpectUniqueSample(
+              "SideSearch.RedirectionToTabCountPerJourney2", 1, count);
+          tester->ExpectUniqueSample(
+              "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", 1,
+              count);
+          tester->ExpectUniqueSample(
+              "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2",
+              1, count);
+          tester->ExpectUniqueSample(
+              "SideSearch.AutoTrigger."
+              "NavigationCommittedWithinSideSearchCountPerJourney",
+              1, count);
+        },
+        base::Unretained(&histogram_tester()), expected_count));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -903,73 +941,80 @@ class SideSearchAutoTriggeringBrowserTest
 IN_PROC_BROWSER_TEST_F(
     SideSearchAutoTriggeringBrowserTest,
     MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
   const auto srp_url = GetMatchingSearchUrl();
   const auto non_srp_url_1 = GetNonMatchingUrl();
   const auto non_srp_url_2 = GetNonMatchingUrl();
   const auto non_srp_url_3 = GetNonMatchingUrl();
-  auto* coordinator = BrowserViewFor(browser())->side_panel_coordinator();
 
-  // Navigate once to a non-SRP URL.
-  NavigateActiveTab(browser(), srp_url);
-  NavigateActiveTab(browser(), non_srp_url_1);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  auto* const coordinator = BrowserViewFor(browser())->side_panel_coordinator();
 
-  // Going back will increase the returned-to-SRP count to 1.
-  GoBackInActiveTabFor(browser());
-
-  // The side panel should not automatically open when navigating to a non-SRP
-  // URL.
-  NavigateActiveTab(browser(), non_srp_url_2);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  // Going back will increase the returned-to-SRP count to 2.
-  GoBackInActiveTabFor(browser());
-
-  // Navigating to a non-SRP URL should now automatically trigger the side
-  // search side panel.
-  NavigateActiveTab(browser(), non_srp_url_3, /*is_renderer_initiated=*/true);
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
-  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
-
-  // Navigate matching and non-matching URLs in the side contents and verify
-  // that metrics are emitted correctly.
-  NavigateActiveSideContents(browser(), GetMatchingSearchUrl());
-  NavigateActiveSideContents(browser(), GetNonMatchingUrl());
-
-  // Metrics should not be emitted until the side panel is closed (i.e. the
-  // side contents is destroted).
-  histogram_tester().ExpectUniqueSample(
-      "SideSearch.RedirectionToTabCountPerJourney2", 1, 0);
-  histogram_tester().ExpectUniqueSample(
-      "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", 1, 0);
-  histogram_tester().ExpectUniqueSample(
-      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2", 1, 0);
-  histogram_tester().ExpectUniqueSample(
-      "SideSearch.AutoTrigger."
-      "NavigationCommittedWithinSideSearchCountPerJourney",
-      1, 0);
-
-  auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_NE(nullptr, tab_contents_helper->side_panel_contents_for_testing());
-  BrowserViewFor(browser())->side_panel_coordinator()->Close();
-  EXPECT_EQ(nullptr, tab_contents_helper->side_panel_contents_for_testing());
-
-  histogram_tester().ExpectUniqueSample(
-      "SideSearch.RedirectionToTabCountPerJourney2", 1, 1);
-  histogram_tester().ExpectUniqueSample(
-      "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", 1, 1);
-  histogram_tester().ExpectUniqueSample(
-      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2", 1, 1);
-  histogram_tester().ExpectUniqueSample(
-      "SideSearch.AutoTrigger."
-      "NavigationCommittedWithinSideSearchCountPerJourney",
-      1, 1);
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabId),
+      // Navigate to a SRP URL and then once to a non-SRP URL.
+      NavigateWebContents(kPrimaryTabId, srp_url),
+      NavigateWebContents(kPrimaryTabId, non_srp_url_1),
+      // Ensure that the side search button is present, but the side search
+      // panel isn't open.
+      WaitForShow(kSideSearchButtonElementId),
+      EnsureNotPresent(kSidePanelElementId),
+      // Going back will increase the returned-to-SRP count to 1.
+      PressButton(kBackButtonElementId),
+      WaitForWebContentsNavigation(kPrimaryTabId),
+      // The side panel should not automatically open when navigating to a
+      // non-SRP URL.
+      NavigateWebContents(kPrimaryTabId, non_srp_url_2),
+      WaitForShow(kSideSearchButtonElementId),
+      EnsureNotPresent(kSidePanelElementId),
+      // Going back will increase the returned-to-SRP count to 2.
+      PressButton(kBackButtonElementId),
+      WaitForWebContentsNavigation(kPrimaryTabId),
+      // Navigating to a non-SRP URL should now automatically trigger the side
+      // search side panel.
+      NavigateWebContents(kPrimaryTabId, non_srp_url_3),
+      WaitForHide(kSideSearchButtonElementId), WaitForShow(kSidePanelElementId),
+      // Verify that the side search panel is selected.
+      CheckResult(base::BindLambdaForTesting([coordinator]() {
+                    return coordinator->GetCurrentSidePanelEntryForTesting()
+                        ->key()
+                        .id();
+                  }),
+                  SidePanelEntry::Id::kSideSearch),
+      // When the side search WebContents is displayed, instrument it.
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              kSideSearchWebViewElementId),
+      // Navigate matching and non-matching URLs in the side contents and verify
+      // that metrics are emitted correctly. A matching URL navigates in side
+      // panel.
+      AfterShow(kSidePanelWebContentsId,
+                base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+                  // This isn't guaranteed to load in the side panel, so we
+                  // don't use the NavigateWebContents() verb.
+                  AsInstrumentedWebContents(el)->LoadPage(
+                      GetMatchingSearchUrl());
+                })),
+      WaitForWebContentsNavigation(kSidePanelWebContentsId),
+      // A non-matching URL navigates in the current browser tab.
+      WithElement(kSidePanelWebContentsId,
+                  base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+                    AsInstrumentedWebContents(el)->LoadPage(
+                        GetNonMatchingUrl());
+                  }))
+          .SetMustRemainVisible(false),
+      WaitForWebContentsNavigation(kPrimaryTabId),
+      // Metrics should not be emitted until the side panel is closed (i.e. the
+      // Side Search contents is destroyed).
+      CheckHistogramCounts(0),
+      // Side panel should still be visible.
+      WithElement(kSidePanelElementId, base::DoNothing()),
+      // Close side panel.
+      PressButton(kSidePanelCloseButtonElementId),
+      WaitForHide(kSidePanelElementId), WaitForHide(kSidePanelWebContentsId),
+      // Process any pending cleanup and check the histograms, which should now
+      // be updated.
+      FlushEvents(), CheckHistogramCounts(1));
 }
 
 class SideSearchPageActionLabelTriggerBrowserTest

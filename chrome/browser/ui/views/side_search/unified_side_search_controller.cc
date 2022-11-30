@@ -9,6 +9,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
@@ -28,6 +29,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 class SideSearchWebView : public views::WebView {
@@ -167,6 +169,8 @@ std::unique_ptr<views::View> UnifiedSideSearchController::GetSideSearchView() {
   DCHECK(browser_view);
   auto side_search_view =
       std::make_unique<SideSearchWebView>(browser_view->GetProfile());
+  side_search_view->SetProperty(views::kElementIdentifierKey,
+                                kSideSearchWebViewElementId);
   side_search_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
