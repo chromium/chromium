@@ -1350,7 +1350,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 
       <!-- Privacy Sandbox v4 - Ad Measurement Page -->
       <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" translateable="false" desc="Title for the Ad Measurement preferences page.">
-        Vestibulum augue erat
+        Vestibulum augue
       </message>
       <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_LABEL" translateable="false" desc="Title for the Ad Measurement toggle.">
         Vestibulum augue erat

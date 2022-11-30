@@ -43,6 +43,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/offline_pages/core/prefetch/prefetch_prefs.cc",
     "//components/password_manager/core/common/password_manager_pref_names.cc",
     "//components/payments/core/payment_prefs.cc",
+    "//components/privacy_sandbox/privacy_sandbox_prefs.cc",
     "//components/safe_browsing/core/common/safe_browsing_prefs.cc",
     "//components/signin/public/base/signin_pref_names.cc",
     "//components/translate/core/browser/translate_pref_names.cc",
