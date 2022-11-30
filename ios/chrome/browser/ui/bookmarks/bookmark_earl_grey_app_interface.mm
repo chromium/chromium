@@ -159,8 +159,8 @@
   GURL bookmarkURL = GURL(base::SysNSStringToUTF8(url));
   bookmarks::BookmarkModel* bookmark_model =
       [BookmarkEarlGreyAppInterface bookmarkModel];
-  bookmark_model->AddURL(bookmark_model->mobile_node(), 0,
-                         base::SysNSStringToUTF16(title), bookmarkURL);
+  bookmark_model->AddNewURL(bookmark_model->mobile_node(), 0,
+                            base::SysNSStringToUTF16(title), bookmarkURL);
 
   return nil;
 }

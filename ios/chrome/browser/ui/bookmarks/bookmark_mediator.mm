@@ -95,8 +95,8 @@ const int64_t kLastUsedFolderNone = -1;
       [[self class] folderForNewBookmarksInBrowserState:self.browserState];
   BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(self.browserState);
-  bookmarkModel->AddURL(defaultFolder, defaultFolder->children().size(),
-                        base::SysNSStringToUTF16(title), URL);
+  bookmarkModel->AddNewURL(defaultFolder, defaultFolder->children().size(),
+                           base::SysNSStringToUTF16(title), URL);
 
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   action.handler = editAction;
@@ -127,9 +127,9 @@ const int64_t kLastUsedFolderNone = -1;
 
   for (URLWithTitle* urlWithTitle in URLs) {
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
-    bookmarkModel->AddURL(folder, folder->children().size(),
-                          base::SysNSStringToUTF16(urlWithTitle.title),
-                          urlWithTitle.URL);
+    bookmarkModel->AddNewURL(folder, folder->children().size(),
+                             base::SysNSStringToUTF16(urlWithTitle.title),
+                             urlWithTitle.URL);
   }
 
   NSString* folderTitle = bookmark_utils_ios::TitleForBookmarkNode(folder);
