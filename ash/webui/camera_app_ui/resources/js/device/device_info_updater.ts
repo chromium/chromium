@@ -81,16 +81,6 @@ export class DeviceInfoUpdater {
   }
 
   /**
-   * Gets MediaDeviceInfo of specific video device.
-   *
-   * @param deviceId Device id of video device to get information from.
-   */
-  getDeviceInfo(deviceId: string): MediaDeviceInfo|null {
-    const infos = this.getDevicesInfo();
-    return infos.find((d) => d.deviceId === deviceId) ?? null;
-  }
-
-  /**
    * Gets Camera3DeviceInfo for all available video devices.
    */
   getCamera3DevicesInfo(): Camera3DeviceInfo[]|null {
