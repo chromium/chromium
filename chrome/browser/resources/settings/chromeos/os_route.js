@@ -288,6 +288,10 @@ function createOSSettingsRoutes() {
         r.BRUSCHETTA_DETAILS,
         routesMojomWebui.BRUSCHETTA_USB_PREFERENCES_SUBPAGE_PATH,
         Subpage.kBruschettaUsbPreferences);
+    r.BRUSCHETTA_SHARED_PATHS = createSubpage(
+        r.BRUSCHETTA_DETAILS,
+        routesMojomWebui.BRUSCHETTA_MANAGE_SHARED_FOLDERS_SUBPAGE_PATH,
+        Subpage.kBruschettaManageSharedFolders);
   }
 
   // Date and Time section.

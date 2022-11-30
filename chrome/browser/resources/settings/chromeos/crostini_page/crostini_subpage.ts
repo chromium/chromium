@@ -260,6 +260,7 @@ class SettingsCrostiniSubpageElement extends
 
     const r = routes;
     this.addFocusConfig(r.CROSTINI_SHARED_PATHS, '#crostini-shared-paths');
+    this.addFocusConfig(r.BRUSCHETTA_SHARED_PATHS, '#bruschetta-shared-paths');
     this.addFocusConfig(
         r.CROSTINI_SHARED_USB_DEVICES, '#crostini-shared-usb-devices');
     this.addFocusConfig(

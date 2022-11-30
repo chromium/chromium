@@ -115,6 +115,7 @@ enum Subpage {
   kCrostiniExtraContainers = 806,
   kBruschettaDetails = 850,
   kBruschettaUsbPreferences = 851,
+  kBruschettaManageSharedFolders = 852,
 
   // Note: Deprecated Plugin VM section has no subpages.
 
@@ -243,6 +244,8 @@ const string kCrostiniExtraContainersSubpagePath = "crostini/extraContainers";
 const string kBruschettaDetailsSubpagePath = "bruschetta/details";
 const string kBruschettaUsbPreferencesSubpagePath =
      "bruschetta/sharedUsbDevices";
+const string kBruschettaManageSharedFoldersSubpagePath =
+     "bruschetta/sharedPaths";
 
 // Date and Time section.
 const string kDateAndTimeSectionPath = "dateTime";

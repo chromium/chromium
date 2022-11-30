@@ -46,10 +46,16 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
     super.ready();
     this.addFocusConfig(
         routes.BRUSCHETTA_SHARED_USB_DEVICES, '#bruschetta-shared-usb-devices');
+    this.addFocusConfig(
+        routes.BRUSCHETTA_SHARED_PATHS, '#bruschetta-shared-paths');
   }
 
   private onSharedUsbDevicesClick_() {
     Router.getInstance().navigateTo(routes.BRUSCHETTA_SHARED_USB_DEVICES);
+  }
+
+  private onSharedPathsClick_() {
+    Router.getInstance().navigateTo(routes.BRUSCHETTA_SHARED_PATHS);
   }
 }
 

@@ -170,7 +170,9 @@ GuestOsSharePath::GuestOsSharePath(Profile* profile)
       file_watcher_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       seneschal_callback_(base::BindRepeating(LogErrorResult)) {
-  ash::ConciergeClient::Get()->AddVmObserver(this);
+  if (auto* client = ash::ConciergeClient::Get()) {
+    client->AddVmObserver(this);
+  }
 
   if (auto* vmgr = file_manager::VolumeManager::Get(profile_)) {
     vmgr->AddObserver(this);
@@ -190,7 +192,9 @@ GuestOsSharePath::~GuestOsSharePath() = default;
 
 void GuestOsSharePath::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ash::ConciergeClient::Get()->RemoveVmObserver(this);
+  if (auto* client = ash::ConciergeClient::Get()) {
+    client->RemoveVmObserver(this);
+  }
 
   for (auto& shared_path : shared_paths_) {
     if (shared_path.second.watcher) {

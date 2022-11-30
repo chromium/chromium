@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_features.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/webui/settings/ash/crostini_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/guest_os_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -36,6 +38,7 @@ namespace ash::settings {
 
 namespace mojom {
 using ::chromeos::settings::mojom::kBruschettaDetailsSubpagePath;
+using ::chromeos::settings::mojom::kBruschettaManageSharedFoldersSubpagePath;
 using ::chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniBackupAndRestoreSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniDetailsSubpagePath;
@@ -251,6 +254,10 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bruschettaPageLabel", IDS_SETTINGS_BRUSCHETTA_LABEL},
       {"bruschettaSharedUsbDevicesDescription",
        IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION},
+      {"bruschettaSharedPathsInstructionsAdd",
+       IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_ADD},
+      {"bruschettaSharedPathsRemoveFailureDialogMessage",
+       IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE},
       {"crostiniPageTitle", IDS_SETTINGS_CROSTINI_TITLE},
       {"crostiniPageLabel", IDS_SETTINGS_CROSTINI_LABEL},
       {"crostiniEnable", IDS_SETTINGS_TURN_ON},
@@ -430,6 +437,13 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           bruschetta::BruschettaFeatures::Get()->IsEnabled());
 
   html_source->AddString(
+      "bruschettaSharedPathsInstructionsLocate",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_LOCATE,
+          base::ASCIIToUTF16(
+              bruschetta::BruschettaChromeOSBaseDirectory().value())));
+
+  html_source->AddString(
       "crostiniSubtext",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_CROSTINI_SUBTEXT, ui::GetChromeOSDeviceName(),
@@ -603,6 +617,14 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kBruschettaDetails, mojom::SearchResultIcon::kPenguin,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kBruschettaUsbPreferencesSubpagePath);
+
+  // Manage shared folders.
+  generator->RegisterNestedSubpage(
+      IDS_SETTINGS_GUEST_OS_SHARED_PATHS,
+      mojom::Subpage::kBruschettaManageSharedFolders,
+      mojom::Subpage::kBruschettaDetails, mojom::SearchResultIcon::kPenguin,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kBruschettaManageSharedFoldersSubpagePath);
 }
 
 bool CrostiniSection::IsExportImportAllowed() const {

@@ -105,6 +105,11 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
                 routes.BRUSCHETTA_SHARED_USB_DEVICES.path,
                 '#crostini .subpage-arrow');
           }
+          if (routes.BRUSCHETTA_SHARED_PATHS) {
+            map.set(
+                routes.BRUSCHETTA_SHARED_PATHS.path,
+                '#crostini .subpage-arrow');
+          }
           return map;
         },
       },

@@ -62,4 +62,8 @@ absl::optional<const base::Value::Dict*> GetRunnableConfig(
                                    prefs::PolicyEnabledState::RUN_ALLOWED);
 }
 
+base::FilePath BruschettaChromeOSBaseDirectory() {
+  return base::FilePath("/mnt/shared");
+}
+
 }  // namespace bruschetta

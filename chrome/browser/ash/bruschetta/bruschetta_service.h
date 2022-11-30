@@ -30,7 +30,7 @@ class BruschettaService : public KeyedService {
   static BruschettaService* GetForProfile(Profile* profile);
 
   // Register an existing bruschetta instance with the terminal app.
-  void RegisterWithTerminal(guest_os::GuestId guest_id);
+  void RegisterWithTerminal(const guest_os::GuestId& guest_id);
 
   // Register a new bruschetta instance in prefs. `config_id` controls which
   // enterprise policy manages this instance.

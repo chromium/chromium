@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "components/prefs/pref_service.h"
@@ -148,11 +149,13 @@ void BruschettaService::RegisterInPrefs(const guest_os::GuestId& guest_id,
   }
 }
 
-void BruschettaService::RegisterWithTerminal(guest_os::GuestId guest_id) {
+void BruschettaService::RegisterWithTerminal(
+    const guest_os::GuestId& guest_id) {
   guest_os::GuestOsService::GetForProfile(profile_)
       ->TerminalProviderRegistry()
-      ->Register(std::make_unique<BruschettaTerminalProvider>(
-          profile_, std::move(guest_id)));
+      ->Register(
+          std::make_unique<BruschettaTerminalProvider>(profile_, guest_id));
+  guest_os::GuestOsSharePath::GetForProfile(profile_)->RegisterGuest(guest_id);
 }
 
 base::WeakPtr<BruschettaLauncher> BruschettaService::GetLauncher(

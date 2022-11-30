@@ -1757,7 +1757,7 @@ Press an assigned switch or key to remove assignment.
     Cancel
   </message>
 
-  <!-- Used by both Crostini and Plugin VM -->
+  <!-- Used by Crostini, Plugin VM and Bruschetta -->
   <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS" desc="Label for managing shared folders for Parallels.">
     Manage shared folders
   </message>
@@ -2093,7 +2093,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION" translateable="false" desc="Description for managing shared USB devices.">
     Give Bruschetta permission to access USB devices. Bruschetta won't remember a USB device after it's removed.
   </message>
-
+  <!-- <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_DESCRIPTION" translateable="false" desc="Description for managing shared paths.">
+    Give Bruschetta permission to access USB devices. Bruschetta won't remember a USB device after it's removed.
+  </message> -->
+  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_LOCATE" translateable="false" desc="Instructions for how to locate shared folders in Bruschetta. Do not translate 'Bruschetta'.">
+    Shared folders are available in Bruschetta at <ph name="BASE_DIR">$1<ex>/mnt/chromeos</ex></ph>.
+  </message>
+  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_ADD" translateable="false" desc="Instructions for how to add shared folders in Bruschetta. Do not translate 'Bruschetta'.">
+    To share, right-click on a folder in Files app, then select "Share with Bruschetta".
+  </message>
+  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" translateable="false" desc="Message to show user when unsharing a Bruschetta shared folder fails. Do not translate 'Bruschetta'.">
+    Couldn't unshare because an application is using this folder. The folder will be unshared when Bruschetta is next shut down.
+  </message>
   <!-- Android apps page (OS settings) -->
   <message name="IDS_SETTINGS_ANDROID_APPS_LABEL" desc="The text associated with the primary section setting.">
     Google Play Store
