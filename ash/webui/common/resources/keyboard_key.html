@@ -44,6 +44,7 @@
     --background-color-unpressed: var(--cros-highlight-color);
     --background-color-tested: rgba(var(--cros-icon-color-selection-rgb),
         var(--cros-second-tone-opacity));
+    --background-color-disabled: var(--cros-bg-color-dropped-elevation-2);
     --border-color: var(--cros-icon-color-prominent);
     --border-radius:
         var(--keyboard-key-top-radii, 4px)
@@ -56,6 +57,12 @@
     --text-color-pressed: var(--cros-button-icon-color-primary);
 
     position: relative;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --background-color-disabled: var(--cros-bg-color-elevation-4);
+    }
   }
 
   #key {
@@ -177,7 +184,7 @@
   }
 
   :host(.disabled) #key {
-    background-color: var(--cros-bg-color-dropped-elevation-2);
+    background-color: var(--background-color-disabled);
     border-color: transparent;
     bottom: 0;
     color: var(--cros-icon-color-disabled);
@@ -191,7 +198,7 @@
   }
 
   :host(.disabled) #shadow {
-    background-color: var(--cros-bg-color-dropped-elevation-2);
+    background-color: var(--background-color-disabled);
   }
 </style>
 <div id="shadow"></div>
