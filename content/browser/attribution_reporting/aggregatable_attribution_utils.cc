@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -160,7 +161,8 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
-          std::move(contributions), mojom::AggregationServiceMode::kDefault),
+          std::move(contributions), mojom::AggregationServiceMode::kDefault,
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
       AggregatableReportSharedInfo(
           data->initial_report_time, report.external_report_id(),
           attribution_info.source.common_info().reporting_origin(), debug_mode,

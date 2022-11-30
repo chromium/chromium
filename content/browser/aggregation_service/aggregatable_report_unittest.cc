@@ -19,10 +19,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
+#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/common/aggregatable_report.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -672,7 +675,8 @@ TEST(AggregatableReportProtoMigrationTest,
               AggregationServicePayloadContents::Operation::kHistogram,
               {mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
-              mojom::AggregationServiceMode::kDefault),
+              mojom::AggregationServiceMode::kDefault,
+              ::aggregation_service::mojom::AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               base::Time::FromJavaTime(1652984901234),
               base::GUID::ParseLowercase(
@@ -714,7 +718,8 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
               AggregationServicePayloadContents::Operation::kHistogram,
               {mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
-              mojom::AggregationServiceMode::kDefault),
+              mojom::AggregationServiceMode::kDefault,
+              ::aggregation_service::mojom::AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               base::Time::FromJavaTime(1652984901234),
               base::GUID::ParseLowercase(
@@ -731,6 +736,47 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
 
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
       deserialized_request.value(), expected_request));
+}
+
+TEST(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
+  const struct {
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator;
+    std::string expected_url;
+  } kTestCases[] = {
+      {
+          ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud,
+          kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get(),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    AggregatableReportRequest request =
+        aggregation_service::CreateExampleRequest(
+            mojom::AggregationServiceMode::kDefault,
+            /*failed_send_attempts=*/0, test_case.aggregation_coordinator);
+    EXPECT_THAT(request.processing_urls(),
+                ::testing::ElementsAre(GURL(test_case.expected_url)));
+  }
+}
+
+TEST(AggregatableReportTest, AggregationCoordinator_ProtoSet) {
+  for (auto aggregation_coordinator :
+       {::aggregation_service::mojom::AggregationCoordinator::kAwsCloud}) {
+    AggregatableReportRequest request =
+        aggregation_service::CreateExampleRequest(
+            mojom::AggregationServiceMode::kDefault,
+            /*failed_send_attempts=*/0, aggregation_coordinator);
+
+    // The aggregation coordinator identifier is correctly serialized and
+    // deserialized.
+    std::vector<uint8_t> proto = request.Serialize();
+    absl::optional<AggregatableReportRequest> parsed_request =
+        AggregatableReportRequest::Deserialize(proto);
+    ASSERT_TRUE(parsed_request.has_value());
+    EXPECT_EQ(parsed_request->payload_contents().aggregation_coordinator,
+              aggregation_coordinator);
+  }
 }
 
 }  // namespace content

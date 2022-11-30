@@ -26,6 +26,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
@@ -54,11 +55,16 @@ constexpr char kHistogramValue[] = "histogram";
 constexpr char kOperationKey[] = "operation";
 
 std::vector<GURL> GetDefaultProcessingUrls(
-    mojom::AggregationServiceMode aggregation_mode) {
+    mojom::AggregationServiceMode aggregation_mode,
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator) {
   switch (aggregation_mode) {
     case mojom::AggregationServiceMode::kTeeBased:
-      return {
-          GURL(kPrivacySandboxAggregationServiceTrustedServerUrlParam.Get())};
+      switch (aggregation_coordinator) {
+        case ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud:
+          return {GURL(
+              kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get())};
+      }
     case mojom::AggregationServiceMode::kExperimentalPoplar:
       // TODO(crbug.com/1295705): Update default processing urls.
       return {GURL("https://server1.example"), GURL("https://server2.example")};
@@ -286,8 +292,19 @@ ConvertPayloadContentsFromProto(
       return absl::nullopt;
   }
 
+  ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator;
+  switch (proto.aggregation_coordinator()) {
+    case proto::AggregationCoordinator::AWS_CLOUD:
+      aggregation_coordinator =
+          ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
+      break;
+    default:
+      return absl::nullopt;
+  }
+
   return AggregationServicePayloadContents(operation, std::move(contributions),
-                                           aggregation_mode);
+                                           aggregation_mode,
+                                           aggregation_coordinator);
 }
 
 absl::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
@@ -376,6 +393,13 @@ void ConvertPayloadContentsToProto(
           proto::AggregationServiceMode::EXPERIMENTAL_POPLAR);
       break;
   }
+
+  switch (payload_contents.aggregation_coordinator) {
+    case ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud:
+      out->set_aggregation_coordinator(
+          proto::AggregationCoordinator::AWS_CLOUD);
+      break;
+  }
 }
 
 void ConvertSharedInfoToProto(const AggregatableReportSharedInfo& shared_info,
@@ -425,10 +449,13 @@ proto::AggregatableReportRequest ConvertReportRequestToProto(
 AggregationServicePayloadContents::AggregationServicePayloadContents(
     Operation operation,
     std::vector<mojom::AggregatableReportHistogramContribution> contributions,
-    mojom::AggregationServiceMode aggregation_mode)
+    mojom::AggregationServiceMode aggregation_mode,
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator)
     : operation(operation),
       contributions(std::move(contributions)),
-      aggregation_mode(aggregation_mode) {}
+      aggregation_mode(aggregation_mode),
+      aggregation_coordinator(aggregation_coordinator) {}
 
 AggregationServicePayloadContents::AggregationServicePayloadContents(
     const AggregationServicePayloadContents& other) = default;
@@ -516,7 +543,8 @@ absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     absl::optional<uint64_t> debug_key,
     int failed_send_attempts) {
   std::vector<GURL> processing_urls =
-      GetDefaultProcessingUrls(payload_contents.aggregation_mode);
+      GetDefaultProcessingUrls(payload_contents.aggregation_mode,
+                               payload_contents.aggregation_coordinator);
   return CreateInternal(std::move(processing_urls), std::move(payload_contents),
                         std::move(shared_info), std::move(reporting_path),
                         debug_key, failed_send_attempts);

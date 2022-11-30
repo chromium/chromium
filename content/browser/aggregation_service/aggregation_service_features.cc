@@ -12,7 +12,7 @@ BASE_FEATURE(kPrivacySandboxAggregationService,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string>
-    kPrivacySandboxAggregationServiceTrustedServerUrlParam{
+    kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam{
         &kPrivacySandboxAggregationService, "trusted_server_url",
         "https://publickeyservice.aws.privacysandboxservices.com/v1alpha/"
         "publicKeys"};

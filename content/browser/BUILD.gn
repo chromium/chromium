@@ -73,6 +73,7 @@ source_set("browser") {
     "//cc/animation",
     "//cc/mojo_embedder",
     "//cc/paint",
+    "//components/aggregation_service:mojom",
     "//components/attribution_reporting:mojom",
     "//components/back_forward_cache:enum",
     "//components/browsing_topics/common:common",

@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_observer.h"
@@ -68,13 +69,19 @@ testing::AssertionResult SharedInfoEqual(
 AggregatableReportRequest CreateExampleRequest(
     mojom::AggregationServiceMode aggregation_mode =
         mojom::AggregationServiceMode::kDefault,
-    int failed_send_attempts = 0);
+    int failed_send_attempts = 0,
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator =
+            ::aggregation_service::mojom::AggregationCoordinator::kDefault);
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
     mojom::AggregationServiceMode aggregation_mode =
         mojom::AggregationServiceMode::kDefault,
-    int failed_send_attempts = 0);
+    int failed_send_attempts = 0,
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator =
+            ::aggregation_service::mojom::AggregationCoordinator::kDefault);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);

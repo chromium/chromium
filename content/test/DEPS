@@ -61,5 +61,8 @@ specific_include_rules = {
   ],
   "mock_web_bundle_reader_factory.cc": [
     "+components/web_package/test_support",
-  ]
+  ],
+  "test_aggregation_service_impl.cc": [
+    "+components/aggregation_service",
+  ],
 }

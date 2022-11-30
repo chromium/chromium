@@ -14,7 +14,7 @@ namespace content {
 // Enables the Aggregation Service. See crbug.com/1207974.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAggregationService);
 extern CONTENT_EXPORT const base::FeatureParam<std::string>
-    kPrivacySandboxAggregationServiceTrustedServerUrlParam;
+    kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam;
 
 }  // namespace content
 

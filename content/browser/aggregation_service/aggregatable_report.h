@@ -17,6 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "content/common/content_export.h"
@@ -42,7 +43,9 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   AggregationServicePayloadContents(
       Operation operation,
       std::vector<mojom::AggregatableReportHistogramContribution> contributions,
-      mojom::AggregationServiceMode aggregation_mode);
+      mojom::AggregationServiceMode aggregation_mode,
+      ::aggregation_service::mojom::AggregationCoordinator
+          aggregation_coordinator);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -56,6 +59,9 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   Operation operation;
   std::vector<mojom::AggregatableReportHistogramContribution> contributions;
   mojom::AggregationServiceMode aggregation_mode;
+
+  // Does not affect the unencrypted payload, but is used for encryption.
+  ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator;
 };
 
 // Represents the information that will be provided to both the reporting

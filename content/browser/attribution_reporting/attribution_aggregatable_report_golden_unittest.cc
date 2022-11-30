@@ -76,7 +76,7 @@ class AttributionAggregatableReportGoldenLatestVersionTest
     ASSERT_EQ(keyset->keys.size(), 1u);
 
     aggregation_service().SetPublicKeysForTesting(
-        GURL(kPrivacySandboxAggregationServiceTrustedServerUrlParam.Get()),
+        GURL(kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get()),
         std::move(*keyset));
 
     absl::optional<std::vector<uint8_t>> private_key =

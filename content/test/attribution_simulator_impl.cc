@@ -582,7 +582,7 @@ base::Value RunAttributionSimulation(
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())
       ->SetPublicKeysForTesting(
-          GURL(kPrivacySandboxAggregationServiceTrustedServerUrlParam.Get()),
+          GURL(kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get()),
           PublicKeyset({aggregation_service::GenerateKey().public_key},
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
