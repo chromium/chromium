@@ -106,6 +106,30 @@ chrome.runtime.onMessageExternal.addListener(
  });
 ```
 
+[//]: <> (This section is part of the API terms of use, internal version is)
+[//]: <> (here go/telemetry-extension-tos. DO NOT EDIT unless changes in source)
+## Permission to API Functionality Mapping
+
+For an overview of all exposed function under `chrome.os.telemetry` and
+`chrome.os.diagnostics`, please visit
+[this page](https://github.com/GoogleChromeLabs/telemetry-support-extension-for-chromeos/blob/main/src/README.md#functions).
+Some telemetry data requires special permissions to be accessed:
+
+1. `VpdInfo.serialNumber` requires additional permission:
+"os.telemetry.serial_number" with string
+"Read Chrome OS device and component serial numbers"
+
+2. `OemData.oemData` requires additional permission:
+"os.telemetry.serial_number" with string
+"Read Chrome OS device and component serial numbers"
+
+3. `Batteryinfo.serialNumber` requires additional permission:
+"os.telemetry.serial_number" with string
+"Read Chrome OS device and component serial numbers"
+
+4. MAC Address in `InternetConnectivity` requires additional permission:
+“os.telemetry.network_info” with string “Read ChromeOS network information”
+
 # The Chrome extension
 
 In order for a Chrome extension to have access to telemetry and diagnostics
@@ -241,6 +265,31 @@ Under `Settings>Privacy and security>Security>Manage certificates` you are
 able to set the root CA. Just select the `Authorities` tab and click `Import`.
 Select the generated `CA.pem` file and click open. Now your Chrome instance
 and testing environment trust each other.
+
+[//]: <> (This section is part of the API terms of use, internal version is)
+[//]: <> (here go/telemetry-extension-tos. DO NOT EDIT unless changes in source)
+# Restrictions on Data Use
+
+Due to the powerful nature of this API there are limits on how the data can be
+utilized:
+
+1. This API can only be used to receive telemetry data and diagnostic
+information from ChromeOS-based devices to provide Customer Support Services.
+
+2. This API will only be used, access or otherwise process personal data or
+device identifiers at the Customer’s express direction in each instance.
+
+3. Company will not access the ChromeOS API on an ongoing basis, or at recurring
+intervals, without express direction by the Customer.
+
+4. Company will not store (on device or server), or use for geolocation
+purposes, the device SSID or BSSID.
+
+5. Company will not use data obtained through the API for marketing purposes.
+
+6. Company will provide and adhere to a privacy policy that clearly and
+accurately describes to Customers what data is collected and how the data is
+used and shared.
 
 # Further reads
 
