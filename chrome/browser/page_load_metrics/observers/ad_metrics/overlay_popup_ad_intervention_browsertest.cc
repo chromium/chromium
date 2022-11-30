@@ -155,7 +155,7 @@ class OverlayPopupAdViolationBrowserTestWithoutEnforcement
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(https://crbug.com/1287783): Fails on Linux MSan.
+// TODO(https://crbug.com/1394447): Fails on Linux MSan.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_OverlayPopupAd_NoAdInterventionTriggered \
   DISABLED_OverlayPopupAd_NoAdInterventionTriggered
