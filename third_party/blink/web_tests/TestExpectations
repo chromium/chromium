@@ -252,10 +252,10 @@ crbug.com/1311546 http/tests/test-runner/back-forward.html [ Failure Pass ]
 # or upstream this to WPT.
 crbug.com/1185506 svg/text/textpath-pattern.svg [ Failure Pass ]
 
-crbug.com/1225630 fast/multicol/infinite-height-causing-fractional-row-height-crash.html [ Crash Failure Pass Timeout ]
-crbug.com/1225630 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Crash Failure Pass Timeout ]
+crbug.com/1225630 fast/multicol/infinite-height-causing-fractional-row-height-crash.html [ Skip Timeout ]
+crbug.com/1225630 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Skip Timeout ]
 crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
-crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Crash Failure Pass Timeout ]
+crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Skip Timeout ]
 
 crbug.com/1351556 virtual/view-transition/view-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/view-transition-wide-gamut/view-transition/capture-callback-exception.html [ Failure ]
@@ -1576,7 +1576,7 @@ crbug.com/1347984 fragmentation/table-row-dimensions.html [ Failure ]
 ### Tests failing with LayoutNGFlexFragmentation enabled:
 crbug.com/1367912 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-058.html [ Failure ]
 crbug.com/1367912 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-043.html [ Failure ]
-crbug.com/660611 fast/multicol/flexbox/doubly-nested-with-zero-width-flexbox-and-forced-break-crash.html [ Crash Failure Pass Timeout ]
+crbug.com/1225630 fast/multicol/flexbox/doubly-nested-with-zero-width-flexbox-and-forced-break-crash.html [ Skip Timeout ]
 
 ### Tests failing with LayoutNGTableFragmentation enabled:
 crbug.com/1078927 external/wpt/css/css-multicol/table/balance-table-with-border-spacing.html [ Failure ]
