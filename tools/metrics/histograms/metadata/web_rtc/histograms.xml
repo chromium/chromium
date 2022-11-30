@@ -1828,6 +1828,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.ValidBundledPayloadTypes"
+    units="boolean" expires_after="2023-06-01">
+  <owner>hbos@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <owner>phancke@microsoft.com</owner>
+  <summary>
+    Measures whether the remote description contains a payload type collision
+    that is not allowed by the IETFs BUNDLE specification. Enforcing this would
+    allow simplifying the statistics collector. Recorded for every remote
+    description.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.ValidIceChars" units="boolean"
     expires_after="2023-08-01">
   <owner>hta@chromium.org</owner>
