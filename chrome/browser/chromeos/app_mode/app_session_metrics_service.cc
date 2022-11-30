@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -18,17 +19,21 @@
 #include "base/path_service.h"
 #include "base/process/process_iterator.h"
 #include "base/process/process_metrics.h"
+#include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
@@ -97,6 +102,89 @@ bool IsPreviousKioskSessionCrashed(const std::vector<std::string>& crash_dirs,
   return false;
 }
 
+void ClearMetricFromPrefs(const std::string& metric_name, PrefService* prefs) {
+  ScopedDictPrefUpdate(prefs, prefs::kKioskMetrics)->Remove(metric_name);
+  prefs->CommitPendingWrite(base::DoNothing(), base::DoNothing());
+}
+
+bool IsFirstSessionAfterReboot() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return user_manager::UserManager::Get()->IsFirstExecAfterBoot();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+KioskSessionRestartReason RestartReasonWithRebootInfo(
+    const KioskSessionRestartReason& initial_reason) {
+  switch (initial_reason) {
+    case KioskSessionRestartReason::kStopped:
+      return IsFirstSessionAfterReboot()
+                 ? KioskSessionRestartReason::kStoppedWithReboot
+                 : KioskSessionRestartReason::kStopped;
+    case KioskSessionRestartReason::kCrashed:
+      return IsFirstSessionAfterReboot()
+                 ? KioskSessionRestartReason::kCrashedWithReboot
+                 : KioskSessionRestartReason::kCrashed;
+    case KioskSessionRestartReason::kLocalStateWasNotSaved:
+      return IsFirstSessionAfterReboot()
+                 ? KioskSessionRestartReason::kLocalStateWasNotSavedWithReboot
+                 : KioskSessionRestartReason::kLocalStateWasNotSaved;
+    case KioskSessionRestartReason::kPluginCrashed:
+      return IsFirstSessionAfterReboot()
+                 ? KioskSessionRestartReason::kPluginCrashedWithReboot
+                 : KioskSessionRestartReason::kPluginCrashed;
+    case KioskSessionRestartReason::kPluginHung:
+      return IsFirstSessionAfterReboot()
+                 ? KioskSessionRestartReason::kPluginHungWithReboot
+                 : KioskSessionRestartReason::kPluginHung;
+    case KioskSessionRestartReason::kStoppedWithReboot:
+    case KioskSessionRestartReason::kCrashedWithReboot:
+    case KioskSessionRestartReason::kPluginCrashedWithReboot:
+    case KioskSessionRestartReason::kPluginHungWithReboot:
+    case KioskSessionRestartReason::kRebootPolicy:
+    case KioskSessionRestartReason::kRemoteActionReboot:
+    case KioskSessionRestartReason::kRestartApi:
+    case KioskSessionRestartReason::kLocalStateWasNotSavedWithReboot:
+      return initial_reason;
+  }
+}
+
+KioskSessionRestartReason ConvertSessionEndReasonToSessionRestartReason(
+    const KioskSessionEndReason& session_end_reason) {
+  switch (session_end_reason) {
+    case KioskSessionEndReason::kStopped:
+      return RestartReasonWithRebootInfo(KioskSessionRestartReason::kStopped);
+    case KioskSessionEndReason::kRebootPolicy:
+      return KioskSessionRestartReason::kRebootPolicy;
+    case KioskSessionEndReason::kRemoteActionReboot:
+      return KioskSessionRestartReason::kRemoteActionReboot;
+    case KioskSessionEndReason::kRestartApi:
+      return KioskSessionRestartReason::kRestartApi;
+    case KioskSessionEndReason::kPluginCrashed:
+      return RestartReasonWithRebootInfo(
+          KioskSessionRestartReason::kPluginCrashed);
+    case KioskSessionEndReason::kPluginHung:
+      return RestartReasonWithRebootInfo(
+          KioskSessionRestartReason::kPluginHung);
+  }
+}
+
+// If the session termination reason was not saved, returns an empty optional.
+absl::optional<KioskSessionEndReason> GetSessionEndReason(
+    const PrefService* prefs) {
+  const base::Value::Dict& metrics_dict = prefs->GetDict(prefs::kKioskMetrics);
+  const auto* kiosk_session_stop_reason_value =
+      metrics_dict.Find(kKioskSessionEndReason);
+  if (!kiosk_session_stop_reason_value)
+    return absl::nullopt;
+  auto kiosk_session_stop_reason = kiosk_session_stop_reason_value->GetIfInt();
+  if (!kiosk_session_stop_reason.has_value())
+    return absl::nullopt;
+
+  return static_cast<KioskSessionEndReason>(kiosk_session_stop_reason.value());
+}
+
 }  // namespace
 
 const char kKioskSessionStateHistogram[] = "Kiosk.SessionState";
@@ -113,8 +201,11 @@ const char kKioskRamUsagePercentageHistogram[] = "Kiosk.RamUsagePercentage";
 const char kKioskSwapUsagePercentageHistogram[] = "Kiosk.SwapUsagePercentage";
 const char kKioskDiskUsagePercentageHistogram[] = "Kiosk.DiskUsagePercentage";
 const char kKioskChromeProcessCountHistogram[] = "Kiosk.ChromeProcessCount";
+const char kKioskSessionRestartReasonHistogram[] =
+    "Kiosk.SessionRestart.Reason";
 const char kKioskSessionLastDayList[] = "last-day-sessions";
 const char kKioskSessionStartTime[] = "session-start-time";
+const char kKioskSessionEndReason[] = "session-end-reason";
 
 const int kKioskHistogramBucketCount = 100;
 const base::TimeDelta kKioskSessionDurationHistogramLimit = base::Days(1);
@@ -181,6 +272,7 @@ void AppSessionMetricsService::RecordKioskSessionWebStarted() {
 void AppSessionMetricsService::RecordKioskSessionStopped() {
   if (!IsKioskSessionRunning())
     return;
+  SaveSessionEndReason(KioskSessionEndReason::kStopped);
   RecordKioskSessionState(KioskSessionState::kStopped);
   RecordKioskSessionDuration(kKioskSessionDurationNormalHistogram,
                              kKioskSessionDurationInDaysNormalHistogram);
@@ -194,16 +286,42 @@ void AppSessionMetricsService::RecordPreviousKioskSessionCrashed(
                              start_time);
 }
 
+void AppSessionMetricsService::RecordKioskSessionRestartReason(
+    const KioskSessionRestartReason& reason) const {
+  base::UmaHistogramEnumeration(kKioskSessionRestartReasonHistogram, reason);
+}
+
 void AppSessionMetricsService::RecordKioskSessionPluginCrashed() {
+  SaveSessionEndReason(KioskSessionEndReason::kPluginCrashed);
   RecordKioskSessionState(KioskSessionState::kPluginCrashed);
   RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
                              kKioskSessionDurationInDaysCrashedHistogram);
 }
 
 void AppSessionMetricsService::RecordKioskSessionPluginHung() {
+  SaveSessionEndReason(KioskSessionEndReason::kPluginHung);
   RecordKioskSessionState(KioskSessionState::kPluginHung);
   RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
                              kKioskSessionDurationInDaysCrashedHistogram);
+}
+
+void AppSessionMetricsService::RestartRequested(
+    power_manager::RequestRestartReason reason) {
+  switch (reason) {
+    case power_manager::REQUEST_RESTART_FOR_USER:
+    case power_manager::REQUEST_RESTART_FOR_UPDATE:
+    case power_manager::REQUEST_RESTART_OTHER:
+      return;
+    case power_manager::REQUEST_RESTART_SCHEDULED_REBOOT_POLICY:
+      SaveSessionEndReason(KioskSessionEndReason::kRebootPolicy);
+      return;
+    case power_manager::REQUEST_RESTART_REMOTE_ACTION_REBOOT:
+      SaveSessionEndReason(KioskSessionEndReason::kRemoteActionReboot);
+      return;
+    case power_manager::REQUEST_RESTART_API:
+      SaveSessionEndReason(KioskSessionEndReason::kRestartApi);
+      return;
+  }
 }
 
 AppSessionMetricsService::AppSessionMetricsService(
@@ -211,7 +329,11 @@ AppSessionMetricsService::AppSessionMetricsService(
     const std::vector<std::string>& crash_dirs)
     : prefs_(prefs),
       disk_space_calculator_(std::make_unique<DiskSpaceCalculator>()),
-      crash_dirs_(crash_dirs) {}
+      crash_dirs_(crash_dirs) {
+  auto* power_manager_client = chromeos::PowerManagerClient::Get();
+  DCHECK(power_manager_client);
+  power_manager_client_observation_.Observe(power_manager_client);
+}
 
 bool AppSessionMetricsService::IsKioskSessionRunning() const {
   return !start_time_.is_null();
@@ -219,7 +341,7 @@ bool AppSessionMetricsService::IsKioskSessionRunning() const {
 
 void AppSessionMetricsService::RecordKioskSessionStarted(
     KioskSessionState started_state) {
-  RecordPreviousKioskSessionCrashIfAny();
+  RecordPreviousKioskSessionEndState();
   if (IsRestoredSession()) {
     RecordKioskSessionState(KioskSessionState::kRestored);
   } else {
@@ -308,13 +430,22 @@ void AppSessionMetricsService::RecordKioskSessionDuration(
       kKioskSessionDurationHistogramLimit, kKioskHistogramBucketCount);
 }
 
-void AppSessionMetricsService::RecordPreviousKioskSessionCrashIfAny() {
+void AppSessionMetricsService::RecordPreviousKioskSessionEndState() {
+  absl::optional<KioskSessionEndReason> previous_session_end_reason =
+      GetSessionEndReason(prefs_);
+  // Avoid reading the old saved reason in the future.
+  ClearMetricFromPrefs(kKioskSessionEndReason, prefs_);
+  if (previous_session_end_reason.has_value()) {
+    auto restart_reason = ConvertSessionEndReasonToSessionRestartReason(
+        previous_session_end_reason.value());
+    RecordKioskSessionRestartReason(restart_reason);
+  }
+
+  // Check for a previous session crash, as a crash may occur after the session
+  // end reason was saved.
   const base::Value::Dict& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
-  const auto* previous_start_time_value =
-      metrics_dict.Find(kKioskSessionStartTime);
-  if (!previous_start_time_value)
-    return;
-  auto previous_start_time = base::ValueToTime(previous_start_time_value);
+  auto previous_start_time =
+      base::ValueToTime(metrics_dict.Find(kKioskSessionStartTime));
   if (!previous_start_time.has_value())
     return;
 
@@ -324,19 +455,44 @@ void AppSessionMetricsService::RecordPreviousKioskSessionCrashIfAny() {
                      previous_start_time.value()),
       base::BindOnce(&AppSessionMetricsService::OnPreviousKioskSessionResult,
                      weak_ptr_factory_.GetWeakPtr(),
-                     previous_start_time.value()));
+                     previous_start_time.value(),
+                     previous_session_end_reason.has_value()));
 }
 
 void AppSessionMetricsService::OnPreviousKioskSessionResult(
     const base::Time& start_time,
+    bool has_recorded_session_restart_reason,
     bool crashed) const {
   if (crashed) {
     RecordPreviousKioskSessionCrashed(start_time);
+    if (!has_recorded_session_restart_reason) {
+      RecordKioskSessionRestartReason(
+          RestartReasonWithRebootInfo(KioskSessionRestartReason::kCrashed));
+    } else {
+      SYSLOG(INFO)
+          << "Kiosk session crash happend after recording end session reason";
+    }
+  } else if (!has_recorded_session_restart_reason) {
+    // Previous session successfully stopped, but due to a race condition
+    // local_state was not correctly updated.
+    RecordKioskSessionRestartReason(RestartReasonWithRebootInfo(
+        KioskSessionRestartReason::kLocalStateWasNotSaved));
+  }
+}
+
+void AppSessionMetricsService::SaveSessionEndReason(
+    const KioskSessionEndReason& reason) {
+  if (prefs_->GetDict(prefs::kKioskMetrics).contains(kKioskSessionEndReason)) {
+    // Do not override saved reason.
+    // This function is called inside `RecordKioskSessionStopped` during the
+    // destructor, but before that the actual restart reason could be saved from
+    // different place.
     return;
   }
-  // Previous session is successfully stopped, but due to a race condition not
-  // cleared local_state correctly.
-  // Respective UMA metrics were emitted during the previous session.
+
+  ScopedDictPrefUpdate(prefs_, prefs::kKioskMetrics)
+      ->Set(kKioskSessionEndReason, static_cast<int>(reason));
+  prefs_->CommitPendingWrite(base::DoNothing(), base::DoNothing());
 }
 
 size_t AppSessionMetricsService::RetrieveLastDaySessionCount(
@@ -365,22 +521,16 @@ size_t AppSessionMetricsService::RetrieveLastDaySessionCount(
 
   start_time_ = session_start_time;
 
-  base::Value::Dict result_value;
-  result_value.Set(kKioskSessionLastDayList, std::move(times));
-  result_value.Set(kKioskSessionStartTime, base::TimeToValue(start_time_));
-  prefs_->SetDict(prefs::kKioskMetrics, std::move(result_value));
+  ScopedDictPrefUpdate(prefs_, prefs::kKioskMetrics)
+      ->Set(kKioskSessionLastDayList, std::move(times));
+  ScopedDictPrefUpdate(prefs_, prefs::kKioskMetrics)
+      ->Set(kKioskSessionStartTime, base::TimeToValue(start_time_));
   return result;
 }
 
 void AppSessionMetricsService::ClearStartTime() {
   start_time_ = base::Time();
-  const base::Value::Dict& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
-
-  base::Value::Dict new_metrics_dict = metrics_dict.Clone();
-  DCHECK(new_metrics_dict.Remove(kKioskSessionStartTime));
-
-  prefs_->SetDict(prefs::kKioskMetrics, std::move(new_metrics_dict));
-  prefs_->CommitPendingWrite(base::DoNothing(), base::DoNothing());
+  ClearMetricFromPrefs(kKioskSessionStartTime, prefs_);
 }
 
 }  // namespace chromeos

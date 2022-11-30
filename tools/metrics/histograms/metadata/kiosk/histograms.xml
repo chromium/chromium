@@ -339,6 +339,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.SessionRestart.Reason" enum="KioskSessionRestartReason"
+    expires_after="2023-11-10">
+  <owner>irfedorova@google.com</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records the reason of a kiosk session restart. This metric is
+    recorded when a new kiosk session started. It is based on the previous kiosk
+    session end reason.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.SessionState" enum="KioskSessionState"
     expires_after="2023-03-22">
   <owner>pbond@chromium.org</owner>

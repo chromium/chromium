@@ -54403,6 +54403,22 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="7" label="Failed to download update crx from fetch URL"/>
 </enum>
 
+<enum name="KioskSessionRestartReason">
+  <int value="0" label="Stopped correctly"/>
+  <int value="1" label="Rebooted, stopped correctly"/>
+  <int value="2" label="Session crashed"/>
+  <int value="3" label="Rebooted, session crashed"/>
+  <int value="4" label="Rebooted by scheduled reboot policy"/>
+  <int value="5" label="Rebooted by remote command"/>
+  <int value="6" label="Rebooted by restart API"/>
+  <int value="7" label="No data"/>
+  <int value="8" label="Rebooted, no data"/>
+  <int value="9" label="Plugin crashed"/>
+  <int value="10" label="Rebooted, plugin crashed"/>
+  <int value="11" label="Plugin hung"/>
+  <int value="12" label="Rebooted, plugin hung"/>
+</enum>
+
 <enum name="KioskSessionState">
   <int value="0" label="Chrome app kiosk started"/>
   <int value="1" label="Web kiosk started/"/>

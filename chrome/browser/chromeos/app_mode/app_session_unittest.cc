@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
+#include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -125,9 +126,40 @@ std::unique_ptr<Browser> CreateBrowserWithFullscreenTestWindowForParams(
   return base::WrapUnique<Browser>(Browser::Create(params));
 }
 
+void EmulateDeviceReboot() {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kFirstExecAfterBoot);
+}
+
+struct KioskSessionRestartTestCase {
+  std::string test_name;
+  bool run_with_reboot = false;
+};
+
+struct KioskSessionPowerManagerRequestRestartTestCase {
+  power_manager::RequestRestartReason power_manager_reason;
+  KioskSessionRestartReason restart_reason;
+};
+
+void CheckSessionRestartReasonHistogramDependingOnRebootStatus(
+    bool run_with_reboot,
+    const KioskSessionRestartReason& reasonWithoutReboot,
+    const KioskSessionRestartReason& reasonWithReboot,
+    const base::HistogramTester* histogram) {
+  if (run_with_reboot) {
+    histogram->ExpectBucketCount(kKioskSessionRestartReasonHistogram,
+                                 reasonWithReboot, 1);
+  } else {
+    histogram->ExpectBucketCount(kKioskSessionRestartReasonHistogram,
+                                 reasonWithoutReboot, 1);
+  }
+  histogram->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 1);
+}
+
 }  // namespace
 
-class AppSessionTest : public testing::Test {
+class AppSessionTest
+    : public ::testing::TestWithParam<KioskSessionRestartTestCase> {
  public:
   explicit AppSessionTest(base::test::TaskEnvironment::TimeSource time_source =
                               base::test::TaskEnvironment::TimeSource::DEFAULT)
@@ -138,7 +170,13 @@ class AppSessionTest : public testing::Test {
   AppSessionTest(const AppSessionTest&) = delete;
   AppSessionTest& operator=(const AppSessionTest&) = delete;
 
+  static void SetUpTestSuite() {
+    chromeos::PowerManagerClient::InitializeFake();
+  }
+
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+  static void TearDownTestSuite() { chromeos::PowerManagerClient::Shutdown(); }
 
   TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
 
@@ -236,6 +274,10 @@ class AppSessionTest : public testing::Test {
 
   PrefService* GetPrefs() { return profile()->GetPrefs(); }
 
+  KioskSessionPluginHandlerDelegate* GetPluginHandlerDelegate() {
+    return app_session_->GetPluginHandlerDelegateForTesting();
+  }
+
   base::FilePath crash_path() const { return temp_dir_.GetPath(); }
 
  private:
@@ -251,6 +293,8 @@ class AppSessionTest : public testing::Test {
   base::HistogramTester histogram_;
   std::unique_ptr<AppSession> app_session_;
 };
+
+using AppSessionRestartReasonTest = AppSessionTest;
 
 class AppSessionTestMockTime : public AppSessionTest {
  public:
@@ -545,6 +589,152 @@ TEST_F(AppSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
+TEST_P(AppSessionRestartReasonTest, StoppedMetric) {
+  const KioskSessionRestartTestCase& test_config = GetParam();
+  StartWebKioskSession();
+  // Emulate exiting the kiosk session.
+  CloseMainBrowser();
+  EXPECT_TRUE(IsSessionShuttingDown());
+  if (test_config.run_with_reboot)
+    EmulateDeviceReboot();
+  histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 0);
+
+  StartWebKioskSession();
+
+  if (test_config.run_with_reboot) {
+    histogram()->ExpectBucketCount(
+        kKioskSessionRestartReasonHistogram,
+        KioskSessionRestartReason::kStoppedWithReboot, 1);
+  } else {
+    histogram()->ExpectBucketCount(kKioskSessionRestartReasonHistogram,
+                                   KioskSessionRestartReason::kStopped, 1);
+  }
+  histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 1);
+}
+
+TEST_P(AppSessionRestartReasonTest, CrashMetric) {
+  const KioskSessionRestartTestCase& test_config = GetParam();
+  // Setup `kKioskSessionStartTime` and add a file to the crash directory to
+  // emulate previous kiosk session crash.
+  base::Value::Dict value;
+  value.Set(kKioskSessionStartTime,
+            base::TimeToValue(base::Time::Now() - base::Hours(1)));
+  local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
+  base::FilePath crash_file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(crash_path(), &crash_file));
+  if (test_config.run_with_reboot)
+    EmulateDeviceReboot();
+
+  StartWebKioskSession();
+
+  CheckSessionRestartReasonHistogramDependingOnRebootStatus(
+      test_config.run_with_reboot, KioskSessionRestartReason::kCrashed,
+      KioskSessionRestartReason::kCrashedWithReboot, histogram());
+}
+
+TEST_P(AppSessionRestartReasonTest, LocalStateWasNotSavedMetric) {
+  const KioskSessionRestartTestCase& test_config = GetParam();
+  // Setup `kKioskSessionStartTime` to emulate previous kiosk session stopped
+  // correctly, but because of race condition, `kKioskSessionStartTime` was not
+  // cleaned.
+  base::Value::Dict value;
+  value.Set(kKioskSessionStartTime,
+            base::TimeToValue(base::Time::Now() - base::Hours(1)));
+  local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
+  if (test_config.run_with_reboot)
+    EmulateDeviceReboot();
+
+  StartWebKioskSession();
+
+  CheckSessionRestartReasonHistogramDependingOnRebootStatus(
+      test_config.run_with_reboot,
+      KioskSessionRestartReason::kLocalStateWasNotSaved,
+      KioskSessionRestartReason::kLocalStateWasNotSavedWithReboot, histogram());
+}
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+TEST_P(AppSessionRestartReasonTest, PluginCrashedMetric) {
+  const KioskSessionRestartTestCase& test_config = GetParam();
+  StartWebKioskSession();
+
+  KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
+  delegate->OnPluginCrashed(base::FilePath(kBrowserPluginFilePath));
+
+  // Emulate exiting the kiosk session.
+  CloseMainBrowser();
+  EXPECT_TRUE(IsSessionShuttingDown());
+  if (test_config.run_with_reboot)
+    EmulateDeviceReboot();
+  histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 0);
+
+  StartWebKioskSession();
+
+  CheckSessionRestartReasonHistogramDependingOnRebootStatus(
+      test_config.run_with_reboot, KioskSessionRestartReason::kPluginCrashed,
+      KioskSessionRestartReason::kPluginCrashedWithReboot, histogram());
+}
+
+TEST_P(AppSessionRestartReasonTest, PluginHungMetric) {
+  const KioskSessionRestartTestCase& test_config = GetParam();
+  // Create a fake power manager client.
+  // FakePowerManagerClient client;
+  StartWebKioskSession();
+
+  KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
+  delegate->OnPluginHung(std::set<int>());
+
+  // Emulate exiting the kiosk session.
+  CloseMainBrowser();
+  EXPECT_TRUE(IsSessionShuttingDown());
+  if (test_config.run_with_reboot)
+    EmulateDeviceReboot();
+  histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 0);
+
+  StartWebKioskSession();
+
+  CheckSessionRestartReasonHistogramDependingOnRebootStatus(
+      test_config.run_with_reboot, KioskSessionRestartReason::kPluginHung,
+      KioskSessionRestartReason::kPluginHungWithReboot, histogram());
+}
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+INSTANTIATE_TEST_SUITE_P(
+    RestartReasons,
+    AppSessionRestartReasonTest,
+    testing::ValuesIn<KioskSessionRestartTestCase>({
+        {/*test_name=*/"WithReboot", /*run_with_reboot=*/false},
+        {/*test_name=*/"WithoutReboot", /*run_with_reboot=*/true},
+    }),
+    [](const testing::TestParamInfo<AppSessionRestartReasonTest::ParamType>&
+           info) { return info.param.test_name; });
+
+TEST_F(AppSessionRestartReasonTest, PowerManagerRequestRestart) {
+  std::vector<KioskSessionPowerManagerRequestRestartTestCase> test_cases = {
+      {/*power_manager_reason=*/power_manager::RequestRestartReason::
+           REQUEST_RESTART_SCHEDULED_REBOOT_POLICY,
+       /*restart_reason=*/KioskSessionRestartReason::kRebootPolicy},
+      {/*power_manager_reason=*/power_manager::RequestRestartReason::
+           REQUEST_RESTART_REMOTE_ACTION_REBOOT,
+       /*restart_reason=*/KioskSessionRestartReason::kRemoteActionReboot},
+      {/*power_manager_reason=*/power_manager::RequestRestartReason::
+           REQUEST_RESTART_API,
+       /*restart_reason=*/KioskSessionRestartReason::kRestartApi}};
+
+  for (auto test_case : test_cases) {
+    StartWebKioskSession();
+    chromeos::FakePowerManagerClient::Get()->RequestRestart(
+        test_case.power_manager_reason, "test reboot description");
+    // Emulate exiting the kiosk session.
+    CloseMainBrowser();
+    EXPECT_TRUE(IsSessionShuttingDown());
+
+    StartWebKioskSession();
+
+    histogram()->ExpectBucketCount(kKioskSessionRestartReasonHistogram,
+                                   test_case.restart_reason, 1);
+  }
+}
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 TEST_F(AppSessionTest, ShouldHandlePlugin) {
   // Create an out-of-process pepper plugin.
@@ -603,40 +793,30 @@ TEST_F(AppSessionTest, ShouldHandlePlugin) {
 }
 
 TEST_F(AppSessionTest, OnPluginCrashed) {
-  AppSession app_session;
-  KioskSessionPluginHandlerDelegate* delegate =
-      app_session.GetPluginHandlerDelegateForTesting();
-
-  // Create a fake power manager client.
-  FakePowerManagerClient client;
+  StartWebKioskSession();
+  KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
 
   // Verified the number of restart calls.
-  EXPECT_EQ(client.num_request_restart_calls(), 0);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
   delegate->OnPluginCrashed(base::FilePath(kBrowserPluginFilePath));
-  EXPECT_EQ(client.num_request_restart_calls(), 1);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kPluginCrashed, 1);
-  EXPECT_EQ(1u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
-
-  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
+  EXPECT_EQ(2u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 }
 
 TEST_F(AppSessionTest, OnPluginHung) {
-  AppSession app_session;
-  KioskSessionPluginHandlerDelegate* delegate =
-      app_session.GetPluginHandlerDelegateForTesting();
-
-  // Create a fake power manager client.
-  FakePowerManagerClient::InitializeFake();
+  StartWebKioskSession();
+  KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
 
   // Only verify if this method can be called without error.
   delegate->OnPluginHung(std::set<int>());
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kPluginHung, 1);
-  EXPECT_EQ(1u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
-
-  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
+  EXPECT_EQ(2u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
