@@ -21,7 +21,6 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -480,7 +479,6 @@ void SetReportErrorForInvisibleIconForTesting(bool value) {
 bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
                               const Extension* extension,
                               const char* manifest_key,
-                              SkColor background_color,
                               std::string* error) {
   for (const auto& entry : icon_set.map()) {
     const base::FilePath path =
@@ -496,15 +494,6 @@ bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
     if (extension->location() == ManifestLocation::kUnpacked) {
       const bool is_sufficiently_visible =
           image_util::IsIconAtPathSufficientlyVisible(path);
-      const bool is_sufficiently_visible_rendered =
-          image_util::IsRenderedIconAtPathSufficientlyVisible(path,
-                                                              background_color);
-      UMA_HISTOGRAM_BOOLEAN(
-          "Extensions.ManifestIconSetIconWasVisibleForUnpacked",
-          is_sufficiently_visible);
-      UMA_HISTOGRAM_BOOLEAN(
-          "Extensions.ManifestIconSetIconWasVisibleForUnpackedRendered",
-          is_sufficiently_visible_rendered);
       if (!is_sufficiently_visible && g_report_error_for_invisible_icon) {
         constexpr char kIconNotSufficientlyVisibleError[] =
             "Icon '%s' specified in '%s' is not sufficiently visible.";

@@ -134,7 +134,6 @@ void SetReportErrorForInvisibleIconForTesting(bool value);
 bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
                               const Extension* extension,
                               const char* manifest_key,
-                              SkColor background_color,
                               std::string* error);
 
 // Loads extension message catalogs and returns message bundle. Passes

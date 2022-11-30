@@ -141,9 +141,8 @@ bool ExtensionActionHandler::Validate(
 
   // Analyze the icons for visibility using the default toolbar color, since
   // the majority of Chrome users don't modify their theme.
-  return file_util::ValidateExtensionIconSet(
-      action->default_icon, extension, manifest_key,
-      image_util::kDefaultToolbarColor, error);
+  return file_util::ValidateExtensionIconSet(action->default_icon, extension,
+                                             manifest_key, error);
 }
 
 bool ExtensionActionHandler::AlwaysParseForType(Manifest::Type type) const {
