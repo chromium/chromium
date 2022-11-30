@@ -211,6 +211,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_RequestDesktopSiteAppMenu"
       summary="educating users about using the desktop site app menu item to
                add a site-level exception."/>
+  <variant name="IPH_RequestDesktopSiteDefaultOn"
+      summary="the in product help message to let users opt out of desktop
+               site global settings default-on."/>
   <variant name="IPH_SharedHighlightingBuilder"
       summary="the in product help message to notify the user that the share
                action can preemptively share a link-to-text"/>

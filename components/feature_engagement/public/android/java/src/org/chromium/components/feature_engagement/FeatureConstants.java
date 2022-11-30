@@ -65,6 +65,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.READ_LATER_BOTTOM_SHEET_FEATURE,
         FeatureConstants.READ_LATER_CONTEXT_MENU_FEATURE,
         FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE,
+        FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE,
         FeatureConstants.IPH_MIC_TOOLBAR_FEATURE, FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
         FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
         FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
@@ -119,6 +120,7 @@ public @interface FeatureConstants {
     String READ_LATER_APP_MENU_BOOKMARKS_FEATURE = "IPH_ReadLaterAppMenuBookmarks";
     String READ_LATER_BOTTOM_SHEET_FEATURE = "IPH_ReadLaterBottomSheet";
     String REQUEST_DESKTOP_SITE_APP_MENU_FEATURE = "IPH_RequestDesktopSiteAppMenu";
+    String REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE = "IPH_RequestDesktopSiteDefaultOn";
 
     /**
      * An IPH feature indicating to users that there are settings for downloads and they are

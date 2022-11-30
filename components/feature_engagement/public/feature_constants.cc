@@ -195,6 +195,9 @@ BASE_FEATURE(kIPHReadLaterBottomSheetFeature,
 BASE_FEATURE(kIPHRequestDesktopSiteAppMenuFeature,
              "IPH_RequestDesktopSiteAppMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHRequestDesktopSiteDefaultOnFeature,
+             "IPH_RequestDesktopSiteDefaultOn",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHShoppingListSaveFlowFeature,
              "IPH_ShoppingListSaveFlow",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -134,6 +134,7 @@ BASE_DECLARE_FEATURE(kIPHReadLaterAppMenuBookmarkThisPageFeature);
 BASE_DECLARE_FEATURE(kIPHReadLaterAppMenuBookmarksFeature);
 BASE_DECLARE_FEATURE(kIPHReadLaterBottomSheetFeature);
 BASE_DECLARE_FEATURE(kIPHRequestDesktopSiteAppMenuFeature);
+BASE_DECLARE_FEATURE(kIPHRequestDesktopSiteDefaultOnFeature);
 BASE_DECLARE_FEATURE(kIPHShoppingListMenuItemFeature);
 BASE_DECLARE_FEATURE(kIPHShoppingListSaveFlowFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsQuicklyComparePagesFeature);
