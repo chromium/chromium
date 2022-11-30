@@ -51,31 +51,50 @@ suite('ApnSubpageTest', function() {
   });
 
   test('Page closed while device is updating', async function() {
+    const oldClose = apnSubpage.close;
+    let counter = 0;
+    apnSubpage.close = () => {
+      counter++;
+      oldClose.apply(apnSubpage, arguments);
+    };
+    mojoApi_.beforeGetDeviceStateList = () => {
+      apnSubpage.close();
+    };
     mojoApi_.setDeviceStateForTest({
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
       scanning: true,
     });
+    await flushTasks();
+    assertEquals(1, counter);
+    assertFalse(!!apnSubpage.managedProperties_);
+  });
 
-    await flushTasks().then(() => {
-      // Close the page as soon as getDeviceStateList() is invoked, before
-      // the callback returns.
-      mojoApi_.beforeGetDeviceStateList = () => {
-        apnSubpage.close();
-      };
-
-      mojoApi_.onDeviceStateListChanged();
-
-      return flushTasks();
-    });
+  test('Page closed while network is updating', async function() {
+    const oldClose = apnSubpage.close;
+    let counter = 0;
+    apnSubpage.close = () => {
+      counter++;
+      oldClose.apply(apnSubpage, arguments);
+    };
+    mojoApi_.beforeGetManagedProperties = () => {
+      apnSubpage.close();
+    };
+    mojoApi_.setManagedPropertiesForTest(OncMojo.getDefaultManagedProperties(
+        NetworkType.kCellular, 'cellular_guid', 'cellular'));
+    await flushTasks();
+    assertEquals(1, counter);
+    assertFalse(!!apnSubpage.managedProperties_);
   });
 
   test(
       'Only updating with different device state should call networkDetails',
       async function() {
         let counter = 0;
+        const oldGetNetworkDetails = apnSubpage.getNetworkDetails_;
         apnSubpage.getNetworkDetails_ = () => {
           counter++;
+          oldGetNetworkDetails.apply(apnSubpage, arguments);
         };
         mojoApi_.setDeviceStateForTest({
           type: NetworkType.kCellular,

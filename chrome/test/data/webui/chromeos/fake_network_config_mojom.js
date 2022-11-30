@@ -77,6 +77,9 @@ export class FakeNetworkConfig {
     /** @type {Function} */
     this.beforeGetDeviceStateList = null;
 
+    /** @type {Function} */
+    this.beforeGetManagedProperties = null;
+
     /** @private {!Array<VpnProvider>} */
     this.vpnProviders_ = [];
 
@@ -511,6 +514,7 @@ export class FakeNetworkConfig {
       if (limit !== NO_LIMIT) {
         result = result.slice(0, limit);
       }
+
       this.methodCalled('getNetworkStateList');
       resolve({result: result});
     });
@@ -555,6 +559,10 @@ export class FakeNetworkConfig {
         } else {
           console.error('GUID not found: ' + guid);
         }
+      }
+      if (this.beforeGetManagedProperties) {
+        this.beforeGetManagedProperties();
+        this.beforeGetManagedProperties = null;
       }
       this.methodCalled('getManagedProperties');
       resolve({result: result || null});

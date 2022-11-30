@@ -11,7 +11,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-suite('ApnListTest', function() {
+suite('ApnListItemTest', function() {
   /** @type {ApnListItemElement} */
   let apnListItem = null;
 

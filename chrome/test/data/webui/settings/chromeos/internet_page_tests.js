@@ -127,6 +127,14 @@ suite('InternetPage', function() {
     return flushAsync();
   }
 
+  async function navigateToApnSubpage() {
+    await navigateToCellularDetailPage();
+    internetPage.shadowRoot.querySelector('settings-internet-detail-page')
+        .shadowRoot.querySelector('#apnSubpageButton')
+        .click();
+    return await flushAsync();
+  }
+
   function init() {
     loadTimeData.overrideValues({
       bypassConnectivityCheck: false,
@@ -738,14 +746,7 @@ suite('InternetPage', function() {
 
   test('Navigate to/from APN subpage', async function() {
     loadTimeData.overrideValues({isApnRevampEnabled: true});
-    await navigateToCellularDetailPage();
-
-    let detailPage =
-        internetPage.shadowRoot.querySelector('settings-internet-detail-page');
-    const getCrLink = () =>
-        detailPage.shadowRoot.querySelector('#apnSubpageButton');
-    getCrLink().click();
-    await flushAsync();
+    await navigateToApnSubpage();
     assertEquals(Router.getInstance().getCurrentRoute(), routes.APN);
     assertTrue(!!internetPage.shadowRoot.querySelector('apn-subpage'));
 
@@ -753,12 +754,13 @@ suite('InternetPage', function() {
     Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
     await waitBeforeNextRender(internetPage);
-    detailPage =
+    const detailPage =
         internetPage.shadowRoot.querySelector('settings-internet-detail-page');
     await flushAsync();
 
     assertEquals(
-        getCrLink(), detailPage.shadowRoot.activeElement,
+        detailPage.shadowRoot.querySelector('#apnSubpageButton'),
+        detailPage.shadowRoot.activeElement,
         'Apn subpage row should be focused');
   });
 
@@ -766,11 +768,7 @@ suite('InternetPage', function() {
       'Create apn button opens dialogs and clicking cancel button removes it',
       async function() {
         loadTimeData.overrideValues({isApnRevampEnabled: true});
-        await navigateToCellularDetailPage();
-        internetPage.shadowRoot.querySelector('settings-internet-detail-page')
-            .shadowRoot.querySelector('#apnSubpageButton')
-            .click();
-        await flushAsync();
+        await navigateToApnSubpage();
         const getApnDetailDialog = () =>
             internetPage.shadowRoot.querySelector('apn-detail-dialog');
 
@@ -795,11 +793,7 @@ suite('InternetPage', function() {
       'Navigate to APN subpage and remove cellular properties.',
       async function() {
         loadTimeData.overrideValues({isApnRevampEnabled: true});
-        await navigateToCellularDetailPage();
-        internetPage.shadowRoot.querySelector('settings-internet-detail-page')
-            .shadowRoot.querySelector('#apnSubpageButton')
-            .click();
-        await flushAsync();
+        await navigateToApnSubpage();
         assertEquals(Router.getInstance().getCurrentRoute(), routes.APN);
         assertTrue(!!internetPage.shadowRoot.querySelector('apn-subpage'));
         // We use the same guid as in navigateToCellularDetailPage so that
