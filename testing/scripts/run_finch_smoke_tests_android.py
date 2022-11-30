@@ -959,15 +959,15 @@ def main(args):
       ret |= test_case.run_tests('with_finch_seed', test_results_dict,
                                  check_seed_loaded=True)
 
+      # enable wifi so that a new seed can be downloaded from the finch server
+      test_case.enable_wifi()
+
       # TODO(b/187185389): Figure out why WebView needs an extra restart
       # to fetch and load a new finch seed.
       ret |= test_case.run_tests(
           'extra_restart', test_results_dict,
           extra_browser_args=test_case.finch_seed_download_args(),
           check_seed_loaded=True)
-
-      # enable wifi so that a new seed can be downloaded from the finch server
-      test_case.enable_wifi()
 
       # Restart webview+shell to fetch new seed to variations_seed_new
       ret |= test_case.run_tests(
