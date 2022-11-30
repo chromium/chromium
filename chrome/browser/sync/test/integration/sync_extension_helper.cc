@@ -330,36 +330,37 @@ std::string NameToPublicKey(const std::string& name) {
 scoped_refptr<Extension> CreateExtension(const base::FilePath& base_dir,
                                          const std::string& name,
                                          Manifest::Type type) {
-  base::DictionaryValue source;
-  source.SetString(extensions::manifest_keys::kName, name);
+  base::Value::Dict source;
+  source.SetByDottedPath(extensions::manifest_keys::kName, name);
   const std::string& public_key = NameToPublicKey(name);
-  source.SetString(extensions::manifest_keys::kPublicKey, public_key);
-  source.SetString(extensions::manifest_keys::kVersion, "0.0.0.0");
-  source.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
+  source.SetByDottedPath(extensions::manifest_keys::kPublicKey, public_key);
+  source.SetByDottedPath(extensions::manifest_keys::kVersion, "0.0.0.0");
+  source.SetByDottedPath(extensions::manifest_keys::kManifestVersion, 2);
   switch (type) {
     case Manifest::TYPE_EXTENSION:
       // Do nothing.
       break;
     case Manifest::TYPE_THEME:
-      source.Set(extensions::manifest_keys::kTheme,
-                 std::make_unique<base::DictionaryValue>());
+      source.SetByDottedPath(extensions::manifest_keys::kTheme,
+                             base::Value::Dict());
       break;
     case Manifest::TYPE_HOSTED_APP:
     case Manifest::TYPE_LEGACY_PACKAGED_APP:
-      source.Set(extensions::manifest_keys::kApp,
-                 std::make_unique<base::DictionaryValue>());
-      source.SetString(extensions::manifest_keys::kLaunchWebURL,
-                       "http://www.example.com");
+      source.SetByDottedPath(extensions::manifest_keys::kApp,
+                             base::Value::Dict());
+      source.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
+                             "http://www.example.com");
       break;
     case Manifest::TYPE_PLATFORM_APP: {
-      source.Set(extensions::manifest_keys::kApp,
-                 std::make_unique<base::DictionaryValue>());
-      source.Set(extensions::manifest_keys::kPlatformAppBackground,
-                 std::make_unique<base::DictionaryValue>());
-      auto scripts = std::make_unique<base::ListValue>();
-      scripts->Append("main.js");
-      source.Set(extensions::manifest_keys::kPlatformAppBackgroundScripts,
-                 std::move(scripts));
+      source.SetByDottedPath(extensions::manifest_keys::kApp,
+                             base::Value::Dict());
+      source.SetByDottedPath(extensions::manifest_keys::kPlatformAppBackground,
+                             base::Value::Dict());
+      base::Value::List scripts;
+      scripts.Append("main.js");
+      source.SetByDottedPath(
+          extensions::manifest_keys::kPlatformAppBackgroundScripts,
+          std::move(scripts));
       break;
     }
     default:
