@@ -5,10 +5,12 @@
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 
 namespace web_app {
@@ -23,8 +25,7 @@ class ClearBrowsingDataCommandTest : public WebAppTest {
 
   void Init() {
     base::RunLoop run_loop;
-    web_app_provider_->on_registry_ready().Post(FROM_HERE,
-                                                run_loop.QuitClosure());
+    provider()->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -66,18 +67,16 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {
   EXPECT_EQ(launch_time3,
             provider()->registrar().GetAppLastLaunchTime(app_id3));
 
-  bool callback_invoked = false;
-  ClearWebAppBrowsingData(
-      base::Time(), base::Time::Now(), provider(),
-      base::BindLambdaForTesting([&]() { callback_invoked = true; }));
-
+  base::test::TestFuture<void> future;
+  provider()->scheduler().ClearWebAppBrowsingData(
+      base::Time(), base::Time::Now(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   EXPECT_EQ(base::Time(),
             provider()->registrar().GetAppLastLaunchTime(app_id1));
   EXPECT_EQ(base::Time(),
             provider()->registrar().GetAppLastLaunchTime(app_id2));
   EXPECT_EQ(base::Time(),
             provider()->registrar().GetAppLastLaunchTime(app_id3));
-  EXPECT_TRUE(callback_invoked);
 }
 
 TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
@@ -112,33 +111,30 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
   EXPECT_EQ(launch_time3,
             provider()->registrar().GetAppLastLaunchTime(app_id3));
 
-  bool callback_invoked = false;
-  ClearWebAppBrowsingData(
+  base::test::TestFuture<void> future;
+  provider()->scheduler().ClearWebAppBrowsingData(
       base::Time() + base::Seconds(5), base::Time() + base::Seconds(15),
-      provider(),
-      base::BindLambdaForTesting([&]() { callback_invoked = true; }));
-
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   EXPECT_EQ(launch_time1,
             provider()->registrar().GetAppLastLaunchTime(app_id1));
   EXPECT_EQ(base::Time(),
             provider()->registrar().GetAppLastLaunchTime(app_id2));
   EXPECT_EQ(launch_time3,
             provider()->registrar().GetAppLastLaunchTime(app_id3));
-  EXPECT_TRUE(callback_invoked);
 }
 
 TEST_F(ClearBrowsingDataCommandTest,
        ClearLastLaunchTimeCalledBeforeWebAppProviderIsReady) {
-  bool callback_invoked = false;
-  ClearWebAppBrowsingData(
-      base::Time(), base::Time::Now(), provider(),
-      base::BindLambdaForTesting([&]() { callback_invoked = true; }));
+  base::test::TestFuture<void> future;
+  provider()->scheduler().ClearWebAppBrowsingData(
+      base::Time(), base::Time::Now(), future.GetCallback());
 
-  EXPECT_FALSE(callback_invoked);
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
 
   Init();
-
-  EXPECT_TRUE(callback_invoked);
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForAllTimes) {
@@ -173,18 +169,17 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForAllTimes) {
   EXPECT_EQ(badging_time3,
             provider()->registrar().GetAppLastBadgingTime(app_id3));
 
-  bool callback_invoked = false;
-  ClearWebAppBrowsingData(
-      base::Time(), base::Time::Now(), provider(),
-      base::BindLambdaForTesting([&]() { callback_invoked = true; }));
+  base::test::TestFuture<void> future;
+  provider()->scheduler().ClearWebAppBrowsingData(
+      base::Time(), base::Time::Now(), future.GetCallback());
 
+  EXPECT_TRUE(future.Wait());
   EXPECT_EQ(base::Time(),
             provider()->registrar().GetAppLastBadgingTime(app_id1));
   EXPECT_EQ(base::Time(),
             provider()->registrar().GetAppLastBadgingTime(app_id2));
   EXPECT_EQ(base::Time(),
             provider()->registrar().GetAppLastBadgingTime(app_id3));
-  EXPECT_TRUE(callback_invoked);
 }
 
 TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
@@ -219,11 +214,11 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
   EXPECT_EQ(badging_time3,
             provider()->registrar().GetAppLastBadgingTime(app_id3));
 
-  bool callback_invoked = false;
-  ClearWebAppBrowsingData(
+  base::test::TestFuture<void> future;
+  provider()->scheduler().ClearWebAppBrowsingData(
       base::Time() + base::Seconds(5), base::Time() + base::Seconds(15),
-      provider(),
-      base::BindLambdaForTesting([&]() { callback_invoked = true; }));
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
   EXPECT_EQ(badging_time1,
             provider()->registrar().GetAppLastBadgingTime(app_id1));
@@ -231,7 +226,6 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
             provider()->registrar().GetAppLastBadgingTime(app_id2));
   EXPECT_EQ(badging_time3,
             provider()->registrar().GetAppLastBadgingTime(app_id3));
-  EXPECT_TRUE(callback_invoked);
 }
 
 }  // namespace web_app

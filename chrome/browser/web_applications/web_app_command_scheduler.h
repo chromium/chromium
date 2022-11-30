@@ -146,6 +146,12 @@ class WebAppCommandScheduler {
       std::unique_ptr<DescriptionType> lock_description,
       base::OnceCallback<void(LockType& lock)> callback);
 
+  // Schedules to clear the browsing data for web app, given the inclusive time
+  // range.
+  void ClearWebAppBrowsingData(const base::Time& begin_time,
+                               const base::Time& end_time,
+                               base::OnceClosure done);
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 

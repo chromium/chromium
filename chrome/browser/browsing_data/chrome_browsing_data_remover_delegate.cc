@@ -161,7 +161,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1260,8 +1260,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       web_app::AreWebAppsEnabled(profile_)) {
     auto* web_app_provider =
         web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
-    web_app::ClearWebAppBrowsingData(
-        delete_begin, delete_end, web_app_provider,
+    web_app_provider->scheduler().ClearWebAppBrowsingData(
+        delete_begin, delete_end,
         CreateTaskCompletionClosure(TracingDataType::kWebAppHistory));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

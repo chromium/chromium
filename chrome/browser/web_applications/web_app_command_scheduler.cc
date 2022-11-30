@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
+#include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
 #include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
@@ -278,6 +279,22 @@ void WebAppCommandScheduler::SyncRunOnOsLoginMode(const AppId& app_id,
 
   provider_->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSyncLoginMode(app_id, std::move(callback)));
+}
+
+void WebAppCommandScheduler::ClearWebAppBrowsingData(
+    const base::Time& begin_time,
+    const base::Time& end_time,
+    base::OnceClosure done) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(done));
+    return;
+  }
+
+  provider_->scheduler().ScheduleCallbackWithLock<FullSystemLock>(
+      std::make_unique<FullSystemLockDescription>(),
+      base::BindOnce(web_app::ClearWebAppBrowsingData, begin_time, end_time,
+                     std::move(done)));
 }
 
 template <class LockType, class DescriptionType>

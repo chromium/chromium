@@ -6,7 +6,9 @@
 
 #include <vector>
 
+#include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -15,21 +17,14 @@
 
 namespace web_app {
 
-void ClearWebAppBrowsingData(base::Time begin_time,
-                             base::Time end_time,
-                             WebAppProvider* provider,
-                             base::OnceClosure done) {
+void ClearWebAppBrowsingData(const base::Time& begin_time,
+                             const base::Time& end_time,
+                             base::OnceClosure done,
+                             FullSystemLock& lock) {
   DCHECK_LE(begin_time, end_time);
 
-  if (!provider->is_registry_ready()) {
-    provider->on_registry_ready().Post(
-        FROM_HERE, base::BindOnce(&ClearWebAppBrowsingData, begin_time,
-                                  end_time, provider, std::move(done)));
-    return;
-  }
-
-  WebAppSyncBridge* sync_bridge = &provider->sync_bridge();
-  WebAppRegistrar* registrar = &provider->registrar();
+  WebAppSyncBridge* sync_bridge = &lock.sync_bridge();
+  WebAppRegistrar* registrar = &lock.registrar();
   std::vector<AppId> ids_to_notify_last_launch_time;
   std::vector<AppId> ids_to_notify_last_badging_time;
   {
