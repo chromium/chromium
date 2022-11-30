@@ -4865,27 +4865,27 @@
   {
     "name": "ntp-realbox-match-omnibox-theme",
     "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-realbox-match-searchbox-theme",
     "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-realbox-pedals",
     "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-realbox-rounded-corners",
     "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-realbox-use-google-g-icon",
     "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-recipe-tasks-module",
