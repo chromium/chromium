@@ -1118,14 +1118,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
-      ('base::ThreadRestrictions::ScopedAllowIO'),
-      (
-        'ScopedAllowIO is deprecated, use ScopedAllowBlocking instead.',
-      ),
-      False,
-      (),
-    ),
-    BanRule(
       r'/\bRunMessageLoop\b',
       (
           'RunMessageLoop is deprecated, use RunLoop instead.',
