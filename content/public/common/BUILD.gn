@@ -128,10 +128,7 @@ source_set("static_main_function_params") {
   ]
   public_deps = [ "//base" ]
 
-  public_configs = [
-    ":static_switches_defines",
-    "//tools/v8_context_snapshot:use_v8_context_snapshot",
-  ]
+  public_configs = [ ":static_switches_defines" ]
 }
 
 # Target for depending on main_function_params.h. This can be included without
@@ -240,10 +237,7 @@ source_set("common_sources") {
     "//content:content_implementation",
   ]
 
-  public_configs = [
-    "//v8:external_startup_data",
-    "//tools/v8_context_snapshot:use_v8_context_snapshot",
-  ]
+  public_configs = [ "//v8:external_startup_data" ]
 
   public_deps = [
     ":interfaces",

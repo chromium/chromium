@@ -323,10 +323,7 @@ test("accessibility_unittests") {
       "platform/automation/automation_tree_manager_owner_unittest.cc",
     ]
     public_deps = [ "//gin" ]
-    configs += [
-      "//tools/v8_context_snapshot:use_v8_context_snapshot",
-      "//v8:external_startup_data",
-    ]
+    configs += [ "//v8:external_startup_data" ]
 
     if (is_fuchsia) {
       # TODO(https://crbug.com/1185811): Investigate removing the requirement for

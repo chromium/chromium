@@ -12,12 +12,13 @@
 #include "base/test/test_timeouts.h"
 #include "gin/v8_initializer.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "tools/v8_context_snapshot/buildflags.h"
 
 namespace content {
 
 namespace {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
 constexpr gin::V8SnapshotFileType kSnapshotType =
     gin::V8SnapshotFileType::kWithAdditionalContext;
 #else

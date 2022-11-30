@@ -23,6 +23,7 @@
 #include "headless/lib/headless_content_main_delegate.h"
 #include "headless/public/headless_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "tools/v8_context_snapshot/buildflags.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
@@ -65,13 +66,13 @@ HeadlessBrowserTest::~HeadlessBrowserTest() = default;
 
 void HeadlessBrowserTest::PreRunTestOnMainThread() {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   constexpr gin::V8SnapshotFileType kSnapshotType =
       gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
   constexpr gin::V8SnapshotFileType kSnapshotType =
       gin::V8SnapshotFileType::kDefault;
-#endif  // USE_V8_CONTEXT_SNAPSHOT
+#endif  // BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
 #endif
 

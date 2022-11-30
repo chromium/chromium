@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "tools/v8_context_snapshot/buildflags.h"
 #include "v8/include/v8-profiler.h"
 #include "v8/include/v8.h"
 
@@ -802,14 +803,14 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
 };
 
 V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   if (Platform::Current()->IsTakingV8ContextSnapshot())
     return V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot;
   if (gin::GetLoadedSnapshotFileType() ==
       gin::V8SnapshotFileType::kWithAdditionalContext) {
     return V8PerIsolateData::V8ContextSnapshotMode::kUseSnapshot;
   }
-#endif  // USE_V8_CONTEXT_SNAPSHOT
+#endif  // BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   return V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot;
 }
 

@@ -32,10 +32,7 @@ source_set("lib") {
       "//gin",
       "//ui/accessibility:accessibility",
     ]
-    configs += [
-      "//tools/v8_context_snapshot:use_v8_context_snapshot",
-      "//v8:external_startup_data",
-    ]
+    configs += [ "//v8:external_startup_data" ]
   } else {
     sources = [
       "accessibility_service_chrome.cc",

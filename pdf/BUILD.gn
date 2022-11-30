@@ -383,11 +383,11 @@ if (enable_pdf) {
     ]
 
     if (v8_use_external_startup_data) {
-      deps += [ "//tools/v8_context_snapshot" ]
-      configs += [
-        "//tools/v8_context_snapshot:use_v8_context_snapshot",
-        "//v8:external_startup_data",
+      deps += [
+        "//tools/v8_context_snapshot",
+        "//tools/v8_context_snapshot:buildflags",
       ]
+      configs += [ "//v8:external_startup_data" ]
     }
 
     data_deps = [

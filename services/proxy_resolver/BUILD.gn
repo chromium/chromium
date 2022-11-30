@@ -27,13 +27,13 @@ source_set("lib") {
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//v8:external_startup_data",
-    "//tools/v8_context_snapshot:use_v8_context_snapshot",
   ]
 
   deps = [
     "//base",
     "//gin",
     "//mojo/public/cpp/bindings",
+    "//tools/v8_context_snapshot:buildflags",
     "//url",
     "//v8",
   ]

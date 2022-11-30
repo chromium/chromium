@@ -21,6 +21,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "tools/v8_context_snapshot/buildflags.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
@@ -34,7 +35,7 @@ namespace {
 const int64_t kTestMaxImageSize = 128 * 1024;
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
 constexpr gin::V8SnapshotFileType kSnapshotType =
     gin::V8SnapshotFileType::kWithAdditionalContext;
 #else

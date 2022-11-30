@@ -48,6 +48,7 @@ source_set("lib") {
     "//media",
     "//media:media_buildflags",
     "//third_party/blink/public/common:headers",
+    "//tools/v8_context_snapshot:buildflags",
     "//ui/base",
     "//ui/events:gesture_detection",
   ]

@@ -19,6 +19,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/blink.h"
+#include "tools/v8_context_snapshot/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 #include "v8/include/v8.h"
@@ -31,11 +32,11 @@ namespace {
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 constexpr gin::V8SnapshotFileType kSnapshotType =
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
     gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
     gin::V8SnapshotFileType::kDefault;
-#endif  // defined(USE_V8_CONTEXT_SNAPSHOT)
+#endif  // BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
 #endif  // defined(V8_USE_EXTERNAL_STARTUP_DATA)
 
 class BlinkPlatformForTesting : public blink::Platform {

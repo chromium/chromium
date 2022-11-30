@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "tools/v8_context_snapshot/buildflags.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #include "gin/public/v8_snapshot_file_type.h"
@@ -30,13 +31,13 @@ namespace blink {
 namespace {
 
 bool IsUsingContextSnapshot() {
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   if (Platform::Current()->IsTakingV8ContextSnapshot() ||
       gin::GetLoadedSnapshotFileType() ==
           gin::V8SnapshotFileType::kWithAdditionalContext) {
     return true;
   }
-#endif  // USE_V8_CONTEXT_SNAPSHOT
+#endif  // BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   return false;
 }
 

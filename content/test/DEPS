@@ -30,6 +30,7 @@ include_rules = [
   "+services/network/url_request_context_builder_mojo.h",
   "+services/proxy_resolver",
   "+services/service_manager/public",
+  "+tools/v8_context_snapshot/buildflags.h",
   "+ui/base/resource/data_pack.h",
   "+ui/base/resource/resource_bundle.h",
   "+ui/base/resource/resource_bundle_android.h",

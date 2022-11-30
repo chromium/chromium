@@ -3,4 +3,5 @@ include_rules = [
   "+gin",
   "+v8",
   "+services/network/public",
+  "+tools/v8_context_snapshot/buildflags.h",
 ]

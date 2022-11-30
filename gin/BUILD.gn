@@ -94,16 +94,14 @@ component("gin") {
   deps = [
     "//base/third_party/dynamic_annotations",
     "//third_party/abseil-cpp:absl",
+    "//tools/v8_context_snapshot:buildflags",
   ]
 
   if (is_mac) {
     frameworks = [ "CoreFoundation.framework" ]
   }
 
-  configs += [
-    "//tools/v8_context_snapshot:use_v8_context_snapshot",
-    "//v8:external_startup_data",
-  ]
+  configs += [ "//v8:external_startup_data" ]
 }
 
 executable("gin_shell") {
@@ -170,10 +168,7 @@ test("gin_unittests") {
     }
   }
 
-  configs += [
-    "//tools/v8_context_snapshot:use_v8_context_snapshot",
-    "//v8:external_startup_data",
-  ]
+  configs += [ "//v8:external_startup_data" ]
 
   data_deps = [
     "//testing/buildbot/filters:gin_unittests_filters",

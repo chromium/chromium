@@ -13,6 +13,7 @@ include_rules = [
   "+components/policy",
   "+components/prefs",
   "+services/device/public/cpp/test/fake_geolocation_manager.h",
+  "+tools/v8_context_snapshot/buildflags.h",
 ]
 specific_include_rules = {
   "headless_browser_browsertest.*": [

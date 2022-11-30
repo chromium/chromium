@@ -37,6 +37,7 @@
 #include "gin/array_buffer.h"
 #include "gin/gin_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "tools/v8_context_snapshot/buildflags.h"
 #include "v8/include/v8-initialization.h"
 #include "v8/include/v8-snapshot.h"
 
@@ -96,8 +97,9 @@ const char kSnapshotFileName32[] = "snapshot_blob_32.bin";
 #endif
 
 #else  // BUILDFLAG(IS_ANDROID)
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
-const char kV8ContextSnapshotFileName[] = V8_CONTEXT_SNAPSHOT_FILENAME;
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
+const char kV8ContextSnapshotFileName[] =
+    BUILDFLAG(V8_CONTEXT_SNAPSHOT_FILENAME);
 #endif
 const char kSnapshotFileName[] = "snapshot_blob.bin";
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -107,7 +109,7 @@ const char* GetSnapshotFileName(const V8SnapshotFileType file_type) {
     case V8SnapshotFileType::kDefault:
       return kSnapshotFileName;
     case V8SnapshotFileType::kWithAdditionalContext:
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
       return kV8ContextSnapshotFileName;
 #else
       NOTREACHED();

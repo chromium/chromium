@@ -11,7 +11,6 @@ import("//third_party/tflite/features.gni")
 extra_configs = [
   "//build/config/compiler:wexit_time_destructors",
   "//content:content_implementation",
-  "//tools/v8_context_snapshot:use_v8_context_snapshot",
   "//v8:external_startup_data",
 ]
 
@@ -86,6 +85,7 @@ source_set("content_main_runner_app") {
            "//content/renderer",
            "//content/utility",
            "//content/zygote",
+           "//tools/v8_context_snapshot:buildflags",
          ]
   if (is_chromeos_lacros) {
     deps += [

@@ -101,12 +101,10 @@ source_set("tests") {
       "//gin",
       "//gin:gin_test",
       "//third_party/blink/public:blink",
+      "//tools/v8_context_snapshot:buildflags",
     ]
     data_deps = [ "//tools/v8_context_snapshot" ]
-    configs += [
-      "//tools/v8_context_snapshot:use_v8_context_snapshot",
-      "//v8:external_startup_data",
-    ]
+    configs += [ "//v8:external_startup_data" ]
   }
 }
 

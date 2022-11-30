@@ -16,4 +16,5 @@ include_rules = [
   "+services/resource_coordinator/public",
   "+services/tracing/public/cpp",
   "+third_party/cpuinfo/src/include/cpuinfo.h",
+  "+tools/v8_context_snapshot/buildflags.h",
 ]

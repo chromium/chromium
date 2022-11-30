@@ -313,8 +313,5 @@ source_set("browser") {
     deps += [ "//components/spellcheck/browser" ]
   }
 
-  configs += [
-    "//tools/v8_context_snapshot:use_v8_context_snapshot",
-    "//v8:external_startup_data",
-  ]
+  configs += [ "//v8:external_startup_data" ]
 }

@@ -28,7 +28,7 @@ source_set("fuzzer_support") {
     "//gin",
     "//tools/v8_context_snapshot",
   ]
-  configs += [ "//tools/v8_context_snapshot:use_v8_context_snapshot" ]
+  deps = [ "//tools/v8_context_snapshot:buildflags" ]
   testonly = true
 }
 
