@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -1072,12 +1073,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_TRUE(helper()->browser_view()->AppUsesWindowControlsOverlay());
 
   // Toggle WCO on, and verify that the UI updates accordingly.
-  helper()->browser_view()->ToggleWindowControlsOverlayEnabled();
+  ToggleWindowControlsOverlayAndWait();
   EXPECT_TRUE(helper()->browser_view()->IsWindowControlsOverlayEnabled());
   EXPECT_TRUE(helper()->browser_view()->AppUsesWindowControlsOverlay());
 
   // Toggle WCO off, and verify that the app returns to 'standalone' mode.
-  helper()->browser_view()->ToggleWindowControlsOverlayEnabled();
+  ToggleWindowControlsOverlayAndWait();
   EXPECT_FALSE(helper()->browser_view()->IsWindowControlsOverlayEnabled());
   EXPECT_TRUE(helper()->browser_view()->AppUsesWindowControlsOverlay());
 }
@@ -1127,7 +1128,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // Hide CCT and enable window controls overlay.
   helper()->browser_view()->UpdateCustomTabBarVisibility(/*visible*/ false,
                                                          /*animate*/ false);
-  helper()->browser_view()->ToggleWindowControlsOverlayEnabled();
+  ToggleWindowControlsOverlayAndWait();
 
   // Verify that the app entered window controls overlay mode.
   EXPECT_TRUE(helper()->browser_view()->IsWindowControlsOverlayEnabled());
@@ -1169,11 +1170,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        OpenWithOverlayEnabled) {
   web_app::AppId app_id = InstallAndLaunchWebApp();
+  base::test::TestFuture<void> future;
   helper()
       ->browser_view()
       ->browser()
       ->app_controller()
-      ->ToggleWindowControlsOverlayEnabled();
+      ->ToggleWindowControlsOverlayEnabled(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
   // If there's no crash, the test has passed.
 }

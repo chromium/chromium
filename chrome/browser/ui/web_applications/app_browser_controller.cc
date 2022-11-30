@@ -278,7 +278,10 @@ bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
   return false;
 }
 
-void AppBrowserController::ToggleWindowControlsOverlayEnabled() {}
+void AppBrowserController::ToggleWindowControlsOverlayEnabled(
+    base::OnceClosure on_complete) {
+  std::move(on_complete).Run();
+}
 
 gfx::Rect AppBrowserController::GetDefaultBounds() const {
   return gfx::Rect();

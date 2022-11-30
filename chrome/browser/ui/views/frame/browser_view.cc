@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -2288,8 +2289,9 @@ void BrowserView::UpdateIsIsolatedWebApp() {
 }
 
 void BrowserView::ToggleWindowControlsOverlayEnabled() {
-  browser()->app_controller()->ToggleWindowControlsOverlayEnabled();
-  UpdateWindowControlsOverlayEnabled();
+  browser()->app_controller()->ToggleWindowControlsOverlayEnabled(
+      base::BindOnce(&BrowserView::UpdateWindowControlsOverlayEnabled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool BrowserView::IsBorderlessModeEnabled() const {

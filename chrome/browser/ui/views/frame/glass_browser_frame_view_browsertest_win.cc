@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
     return;
 
-  browser_view_->ToggleWindowControlsOverlayEnabled();
+  ToggleWindowControlsOverlayEnabledAndWait();
   glass_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
   glass_frame_view_->UpdateWindowTitle();
 

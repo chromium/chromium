@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -154,11 +155,21 @@ bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
          registrar().GetWindowControlsOverlayEnabled(app_id());
 }
 
-void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
+void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
+    base::OnceClosure on_complete) {
   DCHECK(AppUsesWindowControlsOverlay());
 
-  provider_->sync_bridge().SetAppWindowControlsOverlayEnabled(
-      app_id(), !registrar().GetWindowControlsOverlayEnabled(app_id()));
+  provider_->scheduler().ScheduleCallbackWithLock<AppLock>(
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id()}),
+      base::BindOnce(
+          [](base::OnceClosure on_complete, const AppId& app_id,
+             AppLock& lock) {
+            lock.sync_bridge().SetAppWindowControlsOverlayEnabled(
+                app_id,
+                !lock.registrar().GetWindowControlsOverlayEnabled(app_id));
+            std::move(on_complete).Run();
+          },
+          std::move(on_complete), app_id()));
 }
 
 bool WebAppBrowserController::AppUsesBorderlessMode() const {

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -92,7 +93,8 @@ class WebAppBrowserController : public AppBrowserController,
   std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const override;
   bool AppUsesWindowControlsOverlay() const override;
   bool IsWindowControlsOverlayEnabled() const override;
-  void ToggleWindowControlsOverlayEnabled() override;
+  void ToggleWindowControlsOverlayEnabled(
+      base::OnceClosure on_complete) override;
   bool AppUsesBorderlessMode() const override;
   bool IsIsolatedWebApp() const override;
   gfx::Rect GetDefaultBounds() const override;

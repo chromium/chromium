@@ -186,7 +186,8 @@ class AppBrowserController
   // window-controls-overlay and the user has toggled WCO on for the app.
   virtual bool IsWindowControlsOverlayEnabled() const;
 
-  virtual void ToggleWindowControlsOverlayEnabled();
+  virtual void ToggleWindowControlsOverlayEnabled(
+      base::OnceClosure on_complete);
 
   // Returns the default bounds for the app or empty for no defaults.
   virtual gfx::Rect GetDefaultBounds() const;
