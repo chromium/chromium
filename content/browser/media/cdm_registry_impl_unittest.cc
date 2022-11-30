@@ -91,8 +91,8 @@ std::vector<media::VideoCodec> VideoCodecMapToList(
 // std::string instead of base::FilePath and std::vector<std::string>.
 class CdmRegistryImplTest : public testing::Test {
  public:
-  CdmRegistryImplTest() {}
-  ~CdmRegistryImplTest() override {}
+  CdmRegistryImplTest() = default;
+  ~CdmRegistryImplTest() override = default;
 
   void SetUp() final {
     DVLOG(1) << __func__;
@@ -214,13 +214,14 @@ class CdmRegistryImplTest : public testing::Test {
           switches::kLacrosUseChromeosProtectedMedia);
     }
 #else
-    if (enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          media::kHardwareSecureDecryption);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          media::kHardwareSecureDecryption);
-    }
+    const std::vector<base::test::FeatureRef> kHardwareSecureFeatures = {
+        media::kHardwareSecureDecryption,
+        media::kHardwareSecureDecryptionExperiment};
+    const std::vector<base::test::FeatureRef> kNoFeatures = {};
+
+    auto enabled_features = enabled ? kHardwareSecureFeatures : kNoFeatures;
+    auto disabled_features = enabled ? kNoFeatures : kHardwareSecureFeatures;
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 #endif
   }
 

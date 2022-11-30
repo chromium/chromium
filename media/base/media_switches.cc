@@ -758,7 +758,7 @@ const base::FeatureParam<bool> kHardwareSecureDecryptionForceSupportClearLead{
 // sub key systems. Which sub key system is experimental is key system specific.
 BASE_FEATURE(kHardwareSecureDecryptionExperiment,
              "HardwareSecureDecryptionExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows automatically disabling hardware secure Content Decryption Module
 // (CDM) after failures or crashes to fallback to software secure CDMs. If this
