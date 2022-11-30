@@ -122,6 +122,8 @@ Polymer({
     this.addWebUIListener(
         'multidevice_setup.initializeSetupFlow',
         () => this.initializeSetupFlow_());
+
+    this.addAccessibilityLabel_();
   },
 
   /**
@@ -133,7 +135,12 @@ Polymer({
         .setPlay(enabled);
   },
 
-  /** @private */
+  /**
+   * Since web links cannot be opened in OOBE as there is no web browser, this
+   * attaches a listener to open a webview modal in OOBE when "Learn More" links
+   * are clicked.
+   * @private
+   */
   initializeSetupFlow_() {
     // The "Learn More" links are inside a grdp string, so we cannot actually
     // add an onclick handler directly to the html. Instead, grab the two and
@@ -144,6 +151,23 @@ Polymer({
     for (let i = 0; i < helpArticleLinks.length; i++) {
       helpArticleLinks[i].onclick = this.fire.bind(
           this, 'open-learn-more-webview-requested', helpArticleLinks[i].href);
+    }
+  },
+
+  /**
+   * Adds ARIA description to "Learn More" links since the link tag is embedded
+   * in the grdp string without additional attributes.
+   * @private
+   */
+  addAccessibilityLabel_() {
+    // Since the "Learn More" links are inside a grdp string, we add the
+    // attribute here.
+    const helpArticleLinks = [
+      this.$$('#multidevice-summary-message a'),
+    ];
+    for (let i = 0; i < helpArticleLinks.length; i++) {
+      helpArticleLinks[i].setAttribute(
+          'aria-describedby', 'multidevice-summary-message');
     }
   },
 
