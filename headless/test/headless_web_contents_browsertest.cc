@@ -754,4 +754,47 @@ class BlockWebContentsOpenTest : public WebContentsOpenTest {
 
 HEADLESS_DEVTOOLED_TEST_F(BlockWebContentsOpenTest);
 
+// Regression test for crbug.com/1385982.
+class BlockDevToolsEmbedding : public HeadlessDevTooledBrowserTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    HeadlessDevTooledBrowserTest::SetUpInProcessBrowserTestFixture();
+    options()->devtools_endpoint = net::HostPortPair("localhost", port_);
+  }
+
+  void RunDevTooledTest() override {
+    std::stringstream url;
+    url << "data:text/html,<iframe src='http://localhost:" << port_
+        << "/json/version'></iframe>";
+
+    devtools_client_.AddEventHandler(
+        "Page.loadEventFired",
+        base::BindRepeating(&BlockDevToolsEmbedding::OnLoadEventFired,
+                            base::Unretained(this)));
+    devtools_client_.SendCommand("Page.enable");
+    devtools_client_.SendCommand("Page.navigate", Param("url", url.str()));
+  }
+
+  void OnLoadEventFired(const base::Value::Dict& params) {
+    devtools_client_.SendCommand(
+        "Page.getFrameTree",
+        base::BindOnce(&BlockDevToolsEmbedding::OnFrameTreeResult,
+                       base::Unretained(this)));
+  }
+
+  void OnFrameTreeResult(base::Value::Dict result) {
+    // Make sure the iframe did not load successfully.
+    auto& child_frames =
+        *result.FindListByDottedPath("result.frameTree.childFrames");
+    EXPECT_EQ(DictString(child_frames[0].GetDict(), "frame.url"),
+              "chrome-error://chromewebdata/");
+    FinishAsynchronousTest();
+  }
+
+ private:
+  int port_ = 10000 + (rand() % 60000);
+};
+
+HEADLESS_DEVTOOLED_TEST_F(BlockDevToolsEmbedding);
+
 }  // namespace headless

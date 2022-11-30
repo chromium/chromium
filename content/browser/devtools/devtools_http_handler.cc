@@ -863,6 +863,7 @@ void DevToolsHttpHandler::SendJson(int connection_id,
   base::JSONWriter::Write(base::Value(message), &json_message);
 
   net::HttpServerResponseInfo response(status_code);
+  response.AddHeader("Content-Security-Policy", "frame-ancestors 'none'");
   response.SetBody(json_value + message, "application/json; charset=UTF-8");
 
   thread_->task_runner()->PostTask(
