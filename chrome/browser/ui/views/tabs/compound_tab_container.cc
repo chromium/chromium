@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
-#include "tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_animation_delegate.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -179,6 +181,23 @@ class UnpinnedTabContainerController final : public TabContainerController {
   const raw_ref<TabContainerController> base_controller_;
   const raw_ref<CompoundTabContainer> compound_tab_container_;
 };
+
+// Animates tabs being pinned or unpinned, then hands them back to
+// |tab_container_|.
+class PinUnpinAnimationDelegate : public TabSlotAnimationDelegate {
+ public:
+  PinUnpinAnimationDelegate(TabContainer* tab_container, TabSlotView* slot_view)
+      : TabSlotAnimationDelegate(tab_container, slot_view) {}
+  PinUnpinAnimationDelegate(const PinUnpinAnimationDelegate&) = delete;
+  PinUnpinAnimationDelegate& operator=(const PinUnpinAnimationDelegate&) =
+      delete;
+  ~PinUnpinAnimationDelegate() override = default;
+
+  void AnimationEnded(const gfx::Animation* animation) override {
+    TabSlotAnimationDelegate::AnimationEnded(animation);
+    tab_container()->ReturnTabSlotView(base::to_address(slot_view()));
+  }
+};
 }  // namespace
 
 CompoundTabContainer::CompoundTabContainer(
@@ -203,7 +222,8 @@ CompoundTabContainer::CompoundTabContainer(
           hover_card_controller,
           drag_context,
           tab_slot_controller,
-          scroll_contents_view))) {
+          scroll_contents_view))),
+      bounds_animator_(this) {
   const views::FlexSpecification tab_container_flex_spec =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -215,6 +235,9 @@ CompoundTabContainer::CompoundTabContainer(
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  if (!gfx::Animation::ShouldRenderRichAnimation())
+    bounds_animator_.SetAnimationDuration(base::TimeDelta());
 }
 
 CompoundTabContainer::~CompoundTabContainer() = default;
@@ -284,6 +307,9 @@ void CompoundTabContainer::SetTabPinned(int model_index, TabPinned pinned) {
       << " the tab at model index " << model_index << " when there are "
       << NumPinnedTabs() << " pinned tabs without moving that tab."
       << " Use MoveTab to move and (un)pin a tab at the same time.";
+  // The tab's data must already have been updated.
+  DCHECK_EQ(pinned == TabPinned::kPinned,
+            GetTabAtModelIndex(model_index)->data().pinned);
   TransferTabBetweenContainers(model_index, model_index);
 }
 
@@ -320,8 +346,18 @@ std::unique_ptr<Tab> CompoundTabContainer::TransferTabOut(int model_index) {
   return nullptr;
 }
 
-void CompoundTabContainer::StoppedDraggingView(TabSlotView* view) {
-  GetTabContainerFor(view)->StoppedDraggingView(view);
+Tab* CompoundTabContainer::AddTabToViewModel(Tab* tab,
+                                             int model_index,
+                                             TabPinned pinned) {
+  // This method is implemented by TabContainerImpl for when it's a target for a
+  // pin or unpin animation. This would need to be implemented to nest
+  // CompoundTabContainers inside one another.
+  NOTREACHED();
+  return nullptr;
+}
+
+void CompoundTabContainer::ReturnTabSlotView(TabSlotView* view) {
+  GetTabContainerFor(view)->ReturnTabSlotView(view);
 }
 
 void CompoundTabContainer::ScrollTabToVisible(int model_index) {
@@ -462,8 +498,24 @@ void CompoundTabContainer::InvalidateIdealBounds() {
   unpinned_tab_container_->InvalidateIdealBounds();
 }
 
+void CompoundTabContainer::AnimateToIdealBounds() {
+  // `pinned_tab_container_` must plan its animation first so
+  // `unpinned_tab_container_` has up-to-date available width.
+  pinned_tab_container_->AnimateToIdealBounds();
+  unpinned_tab_container_->AnimateToIdealBounds();
+
+  for (views::View* child : children()) {
+    Tab* tab = views::AsViewClass<Tab>(child);
+    if (!tab)
+      continue;
+
+    AnimateTabTo(tab, GetIdealBounds(GetModelIndexOf(tab)));
+  }
+}
+
 bool CompoundTabContainer::IsAnimating() const {
-  return pinned_tab_container_->IsAnimating() ||
+  return bounds_animator_.IsAnimating() ||
+         pinned_tab_container_->IsAnimating() ||
          unpinned_tab_container_->IsAnimating();
 }
 
@@ -473,6 +525,7 @@ void CompoundTabContainer::CancelAnimation() {
 }
 
 void CompoundTabContainer::CompleteAnimationAndLayout() {
+  bounds_animator_.Complete();
   pinned_tab_container_->CompleteAnimationAndLayout();
   unpinned_tab_container_->CompleteAnimationAndLayout();
   Layout();
@@ -550,8 +603,7 @@ gfx::Rect CompoundTabContainer::GetIdealBounds(
 }
 
 void CompoundTabContainer::Layout() {
-  // TODO(crub.com/1346023): Probably need something special in here for drag at
-  // end of tabstrip scenarios.
+  // TODO(now): What do we do if an animation is running?
   views::View::Layout();
 }
 
@@ -593,11 +645,18 @@ void CompoundTabContainer::HandleDragExited() {
 void CompoundTabContainer::UpdateAnimationTarget(TabSlotView* tab_slot_view,
                                                  gfx::Rect target_bounds,
                                                  TabPinned pinned) {
-  controller_->UpdateAnimationTarget(
-      tab_slot_view,
-      pinned == TabPinned::kPinned
-          ? target_bounds
-          : ConvertUnpinnedContainerIdealBoundsToLocal(target_bounds));
+  if (pinned == TabPinned::kUnpinned)
+    target_bounds = ConvertUnpinnedContainerIdealBoundsToLocal(target_bounds);
+
+  if (tab_slot_view->parent() != this) {
+    controller_->UpdateAnimationTarget(tab_slot_view, target_bounds);
+    return;
+  }
+
+  // We should only have tabs to deal with here, as groups cannot be pinned.
+  DCHECK(views::IsViewClass<Tab>(tab_slot_view));
+  if (bounds_animator_.IsAnimating(tab_slot_view))
+    bounds_animator_.SetTargetBounds(tab_slot_view, target_bounds);
 }
 
 int CompoundTabContainer::NumPinnedTabs() const {
@@ -612,6 +671,11 @@ bool CompoundTabContainer::IsValidViewModelIndex(int index) const {
 
 void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,
                                                         int to_model_index) {
+  // If the tab at `from_model_index` is already being transferred, complete
+  // all pending transfers before we embark upon this one to avoid conflicts.
+  if (bounds_animator_.IsAnimating(GetTabAtModelIndex(from_model_index)))
+    CompleteAnimationAndLayout();
+
   const bool prev_pinned = from_model_index < NumPinnedTabs();
   const bool next_pinned = !prev_pinned;
 
@@ -625,28 +689,54 @@ void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,
     // `to_model_index`, we're pinning the first unpinned tab.
     CHECK_GE(from_model_index, before_num_pinned_tabs);
     CHECK_LT(to_model_index, after_num_pinned_tabs);
-
-    std::unique_ptr<Tab> tab = unpinned_tab_container_->TransferTabOut(
-        from_model_index - before_num_pinned_tabs);
-    pinned_tab_container_->AddTab(std::move(tab), to_model_index,
-                                  TabPinned::kPinned);
   } else {
     // We are going from `pinned_tab_container_` to `unpinned_tab_container_`.
     // Indices must be valid for those containers. If `from_model_index` ==
     // `to_model_index`, we're unpinning the last pinned tab.
     CHECK_LT(from_model_index, before_num_pinned_tabs);
     CHECK_GE(to_model_index, after_num_pinned_tabs);
-
-    std::unique_ptr<Tab> tab =
-        pinned_tab_container_->TransferTabOut(from_model_index);
-    unpinned_tab_container_->AddTab(std::move(tab),
-                                    to_model_index - after_num_pinned_tabs,
-                                    TabPinned::kUnpinned);
   }
 
-  // TODO(crbug.com/1346023): Remove this jank-reducing band-aid when handoff is
-  // properly animated.
-  Layout();
+  TabContainer& from_container =
+      *(prev_pinned ? pinned_tab_container_ : unpinned_tab_container_);
+  const int from_container_index =
+      prev_pinned ? from_model_index
+                  : from_model_index - before_num_pinned_tabs;
+  TabContainer& to_container =
+      *(next_pinned ? pinned_tab_container_ : unpinned_tab_container_);
+  const int to_container_index =
+      next_pinned ? to_model_index : to_model_index - after_num_pinned_tabs;
+
+  // Take `tab` ourselves, so we can animate it. Save and restore its bounds to
+  // ensure it doesn't move visually from its current starting bounds.
+  const gfx::RectF initial_tab_bounds = ConvertRectToTarget(
+      &from_container, this,
+      gfx::RectF(
+          from_container.GetTabAtModelIndex(from_container_index)->bounds()));
+  Tab* const tab =
+      AddChildView(from_container.TransferTabOut(from_container_index));
+  tab->SetBoundsRect(ToEnclosingRect(initial_tab_bounds));
+
+  // Remove it from layout - `bounds_animator_` will be managing it.
+  static_cast<views::LayoutManagerBase*>(GetLayoutManager())
+      ->SetChildViewIgnoredByLayout(tab, true);
+
+  // Let `to_container` update its layout data structures.
+  to_container.AddTabToViewModel(
+      tab, to_container_index,
+      next_pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
+
+  AnimateToIdealBounds();
+}
+
+void CompoundTabContainer::AnimateTabTo(Tab* tab, gfx::Rect ideal_bounds) {
+  if (bounds_animator_.IsAnimating(tab)) {
+    bounds_animator_.SetTargetBounds(tab, ideal_bounds);
+  } else {
+    bounds_animator_.AnimateViewTo(tab, ideal_bounds,
+                                   std::make_unique<PinUnpinAnimationDelegate>(
+                                       &GetTabContainerFor(tab).get(), tab));
+  }
 }
 
 gfx::Rect CompoundTabContainer::ConvertUnpinnedContainerIdealBoundsToLocal(

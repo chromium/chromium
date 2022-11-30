@@ -42,7 +42,8 @@ class CompoundTabContainer : public TabContainer {
   void SetActiveTab(absl::optional<size_t> prev_active_index,
                     absl::optional<size_t> new_active_index) override;
   std::unique_ptr<Tab> TransferTabOut(int model_index) override;
-  void StoppedDraggingView(TabSlotView* view) override;
+  Tab* AddTabToViewModel(Tab* tab, int model_index, TabPinned pinned) override;
+  void ReturnTabSlotView(TabSlotView* view) override;
   void ScrollTabToVisible(int model_index) override;
   void ScrollTabContainerByOffset(int offset) override;
   void OnGroupCreated(const tab_groups::TabGroupId& group) override;
@@ -72,6 +73,7 @@ class CompoundTabContainer : public TabContainer {
   void OnTabSlotAnimationProgressed(TabSlotView* view) override;
   void OnTabCloseAnimationCompleted(Tab* tab) override;
   void InvalidateIdealBounds() override;
+  void AnimateToIdealBounds() override;
   bool IsAnimating() const override;
   void CancelAnimation() override;
   void CompleteAnimationAndLayout() override;
@@ -132,6 +134,10 @@ class CompoundTabContainer : public TabContainer {
   gfx::Rect ConvertUnpinnedContainerIdealBoundsToLocal(
       gfx::Rect ideal_bounds) const;
 
+  // Animates `tab` to `ideal_bounds` using `bounds_animator_`. Retargets an
+  // existing animation if one is already running.
+  void AnimateTabTo(Tab* tab, gfx::Rect ideal_bounds);
+
   // Returns the child TabContainer that should contain `view`. NB this can be
   // different from `view->parent()` e.g. while `view` is being dragged.
   raw_ref<TabContainer> GetTabContainerFor(TabSlotView* view);
@@ -162,6 +168,9 @@ class CompoundTabContainer : public TabContainer {
   const raw_ref<TabContainer> unpinned_tab_container_;
 
   base::RepeatingCallback<int()> available_width_callback_;
+
+  // Animates tabs between pinned and unpinned states.
+  views::BoundsAnimator bounds_animator_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMPOUND_TAB_CONTAINER_H_

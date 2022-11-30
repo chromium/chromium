@@ -61,7 +61,8 @@ class TabContainerImpl : public TabContainer,
                     absl::optional<size_t> new_active_index) override;
 
   std::unique_ptr<Tab> TransferTabOut(int model_index) override;
-  void StoppedDraggingView(TabSlotView* view) override;
+  Tab* AddTabToViewModel(Tab* tab, int model_index, TabPinned pinned) override;
+  void ReturnTabSlotView(TabSlotView* view) override;
 
   void ScrollTabToVisible(int model_index) override;
 
@@ -100,6 +101,7 @@ class TabContainerImpl : public TabContainer,
   void OnTabCloseAnimationCompleted(Tab* tab) override;
 
   void InvalidateIdealBounds() override;
+  void AnimateToIdealBounds() override;
   bool IsAnimating() const override;
   void CancelAnimation() override;
   void CompleteAnimationAndLayout() override;
@@ -196,11 +198,6 @@ class TabContainerImpl : public TabContainer,
 
   views::ViewModelT<Tab>* GetTabsViewModel();
 
-  // Generates and sets the ideal bounds for each of the tabs as well as the new
-  // tab button. Note: Does not animate the tabs to those bounds so callers can
-  // use this information for other purposes - see AnimateToIdealBounds.
-  void UpdateIdealBounds();
-
   // Private getter to retrieve the visible rect of the scroll container.
   absl::optional<gfx::Rect> GetVisibleContentRect();
 
@@ -209,15 +206,14 @@ class TabContainerImpl : public TabContainer,
   // bounds of the tabstrip.
   void AnimateScrollToShowXCoordinate(const int start_edge,
                                       const int target_edge);
-
-  // Animates all the views to their ideal bounds.
-  // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
-  // currently set in ideal_bounds.
-  void AnimateToIdealBounds();
-
   // Animates |tab_slot_view| to |target_bounds|
   void AnimateTabSlotViewTo(TabSlotView* tab_slot_view,
                             const gfx::Rect& target_bounds);
+
+  // Generates and sets the ideal bounds for each of the tabs. Note: Does not
+  // animate the tabs to those bounds so callers can use this information for
+  // other purposes - see AnimateToIdealBounds.
+  void UpdateIdealBounds();
 
   // Teleports the tabs to their ideal bounds.
   // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
@@ -228,12 +224,6 @@ class TabContainerImpl : public TabContainer,
   // This can differ from GetAvailableWidthForTabContainer() when in tab closing
   // mode.
   int CalculateAvailableWidthForTabs() const;
-
-  // Animates tabs and group views from where they are to where they should be.
-  // Callers that want to do fancier things can manipulate starting bounds
-  // before calling this and/or replace the animation for some tabs or group
-  // views after calling this.
-  void StartBasicAnimation();
 
   // Invoked from |AddTab| after the newly created tab has been inserted.
   void StartInsertTabAnimation(int model_index);
@@ -251,6 +241,9 @@ class TabContainerImpl : public TabContainer,
   // Remove the tab from |tabs_view_model_|, but *not* from the View hierarchy,
   // so it can be animated closed.
   void RemoveTabFromViewModel(int index);
+
+  // Call when `tab` is going away to remove the tab from data structures.
+  void OnTabRemoved(Tab* tab);
 
   // Updates |override_available_width_for_tabs_|, if necessary, to account for
   // the removal of the tab at |model_index|.

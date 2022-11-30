@@ -698,7 +698,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       AnimationProgressed(animation);
       slot_view_->set_animating(false);
       slot_view_->set_dragging(false);
-      tab_container_->StoppedDraggingView(base::to_address(slot_view_));
+      tab_container_->ReturnTabSlotView(base::to_address(slot_view_));
     }
 
     void AnimationCanceled(const gfx::Animation* animation) override {

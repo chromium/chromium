@@ -94,6 +94,12 @@ class FakeTabContainerController final : public TabContainerController {
  private:
   const raw_ref<TabStripController> tab_strip_controller_;
 };
+
+void SetTabDataPinned(Tab* tab, TabPinned pinned) {
+  TabRendererData tab_data = tab->data();
+  tab_data.pinned = pinned == TabPinned::kPinned;
+  tab->SetData(tab_data);
+}
 }  // namespace
 
 class CompoundTabContainerTest : public ChromeViewsTestBase {
@@ -166,9 +172,7 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
       AddTabToGroup(model_index, group.value());
     }
 
-    TabRendererData tab_data = tab->data();
-    tab_data.pinned = pinned == TabPinned::kPinned;
-    tab->SetData(tab_data);
+    SetTabDataPinned(tab, pinned);
 
     return tab;
   }
@@ -218,15 +222,47 @@ TEST_F(CompoundTabContainerTest, PinnedTabReparents) {
       views::AsViewClass<TabContainer>(tab->parent());
   ASSERT_NE(pinned_container, nullptr);
 
-  // Unpin the tab and it should move to a new TabContainer.
+  // Unpin the tab and it should move to the compound container for animation.
+  SetTabDataPinned(tab, TabPinned::kUnpinned);
   tab_container_->SetTabPinned(0, TabPinned::kUnpinned);
+  EXPECT_EQ(tab->parent(), tab_container_);
+
+  // Complete the animation and it should move to the other TabContainer.
+  tab_container_->CompleteAnimationAndLayout();
   TabContainer* const unpinned_container =
       views::AsViewClass<TabContainer>(tab->parent());
   ASSERT_NE(unpinned_container, nullptr);
   EXPECT_NE(pinned_container, unpinned_container);
 
-  // Re-pin the tab and it should move back.
+  // Re-pin the tab and it should animate in the compound container again.
+  SetTabDataPinned(tab, TabPinned::kPinned);
   tab_container_->SetTabPinned(0, TabPinned::kPinned);
+  EXPECT_EQ(tab->parent(), tab_container_);
+
+  // Complete animation and it should be back in the pinned container.
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_EQ(tab->parent(), pinned_container);
+}
+
+TEST_F(CompoundTabContainerTest, PinDuringUnpinAnimation) {
+  // Start with one tab, initially pinned.
+  Tab* const tab = AddTab(0, TabPinned::kPinned);
+  TabContainer* const pinned_container =
+      views::AsViewClass<TabContainer>(tab->parent());
+  ASSERT_NE(pinned_container, nullptr);
+
+  // Unpin the tab and it should move to the compound container for animation.
+  SetTabDataPinned(tab, TabPinned::kUnpinned);
+  tab_container_->SetTabPinned(0, TabPinned::kUnpinned);
+  EXPECT_EQ(tab->parent(), tab_container_);
+
+  // Re-pin the tab and it should still be in the compound container.
+  SetTabDataPinned(tab, TabPinned::kPinned);
+  tab_container_->SetTabPinned(0, TabPinned::kPinned);
+  EXPECT_EQ(tab->parent(), tab_container_);
+
+  // Complete animation and it should be back in the pinned container.
+  tab_container_->CompleteAnimationAndLayout();
   EXPECT_EQ(tab->parent(), pinned_container);
 }
 
@@ -263,22 +299,29 @@ TEST_F(CompoundTabContainerTest, MoveTabBetweenContainers) {
   const views::View* const unpinned_container =
       AddTab(1, TabPinned::kUnpinned)->parent();
   Tab* const moving_tab = AddTab(2, TabPinned::kUnpinned);
-  TabRendererData moving_tab_data = moving_tab->data();
 
   // Pin `moving_tab` as part of a move.
-  moving_tab_data.pinned = true;
-  moving_tab->SetData(moving_tab_data);
+  SetTabDataPinned(moving_tab, TabPinned::kPinned);
   tab_container_->MoveTab(2, 1);
-  // It should be pinned and at index 1.
+  // It should be in the compound container, animating.
+  EXPECT_EQ(moving_tab->parent(), tab_container_);
+  EXPECT_TRUE(tab_container_->IsAnimating());
+
+  // Finish animating and it should be pinned and at index 1.
+  tab_container_->CompleteAnimationAndLayout();
   EXPECT_EQ(moving_tab->parent(), pinned_container);
   EXPECT_EQ(tab_container_->GetTabAtModelIndex(1), moving_tab);
 
   // Move it to index 0, then unpin it as part of another move.
   tab_container_->MoveTab(1, 0);
-  moving_tab_data.pinned = false;
-  moving_tab->SetData(moving_tab_data);
+  SetTabDataPinned(moving_tab, TabPinned::kUnpinned);
   tab_container_->MoveTab(0, 1);
+  // It should be in the compound container, animating.
+  EXPECT_EQ(moving_tab->parent(), tab_container_);
+  EXPECT_TRUE(tab_container_->IsAnimating());
+
   // It should be unpinned and at index 1.
+  tab_container_->CompleteAnimationAndLayout();
   EXPECT_EQ(moving_tab->parent(), unpinned_container);
   EXPECT_EQ(tab_container_->GetTabAtModelIndex(1), moving_tab);
 }

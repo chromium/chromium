@@ -964,3 +964,63 @@ TEST_F(TabContainerTest, PreferredWidthDuringAnimation) {
             tab_container_->GetIdealBounds(tab_container_->GetTabCount() - 1)
                 .right());
 }
+
+TEST_F(TabContainerTest, PreferredWidthNotAffectedByTransferOut) {
+  // Start with two tabs.
+  AddTab(0);
+  AddTab(1);
+  const int initial_pref_width = tab_container_->GetPreferredSize().width();
+
+  // Transfer one out, then pretend to animate it.
+  std::unique_ptr<Tab> owned_tab = tab_container_->TransferTabOut(1);
+  tab_container_controller_->set_is_animating_outside_container(true);
+  // Preferred width should be unchanged, even though `owned_tab` is no longer
+  // part of `tab_container_`.
+  EXPECT_EQ(initial_pref_width, tab_container_->GetPreferredSize().width());
+
+  // Complete the animation and stop pretending.
+  tab_container_->CompleteAnimationAndLayout();
+  tab_container_controller_->set_is_animating_outside_container(false);
+  // Preferred width should now be changed.
+  EXPECT_NE(initial_pref_width, tab_container_->GetPreferredSize().width());
+}
+
+TEST_F(TabContainerTest, PreferredWidthAddTabToViewModel) {
+  // Start with one tab, and one more that is not in the container.
+  AddTab(0);
+  const auto owned_tab = std::make_unique<Tab>(tab_slot_controller_.get());
+  const int initial_pref_width = tab_container_->GetPreferredSize().width();
+
+  // Add `owned_tab` to `tab_container_`'s viewmodel without giving it the
+  // actual view, and pretend to animate it.
+  tab_container_->AddTabToViewModel(owned_tab.get(), 1, TabPinned::kUnpinned);
+  tab_container_controller_->set_is_animating_outside_container(true);
+  // Preferred width should be unchanged.
+  EXPECT_EQ(initial_pref_width, tab_container_->GetPreferredSize().width());
+
+  // Complete animation and stop pretending.
+  tab_container_->CompleteAnimationAndLayout();
+  tab_container_controller_->set_is_animating_outside_container(false);
+  // Preferred width should be changed, even though we still haven't handed the
+  // actual view over.
+  EXPECT_NE(initial_pref_width, tab_container_->GetPreferredSize().width());
+}
+
+TEST_F(TabContainerTest, TabDestroyedWhileOutOfContainerDoesNotActuallyReturn) {
+  // Add a tab, but take the view to simulate an outside-container animation.
+  std::unique_ptr<views::View> tab_parent = std::make_unique<views::View>();
+  Tab* tab_ptr =
+      tab_parent->AddChildView(tab_container_->RemoveChildViewT(AddTab(0)));
+
+  // Simulate destroying the tabstrip during this animation:
+  // 1. Close the tab.
+  RemoveTab(0);
+  // 2. Remove it from the view hierarchy (this would happen as part of the
+  // tab's destructor).
+  std::unique_ptr<Tab> tab = tab_parent->RemoveChildViewT(tab_ptr);
+  // 3. BoundsAnimator completes the animation, which returns the TabSlotView.
+  tab_container_->ReturnTabSlotView(tab_ptr);
+
+  // Validate that `tab_container_` did not actually take the tab view back.
+  EXPECT_EQ(tab->parent(), nullptr);
+}

@@ -49,14 +49,18 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // Transfer the tab at `model_index` our of this container so it can be
   // parented elsewhere. Unlike RemoveTab, this method does not close the tab,
   // but it does remove it from the layout viewmodel.
-  // TODO(crbug.com/1346023): Find a better name for this once the full suite of
-  // ownership-transferring methods is in place.
   [[nodiscard]] virtual std::unique_ptr<Tab> TransferTabOut(
       int model_index) = 0;
 
-  // `view` is no longer being dragged. This TabContainer takes ownership of it
-  // in the view hierarchy.
-  virtual void StoppedDraggingView(TabSlotView* view) = 0;
+  // Adds the tab to the TabContainer's data structures, but does not transfer
+  // ownership of the actual view `tab`.
+  virtual Tab* AddTabToViewModel(Tab* tab,
+                                 int model_index,
+                                 TabPinned pinned) = 0;
+
+  // Returns `view` to this TabContainer in the view hierarchy. N.B. this
+  // may be called during `view`'s destruction.
+  virtual void ReturnTabSlotView(TabSlotView* view) = 0;
 
   // Scrolls so the tab at `model_index` is fully visible.
   virtual void ScrollTabToVisible(int model_index) = 0;
@@ -111,6 +115,12 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // to animate to their ideal bounds after somebody other than TabContainer
   // (cough TabDragController cough) moves tabs directly.
   virtual void InvalidateIdealBounds() = 0;
+
+  // Animates tabs and group views from where they are to where they should be.
+  // Callers that want to do fancier things can manipulate starting bounds
+  // before calling this and/or replace the animation for some tabs or group
+  // views after calling this.
+  virtual void AnimateToIdealBounds() = 0;
 
   // Returns true if any tabs are being animated by this TabContainer.
   virtual bool IsAnimating() const = 0;
