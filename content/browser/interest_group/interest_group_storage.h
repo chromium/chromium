@@ -117,6 +117,11 @@ class CONTENT_EXPORT InterestGroupStorage {
   // will only appear once.
   std::vector<url::Origin> GetAllInterestGroupJoiningOrigins();
 
+  std::vector<std::pair<url::Origin, url::Origin>>
+  GetAllInterestGroupOwnerJoinerPairs();
+  void RemoveInterestGroupsMatchingOwnerAndJoiner(url::Origin owner,
+                                                  url::Origin joining_origin);
+
   // Clear out storage for the matching owning storage key.
   void DeleteInterestGroupData(
       StoragePartition::StorageKeyMatcherFunction storage_key_matcher);

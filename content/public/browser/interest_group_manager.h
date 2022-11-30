@@ -15,6 +15,21 @@ namespace content {
 // state needed to run FLEDGE auctions. It lives on the UI thread.
 class InterestGroupManager {
  public:
+  struct InterestGroupDataKey {
+    url::Origin owner;
+    url::Origin joining_origin;
+
+    bool operator<(const InterestGroupDataKey& other) const {
+      return std::tie(owner, joining_origin) <
+             std::tie(other.owner, other.joining_origin);
+    }
+
+    bool operator==(const InterestGroupDataKey& other) const {
+      return std::tie(owner, joining_origin) ==
+             std::tie(other.owner, other.joining_origin);
+    }
+  };
+
   // Gets a list of all interest group joining origins. Each joining origin
   // will only appear once. A joining origin is the top-frame origin for a page
   // on which the join action occurred. Interest groups the user is joined to
@@ -23,6 +38,16 @@ class InterestGroupManager {
   // IsInterestGroupAPIAllowed function on the ContentBrowserClient.
   virtual void GetAllInterestGroupJoiningOrigins(
       base::OnceCallback<void(std::vector<url::Origin>)> callback) = 0;
+
+  // Gets a list of all interest group data keys of owner origin and joining
+  // origin pairs.
+  virtual void GetAllInterestGroupDataKeys(
+      base::OnceCallback<void(std::vector<InterestGroupDataKey>)> callback) = 0;
+
+  // Removes all interest groups that match the given interest group data key of
+  // same owner origin and joining origins.
+  virtual void RemoveInterestGroupsByDataKey(InterestGroupDataKey data_key,
+                                             base::OnceClosure callback) = 0;
 
  protected:
   virtual ~InterestGroupManager() = default;

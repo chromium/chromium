@@ -1360,6 +1360,67 @@ absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupJoiningOrigins(
   return result;
 }
 
+bool DoRemoveInterestGroupsMatchingOwnerAndJoiner(sql::Database& db,
+                                                  url::Origin owner,
+                                                  url::Origin joining_origin,
+                                                  base::Time expiring_after) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin())
+    return false;
+
+  std::vector<std::string> owner_joiner_names;
+  sql::Statement load(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT name "
+      "FROM interest_groups "
+      "WHERE owner=? AND joining_origin=? AND expiration>=?"));
+
+  if (!load.is_valid())
+    return false;
+
+  load.Reset(true);
+  load.BindString(0, owner.Serialize());
+  load.BindString(1, joining_origin.Serialize());
+  load.BindTime(2, expiring_after);
+
+  while (load.Step()) {
+    owner_joiner_names.emplace_back(load.ColumnString(0));
+  }
+
+  for (const auto& name : owner_joiner_names) {
+    if (!DoRemoveInterestGroup(db, blink::InterestGroupKey{owner, name}))
+      return false;
+  }
+
+  return transaction.Commit();
+}
+
+absl::optional<std::vector<std::pair<url::Origin, url::Origin>>>
+DoGetAllInterestGroupOwnerJoinerPairs(sql::Database& db,
+                                      base::Time expiring_after) {
+  std::vector<std::pair<url::Origin, url::Origin>> result;
+  sql::Statement load(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT DISTINCT owner,joining_origin "
+                            "FROM interest_groups "
+                            "WHERE expiration>=?"));
+  if (!load.is_valid()) {
+    DLOG(ERROR) << "LoadAllInterestGroupOwnerJoinerPairs SQL statement did not "
+                   "compile: "
+                << db.GetErrorMessage();
+    return absl::nullopt;
+  }
+  load.Reset(true);
+  load.BindTime(0, expiring_after);
+  while (load.Step()) {
+    result.emplace_back(DeserializeOrigin(load.ColumnString(0)),
+                        DeserializeOrigin(load.ColumnString(1)));
+  }
+  if (!load.Succeeded())
+    return absl::nullopt;
+  return result;
+}
+
 bool DoGetKAnonymity(
     sql::Database& db,
     const std::string& key,
@@ -2268,6 +2329,35 @@ InterestGroupStorage::GetAllInterestGroupJoiningOrigins() {
   if (!maybe_result)
     return {};
   return std::move(maybe_result.value());
+}
+
+std::vector<std::pair<url::Origin, url::Origin>>
+InterestGroupStorage::GetAllInterestGroupOwnerJoinerPairs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized())
+    return {};
+  absl::optional<std::vector<std::pair<url::Origin, url::Origin>>>
+      maybe_result =
+          DoGetAllInterestGroupOwnerJoinerPairs(*db_, base::Time::Now());
+  if (!maybe_result)
+    return {};
+  return std::move(maybe_result.value());
+}
+
+void InterestGroupStorage::RemoveInterestGroupsMatchingOwnerAndJoiner(
+    url::Origin owner,
+    url::Origin joining_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized())
+    return;
+
+  if (!DoRemoveInterestGroupsMatchingOwnerAndJoiner(*db_, owner, joining_origin,
+                                                    base::Time::Now()))
+    DLOG(ERROR)
+        << "Could not remove interest groups matching owner and joiner: "
+        << db_->GetErrorMessage();
+
+  return;
 }
 
 void InterestGroupStorage::DeleteInterestGroupData(

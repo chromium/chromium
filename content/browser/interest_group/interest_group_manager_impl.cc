@@ -89,6 +89,18 @@ std::unique_ptr<network::SimpleURLLoader> BuildSimpleUrlLoader(
   simple_url_loader->SetTimeoutDuration(base::Seconds(30));
   return simple_url_loader;
 }
+
+std::vector<InterestGroupManager::InterestGroupDataKey>
+ConvertOwnerJoinerPairsToDataKeys(
+    std::vector<std::pair<url::Origin, url::Origin>> owner_joiner_pairs) {
+  std::vector<InterestGroupManager::InterestGroupDataKey> data_keys;
+  for (auto& key : owner_joiner_pairs) {
+    data_keys.emplace_back(
+        InterestGroupManager::InterestGroupDataKey{key.first, key.second});
+  }
+  return data_keys;
+}
+
 }  // namespace
 
 InterestGroupManagerImpl::ReportRequest::ReportRequest() = default;
@@ -123,6 +135,23 @@ InterestGroupManagerImpl::~InterestGroupManagerImpl() = default;
 void InterestGroupManagerImpl::GetAllInterestGroupJoiningOrigins(
     base::OnceCallback<void(std::vector<url::Origin>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetAllInterestGroupJoiningOrigins)
+      .Then(std::move(callback));
+}
+
+void InterestGroupManagerImpl::GetAllInterestGroupDataKeys(
+    base::OnceCallback<void(std::vector<InterestGroupDataKey>)> callback) {
+  impl_.AsyncCall(&InterestGroupStorage::GetAllInterestGroupOwnerJoinerPairs)
+      .Then(base::BindOnce(&ConvertOwnerJoinerPairsToDataKeys)
+                .Then(std::move(callback)));
+}
+
+void InterestGroupManagerImpl::RemoveInterestGroupsByDataKey(
+    InterestGroupDataKey data_key,
+    base::OnceClosure callback) {
+  impl_
+      .AsyncCall(
+          &InterestGroupStorage::RemoveInterestGroupsMatchingOwnerAndJoiner)
+      .WithArgs(data_key.owner, data_key.joining_origin)
       .Then(std::move(callback));
 }
 

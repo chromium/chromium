@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -32,31 +33,103 @@ namespace {
 
 constexpr char kTestHost[] = "a.test";
 
+void ProvideRequestHandlerKeyCommitmentsToNetworkService(
+    base::StringPiece host,
+    net::EmbeddedTestServer* https_server,
+    const network::test::TrustTokenRequestHandler& request_handler) {
+  base::flat_map<url::Origin, base::StringPiece> origins_and_commitments;
+  std::string key_commitments = request_handler.GetKeyCommitmentRecord();
+
+  GURL::Replacements replacements;
+  replacements.SetHostStr(host);
+  origins_and_commitments.insert_or_assign(
+      url::Origin::Create(
+          https_server->base_url().ReplaceComponents(replacements)),
+      key_commitments);
+
+  base::RunLoop run_loop;
+  content::GetNetworkService()->SetTrustTokenKeyCommitments(
+      network::WrapKeyCommitmentsForIssuers(std::move(origins_and_commitments)),
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
+
+void JoinInterestGroup(const content::ToRenderFrameHost& adapter,
+                       net::EmbeddedTestServer* https_server) {
+  // join interest group
+  auto command = content::JsReplace(
+      R"(
+    (async () => {
+      try {
+        navigator.joinAdInterestGroup(
+            {
+              name: 'cars',
+              owner: $1,
+              biddingLogicUrl: $2,
+              trustedBiddingSignalsUrl: $3,
+              trustedBiddingSignalsKeys: ['key1'],
+              userBiddingSignals: {some: 'json', data: {here: [1, 2, 3]}},
+              ads: [{
+                renderUrl: $4,
+                metadata: {ad: 'metadata', here: [1, 2, 3]},
+              }],
+            },
+            /*joinDurationSec=*/ 1000);
+      } catch (e) {
+        return e.toString();
+      }
+      return "Success";
+    })())",
+      https_server->GetURL(kTestHost, "/"),
+      https_server->GetURL(kTestHost, "/interest_group/bidding_logic.js"),
+      https_server->GetURL(kTestHost,
+                           "/interest_group/trusted_bidding_signals.json"),
+      GURL("https://example.com/render"));
+  EXPECT_EQ("Success", EvalJs(adapter, command));
+}
+}  // namespace
 
 using browsing_data_model_test_util::ValidateBrowsingDataEntries;
 using OperationResult = storage::SharedStorageDatabase::OperationResult;
 
 class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
  public:
-  BrowsingDataModelBrowserTest() = default;
+  BrowsingDataModelBrowserTest() {
+    auto& field_trial_param =
+        network::features::kTrustTokenOperationsRequiringOriginTrial;
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{network::features::kPrivateStateTokens,
+          {{field_trial_param.name,
+            field_trial_param.GetName(
+                network::features::TrustTokenOriginTrialSpec::
+                    kOriginTrialNotRequired)}}},
+         {blink::features::kSharedStorageAPI, {}},
+         {blink::features::kInterestGroupStorage, {}},
+         {blink::features::kAdInterestGroupAPI, {}},
+         {blink::features::kFledge, {}},
+         {blink::features::kFencedFrames, {}}},
+        /*disabled_features=*/
+        {});
+  }
 
   ~BrowsingDataModelBrowserTest() override = default;
-
-  void SetUp() override {
-    SetUpFeatureList();
-    InProcessBrowserTest::SetUp();
-  }
 
   void SetUpOnMainThread() override {
     PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
         ->SetPrivacySandboxEnabled(true);
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_->AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    network::test::RegisterTrustTokenTestHandlers(https_test_server(),
+                                                  &request_handler_);
+    ASSERT_TRUE(https_server_->Start());
   }
 
-  virtual void SetUpFeatureList() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
-  }
-
+ protected:
   std::unique_ptr<BrowsingDataModel> BuildBrowsingDataModel() {
     base::test::TestFuture<std::unique_ptr<BrowsingDataModel>>
         browsing_data_model;
@@ -69,8 +142,19 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
     return browser()->profile()->GetDefaultStoragePartition();
   }
 
- protected:
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  net::EmbeddedTestServer* https_test_server() { return https_server_.get(); }
+
+  GURL test_url() { return https_server_->GetURL("a.test", "/echo"); }
+
+  network::test::TrustTokenRequestHandler request_handler_;
+
+ private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
@@ -117,77 +201,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 
-class BrowsingDataModelTrustTokenBrowserTest
-    : public BrowsingDataModelBrowserTest {
- public:
-  BrowsingDataModelTrustTokenBrowserTest() = default;
-  ~BrowsingDataModelTrustTokenBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
-        ->SetPrivacySandboxEnabled(true);
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-    https_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server_->AddDefaultHandlers(
-        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
-    network::test::RegisterTrustTokenTestHandlers(https_server_.get(),
-                                                  &request_handler_);
-    ASSERT_TRUE(https_server_->Start());
-  }
-
-  void SetUpFeatureList() override {
-    auto& field_trial_param =
-        network::features::kTrustTokenOperationsRequiringOriginTrial;
-    feature_list_.InitWithFeaturesAndParameters(
-        // Enabled Features:
-        {{network::features::kPrivateStateTokens,
-          {{field_trial_param.name,
-            field_trial_param.GetName(
-                network::features::TrustTokenOriginTrialSpec::
-                    kOriginTrialNotRequired)}}}},
-        // Disabled Features:
-        {});
-  }
-
- protected:
-  void ProvideRequestHandlerKeyCommitmentsToNetworkService(
-      base::StringPiece host) {
-    base::flat_map<url::Origin, base::StringPiece> origins_and_commitments;
-    std::string key_commitments = request_handler_.GetKeyCommitmentRecord();
-
-    GURL::Replacements replacements;
-    replacements.SetHostStr(host);
-    origins_and_commitments.insert_or_assign(
-        url::Origin::Create(
-            https_server_->base_url().ReplaceComponents(replacements)),
-        key_commitments);
-
-    base::RunLoop run_loop;
-    content::GetNetworkService()->SetTrustTokenKeyCommitments(
-        network::WrapKeyCommitmentsForIssuers(
-            std::move(origins_and_commitments)),
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-  net::EmbeddedTestServer* https_test_server() { return https_server_.get(); }
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  network::test::TrustTokenRequestHandler request_handler_;
-};
-
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelTrustTokenBrowserTest,
-                       TrustTokenIssuance) {
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
   // Setup the test server to be able to issue trust tokens, and have it issue
   // some to the profile.
-  ProvideRequestHandlerKeyCommitmentsToNetworkService(kTestHost);
+  ProvideRequestHandlerKeyCommitmentsToNetworkService(
+      kTestHost, https_test_server(), request_handler_);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server()->GetURL(kTestHost, "/title1.html")));
@@ -236,6 +254,47 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelTrustTokenBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 
   // Build another model from disk, ensuring the data is no longer present.
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       InterestGroupsHandledCorrectly) {
+  // Check that no interest groups are joined at the beginning of the test.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+
+  // Join an interest group.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  JoinInterestGroup(web_contents(), https_test_server());
+
+  // Waiting for the browsing data model to be populated, otherwise the test is
+  // flaky.
+  do {
+    browsing_data_model = BuildBrowsingDataModel();
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  } while (std::distance(browsing_data_model->begin(),
+                         browsing_data_model->end()) != 1);
+
+  // Validate that an interest group is added.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  content::InterestGroupManager::InterestGroupDataKey data_key{testOrigin,
+                                                               testOrigin};
+  ValidateBrowsingDataEntries(browsing_data_model.get(),
+                              {{kTestHost,
+                                data_key,
+                                {BrowsingDataModel::StorageType::kInterestGroup,
+                                 /*storage_size=*/1024, /*cookie_count=*/0}}});
+  // Remove Interest Group.
+  {
+    base::RunLoop run_loop;
+    browsing_data_model.get()->RemoveBrowsingData(kTestHost,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Rebuild Browsing Data Model and verify entries are empty.
   browsing_data_model = BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }

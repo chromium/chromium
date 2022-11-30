@@ -17,14 +17,18 @@
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace {
 
 // A number of bytes used to represent data which takes up a practically
-// inperceptible, but non-0 amount of space, such as Trust Tokens.
+// imperceptible, but non-0 amount of space, such as Trust Tokens.
 constexpr int kSmallAmountOfDataInBytes = 100;
+
+// An estimate of storage size of an Interest Group object.
+constexpr int kModerateAmountOfDataInBytes = 1024;
 
 // Visitor which returns the appropriate primary host for a given `data_key`
 // and `storage_type`.
@@ -65,6 +69,14 @@ std::string GetPrimaryHost::operator()<blink::StorageKey>(
   }
   NOTREACHED();
   return "";
+}
+
+template <>
+std::string
+GetPrimaryHost::operator()<content::InterestGroupManager::InterestGroupDataKey>(
+    const content::InterestGroupManager::InterestGroupDataKey& data_key) const {
+  DCHECK_EQ(BrowsingDataModel::StorageType::kInterestGroup, storage_type_);
+  return data_key.owner.host();
 }
 
 // Helper which allows the lifetime management of a deletion action to occur
@@ -155,6 +167,23 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
   }
 }
 
+template <>
+void StorageRemoverHelper::Visitor::operator()<
+    content::InterestGroupManager::InterestGroupDataKey>(
+    const content::InterestGroupManager::InterestGroupDataKey& data_key) {
+  if (types.Has(BrowsingDataModel::StorageType::kInterestGroup)) {
+    helper->storage_partition_->GetInterestGroupManager()
+        ->RemoveInterestGroupsByDataKey(
+            data_key, base::BindOnce(
+                          [](base::OnceClosure complete_callback) {
+                            std::move(complete_callback).Run();
+                          },
+                          helper->GetCompleteCallback()));
+  } else {
+    NOTREACHED();
+  }
+}
+
 base::OnceClosure StorageRemoverHelper::GetCompleteCallback() {
   callbacks_expected_++;
   return base::BindOnce(&StorageRemoverHelper::BackendFinished,
@@ -195,6 +224,19 @@ void OnSharedStorageLoaded(
     model->AddBrowsingData(info->storage_key,
                            BrowsingDataModel::StorageType::kSharedStorage,
                            info->total_size_bytes);
+  }
+  std::move(loaded_callback).Run();
+}
+
+void OnInterestGroupsLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    std::vector<content::InterestGroupManager::InterestGroupDataKey>
+        interest_groups) {
+  for (const auto& data_key : interest_groups) {
+    model->AddBrowsingData(data_key,
+                           BrowsingDataModel::StorageType::kInterestGroup,
+                           kModerateAmountOfDataInBytes);
   }
   std::move(loaded_callback).Run();
 }
@@ -343,9 +385,13 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool is_shared_storage_enabled =
       base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI);
+  bool is_interest_group_enabled =
+      base::FeatureList::IsEnabled(blink::features::kAdInterestGroupAPI);
   // TODO(crbug.com/1271155): Derive this from the StorageTypeSet directly.
   int storage_backend_count = 1;
   if (is_shared_storage_enabled)
+    storage_backend_count++;
+  if (is_interest_group_enabled)
     storage_backend_count++;
 
   base::RepeatingClosure completion =
@@ -363,6 +409,12 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   if (is_shared_storage_enabled) {
     storage_partition_->GetSharedStorageManager()->FetchOrigins(
         base::BindOnce(&OnSharedStorageLoaded, this, completion));
+  }
+
+  // Interest Groups
+  if (is_interest_group_enabled) {
+    storage_partition_->GetInterestGroupManager()->GetAllInterestGroupDataKeys(
+        base::BindOnce(&OnInterestGroupsLoaded, this, completion));
   }
 }
 

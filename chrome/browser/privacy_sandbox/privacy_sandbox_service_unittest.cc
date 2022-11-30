@@ -86,6 +86,15 @@ class TestInterestGroupManager : public content::InterestGroupManager {
       base::OnceCallback<void(std::vector<url::Origin>)> callback) override {
     std::move(callback).Run(origins_);
   }
+  void GetAllInterestGroupDataKeys(
+      base::OnceCallback<void(std::vector<InterestGroupDataKey>)> callback)
+      override {
+    std::move(callback).Run({});
+  }
+  void RemoveInterestGroupsByDataKey(InterestGroupDataKey data_key,
+                                     base::OnceClosure callback) override {
+    std::move(callback).Run();
+  }
 
  private:
   std::vector<url::Origin> origins_;

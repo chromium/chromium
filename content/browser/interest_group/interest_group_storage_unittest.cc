@@ -765,6 +765,58 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   EXPECT_EQ(base::Time::Min(), storage->GetLastKAnonymityReported(k_anon_key));
 }
 
+TEST_F(InterestGroupStorageTest, DeleteOwnerJoinerPair) {
+  // Set up owner origin, joining origin pairs.
+  const url::Origin owner_originA =
+      url::Origin::Create(GURL("https://ownerA.example.com"));
+  const url::Origin owner_originB =
+      url::Origin::Create(GURL("https://ownerB.example.com"));
+  const url::Origin owner_originC =
+      url::Origin::Create(GURL("https://ownerC.example.com"));
+  const url::Origin joining_originA =
+      url::Origin::Create(GURL("https://joinerA.example.com"));
+  const url::Origin joining_originB =
+      url::Origin::Create(GURL("https://joinerB.example.com"));
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  storage->JoinInterestGroup(NewInterestGroup(owner_originA, "groupA"),
+                             joining_originA.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(owner_originB, "groupB"),
+                             joining_originA.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(owner_originC, "groupC"),
+                             joining_originA.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(owner_originB, "groupB2"),
+                             joining_originB.GetURL());
+
+  // Validate that pairs are retrieved correctly.
+  {
+    std::vector<std::pair<url::Origin, url::Origin>>
+        expected_owner_joiner_pairs = {{owner_originA, joining_originA},
+                                       {owner_originB, joining_originA},
+                                       {owner_originC, joining_originA},
+                                       {owner_originB, joining_originB}};
+    std::vector<std::pair<url::Origin, url::Origin>> owner_joiner_pairs =
+        storage->GetAllInterestGroupOwnerJoinerPairs();
+    EXPECT_THAT(owner_joiner_pairs,
+                UnorderedElementsAreArray(expected_owner_joiner_pairs));
+  }
+
+  // Remove an interest group with specified owner origin and joining origin.
+  storage->RemoveInterestGroupsMatchingOwnerAndJoiner(owner_originB,
+                                                      joining_originA);
+
+  // Validate that only the specified interest group is removed.
+  {
+    std::vector<std::pair<url::Origin, url::Origin>>
+        expected_owner_joiner_pairs = {{owner_originA, joining_originA},
+                                       {owner_originC, joining_originA},
+                                       {owner_originB, joining_originB}};
+    std::vector<std::pair<url::Origin, url::Origin>> owner_joiner_pairs =
+        storage->GetAllInterestGroupOwnerJoinerPairs();
+    EXPECT_THAT(owner_joiner_pairs,
+                UnorderedElementsAreArray(expected_owner_joiner_pairs));
+  }
+}
+
 // Maintenance should prune the number of interest groups and interest group
 // owners based on the set limit.
 TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {

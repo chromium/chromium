@@ -88,6 +88,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void GetAllInterestGroupJoiningOrigins(
       base::OnceCallback<void(std::vector<url::Origin>)> callback) override;
 
+  void GetAllInterestGroupDataKeys(
+      base::OnceCallback<void(std::vector<InterestGroupDataKey>)> callback)
+      override;
+
+  void RemoveInterestGroupsByDataKey(InterestGroupDataKey data_key,
+                                     base::OnceClosure callback) override;
+
   /******** Proxy function calls to InterestGroupsStorage **********/
 
   // Checks if `frame_origin` can join the specified InterestGroup, performing
