@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "components/permissions/object_permission_context_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 
@@ -91,8 +92,11 @@ class BluetoothChooserContext : public ObjectPermissionContextBase {
   std::u16string GetObjectDisplayName(const base::Value& object) override;
 
  private:
-  base::Value FindDeviceObject(const url::Origin& origin,
-                               const blink::WebBluetoothDeviceId& device_id);
+  static bool IsValidDict(const base::Value::Dict& dict);
+
+  absl::optional<base::Value::Dict> FindDeviceObject(
+      const url::Origin& origin,
+      const blink::WebBluetoothDeviceId& device_id);
 
   // This map records the generated Web Bluetooth IDs for devices discovered via
   // the Scanning API. Each requesting/embedding origin pair has its own version
