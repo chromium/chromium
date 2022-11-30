@@ -1320,6 +1320,7 @@ test("content_browsertests") {
     "../browser/payments/payment_app_browsertest.cc",
     "../browser/performance_memory_browsertest.cc",
     "../browser/performance_timeline_back_forward_cache_restoration_browsertest.cc",
+    "../browser/performance_timeline_lcp_start_time_precision_browsertest.cc",
     "../browser/performance_timeline_navigation_id_browsertest.cc",
     "../browser/performance_timeline_prefetch_transfer_size_browsertest.cc",
     "../browser/picture_in_picture/video_picture_in_picture_content_browsertest.cc",

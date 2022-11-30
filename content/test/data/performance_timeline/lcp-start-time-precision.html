@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Largest Contentful Paint Start Time Precision.
+</title>
+
+<body>
+  <script>
+    const getLCPStartTime = async () => {
+      return await new Promise(resolve => {
+        new PerformanceObserver((entryList, observer) => {
+          resolve(entryList.getEntries()[0].startTime);
+          observer.disconnect();
+        }).observe({ type: 'largest-contentful-paint', buffered: true });
+      });
+    }
+
+    const getFCPStartTime = () => {
+      return performance.getEntriesByName('first-contentful-paint')[0].startTime;
+    }
+
+    const isEqualToPrecision = async (n) => {
+      let lcpStartTime = await getLCPStartTime();
+      let fcpStartTime = getFCPStartTime();
+      return lcpStartTime.toPrecision(n) == fcpStartTime.toPrecision(n);
+    }
+  </script>
+  <img src='../single_face.jpg' id="test" />
+</body>

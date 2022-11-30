@@ -26,13 +26,15 @@ function checkImage(entry, expectedUrl, expectedID, expectedSize, timeLowerBound
     assert_equals(entry.renderTime, 0, 'renderTime should be 0');
     assert_between_exclusive(entry.loadTime, timeLowerBound, performance.now(),
       'loadTime should be between the lower bound and the current time');
-    assert_equals(entry.startTime, entry.loadTime, 'startTime should equal loadTime');
+    assert_approx_equals(entry.startTime, entry.loadTime, 0.001,
+      'startTime should be equal to renderTime to the precision of 1 millisecond.');
   } else {
     assert_between_exclusive(entry.loadTime, timeLowerBound, entry.renderTime,
       'loadTime should occur between the lower bound and the renderTime');
     assert_greater_than_equal(performance.now(), entry.renderTime,
       'renderTime should occur before the entry is dispatched to the observer.');
-    assert_equals(entry.startTime, entry.renderTime, 'startTime should equal renderTime');
+    assert_approx_equals(entry.startTime, entry.renderTime, 0.001,
+      'startTime should be equal to renderTime to the precision of 1 millisecond.');
   }
   if (options.includes('sizeLowerBound')) {
     assert_greater_than(entry.size, expectedSize);

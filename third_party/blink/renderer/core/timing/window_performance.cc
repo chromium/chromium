@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
@@ -714,11 +715,18 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
   base::TimeDelta first_animated_frame_timestamp =
       MonotonicTimeToTimeDelta(first_animated_frame_time);
   // TODO(yoav): Should we modify start to represent the animated frame?
-  base::TimeDelta start_timestamp =
-      render_timestamp.is_zero() ? load_timestamp : render_timestamp;
+
+  // The start_timestamp is converted to DOMHighResTimeStamp which will be
+  // passed to PerformanceEntry constructor as double. This is to align the
+  // conversion to that of FCP so that both start_timestamps have the same
+  // precision.
+  DOMHighResTimeStamp start_timestamp =
+      render_timestamp.is_zero()
+          ? MonotonicTimeToDOMHighResTimeStamp(load_time)
+          : MonotonicTimeToDOMHighResTimeStamp(paint_time);
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
-      start_timestamp.InMillisecondsF(), render_timestamp, paint_size,
-      load_timestamp, first_animated_frame_timestamp, id, url, element,
+      start_timestamp, render_timestamp, paint_size, load_timestamp,
+      first_animated_frame_timestamp, id, url, element,
       PerformanceEntry::GetNavigationId(GetExecutionContext()));
   if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint))
     NotifyObserversOfEntry(*entry);
