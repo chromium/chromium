@@ -40,6 +40,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -1603,8 +1604,17 @@ bool DeviceSettingsProvider::UpdateFromService() {
         break;
       [[fallthrough]];
     case DeviceSettingsService::STORE_KEY_UNAVAILABLE:
-      VLOG(1) << "No policies present yet, will use the temp storage.";
-      trusted_status_ = PERMANENTLY_UNTRUSTED;
+      if (base::FeatureList::IsEnabled(
+              ownership::kChromeSideOwnerKeyGeneration) &&
+          user_manager::UserManager::Get()->GetOwnerEmail().has_value()) {
+        // On the consumer owned device Chrome is responsible for generating a
+        // new key and/or policy if they are missing (which happens after the
+        // user session starts).
+        trusted_status_ = TEMPORARILY_UNTRUSTED;
+      } else {
+        VLOG(1) << "No policies present yet, will use the temp storage.";
+        trusted_status_ = PERMANENTLY_UNTRUSTED;
+      }
       break;
     case DeviceSettingsService::STORE_VALIDATION_ERROR:
     case DeviceSettingsService::STORE_INVALID_POLICY:
