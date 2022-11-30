@@ -19,6 +19,22 @@
     width: 448px;
   }
 
+  ::slotted([slot=header-image]) {
+    /* As this surface is a dialog, replace the color palette with its elevated
+     * variant. */
+    --cros-illustration-color-1-shade-1: var(
+      --cros-illustration-elevation-color-1-shade-1);
+    --cros-illustration-color-1-shade-2: var(
+      --cros-illustration-elevation-color-1-shade-2);
+    --cros-illustration-base-color: var(
+      --cros-illustration-elevation-base-color);
+    --cros-illustration-secondary-color: var(
+      --cros-illustration-elevation-secondary-color);
+
+    height: 100%;
+    width: 100%;
+  }
+
   ::slotted([slot=title]) {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-6-font);

@@ -129,7 +129,7 @@
     "includes": [1340],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/cloud_upload/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
+    "META": {"sizes": {"includes": [30]}},
     "includes": [1345],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/desk_api/resources.grd": {

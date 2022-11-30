@@ -14,6 +14,11 @@ build_webui("build") {
     "icons/office.svg",
     "icons/sheets.svg",
     "icons/slides.svg",
+    "images/connect_to_one_drive.svg",
+    "images/install_office.svg",
+    "images/office.png",
+    "images/one_drive_success.svg",
+    "images/welcome.svg",
     "main.html",
   ]
   web_component_files = [
