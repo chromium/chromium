@@ -10,6 +10,22 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
+bool TimestampRange::Update(base::Time time) {
+  bool modified = false;
+
+  if (!first.has_value() || time < first.value()) {
+    first = time;
+    modified = true;
+  }
+
+  if (!last.has_value() || time > last.value()) {
+    last = time;
+    modified = true;
+  }
+
+  return modified;
+}
+
 // CookieAccessType:
 base::StringPiece CookieAccessTypeToString(CookieAccessType type) {
   switch (type) {

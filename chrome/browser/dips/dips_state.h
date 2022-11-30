@@ -21,6 +21,11 @@ class DirtyBit {
 
   explicit operator bool() const { return value_; }
 
+  DirtyBit& operator|=(bool value) {
+    value_ |= value;
+    return *this;
+  }
+
   DirtyBit& operator=(bool value) {
     value_ = value;
     return *this;

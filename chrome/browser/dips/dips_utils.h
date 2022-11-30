@@ -102,6 +102,10 @@ std::ostream& operator<<(std::ostream& os, DIPSRedirectType type);
 struct TimestampRange {
   absl::optional<base::Time> first;
   absl::optional<base::Time> last;
+
+  // Expand the range to include `time` if necessary. Returns true iff the range
+  // was modified.
+  bool Update(base::Time time);
 };
 
 inline bool operator==(const TimestampRange& lhs, const TimestampRange& rhs) {

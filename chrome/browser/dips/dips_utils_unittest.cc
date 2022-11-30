@@ -7,6 +7,48 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+TEST(TimestampRangeTest, UpdateEmpty) {
+  const base::Time time = base::Time::FromDoubleT(1);
+
+  TimestampRange range;
+  EXPECT_TRUE(range.Update(time));
+  EXPECT_EQ(range.first, time);
+  EXPECT_EQ(range.last, time);
+}
+
+TEST(TimestampRangeTest, Update_SetLast) {
+  const base::Time time1 = base::Time::FromDoubleT(1);
+  const base::Time time2 = base::Time::FromDoubleT(2);
+  const base::Time time3 = base::Time::FromDoubleT(3);
+
+  TimestampRange range = {time1, time2};
+  EXPECT_TRUE(range.Update(time3));
+  EXPECT_EQ(range.first, time1);
+  EXPECT_EQ(range.last, time3);
+}
+
+TEST(TimestampRangeTest, Update_SetFirst) {
+  const base::Time time1 = base::Time::FromDoubleT(1);
+  const base::Time time2 = base::Time::FromDoubleT(2);
+  const base::Time time3 = base::Time::FromDoubleT(3);
+
+  TimestampRange range = {time2, time3};
+  EXPECT_TRUE(range.Update(time1));
+  EXPECT_EQ(range.first, time1);
+  EXPECT_EQ(range.last, time3);
+}
+
+TEST(TimestampRangeTest, Update_Unmodified) {
+  const base::Time time1 = base::Time::FromDoubleT(1);
+  const base::Time time2 = base::Time::FromDoubleT(2);
+  const base::Time time3 = base::Time::FromDoubleT(3);
+
+  TimestampRange range = {time1, time3};
+  EXPECT_FALSE(range.Update(time2));
+  EXPECT_EQ(range.first, time1);
+  EXPECT_EQ(range.last, time3);
+}
+
 TEST(BucketizeBounceDelayTest, BucketizeBounceDelay) {
   // any TimeDelta in (-inf, 1s) should return 0
   EXPECT_EQ(0, BucketizeBounceDelay(base::Days(-1)));
