@@ -800,5 +800,5 @@ interface NetInstance {
       => (ArcPingTestResult result);
 
   // Pass a Chrome flag value into ARC.
-  [MinVersion=22] SetUpFlag@11(Flag flag, bool value);
+  [MinVersion=24] SetUpFlag@11(Flag flag, bool value);
 };
