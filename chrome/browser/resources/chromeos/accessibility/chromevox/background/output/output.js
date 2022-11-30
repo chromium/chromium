@@ -671,32 +671,6 @@ export class Output {
   }
 
   /** @override */
-  formatRole_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    options.annotation.push(token);
-    let msg = node.role;
-    const info = OutputRoleInfo[node.role];
-    if (node.roleDescription) {
-      msg = node.roleDescription;
-    } else if (info) {
-      if (this.formatOptions_.braille) {
-        msg = Msgs.getMsg(info.msgId + '_brl');
-      } else if (info.msgId) {
-        msg = Msgs.getMsg(info.msgId);
-      }
-    } else {
-      // We can safely ignore this role. ChromeVox output tests cover
-      // message id validity.
-      return;
-    }
-    this.append_(buff, msg || '', options);
-    formatLog.writeTokenWithValue(token, msg);
-  }
-
-  /** @override */
   formatInputType_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;

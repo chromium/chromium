@@ -15,6 +15,7 @@ import {Msgs} from '../../common/msgs.js';
 import {OutputFormatParserObserver} from './output_format_parser.js';
 import {OutputFormatTree} from './output_format_tree.js';
 import {OutputInterface} from './output_interface.js';
+import {OutputRoleInfo} from './output_role_info.js';
 import * as outputTypes from './output_types.js';
 
 const Dir = constants.Dir;
@@ -88,7 +89,7 @@ export class OutputFormatter {
         this.speechProps_.properties['relativePitch'] = -0.3;
       }
 
-      this.output_.formatRole_(this.params_, token, options);
+      this.formatRole_(this.params_, token, options);
     } else if (token === 'inputType') {
       this.output_.formatInputType_(this.params_, token, options);
     } else if (
@@ -483,6 +484,37 @@ export class OutputFormatter {
         outputFormatLogger: formatLog,
       });
     }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatRole_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    options.annotation.push(token);
+    let msg = node.role;
+    const info = OutputRoleInfo[node.role];
+    if (node.roleDescription) {
+      msg = node.roleDescription;
+    } else if (info) {
+      if (this.output_.formatAsBraille) {
+        msg = Msgs.getMsg(info.msgId + '_brl');
+      } else if (info.msgId) {
+        msg = Msgs.getMsg(info.msgId);
+      }
+    } else {
+      // We can safely ignore this role. ChromeVox output tests cover
+      // message id validity.
+      return;
+    }
+    this.output_.append_(buff, msg || '', options);
+    formatLog.writeTokenWithValue(token, msg);
   }
 
   /**
