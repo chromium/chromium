@@ -20,6 +20,8 @@ Modifications:
 - Added automatic generation of protocol marshalling code.
 - Made server/client generated with wayland_protocol template.
 - Using a custom branch that includes a fix to a buffer size overflow bug.
+- Added generate_configs.py that generates and copies config.h and
+  wayland-version.h files into include and include/src.
 
 To import a new snapshot of wayland:
 - Checkout the latest release tag.
@@ -28,10 +30,8 @@ To import a new snapshot of wayland:
   $ roll-dep src/third_party/wayland/src --roll-to=<commit>
 - Install build-time dependencies:
   $ apt-get install meson xsltproc xmlto
-- Update generated files. In wayland/src directory, run:
-  TODO(crbug.com/1371438): Automate the steps below using a shell script.
-```
-  rm -rf build && meson build/ -Ddocumentation=false -Dtests=false && ninja -C build
-  mv build/config.h ../include && mv build/src/wayland-version.h ../include/src
-```
+- Update generated files by running config generation script:
+  $ vpython3 generate_configs.py
+- Add updated files:
+  $ git add -uv
 - Update this README to reflect the new version number.
