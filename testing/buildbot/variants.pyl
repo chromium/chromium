@@ -470,8 +470,8 @@
   'CROS_DEDEDE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'dedede',
-      'cros_chrome_version': '110.0.5423.0',
-      'cros_img': 'dedede-release/R110-15255.0.0',
+      'cros_chrome_version': '110.0.5445.0',
+      'cros_img': 'dedede-release/R110-15262.0.0',
     },
     'enabled': True,
     'identifier': 'DEDEDE_RELEASE_LKGM',
@@ -506,8 +506,8 @@
   'CROS_EVE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '110.0.5423.0',
-      'cros_img': 'eve-release/R110-15255.0.0',
+      'cros_chrome_version': '110.0.5445.0',
+      'cros_img': 'eve-release/R110-15262.0.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_LKGM',
@@ -552,8 +552,8 @@
   'CROS_HANA_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '110.0.5423.0',
-      'cros_img': 'hana-release/R110-15255.0.0',
+      'cros_chrome_version': '110.0.5445.0',
+      'cros_img': 'hana-release/R110-15262.0.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_LKGM',
@@ -588,8 +588,8 @@
   'CROS_HEROBRINE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'herobrine',
-      'cros_chrome_version': '110.0.5423.0',
-      'cros_img': 'herobrine-release/R110-15255.0.0',
+      'cros_chrome_version': '110.0.5445.0',
+      'cros_img': 'herobrine-release/R110-15262.0.0',
     },
     'enabled': True,
     'identifier': 'HEROBRINE_RELEASE_LKGM',
@@ -597,8 +597,8 @@
   'CROS_JACUZZI_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '110.0.5423.0',
-      'cros_img': 'jacuzzi-release/R110-15255.0.0',
+      'cros_chrome_version': '110.0.5445.0',
+      'cros_img': 'jacuzzi-release/R110-15262.0.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_LKGM',
@@ -663,8 +663,8 @@
   'CROS_OCTOPUS_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '110.0.5423.0',
-      'cros_img': 'octopus-release/R110-15255.0.0',
+      'cros_chrome_version': '110.0.5445.0',
+      'cros_img': 'octopus-release/R110-15262.0.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_LKGM',
@@ -699,8 +699,8 @@
   'CROS_STRONGBAD_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '110.0.5423.0',
-      'cros_img': 'strongbad-release/R110-15255.0.0',
+      'cros_chrome_version': '110.0.5445.0',
+      'cros_img': 'strongbad-release/R110-15262.0.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_LKGM',
