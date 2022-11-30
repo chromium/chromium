@@ -416,6 +416,7 @@ ios_builder(
             short_name = "ctl",
         ),
     ],
+    tree_closing = False,
 )
 
 ios_builder(
