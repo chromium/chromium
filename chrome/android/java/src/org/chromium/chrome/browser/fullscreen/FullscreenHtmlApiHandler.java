@@ -156,7 +156,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
             Rect bounds = new Rect();
             mContentViewInFullscreen.getWindowVisibleDisplayFrame(bounds);
             var lp = (ViewGroup.MarginLayoutParams) mNotificationToast.getLayoutParams();
-            int bottomMargin = mContentViewInFullscreen.getHeight() - bounds.bottom;
+            int bottomMargin = mContentViewInFullscreen.getHeight() - bounds.height();
             // If positioned at the bottom of the display, shift it up to avoid overlapping
             // with the bottom nav bar when it appears by user gestures.
             if (bottomMargin == 0) bottomMargin = mNavbarHeight;
