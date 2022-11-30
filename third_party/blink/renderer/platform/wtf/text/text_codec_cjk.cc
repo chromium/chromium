@@ -474,13 +474,13 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
 
   SawError ParseByte(uint8_t byte, StringBuilder& result) override {
     DCHECK(saw_error_);
-    if (gb18030_third_) {
+    if (third_) {
       if (byte < 0x30 || byte > 0x39) {
         *saw_error_ = true;
         result.Append(kReplacementCharacter);
-        gb18030_first_ = 0x00;
-        uint8_t second = std::exchange(gb18030_second_, 0x00);
-        uint8_t third = std::exchange(gb18030_third_, 0x00);
+        first_ = 0x00;
+        uint8_t second = std::exchange(second_, 0x00);
+        uint8_t third = std::exchange(third_, 0x00);
         if (ParseByte(second, result) == SawError::kYes) {
           *saw_error_ = true;
           result.Append(kReplacementCharacter);
@@ -491,9 +491,9 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
         }
         return ParseByte(byte, result);
       }
-      uint8_t first = std::exchange(gb18030_first_, 0x00);
-      uint8_t second = std::exchange(gb18030_second_, 0x00);
-      uint8_t third = std::exchange(gb18030_third_, 0x00);
+      uint8_t first = std::exchange(first_, 0x00);
+      uint8_t second = std::exchange(second_, 0x00);
+      uint8_t third = std::exchange(third_, 0x00);
       if (auto code_point = IndexGb18030RangesCodePoint(
               ((first - 0x81) * 10 * 126 * 10) + ((second - 0x30) * 10 * 126) +
               ((third - 0x81) * 10) + byte - 0x30)) {
@@ -502,27 +502,26 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
       }
       return SawError::kYes;
     }
-    if (gb18030_second_) {
+    if (second_) {
       if (byte >= 0x81 && byte <= 0xFE) {
-        gb18030_third_ = byte;
+        third_ = byte;
         return SawError::kNo;
       }
       *saw_error_ = true;
       result.Append(kReplacementCharacter);
-      gb18030_first_ = 0x00;
-      if (ParseByte(std::exchange(gb18030_second_, 0x00), result) ==
-          SawError::kYes) {
+      first_ = 0x00;
+      if (ParseByte(std::exchange(second_, 0x00), result) == SawError::kYes) {
         *saw_error_ = true;
         result.Append(kReplacementCharacter);
       }
       return ParseByte(byte, result);
     }
-    if (gb18030_first_) {
+    if (first_) {
       if (byte >= 0x30 && byte <= 0x39) {
-        gb18030_second_ = byte;
+        second_ = byte;
         return SawError::kNo;
       }
-      uint8_t lead = std::exchange(gb18030_first_, 0x00);
+      uint8_t lead = std::exchange(first_, 0x00);
       uint8_t offset = byte < 0x7F ? 0x40 : 0x41;
       if ((byte >= 0x40 && byte <= 0x7E) || (byte >= 0x80 && byte <= 0xFE)) {
         size_t pointer = (lead - 0x81) * 190 + byte - offset;
@@ -544,7 +543,7 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
       return SawError::kNo;
     }
     if (byte >= 0x81 && byte <= 0xFE) {
-      gb18030_first_ = byte;
+      first_ = byte;
       return SawError::kNo;
     }
     return SawError::kYes;
@@ -552,19 +551,19 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
 
   void Finalize(bool flush, StringBuilder& result) override {
     DCHECK(saw_error_);
-    if (flush && (gb18030_first_ || gb18030_second_ || gb18030_third_)) {
-      gb18030_first_ = 0x00;
-      gb18030_second_ = 0x00;
-      gb18030_third_ = 0x00;
+    if (flush && (first_ || second_ || third_)) {
+      first_ = 0x00;
+      second_ = 0x00;
+      third_ = 0x00;
       *saw_error_ = true;
       result.Append(kReplacementCharacter);
     }
   }
 
  private:
-  uint8_t gb18030_first_ = 0x00;
-  uint8_t gb18030_second_ = 0x00;
-  uint8_t gb18030_third_ = 0x00;
+  uint8_t first_ = 0x00;
+  uint8_t second_ = 0x00;
+  uint8_t third_ = 0x00;
 
   // To share a reference to `saw_error` with `TextCodecCJK::Decoder::Decode`
   // we should keep a pointer to `saw_error`, and use it in `ParseByte` and
@@ -773,10 +772,9 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
         return result.ToString();
       }
     }
-    if (iso2022_jp_second_prepended_byte_ &&
-        ParseByte(
-            *std::exchange(iso2022_jp_second_prepended_byte_, absl::nullopt),
-            result) == SawError::kYes &&
+    if (second_prepended_byte_ &&
+        ParseByte(*std::exchange(second_prepended_byte_, absl::nullopt),
+                  result) == SawError::kYes &&
         stop_on_error) {
       saw_error = true;
       result.Append(kReplacementCharacter);
@@ -804,10 +802,9 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
           return result.ToString();
         }
       }
-      if (iso2022_jp_second_prepended_byte_ &&
-          ParseByte(
-              *std::exchange(iso2022_jp_second_prepended_byte_, absl::nullopt),
-              result) == SawError::kYes &&
+      if (second_prepended_byte_ &&
+          ParseByte(*std::exchange(second_prepended_byte_, absl::nullopt),
+                    result) == SawError::kYes &&
           stop_on_error) {
         saw_error = true;
         result.Append(kReplacementCharacter);
@@ -819,20 +816,20 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
     }
 
     if (flush) {
-      switch (iso2022_jp_decoder_state_) {
-        case Iso2022JpDecoderState::kAscii:
-        case Iso2022JpDecoderState::kRoman:
-        case Iso2022JpDecoderState::kKatakana:
-        case Iso2022JpDecoderState::kLeadByte:
+      switch (decoder_state_) {
+        case State::kAscii:
+        case State::kRoman:
+        case State::kKatakana:
+        case State::kLeadByte:
           break;
-        case Iso2022JpDecoderState::kTrailByte:
-          iso2022_jp_decoder_state_ = Iso2022JpDecoderState::kLeadByte;
+        case State::kTrailByte:
+          decoder_state_ = State::kLeadByte;
           [[fallthrough]];
-        case Iso2022JpDecoderState::kEscapeStart:
+        case State::kEscapeStart:
           saw_error = true;
           result.Append(kReplacementCharacter);
           break;
-        case Iso2022JpDecoderState::kEscape:
+        case State::kEscape:
           saw_error = true;
           result.Append(kReplacementCharacter);
           if (lead_) {
@@ -848,73 +845,73 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
 
  protected:
   SawError ParseByte(uint8_t byte, StringBuilder& result) override {
-    switch (iso2022_jp_decoder_state_) {
-      case Iso2022JpDecoderState::kAscii:
+    switch (decoder_state_) {
+      case State::kAscii:
         if (byte == 0x1B) {
-          iso2022_jp_decoder_state_ = Iso2022JpDecoderState::kEscapeStart;
+          decoder_state_ = State::kEscapeStart;
           break;
         }
         if (byte <= 0x7F && byte != 0x0E && byte != 0x0F && byte != 0x1B) {
-          iso2022_jp_output_ = false;
+          output_ = false;
           result.Append(byte);
           break;
         }
-        iso2022_jp_output_ = false;
+        output_ = false;
         return SawError::kYes;
-      case Iso2022JpDecoderState::kRoman:
+      case State::kRoman:
         if (byte == 0x1B) {
-          iso2022_jp_decoder_state_ = Iso2022JpDecoderState::kEscapeStart;
+          decoder_state_ = State::kEscapeStart;
           break;
         }
         if (byte == 0x5C) {
-          iso2022_jp_output_ = false;
+          output_ = false;
           result.Append(static_cast<UChar>(kYenSignCharacter));
           break;
         }
         if (byte == 0x7E) {
-          iso2022_jp_output_ = false;
+          output_ = false;
           result.Append(static_cast<UChar>(kOverlineCharacter));
           break;
         }
         if (byte <= 0x7F && byte != 0x0E && byte != 0x0F && byte != 0x1B &&
             byte != 0x5C && byte != 0x7E) {
-          iso2022_jp_output_ = false;
+          output_ = false;
           result.Append(byte);
           break;
         }
-        iso2022_jp_output_ = false;
+        output_ = false;
         return SawError::kYes;
-      case Iso2022JpDecoderState::kKatakana:
+      case State::kKatakana:
         if (byte == 0x1B) {
-          iso2022_jp_decoder_state_ = Iso2022JpDecoderState::kEscapeStart;
+          decoder_state_ = State::kEscapeStart;
           break;
         }
         if (byte >= 0x21 && byte <= 0x5F) {
-          iso2022_jp_output_ = false;
+          output_ = false;
           result.Append(static_cast<UChar>(0xFF61 - 0x21 + byte));
           break;
         }
-        iso2022_jp_output_ = false;
+        output_ = false;
         return SawError::kYes;
-      case Iso2022JpDecoderState::kLeadByte:
+      case State::kLeadByte:
         if (byte == 0x1B) {
-          iso2022_jp_decoder_state_ = Iso2022JpDecoderState::kEscapeStart;
+          decoder_state_ = State::kEscapeStart;
           break;
         }
         if (byte >= 0x21 && byte <= 0x7E) {
-          iso2022_jp_output_ = false;
+          output_ = false;
           lead_ = byte;
-          iso2022_jp_decoder_state_ = Iso2022JpDecoderState::kTrailByte;
+          decoder_state_ = State::kTrailByte;
           break;
         }
-        iso2022_jp_output_ = false;
+        output_ = false;
         return SawError::kYes;
-      case Iso2022JpDecoderState::kTrailByte:
+      case State::kTrailByte:
         if (byte == 0x1B) {
-          iso2022_jp_decoder_state_ = Iso2022JpDecoderState::kEscapeStart;
+          decoder_state_ = State::kEscapeStart;
           return SawError::kYes;
         }
-        iso2022_jp_decoder_state_ = Iso2022JpDecoderState::kLeadByte;
+        decoder_state_ = State::kLeadByte;
         if (byte >= 0x21 && byte <= 0x7E) {
           uint16_t pointer = (lead_ - 0x21) * 94 + byte - 0x21;
           if (auto code_point = FindCodePointInJis0208(pointer)) {
@@ -924,40 +921,40 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
           return SawError::kYes;
         }
         return SawError::kYes;
-      case Iso2022JpDecoderState::kEscapeStart:
+      case State::kEscapeStart:
         if (byte == 0x24 || byte == 0x28) {
           lead_ = byte;
-          iso2022_jp_decoder_state_ = Iso2022JpDecoderState::kEscape;
+          decoder_state_ = State::kEscape;
           break;
         }
         prepended_byte_ = byte;
-        iso2022_jp_output_ = false;
-        iso2022_jp_decoder_state_ = iso2022_jp_decoder_output_state_;
+        output_ = false;
+        decoder_state_ = decoder_output_state_;
         return SawError::kYes;
-      case Iso2022JpDecoderState::kEscape: {
+      case State::kEscape: {
         uint8_t lead = std::exchange(lead_, 0x00);
-        absl::optional<Iso2022JpDecoderState> state;
+        absl::optional<State> state;
         if (lead == 0x28) {
           if (byte == 0x42)
-            state = Iso2022JpDecoderState::kAscii;
+            state = State::kAscii;
           else if (byte == 0x4A)
-            state = Iso2022JpDecoderState::kRoman;
+            state = State::kRoman;
           else if (byte == 0x49)
-            state = Iso2022JpDecoderState::kKatakana;
+            state = State::kKatakana;
         } else if (lead == 0x24 && (byte == 0x40 || byte == 0x42)) {
-          state = Iso2022JpDecoderState::kLeadByte;
+          state = State::kLeadByte;
         }
         if (state) {
-          iso2022_jp_decoder_state_ = *state;
-          iso2022_jp_decoder_output_state_ = *state;
-          if (std::exchange(iso2022_jp_output_, true))
+          decoder_state_ = *state;
+          decoder_output_state_ = *state;
+          if (std::exchange(output_, true))
             return SawError::kYes;
           break;
         }
         prepended_byte_ = lead;
-        iso2022_jp_second_prepended_byte_ = byte;
-        iso2022_jp_output_ = false;
-        iso2022_jp_decoder_state_ = iso2022_jp_decoder_output_state_;
+        second_prepended_byte_ = byte;
+        output_ = false;
+        decoder_state_ = decoder_output_state_;
         return SawError::kYes;
       }
     }
@@ -965,7 +962,7 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
   }
 
  private:
-  enum class Iso2022JpDecoderState {
+  enum class State {
     kAscii,
     kRoman,
     kKatakana,
@@ -974,12 +971,10 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
     kEscapeStart,
     kEscape
   };
-  Iso2022JpDecoderState iso2022_jp_decoder_state_ =
-      Iso2022JpDecoderState::kAscii;
-  Iso2022JpDecoderState iso2022_jp_decoder_output_state_ =
-      Iso2022JpDecoderState::kAscii;
-  bool iso2022_jp_output_ = false;
-  absl::optional<uint8_t> iso2022_jp_second_prepended_byte_;
+  State decoder_state_ = State::kAscii;
+  State decoder_output_state_ = State::kAscii;
+  bool output_ = false;
+  absl::optional<uint8_t> second_prepended_byte_;
 };
 
 // https://encoding.spec.whatwg.org/#shift_jis-decoder
