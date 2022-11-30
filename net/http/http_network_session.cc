@@ -297,8 +297,6 @@ base::Value HttpNetworkSession::QuicInfoToValue() const {
            static_cast<int>(quic_params->reduced_ping_timeout.InSeconds()));
   dict.Set("retry_without_alt_svc_on_quic_errors",
            quic_params->retry_without_alt_svc_on_quic_errors);
-  dict.Set("disable_bidirectional_streams",
-           quic_params->disable_bidirectional_streams);
   dict.Set("close_sessions_on_ip_change",
            quic_params->close_sessions_on_ip_change);
   dict.Set("goaway_sessions_on_ip_change",

@@ -159,8 +159,6 @@ struct NET_EXPORT QuicParams {
   // If true, the quic stream factory may race connection from stale dns
   // result with the original dns resolution
   bool race_stale_dns_on_connection = false;
-  // If true, bidirectional streams over QUIC will be disabled.
-  bool disable_bidirectional_streams = false;
   // If true, estimate the initial RTT for QUIC connections based on network.
   bool estimate_initial_rtt = false;
   // If true, client headers will include HTTP/2 stream dependency info

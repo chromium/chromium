@@ -2016,12 +2016,6 @@ class HttpStreamFactoryBidirectionalQuicTest
 
   void TearDown() override { session_.reset(); }
 
-  // Disable bidirectional stream over QUIC. This should be invoked before
-  // Initialize().
-  void DisableQuicBidirectionalStream() {
-    quic_context_.params()->disable_bidirectional_streams = true;
-  }
-
   void Initialize() {
     params_.enable_quic = true;
     quic_context_.params()->supported_versions =
@@ -2208,49 +2202,6 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
       0, GetSocketPoolGroupCount(session()->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   EXPECT_TRUE(waiter.used_proxy_info().is_direct());
-}
-
-// Tests that when QUIC is not enabled for bidirectional streaming, HTTP/2 is
-// used instead.
-TEST_P(HttpStreamFactoryBidirectionalQuicTest,
-       RequestBidirectionalStreamImplQuicNotEnabled) {
-  // Make the http job fail.
-  auto http_job_data = std::make_unique<StaticSocketDataProvider>();
-  MockConnect failed_connect(ASYNC, ERR_CONNECTION_REFUSED);
-  http_job_data->set_connect_data(failed_connect);
-  socket_factory().AddSocketDataProvider(http_job_data.get());
-  SSLSocketDataProvider ssl_data(ASYNC, OK);
-  socket_factory().AddSSLSocketDataProvider(&ssl_data);
-
-  // Set up QUIC as alternative_service.
-  DisableQuicBidirectionalStream();
-  Initialize();
-  AddQuicAlternativeService();
-
-  // Now request a stream.
-  SSLConfig ssl_config;
-  HttpRequestInfo request_info;
-  request_info.method = "GET";
-  request_info.url = default_url_;
-  request_info.load_flags = 0;
-  request_info.traffic_annotation =
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  StreamRequestWaiter waiter;
-  std::unique_ptr<HttpStreamRequest> request(
-      session()->http_stream_factory()->RequestBidirectionalStreamImpl(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
-          /* enable_ip_based_pooling = */ true,
-          /* enable_alternative_services = */ true, NetLogWithSource()));
-
-  waiter.WaitForStream();
-  EXPECT_TRUE(waiter.stream_done());
-  EXPECT_FALSE(waiter.websocket_stream());
-  ASSERT_FALSE(waiter.stream());
-  ASSERT_FALSE(waiter.bidirectional_stream_impl());
-  // Since the alternative service job is not started, we will get the error
-  // from the http job.
-  ASSERT_THAT(waiter.error_status(), IsError(ERR_CONNECTION_REFUSED));
 }
 
 // Tests that if Http job fails, but Quic job succeeds, we return

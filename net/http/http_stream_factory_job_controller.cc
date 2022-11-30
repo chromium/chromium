@@ -1252,13 +1252,6 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     if (!session_->IsQuicEnabled())
       continue;
 
-    if (stream_type == HttpStreamRequest::BIDIRECTIONAL_STREAM &&
-        session_->context()
-            .quic_context->params()
-            ->disable_bidirectional_streams) {
-      continue;
-    }
-
     if (!original_url.SchemeIs(url::kHttpsScheme))
       continue;
 

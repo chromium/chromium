@@ -86,8 +86,6 @@ const char kQuicMigrateSessionsEarlyV2[] = "migrate_sessions_early_v2";
 const char kQuicRetryOnAlternateNetworkBeforeHandshake[] =
     "retry_on_alternate_network_before_handshake";
 const char kQuicRaceStaleDNSOnConnection[] = "race_stale_dns_on_connection";
-const char kQuicDisableBidirectionalStreams[] =
-    "quic_disable_bidirectional_streams";
 const char kQuicHostWhitelist[] = "host_whitelist";
 const char kQuicEnableSocketRecvOptimization[] =
     "enable_socket_recv_optimization";
@@ -607,10 +605,6 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       quic_params->disable_tls_zero_rtt =
           quic_args.FindBool(kDisableTlsZeroRtt)
               .value_or(quic_params->disable_tls_zero_rtt);
-
-      quic_params->disable_bidirectional_streams =
-          quic_args.FindBool(kQuicDisableBidirectionalStreams)
-              .value_or(quic_params->disable_bidirectional_streams);
 
       const std::string* quic_host_allowlist =
           quic_args.FindString(kQuicHostWhitelist);
