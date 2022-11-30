@@ -962,12 +962,17 @@ TEST_F(PrivacySandboxSettingLocalOverrideTest, FollowsOverrideBehavior) {
 
 /**
  * A test fixture for privacy sandbox M1 for Topics.
+ *
+ * TODO(crbug.com/1378703): Add tests for Incognito and supervised accounts to
+ * see that API is disabled for them.  The tests could be potentially also added
+ * in privacy_sandbox_settings_delegate_unittest.cc
  */
 class PrivacySandboxSettingsTopicsM1Test : public PrivacySandboxSettingsTest {
  public:
   void InitializeFeaturesBeforeStart() override {
     feature_list_.InitWithFeatureState(
         privacy_sandbox::kPrivacySandboxSettings4, GetParam());
+    mock_delegate()->SetUpDefaultResponse(/*restricted= */ false);
   }
 
   void InitializePrefsBeforeStart() override {

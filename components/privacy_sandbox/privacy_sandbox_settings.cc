@@ -97,8 +97,7 @@ PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 bool PrivacySandboxSettings::IsTopicsAllowed() const {
   // M1 specific
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    return !incognito_profile_ &&
-           pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
+    return IsM1PrivacySandboxApiEnabled(prefs::kPrivacySandboxM1TopicsEnabled);
   }
 
   // Topics API calculation should be prevented if the user has blocked 3PC
@@ -372,7 +371,7 @@ bool PrivacySandboxSettings::IsTrustTokensAllowed() {
   return IsPrivacySandboxEnabled();
 }
 
-bool PrivacySandboxSettings::IsPrivacySandboxRestricted() {
+bool PrivacySandboxSettings::IsPrivacySandboxRestricted() const {
   return delegate_->IsPrivacySandboxRestricted();
 }
 
@@ -440,6 +439,29 @@ bool PrivacySandboxSettings::IsSiteDataAllowed(const GURL& url) const {
   return host_content_settings_map_->GetContentSetting(
              url, GURL(), ContentSettingsType::COOKIES) !=
          ContentSetting::CONTENT_SETTING_BLOCK;
+}
+
+bool PrivacySandboxSettings::IsM1PrivacySandboxApiEnabled(
+    const std::string& pref_name) const {
+  DCHECK(pref_name == prefs::kPrivacySandboxM1TopicsEnabled ||
+         pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
+         pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
+
+  if (incognito_profile_)
+    return false;
+
+  if (IsPrivacySandboxRestricted())
+    return false;
+
+  // For Measurement and Relevance APIs, we explicitly do not require the
+  // underlying pref to be enabled if there is a local flag enabling the APIs to
+  // allow for local testing.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting)) {
+    return true;
+  }
+
+  return pref_service_->GetBoolean(pref_name);
 }
 
 }  // namespace privacy_sandbox

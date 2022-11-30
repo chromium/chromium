@@ -39,7 +39,7 @@ class MockPrivacySandboxSettingsDelegate
       return restricted;
     });
   }
-  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
+  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
 };
 
 // Define an additional content setting value to simulate an unmanaged default

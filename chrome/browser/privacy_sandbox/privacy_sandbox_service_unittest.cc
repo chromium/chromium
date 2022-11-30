@@ -99,7 +99,7 @@ class MockPrivacySandboxSettings
       return false;
     });
   }
-  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
+  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
 };
 
 struct PromptTestState {
