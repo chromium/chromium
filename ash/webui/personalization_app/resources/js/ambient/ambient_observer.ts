@@ -91,4 +91,6 @@ export class AmbientObserver implements AmbientObserverInterface {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setGooglePhotosAlbumsPreviewsAction(previews));
   }
+
+  onScreenSaverClosed() {}
 }

@@ -6,11 +6,12 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_
 
 #include "ash/constants/ambient_animation_theme.h"
-#include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,7 +27,8 @@ class Profile;
 namespace ash::personalization_app {
 
 class PersonalizationAppAmbientProviderImpl
-    : public PersonalizationAppAmbientProvider {
+    : public PersonalizationAppAmbientProvider,
+      public AmbientUiModelObserver {
  public:
   explicit PersonalizationAppAmbientProviderImpl(content::WebUI* web_ui);
 
@@ -40,6 +42,9 @@ class PersonalizationAppAmbientProviderImpl
   void BindInterface(
       mojo::PendingReceiver<ash::personalization_app::mojom::AmbientProvider>
           receiver) override;
+
+  // AmbientUiModelObserver:
+  void OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility) override;
 
   // ash::personalization_app::mojom:AmbientProvider:
   void IsAmbientModeEnabled(IsAmbientModeEnabledCallback callback) override;
@@ -101,7 +106,8 @@ class PersonalizationAppAmbientProviderImpl
 
   void FetchGooglePhotosAlbumsPreviews(
       const std::vector<std::string>& album_ids);
-  void OnGooglePhotosAlbumsPreviewsFetched(const std::vector<GURL>& preview_urls);
+  void OnGooglePhotosAlbumsPreviewsFetched(
+      const std::vector<GURL>& preview_urls);
 
   ash::PersonalAlbum* FindPersonalAlbumById(const std::string& album_id);
 
@@ -152,6 +158,9 @@ class PersonalizationAppAmbientProviderImpl
 
   // A flag to record if the user has seen the ambient mode page.
   bool page_viewed_ = false;
+
+  base::ScopedObservation<AmbientUiModel, AmbientUiModelObserver>
+      ambient_ui_model_observer_{this};
 
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       write_weak_factory_{this};
