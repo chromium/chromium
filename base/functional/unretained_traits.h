@@ -12,6 +12,7 @@
 // Various opaque system types that should still be usable with the base
 // callback system. Please keep sorted.
 struct DBusMessage;
+struct HWND__;
 struct VkImage_T;
 struct VkDeviceMemory_T;
 struct VkBuffer_T;
@@ -64,6 +65,8 @@ inline constexpr bool IsIncompleteTypeSafeForUnretained<R(Args...)> = true;
 template <>
 inline constexpr bool IsIncompleteTypeSafeForUnretained<DBusMessage> = true;
 template <>
+inline constexpr bool IsIncompleteTypeSafeForUnretained<HWND__> = true;
+template <>
 inline constexpr bool IsIncompleteTypeSafeForUnretained<VkBuffer_T> = true;
 template <>
 inline constexpr bool IsIncompleteTypeSafeForUnretained<VkImage_T> = true;
@@ -113,14 +116,14 @@ struct TypeSupportsUnretained {
 // - non-test code
 // - non-official code (because these builds don't run as part of the default CQ
 //   and are slower due to PGO and LTO)
-// - Linux
+// - Linux or Windows
 //
 // to make this easier to land without potentially breaking the tree.
 //
 // TODO(https://crbug.com/1392872): Enable this on all platforms, then in
 // official builds, and then in non-test code as well.
 #if !defined(UNIT_TEST) && !defined(OFFICIAL_BUILD)
-#if BUILDFLAG(IS_LINUX) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     defined(FORCE_UNRETAINED_COMPLETENESS_CHECKS_FOR_TESTS)
   static_assert(IsCompleteTypeV<T> ||
                     IsIncompleteTypeSafeForUnretained<std::remove_cv_t<T>>,
