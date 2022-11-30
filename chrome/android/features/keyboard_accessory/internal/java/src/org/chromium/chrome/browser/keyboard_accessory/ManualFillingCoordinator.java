@@ -189,4 +189,9 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     public int getKeyboardExtensionHeight() {
         return mMediator != null ? mMediator.getKeyboardExtensionHeight() : 0;
     }
+
+    @Override
+    public void forceShowForTesting() {
+        mMediator.showWhenKeyboardIsVisible();
+    }
 }
