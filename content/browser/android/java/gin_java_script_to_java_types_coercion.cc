@@ -221,19 +221,30 @@ jvalue CoerceJavaScriptBooleanToJavaValue(JNIEnv* env,
                                         .Release()
                                   : nullptr;
       break;
+
+    // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to 0. Spec
+    // requires converting to 0 or 1.
     case JavaType::TypeByte:
-    case JavaType::TypeChar:
-    case JavaType::TypeShort:
-    case JavaType::TypeInt:
-    case JavaType::TypeLong:
-    case JavaType::TypeFloat:
-    case JavaType::TypeDouble: {
-      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to 0. Spec
-      // requires converting to 0 or 1.
-      jvalue null_value = {0};
-      result = null_value;
+      result.b = 0;
       break;
-    }
+    case JavaType::TypeChar:
+      result.c = 0;
+      break;
+    case JavaType::TypeShort:
+      result.s = 0;
+      break;
+    case JavaType::TypeInt:
+      result.i = 0;
+      break;
+    case JavaType::TypeLong:
+      result.j = 0;
+      break;
+    case JavaType::TypeFloat:
+      result.f = 0;
+      break;
+    case JavaType::TypeDouble:
+      result.d = 0;
+      break;
     case JavaType::TypeArray:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires raising a JavaScript exception.
@@ -263,18 +274,27 @@ jvalue CoerceJavaScriptStringToJavaValue(JNIEnv* env,
       // requires handling java.lang.Object.
       result.l = nullptr;
       break;
+
+    // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to 0. Spec
+    // requires using valueOf() method of corresponding object type.
     case JavaType::TypeByte:
-    case JavaType::TypeShort:
-    case JavaType::TypeInt:
-    case JavaType::TypeLong:
-    case JavaType::TypeFloat:
-    case JavaType::TypeDouble: {
-      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to 0. Spec
-      // requires using valueOf() method of corresponding object type.
-      jvalue null_value = {0};
-      result = null_value;
+      result.b = 0;
       break;
-    }
+    case JavaType::TypeShort:
+      result.s = 0;
+      break;
+    case JavaType::TypeInt:
+      result.i = 0;
+      break;
+    case JavaType::TypeLong:
+      result.j = 0;
+      break;
+    case JavaType::TypeFloat:
+      result.f = 0;
+      break;
+    case JavaType::TypeDouble:
+      result.d = 0;
+      break;
     case JavaType::TypeChar:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to 0. Spec
       // requires using java.lang.Short.decode().
@@ -414,16 +434,26 @@ jvalue CoerceJavaScriptNullOrUndefinedToJavaValue(JNIEnv* env,
                      : nullptr;
       break;
     case JavaType::TypeByte:
-    case JavaType::TypeChar:
-    case JavaType::TypeShort:
-    case JavaType::TypeInt:
-    case JavaType::TypeLong:
-    case JavaType::TypeFloat:
-    case JavaType::TypeDouble: {
-      jvalue null_value = {0};
-      result = null_value;
+      result.b = 0;
       break;
-    }
+    case JavaType::TypeChar:
+      result.c = 0;
+      break;
+    case JavaType::TypeShort:
+      result.s = 0;
+      break;
+    case JavaType::TypeInt:
+      result.i = 0;
+      break;
+    case JavaType::TypeLong:
+      result.j = 0;
+      break;
+    case JavaType::TypeFloat:
+      result.f = 0;
+      break;
+    case JavaType::TypeDouble:
+      result.d = 0;
+      break;
     case JavaType::TypeBoolean:
       result.z = JNI_FALSE;
       break;
@@ -609,19 +639,31 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
                      ? ConvertUTF8ToJavaString(env, kUndefined).Release()
                      : nullptr;
       break;
+
+    // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to 0. Spec
+    // requires raising a JavaScript exception.
     case JavaType::TypeByte:
-    case JavaType::TypeShort:
-    case JavaType::TypeInt:
-    case JavaType::TypeLong:
-    case JavaType::TypeFloat:
-    case JavaType::TypeDouble:
-    case JavaType::TypeChar: {
-      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to 0. Spec
-      // requires raising a JavaScript exception.
-      jvalue null_value = {0};
-      result = null_value;
+      result.b = 0;
       break;
-    }
+    case JavaType::TypeShort:
+      result.s = 0;
+      break;
+    case JavaType::TypeInt:
+      result.i = 0;
+      break;
+    case JavaType::TypeLong:
+      result.j = 0;
+      break;
+    case JavaType::TypeFloat:
+      result.f = 0;
+      break;
+    case JavaType::TypeDouble:
+      result.d = 0;
+      break;
+    case JavaType::TypeChar:
+      result.c = 0;
+      break;
+
     case JavaType::TypeBoolean:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to false. Spec
       // requires raising a JavaScript exception.
