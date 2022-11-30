@@ -112,7 +112,7 @@ void NamedMojoIpcServerBase::StartServer() {
       base::SequenceBound<DelegateProxy>(
           base::SequencedTaskRunner::GetCurrentDefault(),
           weak_factory_.GetWeakPtr()),
-      io_sequence_);
+      io_sequence_, server_name_);
   server_started_ = true;
   CreateServerEndpoint();
 }

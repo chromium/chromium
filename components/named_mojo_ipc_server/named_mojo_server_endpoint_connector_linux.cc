@@ -85,7 +85,8 @@ void NamedMojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
 base::SequenceBound<NamedMojoServerEndpointConnector>
 NamedMojoServerEndpointConnector::Create(
     base::SequenceBound<Delegate> delegate,
-    scoped_refptr<base::SequencedTaskRunner> io_sequence) {
+    scoped_refptr<base::SequencedTaskRunner> io_sequence,
+    const mojo::NamedPlatformChannel::ServerName& /*server_name*/) {
   return base::SequenceBound<NamedMojoServerEndpointConnectorLinux>(
       io_sequence, std::move(delegate));
 }

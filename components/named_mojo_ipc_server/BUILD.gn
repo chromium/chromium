@@ -15,6 +15,8 @@ static_library("named_mojo_ipc_server") {
     "ipc_server.h",
     "named_mojo_ipc_server.cc",
     "named_mojo_ipc_server.h",
+    "named_mojo_ipc_server_client_util.cc",
+    "named_mojo_ipc_server_client_util.h",
     "named_mojo_ipc_util.cc",
     "named_mojo_ipc_util.h",
     "named_mojo_server_endpoint_connector.h",
@@ -34,6 +36,11 @@ static_library("named_mojo_ipc_server") {
     sources += [
       "named_mojo_server_endpoint_connector_win.cc",
       "named_mojo_server_endpoint_connector_win.h",
+    ]
+  } else if (is_mac) {
+    sources += [
+      "named_mojo_server_endpoint_connector_mac.cc",
+      "named_mojo_server_endpoint_connector_mac.h",
     ]
   } else {
     sources += [ "named_mojo_server_endpoint_connector_unsupported.cc" ]
@@ -62,8 +69,8 @@ source_set("unit_tests") {
 
   sources = []
 
-  # Disable MojoIpcServerTest on unsupported platforms (i.e. Mac).
-  if (is_linux || is_win) {
+  # Disable MojoIpcServerTest on unsupported platforms.
+  if (is_linux || is_win || is_mac) {
     sources += [ "named_mojo_ipc_server_unittest.cc" ]
   }
   deps = [

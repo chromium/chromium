@@ -21,6 +21,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
@@ -121,7 +122,8 @@ void NamedMojoServerEndpointConnectorWin::OnError() {
 base::SequenceBound<NamedMojoServerEndpointConnector>
 NamedMojoServerEndpointConnector::Create(
     base::SequenceBound<Delegate> delegate,
-    scoped_refptr<base::SequencedTaskRunner> io_sequence) {
+    scoped_refptr<base::SequencedTaskRunner> io_sequence,
+    const mojo::NamedPlatformChannel::ServerName& /*server_name*/) {
   return base::SequenceBound<NamedMojoServerEndpointConnectorWin>(
       io_sequence, std::move(delegate));
 }

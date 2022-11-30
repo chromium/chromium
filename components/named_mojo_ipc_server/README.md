@@ -51,13 +51,18 @@ In the client:
 ```cpp
 void ConnectToServer() {
 mojo::PlatformChannelEndpoint endpoint =
-  mojo::NamedPlatformChannel::ConnectToServer("my_server_name");
+      named_mojo_ipc_server::ConnectToServer(server_name);
 auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
 mojo::Remote<mojom::MyInterface> remote(
   mojo::PendingRemote<mojom::MyInterface>(
     invitation.ExtractMessagePipe(kMessagePipeId), 0));
 }
 ```
+
+Note that for compatibility with all supported platforms clients should use
+`named_mojo_ipc_server::ConnectToServer` instead of
+`mojo::NamedPlatformChannel::ConnectToServer`. Some platforms require
+additional connection brokerage steps which are abstracted by the former.
 
 On Windows, the server needs to have the following access rights on the client
 process: `PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION`.

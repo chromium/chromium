@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -20,7 +21,8 @@ namespace named_mojo_ipc_server {
 base::SequenceBound<NamedMojoServerEndpointConnector>
 NamedMojoServerEndpointConnector::Create(
     base::SequenceBound<Delegate>,
-    scoped_refptr<base::SequencedTaskRunner>) {
+    scoped_refptr<base::SequencedTaskRunner>,
+    const mojo::NamedPlatformChannel::ServerName&) {
   return base::SequenceBound<NamedMojoServerEndpointConnector>();
 }
 

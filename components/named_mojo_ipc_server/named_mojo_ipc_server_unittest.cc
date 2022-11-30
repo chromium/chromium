@@ -25,6 +25,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
 #include "components/named_mojo_ipc_server/testing.test-mojom.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -359,7 +360,7 @@ MULTIPROCESS_TEST_MAIN(EchoClient) {
   auto server_name =
       cmd_line->GetSwitchValueNative(kClientProcessServerNameSwitch);
   EXPECT_FALSE(server_name.empty());
-  auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(server_name);
+  mojo::PlatformChannelEndpoint endpoint = ConnectToServer(server_name);
   if (!endpoint.is_valid()) {
     return kInvalidEndpointExitCode;
   }
