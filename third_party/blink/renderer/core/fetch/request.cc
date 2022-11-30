@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -768,6 +769,14 @@ Request* Request::CreateRequestWithRequestOrString(
     // "Let |reader| be the result of getting reader from |dummyStream|."
     // "Read all bytes from |dummyStream| with |reader|."
     input_request->BodyBuffer()->CloseAndLockAndDisturb();
+  }
+
+  // Back/forward-cache is interested in use of the "Authorization" header.
+  if (r->getHeaders() &&
+      r->getHeaders()->has("Authorization", exception_state)) {
+    execution_context->GetScheduler()->RegisterStickyFeature(
+        SchedulingPolicy::Feature::kAuthorizationHeader,
+        {SchedulingPolicy::DisableBackForwardCache()});
   }
 
   // "Return |r|."

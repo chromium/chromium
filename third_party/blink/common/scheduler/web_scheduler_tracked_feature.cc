@@ -123,6 +123,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"KeepaliveRequest", "requests with keepalive set"};
     case WebSchedulerTrackedFeature::kDummy:
       return {"Dummy", "Dummy for testing"};
+    case WebSchedulerTrackedFeature::kAuthorizationHeader:
+      return {"AuthorizationHeader", "Authorization header used"};
   }
   return {};
 }
@@ -209,7 +211,8 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kInjectedJavascript,
       WebSchedulerTrackedFeature::kInjectedStyleSheet,
       WebSchedulerTrackedFeature::kKeepaliveRequest,
-      WebSchedulerTrackedFeature::kDummy);
+      WebSchedulerTrackedFeature::kDummy,
+      WebSchedulerTrackedFeature::kAuthorizationHeader);
   return features;
 }
 

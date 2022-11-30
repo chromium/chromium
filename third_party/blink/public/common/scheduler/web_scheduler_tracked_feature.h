@@ -120,12 +120,17 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // This should be used only for testing.
   kDummy = 58,
   kKeepaliveRequest = 59,
+  // An RPC has been made using the "Authorization" header. We record this
+  // whenever we see it but we only care about this if the frame it was made
+  // from is same-origin with the main frame and the main frame used
+  // "Cache-Control: no-store".
+  kAuthorizationHeader = 60,
 
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
   // NB: This enum is used in a bitmask, so kMaxValue must be less than 64.
-  kMaxValue = kKeepaliveRequest,
+  kMaxValue = kAuthorizationHeader,
 };
 
 using WebSchedulerTrackedFeatures =

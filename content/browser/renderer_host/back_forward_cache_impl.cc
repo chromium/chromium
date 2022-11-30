@@ -210,6 +210,9 @@ constexpr WebSchedulerTrackedFeatures kAllowedFeatures(
     // We don't block on subresource cache-control:no-store or no-cache.
     WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
     WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
+    // We only record this if "Cache-Control: no-store" header is present on the
+    // main frame.
+    WebSchedulerTrackedFeature::kAuthorizationHeader,
     // TODO(crbug.com/1357482): Figure out if this should be allowed.
     WebSchedulerTrackedFeature::kWebNfc);
 
@@ -903,6 +906,18 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     if (!ShouldIgnoreBlocklists()) {
       result.NoDueToFeatures(banned_features);
     }
+  }
+  // If the main document had CCNS and this document is same-origin with the
+  // main document and used the "Authorization" header then add that reason.
+  // This does not use `IsSameOriginForTreeResult` because we want to be more
+  // conservative and react to *any* same-origin frame using it.
+  if (root_rfh_->GetBackForwardCacheDisablingFeatures().Has(
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore) &&
+      rfh->GetLastCommittedOrigin().IsSameOriginWith(
+          root_rfh_->GetLastCommittedOrigin()) &&
+      rfh->GetBackForwardCacheDisablingFeatures().Has(
+          WebSchedulerTrackedFeature::kAuthorizationHeader)) {
+    result.NoDueToFeatures(WebSchedulerTrackedFeature::kAuthorizationHeader);
   }
 }
 

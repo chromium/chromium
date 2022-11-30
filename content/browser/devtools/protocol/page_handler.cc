@@ -1688,6 +1688,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       // This is a test only reason and should never be called.
       NOTREACHED();
       return Page::BackForwardCacheNotRestoredReasonEnum::Dummy;
+    case WebSchedulerTrackedFeature::kAuthorizationHeader:
+      return Page::BackForwardCacheNotRestoredReasonEnum::AuthorizationHeader;
   }
 }
 
@@ -1900,6 +1902,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kInjectedJavascript:
     case WebSchedulerTrackedFeature::kDocumentLoaded:
     case WebSchedulerTrackedFeature::kDummy:
+    case WebSchedulerTrackedFeature::kAuthorizationHeader:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
   }
 }

@@ -8,12 +8,14 @@
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 // This file contains back-/forward-cache tests for the
 // `Cache-control: no-store` header. It was forked from
@@ -27,6 +29,7 @@ namespace content {
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 using NotRestoredReasons =
     BackForwardCacheCanStoreDocumentResult::NotRestoredReasons;
+using BlocklistedFeature = blink::scheduler::WebSchedulerTrackedFeature;
 
 namespace {
 
@@ -744,6 +747,225 @@ IN_PROC_BROWSER_TEST_F(
                   BlockListedFeatures()));
 }
 
+namespace {
+// Causes a fetch using the "Authorization" header to start and complete in the
+// target frame.
+void UseAuthorizationHeader(const ToRenderFrameHost& execution_target,
+                            GURL url) {
+  ASSERT_EQ(42, EvalJs(execution_target, JsReplace(
+                                             R"(
+      fetch($1, {headers: {Authorization: 'foo'}})
+          .then(p   => {
+              // Ensure that we drain the pipe to avoid blocking on network
+              // activity.
+              p.text();
+              return 42;
+          })
+      )",
+                                             url)));
+}
+
+// Creates an iframe in the target frame with this url. It waits until the frame
+// has loaded.
+void CreateIframe(const ToRenderFrameHost& execution_target, GURL url) {
+  ASSERT_EQ(42, EvalJs(execution_target, JsReplace(
+                                             R"(
+      const iframeElement = document.createElement("iframe");
+      iframeElement.src = $1;
+      document.body.appendChild(iframeElement);
+      new Promise(r => {
+          iframeElement.onload = () => {r(42)};
+      });
+      )",
+                                             url)));
+}
+}  // namespace
+
+// Test that a page without CCNS that makes a fetch with the "Authorization"
+// header does not log the header.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       AuthorizationHeaderNotLogged) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Load the document.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Do a fetch with the "Authorization" header in the main frame.
+  UseAuthorizationHeader(shell(), url_a);
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Check that the document is cached.
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Go back and check that it was restored.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
+// Test that a page with CCNS that makes a fetch with the "Authorization" header
+// logs the header.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       AuthorizationHeaderLoggedMainFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a_no_store(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_a_2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Load the document and specify no-store for the main resource.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a_no_store));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Do a fetch with the "Authorization" header in the main frame.
+  UseAuthorizationHeader(shell(), url_a_2);
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Wait until the first document has been destroyed.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // Go back and check that it was not restored.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {BlocklistedFeature::kMainResourceHasCacheControlNoStore,
+                     BlocklistedFeature::kAuthorizationHeader},
+                    {}, {}, {}, FROM_HERE);
+}
+
+// Test that a page with CCNS that makes a fetch with the "Authorization" header
+// in a same-as-root-origin subframe of a cross-origin subframe logs the header.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       AuthorizationHeaderSameOriginSubFrameLogged) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a_no_store(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_a_2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Load the document and specify no-store for the main resource.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a_no_store));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Create a cross-origin iframe with same-as-root-origin iframe inside that
+  // and do a fetch with the "Authorization" header in that grand-child iframe.
+  CreateIframe(rfh_a.get(), url_b);
+  CreateIframe(DescendantRenderFrameHostImplAt(rfh_a.get(), {0}), url_a_2);
+
+  UseAuthorizationHeader(DescendantRenderFrameHostImplAt(rfh_a.get(), {0, 0}),
+                         url_a_2);
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Wait until the first document has been destroyed.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // Go back and check that it was not cached and that both reasons are present.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {BlocklistedFeature::kMainResourceHasCacheControlNoStore,
+                     BlocklistedFeature::kAuthorizationHeader},
+                    {}, {}, {}, FROM_HERE);
+}
+
+// Test that a page with CCNS that makes a fetch with the "Authorization" header
+// in a same-origin subframe logs the header in the correct place in the tree of
+// reasons.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       AuthorizationHeaderSubFrameTree) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a_no_store(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_a_2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Load the document and specify no-store for the main resource.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a_no_store));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Create a same-origin iframe do a fetch with the "Authorization" header.
+  CreateIframe(rfh_a.get(), url_a_2);
+
+  UseAuthorizationHeader(DescendantRenderFrameHostImplAt(rfh_a.get(), {0}),
+                         url_a_2);
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Wait until the first document has been destroyed.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // Go back and check that it was not cached and that both reasons are present.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {BlocklistedFeature::kMainResourceHasCacheControlNoStore,
+                     BlocklistedFeature::kAuthorizationHeader},
+                    {}, {}, {}, FROM_HERE);
+
+  auto subframe_result = MatchesNotRestoredReasons(
+      blink::mojom::BFCacheBlocked::kYes,
+      MatchesSameOriginDetails(
+          /*id=*/"", /*name=*/"", /*src=*/url_a_2.spec(),
+          /*url=*/url_a_2.spec(),
+          /*reasons=*/{"AuthorizationHeader"},
+          /*children=*/{}));
+  EXPECT_THAT(current_frame_host()->NotRestoredReasonsForTesting(),
+              MatchesNotRestoredReasons(
+                  blink::mojom::BFCacheBlocked::kYes,
+                  MatchesSameOriginDetails(
+                      /*id=*/"", /*name=*/"", /*src=*/"",
+                      /*url=*/url_a_no_store.spec(),
+                      /*reasons=*/{"MainResourceHasCacheControlNoStore"},
+                      /*children=*/
+                      {subframe_result})));
+}
+
+// Test that a page with CCNS that makes a fetch with the "Authorization" header
+// in a cross-origin subframe does not log the header.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       AuthorizationHeaderCrossOriginSubFrameNotLogged) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a_no_store(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_a_2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Load the document and specify no-store for the main resource.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a_no_store));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Create an same-origin iframe and do a fetch with the "Authorization" header
+  // in that iframe.
+  CreateIframe(rfh_a.get(), url_b);
+
+  UseAuthorizationHeader(DescendantRenderFrameHostImplAt(rfh_a.get(), {0}),
+                         url_b);
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Wait until the first document has been destroyed.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // Go back and check that it was not cached and that only CCNS reason is
+  // present.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {BlocklistedFeature::kMainResourceHasCacheControlNoStore},
+                    {}, {}, {}, FROM_HERE);
+}
+
 class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
     : public BackForwardCacheBrowserTest {
  protected:
@@ -785,6 +1007,38 @@ IN_PROC_BROWSER_TEST_F(
   // 3) Go back. |rfh_a| should be restored.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
+}
+
+// Test that a page with CCNS that makes a fetch with the "Authorization" header
+// is blocked even when CCNS pages are allowed to be restored.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
+    AuthorizationHeaderBlocks) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a_no_store(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_a_2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Load the document and specify no-store for the main resource.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a_no_store));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Do a fetch with the "Authorization" header in the main frame.
+  UseAuthorizationHeader(shell(), url_a_2);
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Wait until the first document has been destroyed.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // Go back and check that it was not restored.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {BlocklistedFeature::kAuthorizationHeader}, {}, {}, {},
+                    FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
