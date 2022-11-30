@@ -129,8 +129,9 @@ class PA_TRIVIAL_ABI CompressedPointer final {
   using UnderlyingType = uint32_t;
 
   PA_ALWAYS_INLINE constexpr CompressedPointer() = default;
-  PA_ALWAYS_INLINE CompressedPointer(T* ptr) : value_(Compress(ptr)) {}
-  PA_ALWAYS_INLINE constexpr CompressedPointer(std::nullptr_t) : value_(0u) {}
+  PA_ALWAYS_INLINE explicit CompressedPointer(T* ptr) : value_(Compress(ptr)) {}
+  PA_ALWAYS_INLINE constexpr explicit CompressedPointer(std::nullptr_t)
+      : value_(0u) {}
 
   PA_ALWAYS_INLINE constexpr CompressedPointer(const CompressedPointer&) =
       default;
@@ -160,11 +161,6 @@ class PA_TRIVIAL_ABI CompressedPointer final {
       : CompressedPointer(other) {}
 
   ~CompressedPointer() = default;
-
-  PA_ALWAYS_INLINE constexpr CompressedPointer& operator=(T* ptr) {
-    value_ = Compress(ptr);
-    return *this;
-  }
 
   PA_ALWAYS_INLINE constexpr CompressedPointer& operator=(
       const CompressedPointer&) = default;
@@ -453,7 +449,9 @@ template <typename T>
 class PA_TRIVIAL_ABI UncompressedPointer final {
  public:
   PA_ALWAYS_INLINE constexpr UncompressedPointer() = default;
-  PA_ALWAYS_INLINE constexpr UncompressedPointer(T* ptr) : ptr_(ptr) {}
+  PA_ALWAYS_INLINE constexpr explicit UncompressedPointer(T* ptr) : ptr_(ptr) {}
+  PA_ALWAYS_INLINE constexpr explicit UncompressedPointer(nullptr_t)
+      : ptr_(nullptr) {}
 
   PA_ALWAYS_INLINE constexpr UncompressedPointer(const UncompressedPointer&) =
       default;
@@ -473,11 +471,6 @@ class PA_TRIVIAL_ABI UncompressedPointer final {
       : ptr_(std::move(other.ptr_)) {}
 
   ~UncompressedPointer() = default;
-
-  PA_ALWAYS_INLINE constexpr UncompressedPointer& operator=(T* ptr) {
-    ptr_ = ptr;
-    return *this;
-  }
 
   PA_ALWAYS_INLINE constexpr UncompressedPointer& operator=(
       const UncompressedPointer&) = default;

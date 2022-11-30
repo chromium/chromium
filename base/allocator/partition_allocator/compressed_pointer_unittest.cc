@@ -102,26 +102,26 @@ using ObjectTypes = ::testing::Types<UncompressedTypeTag, CompressedTypeTag>;
 #else   // !defined(PA_POINTER_COMPRESSION)
 using ObjectTypes = ::testing::Types<UncompressedTypeTag>;
 #endif  // !defined(PA_POINTER_COMPRESSION)
-        //
+
 TYPED_TEST_SUITE(CompressedPointerTest, ObjectTypes);
 
 TYPED_TEST(CompressedPointerTest, NullConstruction) {
   using DoublePointer = typename TestFixture::template PointerType<double>;
   {
-    DoublePointer p = nullptr;
+    DoublePointer p = static_cast<DoublePointer>(nullptr);
     EXPECT_FALSE(p.is_nonnull());
     EXPECT_FALSE(p.get());
     EXPECT_EQ(p, nullptr);
   }
   {
-    DoublePointer p1 = nullptr;
+    DoublePointer p1 = static_cast<DoublePointer>(nullptr);
     DoublePointer p2 = p1;
     EXPECT_FALSE(p2.is_nonnull());
     EXPECT_FALSE(p2.get());
     EXPECT_EQ(p2, nullptr);
   }
   {
-    DoublePointer p1 = nullptr;
+    DoublePointer p1 = static_cast<DoublePointer>(nullptr);
     DoublePointer p2 = std::move(p1);
     EXPECT_FALSE(p2.is_nonnull());
     EXPECT_FALSE(p2.get());
@@ -133,14 +133,14 @@ TYPED_TEST(CompressedPointerTest, NullAssignment) {
   using DoublePointer = typename TestFixture::template PointerType<double>;
   {
     DoublePointer p;
-    p = nullptr;
+    p = static_cast<DoublePointer>(nullptr);
     EXPECT_FALSE(p.is_nonnull());
     EXPECT_FALSE(p.get());
     EXPECT_EQ(p.get(), nullptr);
     EXPECT_EQ(p, nullptr);
   }
   {
-    DoublePointer p1 = nullptr, p2;
+    DoublePointer p1 = DoublePointer(nullptr), p2;
     p2 = p1;
     EXPECT_FALSE(p2.is_nonnull());
     EXPECT_FALSE(p2.get());
@@ -148,7 +148,7 @@ TYPED_TEST(CompressedPointerTest, NullAssignment) {
     EXPECT_EQ(p2, nullptr);
   }
   {
-    DoublePointer p1 = nullptr, p2;
+    DoublePointer p1 = DoublePointer(nullptr), p2;
     p2 = std::move(p1);
     EXPECT_FALSE(p2.is_nonnull());
     EXPECT_FALSE(p2.get());
@@ -161,13 +161,13 @@ TYPED_TEST(CompressedPointerTest, SameTypeValueConstruction) {
   using DoublePointer = typename TestFixture::template PointerType<double>;
   auto d = make_pa_unique<double>(this->allocator_);
   {
-    DoublePointer p = d.get();
+    DoublePointer p = static_cast<DoublePointer>(d.get());
     EXPECT_TRUE(p.is_nonnull());
     EXPECT_EQ(p.get(), d.get());
     EXPECT_EQ(p, d.get());
   }
   {
-    DoublePointer p1 = d.get();
+    DoublePointer p1 = static_cast<DoublePointer>(d.get());
     DoublePointer p2 = p1;
     EXPECT_TRUE(p2.is_nonnull());
     EXPECT_EQ(p2.get(), d.get());
@@ -175,7 +175,7 @@ TYPED_TEST(CompressedPointerTest, SameTypeValueConstruction) {
     EXPECT_EQ(p2, d.get());
   }
   {
-    DoublePointer p1 = d.get();
+    DoublePointer p1 = static_cast<DoublePointer>(d.get());
     DoublePointer p2 = std::move(p1);
     EXPECT_TRUE(p2.is_nonnull());
     EXPECT_EQ(p2.get(), d.get());
@@ -188,13 +188,13 @@ TYPED_TEST(CompressedPointerTest, SameTypeValueAssignment) {
   auto d = make_pa_unique<double>(this->allocator_);
   {
     DoublePointer p;
-    p = d.get();
+    p = static_cast<DoublePointer>(d.get());
     EXPECT_TRUE(p.is_nonnull());
     EXPECT_EQ(p.get(), d.get());
     EXPECT_EQ(p, d.get());
   }
   {
-    DoublePointer p1 = d.get();
+    DoublePointer p1 = static_cast<DoublePointer>(d.get());
     DoublePointer p2;
     p2 = p1;
     EXPECT_TRUE(p2.is_nonnull());
@@ -203,7 +203,7 @@ TYPED_TEST(CompressedPointerTest, SameTypeValueAssignment) {
     EXPECT_EQ(p2, d.get());
   }
   {
-    DoublePointer p1 = d.get();
+    DoublePointer p1 = static_cast<DoublePointer>(d.get());
     DoublePointer p2;
     p2 = std::move(p1);
     EXPECT_TRUE(p2.is_nonnull());
@@ -217,12 +217,12 @@ TYPED_TEST(CompressedPointerTest,
   using BasePointer = typename TestFixture::template PointerType<Base>;
   auto d = make_pa_unique<Derived>(this->allocator_);
   {
-    BasePointer p = d.get();
+    BasePointer p = static_cast<BasePointer>(d.get());
     EXPECT_TRUE(p.is_nonnull());
     EXPECT_EQ(p.get(), d.get());
   }
   {
-    BasePointer p1 = d.get();
+    BasePointer p1 = static_cast<BasePointer>(d.get());
     BasePointer p2 = p1;
     EXPECT_TRUE(p2.is_nonnull());
     EXPECT_EQ(p2.get(), d.get());
@@ -230,7 +230,7 @@ TYPED_TEST(CompressedPointerTest,
     EXPECT_EQ(p2, d.get());
   }
   {
-    BasePointer p1 = d.get();
+    BasePointer p1 = static_cast<BasePointer>(d.get());
     BasePointer p2 = std::move(p1);
     EXPECT_TRUE(p2.is_nonnull());
     EXPECT_EQ(p2.get(), d.get());
@@ -244,12 +244,12 @@ TYPED_TEST(CompressedPointerTest,
   auto d = make_pa_unique<Derived>(this->allocator_);
   {
     BasePointer p;
-    p = d.get();
+    p = static_cast<BasePointer>(d.get());
     EXPECT_TRUE(p.is_nonnull());
     EXPECT_EQ(p.get(), d.get());
   }
   {
-    BasePointer p1 = d.get();
+    BasePointer p1 = static_cast<BasePointer>(d.get());
     BasePointer p2;
     p2 = p1;
     EXPECT_TRUE(p2.is_nonnull());
@@ -258,7 +258,7 @@ TYPED_TEST(CompressedPointerTest,
     EXPECT_EQ(p2, d.get());
   }
   {
-    BasePointer p1 = d.get();
+    BasePointer p1 = static_cast<BasePointer>(d.get());
     BasePointer p2;
     p2 = std::move(p1);
     EXPECT_TRUE(p2.is_nonnull());
@@ -272,16 +272,16 @@ TYPED_TEST(CompressedPointerTest,
   using MixinPointer = typename TestFixture::template PointerType<Mixin>;
   auto d = make_pa_unique<DerivedWithMixin>(this->allocator_);
   {
-    MixinPointer p = d.get();
+    MixinPointer p = static_cast<MixinPointer>(d.get());
     ASSERT_NE(static_cast<void*>(p.get()), static_cast<void*>(d.get()));
   }
   {
-    MixinPointer p = d.get();
+    MixinPointer p = static_cast<MixinPointer>(d.get());
     EXPECT_TRUE(p.is_nonnull());
     EXPECT_EQ(p.get(), d.get());
   }
   {
-    MixinPointer p1 = d.get();
+    MixinPointer p1 = static_cast<MixinPointer>(d.get());
     MixinPointer p2 = p1;
     EXPECT_TRUE(p2.is_nonnull());
     EXPECT_EQ(p2.get(), d.get());
@@ -289,7 +289,7 @@ TYPED_TEST(CompressedPointerTest,
     EXPECT_EQ(p2, d.get());
   }
   {
-    MixinPointer p1 = d.get();
+    MixinPointer p1 = static_cast<MixinPointer>(d.get());
     MixinPointer p2 = std::move(p1);
     EXPECT_TRUE(p2.is_nonnull());
     EXPECT_EQ(p2.get(), d.get());
@@ -303,17 +303,17 @@ TYPED_TEST(CompressedPointerTest,
   auto d = make_pa_unique<DerivedWithMixin>(this->allocator_);
   {
     MixinPointer p;
-    p = d.get();
+    p = static_cast<MixinPointer>(d.get());
     ASSERT_NE(static_cast<void*>(p.get()), static_cast<void*>(d.get()));
   }
   {
     MixinPointer p;
-    p = d.get();
+    p = static_cast<MixinPointer>(d.get());
     EXPECT_TRUE(p.is_nonnull());
     EXPECT_EQ(p.get(), d.get());
   }
   {
-    MixinPointer p1 = d.get();
+    MixinPointer p1 = static_cast<MixinPointer>(d.get());
     MixinPointer p2;
     p2 = p1;
     EXPECT_TRUE(p2.is_nonnull());
@@ -322,7 +322,7 @@ TYPED_TEST(CompressedPointerTest,
     EXPECT_EQ(p2, d.get());
   }
   {
-    MixinPointer p1 = d.get();
+    MixinPointer p1 = static_cast<MixinPointer>(d.get());
     MixinPointer p2;
     p2 = std::move(p1);
     EXPECT_TRUE(p2.is_nonnull());
@@ -338,8 +338,8 @@ template <template <typename> class PointerType,
           typename T2,
           typename U>
 void EqualityTest(U* raw) {
-  PointerType<T1> p1 = raw;
-  PointerType<T2> p2 = raw;
+  PointerType<T1> p1 = static_cast<PointerType<T1>>(raw);
+  PointerType<T2> p2 = static_cast<PointerType<T2>>(raw);
   EXPECT_EQ(p1, raw);
   EXPECT_EQ(p2, raw);
   EXPECT_EQ(raw, p1);
@@ -352,8 +352,8 @@ template <template <typename> class PointerType,
           typename T2,
           typename U>
 void CompareTest(U* array) {
-  PointerType<T1> p0 = &array[0];
-  PointerType<T2> p1 = &array[1];
+  PointerType<T1> p0 = static_cast<PointerType<T1>>(&array[0]);
+  PointerType<T2> p1 = static_cast<PointerType<T2>>(&array[1]);
   {
     EXPECT_NE(p0, &array[1]);
     EXPECT_NE(p0, p1);
