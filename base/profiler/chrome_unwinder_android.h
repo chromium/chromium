@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_PROFILER_CHROME_UNWINDER_ANDROID_V2_H_
-#define BASE_PROFILER_CHROME_UNWINDER_ANDROID_V2_H_
+#ifndef BASE_PROFILER_CHROME_UNWINDER_ANDROID_H_
+#define BASE_PROFILER_CHROME_UNWINDER_ANDROID_H_
 
 #include <stdint.h>
 
@@ -18,15 +18,14 @@
 namespace base {
 
 // Chrome unwinder implementation for Android, using ChromeUnwindInfoAndroid,
-// a separate binary resource. This implementation is intended to replace
-// `ChromeUnwinderAndroid`, which uses ArmCfiTable.
-class BASE_EXPORT ChromeUnwinderAndroidV2 : public Unwinder {
+// a separate binary resource.
+class BASE_EXPORT ChromeUnwinderAndroid : public Unwinder {
  public:
-  ChromeUnwinderAndroidV2(const ChromeUnwindInfoAndroid& unwind_info,
-                          uintptr_t chrome_module_base_address,
-                          uintptr_t text_section_start_address);
-  ChromeUnwinderAndroidV2(const ChromeUnwinderAndroidV2&) = delete;
-  ChromeUnwinderAndroidV2& operator=(const ChromeUnwinderAndroidV2&) = delete;
+  ChromeUnwinderAndroid(const ChromeUnwindInfoAndroid& unwind_info,
+                        uintptr_t chrome_module_base_address,
+                        uintptr_t text_section_start_address);
+  ChromeUnwinderAndroid(const ChromeUnwinderAndroid&) = delete;
+  ChromeUnwinderAndroid& operator=(const ChromeUnwinderAndroid&) = delete;
 
   // Unwinder:
   bool CanUnwindFrom(const Frame& current_frame) const override;
@@ -112,4 +111,4 @@ GetFunctionTableIndexFromInstructionOffset(
 
 }  // namespace base
 
-#endif  // BASE_PROFILER_CHROME_UNWINDER_ANDROID_V2_H_
+#endif  // BASE_PROFILER_CHROME_UNWINDER_ANDROID_H_

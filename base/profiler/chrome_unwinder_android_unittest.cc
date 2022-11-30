@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/profiler/chrome_unwinder_android_v2.h"
+#include "base/profiler/chrome_unwinder_android.h"
 
 #include "base/memory/aligned_memory.h"
 #include "base/profiler/chrome_unwind_info_android.h"
@@ -659,7 +659,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementOverflow) {
   EXPECT_EQ(0xfffffffful, thread_context.arm_sp);
 }
 
-TEST(ChromeUnwinderAndroidV2Test,
+TEST(ChromeUnwinderAndroidTest,
      TestFunctionOffsetTableLookupExactMatchingOffset) {
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
@@ -684,7 +684,7 @@ TEST(ChromeUnwinderAndroidV2Test,
                      /* instruction_offset_from_function_start */ 128));
 }
 
-TEST(ChromeUnwinderAndroidV2Test,
+TEST(ChromeUnwinderAndroidTest,
      TestFunctionOffsetTableLookupNonExactMatchingOffset) {
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
@@ -709,7 +709,7 @@ TEST(ChromeUnwinderAndroidV2Test,
                      /* instruction_offset_from_function_start */ 129));
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TestFunctionOffsetTableLookupZeroOffset) {
+TEST(ChromeUnwinderAndroidTest, TestFunctionOffsetTableLookupZeroOffset) {
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
       // offset = 130
@@ -733,7 +733,7 @@ TEST(ChromeUnwinderAndroidV2Test, TestFunctionOffsetTableLookupZeroOffset) {
                      /* instruction_offset_from_function_start */ 0));
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TestAddressTableLookupEntryInPage) {
+TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEntryInPage) {
   const uint32_t page_start_instructions[] = {0, 2};
   const FunctionTableEntry function_offset_table_indices[] = {
       // Page 0
@@ -791,7 +791,7 @@ TEST(ChromeUnwinderAndroidV2Test, TestAddressTableLookupEntryInPage) {
   }
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TestAddressTableLookupEmptyPage) {
+TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEmptyPage) {
   const uint32_t page_start_instructions[] = {0, 1, 1};
   const FunctionTableEntry function_offset_table_indices[] = {
       // Page 0
@@ -818,8 +818,7 @@ TEST(ChromeUnwinderAndroidV2Test, TestAddressTableLookupEmptyPage) {
   EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
 }
 
-TEST(ChromeUnwinderAndroidV2Test,
-     TestAddressTableLookupInvalidIntructionOffset) {
+TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupInvalidIntructionOffset) {
   const uint32_t page_start_instructions[] = {0, 1};
   const FunctionTableEntry function_offset_table_indices[] = {
       // Page 0
@@ -856,7 +855,7 @@ TEST(ChromeUnwinderAndroidV2Test,
   }
 }
 
-TEST(ChromeUnwinderAndroidV2Test,
+TEST(ChromeUnwinderAndroidTest,
      TestAddressTableLookupOnSecondPageOfFunctionSpanningPageBoundary) {
   const uint32_t page_start_instructions[] = {0, 1, 2};
   const FunctionTableEntry function_offset_table_indices[] = {
@@ -887,7 +886,7 @@ TEST(ChromeUnwinderAndroidV2Test,
   EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
 }
 
-TEST(ChromeUnwinderAndroidV2Test,
+TEST(ChromeUnwinderAndroidTest,
      TestAddressTableLookupWithinFunctionSpanningMultiplePages) {
   const uint32_t page_start_instructions[] = {0, 1, 1, 1};
   const FunctionTableEntry function_offset_table_indices[] = {
@@ -962,7 +961,7 @@ const ModuleCache::Module* AddNativeModule(
   return module_ptr;
 }
 
-TEST(ChromeUnwinderAndroidV2Test, CanUnwindFrom) {
+TEST(ChromeUnwinderAndroidTest, CanUnwindFrom) {
   const uint32_t page_table[] = {0};
   const FunctionTableEntry function_table[] = {{0, 0}};
   const uint8_t function_offset_table[] = {0};
@@ -978,10 +977,10 @@ TEST(ChromeUnwinderAndroidV2Test, CanUnwindFrom) {
   auto non_chrome_module = std::make_unique<TestModule>(0x2000, 0x500);
 
   ModuleCache module_cache;
-  ChromeUnwinderAndroidV2 unwinder(dummy_unwind_info,
-                                   chrome_module->GetBaseAddress(),
-                                   /* text_section_start_address */
-                                   chrome_module->GetBaseAddress() + 4);
+  ChromeUnwinderAndroid unwinder(dummy_unwind_info,
+                                 chrome_module->GetBaseAddress(),
+                                 /* text_section_start_address */
+                                 chrome_module->GetBaseAddress() + 4);
   unwinder.Initialize(&module_cache);
 
   EXPECT_TRUE(unwinder.CanUnwindFrom({0x1100, chrome_module.get()}));
@@ -1028,7 +1027,7 @@ class AlignedStackMemory {
 
 }  // namespace
 
-TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
+TEST(ChromeUnwinderAndroidTest, TryUnwind) {
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
   const size_t page_size = 1 << 17;
@@ -1084,8 +1083,8 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                   text_section_start_address);
+  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                 text_section_start_address);
 
   unwinder.Initialize(&module_cache);
 
@@ -1117,7 +1116,7 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
                  unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TryUnwindInfiniteLoopSingleFrame) {
+TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopSingleFrame) {
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
   const size_t page_size = 1 << 17;
@@ -1158,8 +1157,8 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindInfiniteLoopSingleFrame) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                   text_section_start_address);
+  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                 text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1184,7 +1183,7 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindInfiniteLoopSingleFrame) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TryUnwindInfiniteLoopMultipleFrames) {
+TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopMultipleFrames) {
   // This test aims to produce a scenario, where after the unwind of a number
   // of frames, the sp and pc get to their original state before the unwind.
 
@@ -1249,8 +1248,8 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindInfiniteLoopMultipleFrames) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                   text_section_start_address);
+  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                 text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t first_pc = text_section_start_address + 0x20;    // Function 1.
@@ -1279,7 +1278,7 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindInfiniteLoopMultipleFrames) {
                  unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TryUnwindUnalignedSPFrameUnwind) {
+TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPFrameUnwind) {
   // SP should be 2-uintptr_t aligned before/after each frame unwind.
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
@@ -1321,8 +1320,8 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindUnalignedSPFrameUnwind) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                   text_section_start_address);
+  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                 text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1350,7 +1349,7 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindUnalignedSPFrameUnwind) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TryUnwindUnalignedSPInstructionUnwind) {
+TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPInstructionUnwind) {
   // SP should be uintptr_t aligned before/after each unwind instruction
   // execution.
 
@@ -1394,8 +1393,8 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindUnalignedSPInstructionUnwind) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                   text_section_start_address);
+  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                 text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1423,7 +1422,7 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindUnalignedSPInstructionUnwind) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TryUnwindSPOverflow) {
+TEST(ChromeUnwinderAndroidTest, TryUnwindSPOverflow) {
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
   const size_t page_size = 1 << 17;
@@ -1465,8 +1464,8 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindSPOverflow) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                   text_section_start_address);
+  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                 text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1495,7 +1494,7 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindSPOverflow) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TryUnwindNullSP) {
+TEST(ChromeUnwinderAndroidTest, TryUnwindNullSP) {
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
   const size_t page_size = 1 << 17;
@@ -1537,8 +1536,8 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindNullSP) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                   text_section_start_address);
+  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                 text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1567,7 +1566,7 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindNullSP) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidV2Test, TryUnwindInvalidSPOperation) {
+TEST(ChromeUnwinderAndroidTest, TryUnwindInvalidSPOperation) {
   // This test aims to verify that for each unwind instruction executed, it is
   // always true that sp > frame initial sp.
 
@@ -1612,8 +1611,8 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwindInvalidSPOperation) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                   text_section_start_address);
+  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                 text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;

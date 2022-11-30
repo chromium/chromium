@@ -34,7 +34,7 @@
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/arm_cfi_table.h"
-#include "base/profiler/chrome_unwinder_android_v2.h"
+#include "base/profiler/chrome_unwinder_android.h"
 #include "chrome/android/modules/stack_unwinder/public/module.h"
 
 extern "C" {
@@ -69,7 +69,7 @@ class ChromeUnwinderCreator {
   ChromeUnwinderCreator& operator=(const ChromeUnwinderCreator&) = delete;
 
   std::unique_ptr<base::Unwinder> Create() {
-    return std::make_unique<base::ChromeUnwinderAndroidV2>(
+    return std::make_unique<base::ChromeUnwinderAndroid>(
         base::CreateChromeUnwindInfoAndroid(
             {chrome_cfi_file_.data(), chrome_cfi_file_.length()}),
         /* chrome_module_base_address= */

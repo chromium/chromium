@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/profiler/chrome_unwinder_android_v2.h"
+#include "base/profiler/chrome_unwinder_android.h"
 
 #include <algorithm>
 
@@ -68,7 +68,7 @@ uint8_t GetTopBits(uint8_t byte, unsigned bits) {
 
 }  // namespace
 
-ChromeUnwinderAndroidV2::ChromeUnwinderAndroidV2(
+ChromeUnwinderAndroid::ChromeUnwinderAndroid(
     const ChromeUnwindInfoAndroid& unwind_info,
     uintptr_t chrome_module_base_address,
     uintptr_t text_section_start_address)
@@ -78,14 +78,14 @@ ChromeUnwinderAndroidV2::ChromeUnwinderAndroidV2(
   DCHECK_GT(text_section_start_address_, chrome_module_base_address_);
 }
 
-bool ChromeUnwinderAndroidV2::CanUnwindFrom(const Frame& current_frame) const {
+bool ChromeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
   return current_frame.module &&
          current_frame.module->GetBaseAddress() == chrome_module_base_address_;
 }
 
-UnwindResult ChromeUnwinderAndroidV2::TryUnwind(RegisterContext* thread_context,
-                                                uintptr_t stack_top,
-                                                std::vector<Frame>* stack) {
+UnwindResult ChromeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
+                                              uintptr_t stack_top,
+                                              std::vector<Frame>* stack) {
   DCHECK(CanUnwindFrom(stack->back()));
   uintptr_t frame_initial_sp = RegisterContextStackPointer(thread_context);
   const uintptr_t unwind_initial_pc =

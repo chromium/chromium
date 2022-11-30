@@ -24,7 +24,7 @@
 #include "base/android/apk_assets.h"
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/profiler/chrome_unwinder_android_v2.h"
+#include "base/profiler/chrome_unwinder_android.h"
 #include "base/profiler/native_unwinder_android.h"
 #endif
 
@@ -127,15 +127,15 @@ std::unique_ptr<Unwinder> CreateChromeUnwinderAndroidForTesting(
 
   // The wrapper class ensures that `MemoryMappedFile` has the same lifetime
   // as the unwinder.
-  class ChromeUnwinderAndroidForTesting : public ChromeUnwinderAndroidV2 {
+  class ChromeUnwinderAndroidForTesting : public ChromeUnwinderAndroid {
    public:
     ChromeUnwinderAndroidForTesting(std::unique_ptr<MemoryMappedFile> cfi_file,
                                     const ChromeUnwindInfoAndroid& unwind_info,
                                     uintptr_t chrome_module_base_address,
                                     uintptr_t text_section_start_address)
-        : ChromeUnwinderAndroidV2(unwind_info,
-                                  chrome_module_base_address,
-                                  text_section_start_address),
+        : ChromeUnwinderAndroid(unwind_info,
+                                chrome_module_base_address,
+                                text_section_start_address),
           cfi_file_(std::move(cfi_file)) {}
     ~ChromeUnwinderAndroidForTesting() override = default;
 

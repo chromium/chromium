@@ -195,7 +195,7 @@ template("chrome_common_shared_library") {
     _library_target = ":$target_name"
 
     # TODO(crbug.com/1315603): Remove generation of v1 unwind asset when
-    # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroidV2`.
+    # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroid`.
     unwind_table_v1("${target_name}_unwind_table_v1") {
       library_target = _library_target
     }

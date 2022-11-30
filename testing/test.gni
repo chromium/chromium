@@ -314,7 +314,7 @@ template("test") {
       # apk, if |add_unwind_tables_in_apk| is specified by the test.
       if (_add_unwind_tables_in_apk) {
         # TODO(crbug.com/1315603): Remove generation of v1 unwind asset when
-        # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroidV2`.
+        # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroid`.
         _unwind_table_name = "${_library_target_name}_unwind_v1"
         unwind_table_v1(_unwind_table_name) {
           library_target = ":$_library_target_name"
