@@ -12,10 +12,12 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Size kEcheAppItemSize(64, 55);
-constexpr int kEcheAppItemSpacing = 6;
+constexpr int kEcheAppItemWidth = 50;
+constexpr int kEcheAppItemHeight = 60;
+constexpr gfx::Size kEcheAppItemSize(kEcheAppItemWidth, kEcheAppItemHeight);
+constexpr int kEcheAppItemSpacing = 4;
 constexpr int kEcheAppNameLabelLineHeight = 14;
-constexpr int kEcheAppNameLabelFontSize = 12;
+constexpr int kEcheAppNameLabelFontSize = 11;
 
 void ConfigureLabel(views::Label* label, int line_height, int font_size) {
   label->SetAutoColorReadabilityEnabled(false);
@@ -23,7 +25,7 @@ void ConfigureLabel(views::Label* label, int line_height, int font_size) {
   label->SetCanProcessEventsWithinSubtree(false);
 
   label->SetLineHeight(line_height);
-  label->SetTruncateLength(36);
+  label->SetTruncateLength(kEcheAppItemWidth);
 
   gfx::Font default_font;
   gfx::Font label_font =
