@@ -1421,7 +1421,7 @@ class QuietChipPermissionPromptBubbleViewInteractiveTest
     scoped_feature_list_.InitWithFeatures(
         {features::kQuietNotificationPrompts,
          permissions::features::kPermissionQuietChip},
-        {});
+        {permissions::features::kConfirmationChip});
   }
 
  protected:
@@ -1528,6 +1528,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
     ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
         ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
+
     EXPECT_FALSE(quiet_ui_icon.GetVisible());
     EXPECT_FALSE(GetChip()->GetVisible() &&
                  GetChipController()->IsPermissionPromptChipVisible());

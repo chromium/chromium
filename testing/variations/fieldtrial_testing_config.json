@@ -8414,12 +8414,9 @@
             ],
             "experiments": [
                 {
-                    "name": "RequestChipConfirmationChipNoLockIconOverride",
+                    "name": "ConfirmationChipNoLockIconOverride",
                     "enable_features": [
-                        "ConfirmationChip",
-                        "PermissionChip",
-                        "PermissionChipGestureSensitive",
-                        "PermissionChipRequestTypeSensitive"
+                        "ConfirmationChip"
                     ],
                     "disable_features": [
                         "ChipLocationIconOverride"
