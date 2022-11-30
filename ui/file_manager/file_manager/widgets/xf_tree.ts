@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isRTL} from 'chrome://resources/js/util.js';
+import {isRTL} from 'chrome://resources/ash/common/util.js';
 
 import {css, customElement, html, query, state, XfBase} from './xf_base.js';
 import {TreeItemCollapsedEvent, TreeItemExpandedEvent, XfTreeItem} from './xf_tree_item.js';
