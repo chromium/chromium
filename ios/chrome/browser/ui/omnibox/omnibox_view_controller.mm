@@ -118,6 +118,8 @@ const CGFloat kClearButtonSize = 28.0f;
                                                  iconTint:iconTintColor];
   self.view.incognito = self.incognito;
 
+  self.view.shouldGroupAccessibilityChildren = YES;
+
   self.textField.delegate = self;
   self.textField.omniboxKeyboardDelegate = self;
 
