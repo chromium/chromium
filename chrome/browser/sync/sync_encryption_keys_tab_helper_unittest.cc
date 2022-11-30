@@ -163,16 +163,10 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
 class SyncEncryptionKeysTabHelperPrerenderingTest
     : public SyncEncryptionKeysTabHelperTest {
  public:
-  SyncEncryptionKeysTabHelperPrerenderingTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        blink::features::kPrerender2MemoryControls);
-  }
-  ~SyncEncryptionKeysTabHelperPrerenderingTest() override = default;
+  SyncEncryptionKeysTabHelperPrerenderingTest() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 // Tests that EncryptionKeys works based on a main frame. A prerendered page

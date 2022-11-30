@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_content_browser_client.h"
@@ -27,13 +28,7 @@ class PrerenderWebContentsDelegate : public WebContentsDelegate {
 
 class PrerendererTest : public RenderViewHostTestHarness {
  public:
-  PrerendererTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2},
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        {blink::features::kPrerender2MemoryControls});
-  }
+  PrerendererTest() = default;
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -78,7 +73,7 @@ class PrerendererTest : public RenderViewHostTestHarness {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  test::ScopedPrerenderFeatureList prerender_feature_list_;
 
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;

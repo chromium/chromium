@@ -256,20 +256,10 @@ class PrerenderHoldbackDevToolsProtocolTest
 class MultiplePrerendersDevToolsProtocolTest
     : public PrerenderDevToolsProtocolTest {
  public:
-  MultiplePrerendersDevToolsProtocolTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2MemoryControls,
-          // A value 100 allows prerenderings regardless of the current memory
-          // usage.
-          {{"acceptable_percent_of_system_memory", "100"},
-           // Allow prerendering on low-end trybot devices so that prerendering
-           // can run on any bots.
-           {"memory_threshold_in_mb", "0"}}}},
-        {});
-  }
+  MultiplePrerendersDevToolsProtocolTest() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 class SyntheticMouseEventTest : public DevToolsProtocolTest {

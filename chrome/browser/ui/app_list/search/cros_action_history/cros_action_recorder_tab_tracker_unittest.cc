@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -107,21 +108,14 @@ TEST_F(CrOSActionRecorderTabTrackerTest, NavigateAndForegroundTest) {
 class CrOSActionRecorderTabTrackerPrerenderTest
     : public CrOSActionRecorderTabTrackerTest {
  public:
-  CrOSActionRecorderTabTrackerPrerenderTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2},
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        {blink::features::kPrerender2MemoryControls});
-  }
-  ~CrOSActionRecorderTabTrackerPrerenderTest() override = default;
+  CrOSActionRecorderTabTrackerPrerenderTest() = default;
 
   content::WebContents* GetActiveWebContents() const {
     return tab_strip_model_->GetActiveWebContents();
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 TEST_F(CrOSActionRecorderTabTrackerPrerenderTest,

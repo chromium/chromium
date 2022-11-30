@@ -1846,16 +1846,10 @@ TEST_F(ControllerTest, FlowFinishedMetricMultipleRoundtrips) {
 
 class ControllerPrerenderTest : public ControllerTest {
  public:
-  ControllerPrerenderTest() {
-    feature_list_.InitAndDisableFeature(
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        blink::features::kPrerender2MemoryControls);
-  }
+  ControllerPrerenderTest() = default;
 
-  ~ControllerPrerenderTest() override = default;
-
-  base::test::ScopedFeatureList feature_list_;
+ private:
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 TEST_F(ControllerPrerenderTest, SuccessfulNavigation) {

@@ -1066,13 +1066,7 @@ TEST_F(PageTextObserverTest, AMPRequestedOnNonOOPIF) {
 
 class PageTextObserverWithPrerenderTest : public PageTextObserverTest {
  public:
-  PageTextObserverWithPrerenderTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        blink::features::kPrerender2MemoryControls);
-  }
-  ~PageTextObserverWithPrerenderTest() override = default;
+  PageTextObserverWithPrerenderTest() = default;
 
   content::RenderFrameHost* AddPrerender(const GURL& prerender_url) {
     content::RenderFrameHost* prerender_frame =
@@ -1086,7 +1080,7 @@ class PageTextObserverWithPrerenderTest : public PageTextObserverTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 TEST_F(PageTextObserverWithPrerenderTest,

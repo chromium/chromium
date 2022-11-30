@@ -153,15 +153,10 @@ TEST_F(ReauthTabHelperTest, WebContentsDestroyed) {
 
 class ReauthTabHelperPrerenderTest : public ReauthTabHelperTest {
  public:
-  ReauthTabHelperPrerenderTest() {
-    feature_list_.InitAndDisableFeature(
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        blink::features::kPrerender2MemoryControls);
-  }
+  ReauthTabHelperPrerenderTest() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 TEST_F(ReauthTabHelperPrerenderTest,

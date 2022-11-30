@@ -1750,17 +1750,10 @@ TEST_F(TriggerScriptCoordinatorTest, RecordIfPrimaryPageFailed) {
 class TriggerScriptCoordinatorPrerenderTest
     : public TriggerScriptCoordinatorTest {
  public:
-  TriggerScriptCoordinatorPrerenderTest() {
-    feature_list_.InitAndDisableFeature(
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        blink::features::kPrerender2MemoryControls);
-  }
-
-  ~TriggerScriptCoordinatorPrerenderTest() override = default;
+  TriggerScriptCoordinatorPrerenderTest() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 TEST_F(TriggerScriptCoordinatorPrerenderTest, DoNotRecordIfPrerenderingFailed) {

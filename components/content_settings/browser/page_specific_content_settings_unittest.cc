@@ -592,13 +592,7 @@ TEST_F(PageSpecificContentSettingsTest,
 class PageSpecificContentSettingsWithPrerenderTest
     : public PageSpecificContentSettingsTest {
  public:
-  PageSpecificContentSettingsWithPrerenderTest() {
-    feature_list_.InitAndDisableFeature(
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        blink::features::kPrerender2MemoryControls);
-  }
-  ~PageSpecificContentSettingsWithPrerenderTest() override = default;
+  PageSpecificContentSettingsWithPrerenderTest() = default;
 
   content::RenderFrameHost* AddPrerender(const GURL& prerender_url) {
     web_contents_delegate_ =
@@ -615,7 +609,7 @@ class PageSpecificContentSettingsWithPrerenderTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
   std::unique_ptr<content::test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
 };

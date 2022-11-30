@@ -216,17 +216,10 @@ TEST_F(DiceTabHelperTest, IsSyncSigninInProgress) {
 
 class DiceTabHelperPrerenderTest : public DiceTabHelperTest {
  public:
-  DiceTabHelperPrerenderTest() {
-    feature_list_.InitAndDisableFeature(
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        blink::features::kPrerender2MemoryControls);
-  }
-
-  ~DiceTabHelperPrerenderTest() override = default;
+  DiceTabHelperPrerenderTest() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 TEST_F(DiceTabHelperPrerenderTest, SigninStatusAfterPrerendering) {

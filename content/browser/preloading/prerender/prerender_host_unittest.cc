@@ -79,14 +79,7 @@ class TestWebContentsDelegate : public WebContentsDelegate {
 
 class PrerenderHostTest : public RenderViewHostImplTestHarness {
  public:
-  PrerenderHostTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        blink::features::kPrerender2MemoryControls);
-  }
-
-  ~PrerenderHostTest() override = default;
+  PrerenderHostTest() = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -142,7 +135,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  test::ScopedPrerenderFeatureList prerender_feature_list_;
   TestWebContentsDelegate web_contents_delegate_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
