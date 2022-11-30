@@ -151,7 +151,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
       case LifecycleUnitVisibility.VISIBLE:
         return 'visible';
     }
-    assertNotReached('Unknown visibility: ' + visibility);
   }
 
   /**
@@ -170,7 +169,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
       case LifecycleUnitLoadingState.LOADED:
         return 'loaded';
     }
-    assertNotReached('Unknown loadingState: ' + loadingState);
   }
 
   /**
@@ -185,7 +183,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
       case LifecycleUnitDiscardReason.URGENT:
         return 'urgent';
     }
-    assertNotReached('Unknown discard reason: ' + reason);
   }
 
   /**
@@ -213,7 +210,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
         case LifecycleUnitVisibility.VISIBLE:
           return hasFocus ? 'active' : 'passive';
       }
-      assertNotReached('Unknown visibility: ' + visibility);
     }
 
     switch (state) {
@@ -232,7 +228,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
                           .toLocaleString()) :
                                                               '');
     }
-    assertNotReached('Unknown lifecycle state: ' + state);
   }
 
   /** Dispatches a request to update tabInfos_. */

@@ -80,13 +80,13 @@ action("generate_graph_tab") {
 
 copy("copy_mojo") {
   deps = [
-    "//chrome/browser/resource_coordinator:mojo_bindings_js__generator",
-    "//chrome/browser/ui/webui/discards:mojo_bindings_js__generator",
+    "//chrome/browser/resource_coordinator:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/discards:mojo_bindings_ts__generator",
   ]
   sources = [
-    "$root_gen_dir/mojom-webui/chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/discards/discards.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/discards/site_data.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/discards/discards.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/discards/site_data.mojom-webui.ts",
   ]
   outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
@@ -101,9 +101,9 @@ ts_library("build_ts") {
     "graph_tab_template.html.ts",
   ]
   in_files = ts_files + html_wrapper_files + [
-               "discards.mojom-webui.js",
-               "site_data.mojom-webui.js",
-               "lifecycle_unit_state.mojom-webui.js",
+               "discards.mojom-webui.ts",
+               "site_data.mojom-webui.ts",
+               "lifecycle_unit_state.mojom-webui.ts",
              ]
 
   deps = [
