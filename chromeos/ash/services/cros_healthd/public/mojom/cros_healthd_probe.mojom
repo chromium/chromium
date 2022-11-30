@@ -754,13 +754,13 @@ struct BluetoothDeviceInfo {
   // The carriers supported by this remote device ("BR/EDR", "LE", or "DUAL").
   BluetoothDeviceType type@2;
   // The external appearance of the device.
-  NullableUint16 appearance@3;
+  NullableUint16? appearance@3;
   // Remote Device ID information.
   string? modalias@4;
   // Received Signal Strength Indicator.
-  NullableInt16 rssi@5;
+  NullableInt16? rssi@5;
   // The Maximum Transmission Unit used in ATT communication.
-  NullableUint16 mtu@6;
+  NullableUint16? mtu@6;
   // The list of the available remote services.
   array<string>? uuids@7;
   // The battery percentage of the device.
