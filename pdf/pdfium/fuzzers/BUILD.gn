@@ -15,8 +15,13 @@ template("pdfium_fuzzer_test") {
   fuzzer_test(target_name) {
     forward_variables_from(invoker, "*", [ "deps" ])
 
-    sources = []
-    deps = [ "//third_party/pdfium/testing/fuzzers:${target_name}_src" ]
+    sources = [ "initialize_process.cc" ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+    ]
+
+    deps += [ "//third_party/pdfium/testing/fuzzers:${target_name}_src" ]
     if (is_component_build) {
       deps += [ "//third_party/pdfium/testing/fuzzers:${target_name}_impl" ]
     }
