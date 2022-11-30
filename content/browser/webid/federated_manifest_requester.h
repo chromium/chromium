@@ -72,8 +72,8 @@ class FederatedManifestRequester {
   // Starts fetch of manifests and manifest lists. Start() should be called at
   // most once per FederatedManifestRequester instance.
   void Start(const std::vector<GURL>& identity_provider_config_urls,
-             absl::optional<int> icon_ideal_size,
-             absl::optional<int> icon_minimum_size,
+             int icon_ideal_size,
+             int icon_minimum_size,
              RequesterCallback callback);
 
  private:

@@ -548,10 +548,8 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   }
 
-  absl::optional<int> icon_ideal_size =
-      request_dialog_controller_->GetBrandIconIdealSize();
-  absl::optional<int> icon_minimum_size =
-      request_dialog_controller_->GetBrandIconMinimumSize();
+  int icon_ideal_size = request_dialog_controller_->GetBrandIconIdealSize();
+  int icon_minimum_size = request_dialog_controller_->GetBrandIconMinimumSize();
   std::unique_ptr<FederatedManifestRequester> manifest_requester =
       std::make_unique<FederatedManifestRequester>(network_manager_.get());
 

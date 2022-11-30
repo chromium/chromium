@@ -202,8 +202,8 @@ absl::optional<SkColor> ParseCssColor(const std::string* value) {
 // Parse IdentityProviderMetadata from given value. Overwrites |idp_metadata|
 // with the parsed value.
 void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
-                                   absl::optional<int> brand_icon_ideal_size,
-                                   absl::optional<int> brand_icon_minimum_size,
+                                   int brand_icon_ideal_size,
+                                   int brand_icon_minimum_size,
                                    IdentityProviderMetadata& idp_metadata) {
   if (!idp_metadata_value.is_dict())
     return;
@@ -249,13 +249,10 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
       icons.push_back(icon);
     }
 
-    if (brand_icon_minimum_size && brand_icon_ideal_size) {
-      idp_metadata.brand_icon_url =
-          blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-              icons, brand_icon_ideal_size.value(),
-              brand_icon_minimum_size.value(),
-              blink::mojom::ManifestImageResource_Purpose::MASKABLE);
-    }
+    idp_metadata.brand_icon_url =
+        blink::ManifestIconSelector::FindBestMatchingSquareIcon(
+            icons, brand_icon_ideal_size, brand_icon_minimum_size,
+            blink::mojom::ManifestImageResource_Purpose::MASKABLE);
   }
 }
 
@@ -359,8 +356,8 @@ void OnManifestListParsed(
 }
 
 void OnManifestParsed(const GURL& provider,
-                      absl::optional<int> idp_brand_icon_ideal_size,
-                      absl::optional<int> idp_brand_icon_minimum_size,
+                      int idp_brand_icon_ideal_size,
+                      int idp_brand_icon_minimum_size,
                       IdpNetworkRequestManager::FetchManifestCallback callback,
                       FetchStatus fetch_status,
                       data_decoder::DataDecoder::ValueOrError result) {
@@ -570,11 +567,10 @@ void IdpNetworkRequestManager::FetchManifestList(
                        maxResponseSizeInKiB * 1024);
 }
 
-void IdpNetworkRequestManager::FetchManifest(
-    const GURL& provider,
-    absl::optional<int> idp_brand_icon_ideal_size,
-    absl::optional<int> idp_brand_icon_minimum_size,
-    FetchManifestCallback callback) {
+void IdpNetworkRequestManager::FetchManifest(const GURL& provider,
+                                             int idp_brand_icon_ideal_size,
+                                             int idp_brand_icon_minimum_size,
+                                             FetchManifestCallback callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateUncredentialedResourceRequest(provider,
                                           /* send_referrer= */ false);

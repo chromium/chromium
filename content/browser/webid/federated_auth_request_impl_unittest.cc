@@ -396,8 +396,8 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
   void FetchManifest(const GURL& provider,
-                     absl::optional<int> idp_brand_icon_ideal_size,
-                     absl::optional<int> idp_brand_icon_minimum_size,
+                     int idp_brand_icon_ideal_size,
+                     int idp_brand_icon_minimum_size,
                      FetchManifestCallback callback) override {
     delegate_->FetchManifest(provider, idp_brand_icon_ideal_size,
                              idp_brand_icon_minimum_size, std::move(callback));
@@ -478,8 +478,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
   void FetchManifest(const GURL& provider,
-                     absl::optional<int> idp_brand_icon_ideal_size,
-                     absl::optional<int> idp_brand_icon_minimum_size,
+                     int idp_brand_icon_ideal_size,
+                     int idp_brand_icon_minimum_size,
                      FetchManifestCallback callback) override {
     fetched_endpoints_ |= FetchedEndpoint::MANIFEST;
 

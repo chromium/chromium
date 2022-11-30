@@ -22,10 +22,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
 
   MOCK_METHOD2(FetchManifestList, void(const GURL&, FetchManifestListCallback));
   MOCK_METHOD4(FetchManifest,
-               void(const GURL&,
-                    absl::optional<int>,
-                    absl::optional<int>,
-                    FetchManifestCallback));
+               void(const GURL&, int, int, FetchManifestCallback));
   MOCK_METHOD3(FetchClientMetadata,
                void(const GURL&,
                     const std::string&,

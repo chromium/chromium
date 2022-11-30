@@ -161,8 +161,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   // Attempt to fetch the IDP's FedCM parameters from the fedcm.json manifest.
   virtual void FetchManifest(const GURL& provider,
-                             absl::optional<int> idp_brand_icon_ideal_size,
-                             absl::optional<int> idp_brand_icon_minimum_size,
+                             int idp_brand_icon_ideal_size,
+                             int idp_brand_icon_minimum_size,
                              FetchManifestCallback);
 
   virtual void FetchClientMetadata(const GURL& endpoint,
