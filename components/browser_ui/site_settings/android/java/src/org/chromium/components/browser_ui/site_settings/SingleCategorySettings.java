@@ -1447,10 +1447,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 WebsitePreference websitePref = (WebsitePreference) preference;
                 ContentSettingException exception = websitePref.site().getContentSettingException(
                         mCategory.getContentSettingsType());
-                return websitePref.site()
-                        .getContentSettingException(mCategory.getContentSettingsType())
-                        .getSource()
-                        .equals(POLICY);
+                if (exception != null && exception.getSource() != null) {
+                    return exception.getSource().equals(POLICY);
+                }
+                return false;
             }
 
             /*
