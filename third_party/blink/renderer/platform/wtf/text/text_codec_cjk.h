@@ -49,8 +49,25 @@ namespace WTF {
 // specification by using TextCodecICU.
 class TextCodecCJK final : public TextCodec {
  public:
-  enum class SawError { kNo, kYes };
+  // TODO(1378183): move the class details inside the .cc file and hide them
+  // from the .h users.
+  class Decoder {
+   public:
+    virtual ~Decoder() = default;
+    virtual String Decode(const uint8_t* bytes,
+                          wtf_size_t length,
+                          bool flush,
+                          bool stop_on_error,
+                          bool& saw_error);
 
+   protected:
+    enum class SawError { kNo, kYes };
+    virtual SawError ParseByte(uint8_t byte, StringBuilder& result) = 0;
+    virtual void Finalize(bool flush, StringBuilder& result) {}
+
+    uint8_t lead_ = 0x00;
+    absl::optional<uint8_t> prepended_byte_;
+  };
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
   // Returns true if the given `name` is supported.
@@ -61,7 +78,6 @@ class TextCodecCJK final : public TextCodec {
   explicit TextCodecCJK(Encoding);
   WTF_EXPORT static std::unique_ptr<TextCodec> Create(const TextEncoding&,
                                                       const void*);
-
   String Decode(const char*,
                 wtf_size_t length,
                 FlushBehavior,
@@ -76,54 +92,8 @@ class TextCodecCJK final : public TextCodec {
 
   Vector<uint8_t> EncodeCommon(StringView string, UnencodableHandling) const;
 
-  enum class Iso2022JpDecoderState {
-    kAscii,
-    kRoman,
-    kKatakana,
-    kLeadByte,
-    kTrailByte,
-    kEscapeStart,
-    kEscape
-  };
-  using DecodeCallback =
-      base::RepeatingCallback<SawError(uint8_t, StringBuilder&)>;
-  using DecodeFinalizeCallback =
-      base::RepeatingCallback<void(bool, StringBuilder&)>;
-
-  String DecodeCommon(const uint8_t*,
-                      wtf_size_t,
-                      bool,
-                      bool,
-                      bool&,
-                      const DecodeCallback&,
-                      absl::optional<DecodeFinalizeCallback>);
-
-  // TODO(crbug.com/1378183): move encode/decode specific internal functions and
-  // fields to classes in anonymous name space.
-  SawError DecodeEucJpInternal(uint8_t, StringBuilder&);
-  SawError DecodeShiftJisInternal(uint8_t, StringBuilder&);
-  SawError DecodeEucKrInternal(uint8_t, StringBuilder&);
-
-  String DecodeEucJp(const uint8_t*, wtf_size_t, bool, bool, bool&);
-  String DecodeIso2022Jp(const uint8_t*, wtf_size_t, bool, bool, bool&);
-  String DecodeShiftJis(const uint8_t*, wtf_size_t, bool, bool, bool&);
-  String DecodeEucKr(const uint8_t*, wtf_size_t, bool, bool, bool&);
-  String DecodeGbk(const uint8_t*, wtf_size_t, bool, bool, bool&);
-  String DecodeGb18030(const uint8_t*, wtf_size_t, bool, bool, bool&);
-
   const Encoding encoding_;
-
-  bool jis0212_ = false;
-
-  Iso2022JpDecoderState iso2022_jp_decoder_state_ =
-      Iso2022JpDecoderState::kAscii;
-  Iso2022JpDecoderState iso2022_jp_decoder_output_state_ =
-      Iso2022JpDecoderState::kAscii;
-  bool iso2022_jp_output_ = false;
-  absl::optional<uint8_t> iso2022_jp_second_prepended_byte_;
-
-  uint8_t lead_ = 0x00;
-  absl::optional<uint8_t> prepended_byte_;
+  std::unique_ptr<Decoder> decoder_;
 };
 
 }  // namespace WTF
