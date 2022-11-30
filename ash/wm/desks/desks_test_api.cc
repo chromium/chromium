@@ -19,6 +19,7 @@
 #include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {
@@ -112,6 +113,23 @@ views::View* DesksTestApi::GetHighlightOverlayForDeskPreview(int index) {
       ->mini_views()[index]
       ->desk_preview()
       ->highlight_overlay_;
+}
+
+// static
+ui::LayerTreeOwner* DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(
+    aura::Window* root,
+    Desk* desk) {
+  auto& mini_views = GetOverviewSession()
+                         ->GetGridWithRootWindow(root)
+                         ->desks_bar_view()
+                         ->mini_views();
+  for (auto* mini_view : mini_views) {
+    if (mini_view->desk() == desk) {
+      return mini_view->desk_preview()
+          ->desk_mirrored_contents_layer_tree_owner_.get();
+    }
+  }
+  return nullptr;
 }
 
 // static

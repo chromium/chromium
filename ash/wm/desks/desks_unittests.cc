@@ -3681,6 +3681,33 @@ TEST_P(DesksTest, PerDeskZOrder) {
 
     aura::Window* root = window_to_id.begin()->first->GetRootWindow();
 
+    // Verifies that the desk preview is consistent with the expected per-desk
+    // Z-order. Since the layers are mirrored instead of the same instances, we
+    // verify by layer bounds here.
+    auto verify_desk_preview_mirrored_layer_tree =
+        [&](Desk* desk, const std::vector<int>& expected_windows) {
+          ToggleOverview();
+
+          // Retrieves the mirrored layers `mirrored_layers` of application
+          // windows for `desk`. The root of `layer_tree_owner` is a layer that
+          // has only one child, and the only child acts as the parnet of all
+          // the mirrored layers of application windows.
+          const ui::LayerTreeOwner* layer_tree_owner =
+              DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(root,
+                                                                       desk);
+          const std::vector<ui::Layer*> mirrored_layers =
+              layer_tree_owner->root()->children().front()->children();
+
+          // Tests that `mirrored_layers` and `expected_windows` are sync'ed.
+          ASSERT_EQ(expected_windows.size(), mirrored_layers.size());
+          for (size_t i = 0; i < expected_windows.size(); i++) {
+            ASSERT_EQ(id_to_window[expected_windows[i]]->layer()->bounds(),
+                      mirrored_layers[i]->bounds());
+          }
+
+          ToggleOverview();
+        };
+
     // Verifies that windows on the given desk are found in the expected
     // order. Any windows that have not been created by the test will be
     // ignored.
@@ -3703,6 +3730,8 @@ TEST_P(DesksTest, PerDeskZOrder) {
     // Now we are ready to actually execute the test.
     ActivateDesk(desk_2);
     verify_windows(desk_2, test.expected_desk_2_windows);
+    verify_desk_preview_mirrored_layer_tree(desk_2,
+                                            test.expected_desk_2_windows);
 
     // Move specified windows to desk 1.
     for (int id : test.move_windows) {
@@ -3723,6 +3752,8 @@ TEST_P(DesksTest, PerDeskZOrder) {
 
     ActivateDesk(desk_1);
     verify_windows(desk_1, test.expected_desk_1_windows);
+    verify_desk_preview_mirrored_layer_tree(desk_1,
+                                            test.expected_desk_1_windows);
   }
 }
 

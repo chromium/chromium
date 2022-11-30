@@ -10,6 +10,10 @@
 #include "base/time/clock.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace views {
 class LabelButton;
 class ScrollView;
@@ -17,6 +21,7 @@ class View;
 }  // namespace views
 
 namespace ui {
+class LayerTreeOwner;
 class SimpleMenuModel;
 }  // namespace ui
 
@@ -51,6 +56,9 @@ class DesksTestApi {
   static views::LabelButton* GetCloseAllUndoToastDismissButton();
   static const ui::SimpleMenuModel& GetContextMenuModelForDesk(int index);
   static views::View* GetHighlightOverlayForDeskPreview(int index);
+  static ui::LayerTreeOwner* GetMirroredContentsLayerTreeForRootAndDesk(
+      aura::Window* root,
+      Desk* desk);
   static bool HasVerticalDotsButton();
   static bool DesksControllerHasDesk(Desk* desk);
   static bool DesksControllerCanUndoDeskRemoval();
