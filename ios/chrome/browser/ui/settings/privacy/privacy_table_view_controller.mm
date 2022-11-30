@@ -107,9 +107,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   TableViewDetailIconItem* _safeBrowsingDetailItem;
 }
 
-// Browser.
-@property(nonatomic, readonly) Browser* browser;
-
 // Accessor for the incognito reauth pref.
 @property(nonatomic, strong) PrefBackedBoolean* incognitoReauthPref;
 
@@ -143,7 +140,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _browser = browser;
     _reauthModule = reauthModule;
     _browserState = browser->GetBrowserState();
     self.title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
@@ -504,21 +500,20 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kIosHandoffToOtherDevices) {
-    NSString* detailText =
-        _browserState->GetPrefs()->GetBoolean(prefs::kIosHandoffToOtherDevices)
-            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    NSString* detailText = _browserState->GetPrefs()->GetBoolean(preferenceName)
+                               ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                               : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
     _handoffDetailItem.detailText = detailText;
     [self reconfigureCellsForItems:@[ _handoffDetailItem ]];
     return;
   }
 
-    DCHECK(_safeBrowsingDetailItem);
-    if (preferenceName == prefs::kSafeBrowsingEnabled ||
-        preferenceName == prefs::kSafeBrowsingEnhanced) {
-      _safeBrowsingDetailItem.detailText = [self safeBrowsingDetailText];
-      [self reconfigureCellsForItems:@[ _safeBrowsingDetailItem ]];
-    }
+  DCHECK(_safeBrowsingDetailItem);
+  if (preferenceName == prefs::kSafeBrowsingEnabled ||
+      preferenceName == prefs::kSafeBrowsingEnhanced) {
+    _safeBrowsingDetailItem.detailText = [self safeBrowsingDetailText];
+    [self reconfigureCellsForItems:@[ _safeBrowsingDetailItem ]];
+  }
 }
 
 #pragma mark - BooleanObserver
@@ -555,7 +550,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [super view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
 }
 
-#pragma mark - private
+#pragma mark - Private
 
 // Called when the user taps on the information button of the disabled Incognito
 // reauth setting's UI cell.
