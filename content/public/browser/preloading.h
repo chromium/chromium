@@ -25,8 +25,8 @@ enum class PreloadingType {
   // which will be added later to PreloadingType as we expand.
   kUnspecified = 0,
 
-  // TODO(crbug.com/1309934): Add preloading types 1 and 3 as we integrate
-  // Preloading logging with various preloading types.
+  // TODO(crbug.com/1309934): Add preloading types 1 as we integrate
+  // Preloading logging with preresolve.
 
   // Establishes a connection (including potential TLS handshake) with an
   // origin.
@@ -43,6 +43,12 @@ enum class PreloadingType {
   // page navigation nearly instant as we would activate a fully prepared
   // RenderFrameHost. Both resources are fetched and JS is executed.
   kPrerender = 4,
+
+  // Like prerendering, it fetches resources in advance; but unlike prerendering
+  // it does not execute JavaScript or render any part of the page in advance.
+  // NoState prefetch only supports the GET HTTP method and doesn't cache
+  // resources with the no-store cache-control header.
+  kNoStatePrefetch = 5,
 };
 
 // Defines various triggering mechanisms which triggers different preloading
@@ -124,6 +130,24 @@ enum class PreloadingEligibility {
   // Preloading was ineligible because it was triggered from a page that has an
   // effective url.
   kHasEffectiveUrl = 8,
+
+  // Preloading was ineligible because only single renderer process is only
+  // allowed.
+  kSingleProcess = 9,
+
+  // Preloading was ineligible for link-rel:next URLs.
+  kLinkRelNext = 10,
+
+  // Preloading was ineligible due to the page having third party cookies.
+  kThirdPartyCookies = 11,
+
+  // Preloading was ineligible due to being called before we reached the time
+  // limit to invoke one more preloading operation.
+  kPreloadingInvokedWithinTimelimit = 12,
+
+  // Preloading was ineligible because we can't create a new renderer process
+  // for exceeding the renderer processes limit.
+  kRendererProcessLimitExceeded = 13,
 
   // TODO(crbug.com/1309934): Add more specific ineligibility reasons subject to
   // each preloading operation

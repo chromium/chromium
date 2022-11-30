@@ -37,6 +37,7 @@ class BrowserContext;
 class RenderViewHost;
 class SessionStorageNamespace;
 class WebContents;
+class PreloadingAttempt;
 }  // namespace content
 
 namespace memory_instrumentation {
@@ -115,10 +116,12 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // Starts rendering the contents in the prerendered state.
   // |bounds| indicates the rectangle that the prerendered page should be in.
   // |session_storage_namespace| indicates the namespace that the prerendered
-  // page should be part of.
+  // page should be part of. |preloading_attempt| allows to log metrics for this
+  // NoStatePrefetch attempt.
   virtual void StartPrerendering(
       const gfx::Rect& bounds,
-      content::SessionStorageNamespace* session_storage_namespace);
+      content::SessionStorageNamespace* session_storage_namespace,
+      content::PreloadingAttempt* preloading_attempt);
 
   // Verifies that the prerendering is not using too many resources, and kills
   // it if not.
@@ -249,6 +252,10 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
       bool success,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
 
+  // Sets PreloadingFailureReason based on status corresponding to the
+  // |attempt_|.
+  void SetPreloadingFailureReason(FinalStatus status);
+
   // prerender::mojom::PrerenderCanceler:
   void CancelPrerenderForUnsupportedScheme() override;
   void CancelPrerenderForNoStatePrefetch() override;
@@ -266,6 +273,11 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
 
   // The URL being prerendered.
   const GURL prerender_url_;
+
+  // Store the PreloadingAttempt for this NoStatePrefetch attempt. We store
+  // WeakPtr as it is possible that the PreloadingAttempt is deleted before the
+  // NoStatePrefetch is deleted.
+  base::WeakPtr<content::PreloadingAttempt> attempt_;
 
   // The referrer.
   const content::Referrer referrer_;

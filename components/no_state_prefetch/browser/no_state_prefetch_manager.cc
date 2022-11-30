@@ -43,6 +43,8 @@
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/preloading.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -50,6 +52,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "net/http/http_cache.h"
@@ -57,6 +60,11 @@
 #include "ui/gfx/geometry/rect.h"
 
 using content::BrowserThread;
+using content::PreloadingAttempt;
+using content::PreloadingEligibility;
+using content::PreloadingFailureReason;
+using content::PreloadingHoldbackStatus;
+using content::PreloadingTriggeringOutcome;
 using content::RenderViewHost;
 using content::SessionStorageNamespace;
 using content::WebContents;
@@ -74,6 +82,30 @@ constexpr base::TimeDelta kDeleteWithExtremePrejudice = base::Seconds(3);
 
 // Length of prerender history, for display in chrome://net-internals
 constexpr int kHistoryLength = 100;
+
+// Helper methods to set PrelodingAttempt fields.
+PreloadingFailureReason ToPreloadingFailureReason(FinalStatus status) {
+  return static_cast<PreloadingFailureReason>(
+      static_cast<int>(status) +
+      static_cast<int>(
+          PreloadingFailureReason::kPreloadingFailureReasonContentEnd));
+}
+
+void SetPreloadingTriggeringOutcome(PreloadingAttempt* attempt,
+                                    PreloadingTriggeringOutcome outcome) {
+  if (!attempt)
+    return;
+
+  attempt->SetTriggeringOutcome(outcome);
+}
+
+void SetPreloadingEligibility(PreloadingAttempt* attempt,
+                              PreloadingEligibility eligibility) {
+  if (!attempt)
+    return;
+
+  attempt->SetEligibility(eligibility);
+}
 
 }  // namespace
 
@@ -209,10 +241,11 @@ std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::StartPrefetchingFromOmnibox(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
-    const gfx::Size& size) {
+    const gfx::Size& size,
+    PreloadingAttempt* attempt) {
   return StartPrefetchingWithPreconnectFallback(
       ORIGIN_OMNIBOX, url, content::Referrer(), absl::nullopt, gfx::Rect(size),
-      session_storage_namespace);
+      session_storage_namespace, attempt);
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
@@ -502,13 +535,15 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     const content::Referrer& referrer,
     const absl::optional<url::Origin>& initiator_origin,
     const gfx::Rect& bounds,
-    SessionStorageNamespace* session_storage_namespace) {
+    SessionStorageNamespace* session_storage_namespace,
+    PreloadingAttempt* attempt) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line && command_line->HasSwitch(switches::kSingleProcess)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url_arg, origin,
                                                   FINAL_STATUS_SINGLE_PROCESS);
+    SetPreloadingEligibility(attempt, PreloadingEligibility::kSingleProcess);
     return nullptr;
   }
 
@@ -517,6 +552,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   if (origin == ORIGIN_LINK_REL_NEXT) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(
         url_arg, origin, FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED);
+    SetPreloadingEligibility(attempt, PreloadingEligibility::kLinkRelNext);
     return nullptr;
   }
 
@@ -524,6 +560,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   if (IsLowEndDevice()) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url_arg, origin,
                                                   FINAL_STATUS_LOW_END_DEVICE);
+    SetPreloadingEligibility(attempt, PreloadingEligibility::kLowMemory);
     return nullptr;
   }
 
@@ -538,19 +575,80 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   if (delegate_->GetCookieSettings()->ShouldBlockThirdPartyCookies()) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(
         url, origin, FINAL_STATUS_BLOCK_THIRD_PARTY_COOKIES);
+    SetPreloadingEligibility(attempt,
+                             PreloadingEligibility::kThirdPartyCookies);
     return nullptr;
   }
 
   if (!IsPredictionEnabled(origin)) {
     FinalStatus final_status = FINAL_STATUS_PRERENDERING_DISABLED;
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin, final_status);
+    SetPreloadingEligibility(attempt,
+                             PreloadingEligibility::kPreloadingDisabled);
     return nullptr;
   }
+
+  // Check if enough time has passed since the last prefetch.
+  if (!DoesRateLimitAllowPrefetch(origin)) {
+    // Cancel the prefetch. We could add it to the pending prefetch list but
+    // this doesn't make sense as the next prefetch request will be triggered
+    // by a navigation and is unlikely to be the same site.
+    SkipNoStatePrefetchContentsAndMaybePreconnect(
+        url, origin, FINAL_STATUS_RATE_LIMIT_EXCEEDED);
+    SetPreloadingEligibility(
+        attempt, PreloadingEligibility::kPreloadingInvokedWithinTimelimit);
+    return nullptr;
+  }
+
+  // If this is GWS and we are in the holdback, skip the prefetch. Record the
+  // status as holdback, so we can analyze via UKM.
+  if (origin == ORIGIN_GWS_PRERENDER &&
+      base::FeatureList::IsEnabled(kGWSPrefetchHoldback)) {
+    SetPreloadingEligibility(attempt,
+                             PreloadingEligibility::kPreloadingDisabled);
+    // Set the holdback status on the prefetch entry.
+    SetPrefetchFinalStatusForUrl(url, FINAL_STATUS_GWS_HOLDBACK);
+    SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
+                                                  FINAL_STATUS_GWS_HOLDBACK);
+    return nullptr;
+  }
+
+  // If this is Navigation predictor and we are in the holdback, skip the
+  // prefetch. Record the status as holdback, so we can analyze via UKM.
+  if (origin == ORIGIN_NAVIGATION_PREDICTOR &&
+      base::FeatureList::IsEnabled(kNavigationPredictorPrefetchHoldback)) {
+    // Set the holdback status on the prefetch entry.
+    SetPreloadingEligibility(attempt,
+                             PreloadingEligibility::kPreloadingDisabled);
+    SetPrefetchFinalStatusForUrl(url,
+                                 FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK);
+    SkipNoStatePrefetchContentsAndMaybePreconnect(
+        url, origin, FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK);
+    return nullptr;
+  }
+
+  // NoStatePrefetch is now eligible to be triggered.
+  SetPreloadingEligibility(attempt, PreloadingEligibility::kEligible);
+
+  // Check for the holdback status and set it.
+  if (base::FeatureList::IsEnabled(features::kNoStatePrefetchHoldback)) {
+    SetPrefetchFinalStatusForUrl(url, FINAL_STATUS_PREFETCH_HOLDBACK);
+    SkipNoStatePrefetchContentsAndMaybePreconnect(
+        url, origin, FINAL_STATUS_PREFETCH_HOLDBACK);
+
+    if (attempt)
+      attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
+    return nullptr;
+  }
+  if (attempt)
+    attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
 
   if (NoStatePrefetchData* preexisting_prefetch_data =
           FindNoStatePrefetchData(url, session_storage_namespace)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
                                                   FINAL_STATUS_DUPLICATE);
+    SetPreloadingTriggeringOutcome(attempt,
+                                   PreloadingTriggeringOutcome::kDuplicate);
     return base::WrapUnique(
         new NoStatePrefetchHandle(preexisting_prefetch_data));
   }
@@ -562,6 +660,8 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
       prefetch_age < base::Minutes(net::HttpCache::kPrefetchReuseMins)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
                                                   FINAL_STATUS_DUPLICATE);
+    SetPreloadingTriggeringOutcome(attempt,
+                                   PreloadingTriggeringOutcome::kDuplicate);
     return nullptr;
   }
 
@@ -581,45 +681,20 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
       !content::RenderProcessHost::run_renderer_in_process()) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(
         url, origin, FINAL_STATUS_TOO_MANY_PROCESSES);
-    return nullptr;
-  }
-
-  // Check if enough time has passed since the last prefetch.
-  if (!DoesRateLimitAllowPrefetch(origin)) {
-    // Cancel the prefetch. We could add it to the pending prefetch list but
-    // this doesn't make sense as the next prefetch request will be triggered
-    // by a navigation and is unlikely to be the same site.
-    SkipNoStatePrefetchContentsAndMaybePreconnect(
-        url, origin, FINAL_STATUS_RATE_LIMIT_EXCEEDED);
+    // Since it is possible that the NSP enabled group uses more processes, we
+    // don't see a similar behavior in our holdback and enabled group for
+    // counterfactual logging. Setting this as a failure reason to capture this
+    // behavior consistently.
+    if (attempt) {
+      attempt->SetFailureReason(
+          ToPreloadingFailureReason(FINAL_STATUS_TOO_MANY_PROCESSES));
+    }
     return nullptr;
   }
 
   // Record the URL in the prefetch list, even when in full prerender mode, to
   // enable metrics comparisons.
   prefetches_.emplace_back(url, GetCurrentTimeTicks(), origin);
-
-  // If this is GWS and we are in the holdback, skip the prefetch. Record the
-  // status as holdback, so we can analyze via UKM.
-  if (origin == ORIGIN_GWS_PRERENDER &&
-      base::FeatureList::IsEnabled(kGWSPrefetchHoldback)) {
-    // Set the holdback status on the prefetch entry.
-    SetPrefetchFinalStatusForUrl(url, FINAL_STATUS_GWS_HOLDBACK);
-    SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
-                                                  FINAL_STATUS_GWS_HOLDBACK);
-    return nullptr;
-  }
-
-  // If this is Navigation predictor and we are in the holdback, skip the
-  // prefetch. Record the status as holdback, so we can analyze via UKM.
-  if (origin == ORIGIN_NAVIGATION_PREDICTOR &&
-      base::FeatureList::IsEnabled(kNavigationPredictorPrefetchHoldback)) {
-    // Set the holdback status on the prefetch entry.
-    SetPrefetchFinalStatusForUrl(url,
-                                 FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK);
-    SkipNoStatePrefetchContentsAndMaybePreconnect(
-        url, origin, FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK);
-    return nullptr;
-  }
 
   std::unique_ptr<NoStatePrefetchContents> no_state_prefetch_contents =
       CreateNoStatePrefetchContents(url, referrer, initiator_origin, origin);
@@ -647,8 +722,8 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   gfx::Rect contents_bounds =
       bounds.IsEmpty() ? config_.default_tab_bounds : bounds;
 
-  no_state_prefetch_contents_ptr->StartPrerendering(contents_bounds,
-                                                    session_storage_namespace);
+  no_state_prefetch_contents_ptr->StartPrerendering(
+      contents_bounds, session_storage_namespace, attempt);
 
   DCHECK(no_state_prefetch_contents_ptr->prerendering_has_started());
 
@@ -950,7 +1025,7 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
   }
 
   static_assert(
-      FINAL_STATUS_MAX == FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED + 1,
+      FINAL_STATUS_MAX == FINAL_STATUS_PREFETCH_HOLDBACK + 1,
       "Consider whether a failed prefetch should fallback to preconnect");
 }
 

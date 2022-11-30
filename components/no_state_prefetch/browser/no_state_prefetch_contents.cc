@@ -25,6 +25,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/preloading.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -63,6 +65,22 @@ class NoStatePrefetchContentsFactoryImpl
         referrer, initiator_origin, origin);
   }
 };
+
+void SetPreloadingTriggeringOutcome(
+    content::PreloadingAttempt* attempt,
+    content::PreloadingTriggeringOutcome outcome) {
+  if (!attempt)
+    return;
+
+  attempt->SetTriggeringOutcome(outcome);
+}
+
+content::PreloadingFailureReason ToPreloadingFailureReason(FinalStatus status) {
+  return static_cast<content::PreloadingFailureReason>(
+      static_cast<int>(status) +
+      static_cast<int>(content::PreloadingFailureReason::
+                           kPreloadingFailureReasonContentEnd));
+}
 
 // WebContentsDelegateImpl -----------------------------------------------------
 
@@ -177,9 +195,62 @@ NoStatePrefetchContents::Factory* NoStatePrefetchContents::CreateFactory() {
   return new NoStatePrefetchContentsFactoryImpl();
 }
 
+void NoStatePrefetchContents::SetPreloadingFailureReason(FinalStatus status) {
+  if (!attempt_)
+    return;
+
+  switch (status) {
+    case FINAL_STATUS_USED:
+    case FINAL_STATUS_NOSTATE_PREFETCH_FINISHED:
+      // When adding a new failure reason, consider whether it should be
+      // propagated to `attempt_`. Most values should be propagated, but we
+      // explicitly do not propagate failure reasons if:
+      // the no state prefetch was actually successful (USED OR
+      // PREFETCH_FINISHED).
+      return;
+    case FINAL_STATUS_TIMED_OUT:
+    case FINAL_STATUS_PROFILE_DESTROYED:
+    case FINAL_STATUS_APP_TERMINATING:
+    case FINAL_STATUS_AUTH_NEEDED:
+    case FINAL_STATUS_DOWNLOAD:
+    case FINAL_STATUS_MEMORY_LIMIT_EXCEEDED:
+    case FINAL_STATUS_TOO_MANY_PROCESSES:
+    case FINAL_STATUS_RATE_LIMIT_EXCEEDED:
+    case FINAL_STATUS_RENDERER_CRASHED:
+    case FINAL_STATUS_UNSUPPORTED_SCHEME:
+    case FINAL_STATUS_RECENTLY_VISITED:
+    case FINAL_STATUS_SAFE_BROWSING:
+    case FINAL_STATUS_SSL_CLIENT_CERTIFICATE_REQUESTED:
+    case FINAL_STATUS_CACHE_OR_HISTORY_CLEARED:
+    case FINAL_STATUS_CANCELLED:
+    case FINAL_STATUS_SSL_ERROR:
+    case FINAL_STATUS_DUPLICATE:
+    case FINAL_STATUS_OPEN_URL:
+    case FINAL_STATUS_NAVIGATION_INTERCEPTED:
+    case FINAL_STATUS_PRERENDERING_DISABLED:
+    case FINAL_STATUS_BLOCK_THIRD_PARTY_COOKIES:
+    case FINAL_STATUS_LOW_END_DEVICE:
+    case FINAL_STATUS_BROWSER_SWITCH:
+    case FINAL_STATUS_GWS_HOLDBACK:
+    case FINAL_STATUS_UNKNOWN:
+    case FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK:
+    case FINAL_STATUS_SINGLE_PROCESS:
+    case FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED:
+    case FINAL_STATUS_PREFETCH_HOLDBACK:
+    case FINAL_STATUS_MAX:
+      attempt_->SetFailureReason(ToPreloadingFailureReason(status));
+      // We reset the attempt to ensure we don't update once we have reported it
+      // as failure or accidentally use it for any other prerender attempts as
+      // PrerenderHost deletion is async.
+      attempt_.reset();
+      return;
+  }
+}
+
 void NoStatePrefetchContents::StartPrerendering(
     const gfx::Rect& bounds,
-    SessionStorageNamespace* session_storage_namespace) {
+    SessionStorageNamespace* session_storage_namespace,
+    content::PreloadingAttempt* attempt) {
   DCHECK(browser_context_);
   DCHECK(!bounds.IsEmpty());
   DCHECK(!prerendering_has_started_);
@@ -194,6 +265,10 @@ void NoStatePrefetchContents::StartPrerendering(
   load_start_time_ = base::TimeTicks::Now();
 
   prerendering_has_started_ = true;
+  if (attempt)
+    attempt_ = attempt->GetWeakPtr();
+  SetPreloadingTriggeringOutcome(
+      attempt, content::PreloadingTriggeringOutcome::kRunning);
 
   no_state_prefetch_contents_ = CreateWebContents(session_storage_namespace);
   content::WebContentsObserver::Observe(no_state_prefetch_contents_.get());
@@ -236,6 +311,8 @@ void NoStatePrefetchContents::SetFinalStatus(FinalStatus final_status) {
   DCHECK_EQ(FINAL_STATUS_UNKNOWN, final_status_);
 
   final_status_ = final_status;
+
+  SetPreloadingFailureReason(final_status);
 }
 
 NoStatePrefetchContents::~NoStatePrefetchContents() {
@@ -282,6 +359,11 @@ void NoStatePrefetchContents::NotifyPrefetchStart() {
 }
 
 void NoStatePrefetchContents::NotifyPrefetchStopLoading() {
+  // Set the status to Ready once the prefetch stops loading. For
+  // NoStatePrefetch we don't know if the final resource was used from cache
+  // later on or not. kReady doesn't mean it is a success.
+  SetPreloadingTriggeringOutcome(attempt_.get(),
+                                 content::PreloadingTriggeringOutcome::kReady);
   for (Observer& observer : observer_list_)
     observer.OnPrefetchStopLoading(this);
 }

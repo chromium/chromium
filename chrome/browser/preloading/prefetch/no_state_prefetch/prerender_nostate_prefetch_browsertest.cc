@@ -27,6 +27,7 @@
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,6 +49,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -66,6 +68,7 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
@@ -75,19 +78,21 @@
 #include "net/cookies/cookie_store.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 
-using prerender::test_utils::DestructionWaiter;
-using prerender::test_utils::TestPrerender;
-using task_manager::browsertest_util::WaitForTaskManagerRows;
-
 namespace {
 
 const char kExpectedPurposeHeaderOnPrefetch[] = "Purpose";
+using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
+using prerender::test_utils::DestructionWaiter;
+using prerender::test_utils::TestPrerender;
+using task_manager::browsertest_util::WaitForTaskManagerRows;
+using ukm::builders::Preloading_Attempt;
 
 std::string CreateServerRedirect(const std::string& dest_url) {
   const char* const kServerRedirectBase = "/server-redirect?";
@@ -218,6 +223,14 @@ class NavigationOrSwapObserver : public content::WebContentsObserver,
   base::RunLoop loop_;
 };
 
+content::PreloadingFailureReason ToPreloadingFailureReasonFromFinalStatus(
+    FinalStatus status) {
+  return static_cast<content::PreloadingFailureReason>(
+      static_cast<int>(status) +
+      static_cast<int>(content::PreloadingFailureReason::
+                           kPreloadingFailureReasonContentEnd));
+}
+
 // Waits for a new tab to open and a navigation or swap in it.
 class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
                                        public BrowserListObserver {
@@ -288,6 +301,11 @@ class NoStatePrefetchBrowserTest
 
   void SetUpOnMainThread() override {
     test_utils::PrerenderInProcessBrowserTest::SetUpOnMainThread();
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    attempt_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kOmniboxDirectURLInput));
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -295,6 +313,15 @@ class NoStatePrefetchBrowserTest
     // The default zero time causes the prerender manager to do strange things.
     clock_.Advance(base::Seconds(1));
     GetNoStatePrefetchManager()->SetTickClockForTesting(&clock_);
+  }
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder&
+  attempt_entry_builder() {
+    return *attempt_entry_builder_;
   }
 
  protected:
@@ -431,6 +458,9 @@ class NoStatePrefetchBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      attempt_entry_builder_;
 };
 
 class NoStatePrefetchBrowserTestHttpCache
@@ -1621,6 +1651,34 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchOmniboxBrowserTest,
   // Revert the location bar. This should cancel the prerender.
   GetLocationBar()->Revert();
   prerender->WaitForStop();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL(kPrefetchPage2)));
+  {
+    // Check that we store one entry corresponding to NoStatePrefetch attempt.
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // NoStatePrefetch should fail with canceled failure reason.
+    // AccurateTriggering should be false as we navigate to a different URL.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kNoStatePrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            ToPreloadingFailureReasonFromFinalStatus(FINAL_STATUS_CANCELLED),
+            /*accurate=*/false),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, OpenTaskManager) {

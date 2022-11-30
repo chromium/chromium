@@ -333,7 +333,7 @@ TEST_F(ActivityLogTest, LogPrerender) {
       no_state_prefetch_manager->StartPrefetchingFromOmnibox(
           url,
           web_contents()->GetController().GetDefaultSessionStorageNamespace(),
-          kSize));
+          kSize, nullptr));
 
   const std::vector<content::WebContents*> contentses =
       no_state_prefetch_manager->GetAllNoStatePrefetchingContentsForTesting();

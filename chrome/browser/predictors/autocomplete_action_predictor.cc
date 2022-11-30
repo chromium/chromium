@@ -39,6 +39,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_features.h"
 
 namespace {
 
@@ -196,15 +197,16 @@ void AutocompleteActionPredictor::StartPrerendering(
     content::WebContents& web_contents,
     const gfx::Size& size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Helpers to create content::PreloadingAttempt.
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(&web_contents);
+  content::PreloadingURLMatchCallback same_url_matcher =
+      content::PreloadingData::GetSameURLMatcher(url);
+
   if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
-    auto* preloading_data =
-        content::PreloadingData::GetOrCreateForWebContents(&web_contents);
-
-    content::PreloadingURLMatchCallback same_url_matcher =
-        content::PreloadingData::GetSameURLMatcher(url);
-
     // Create new PreloadingAttempt and pass all the values corresponding to
-    // this prerendering attempt.
+    // this prerendering attempt for Prerender.
     content::PreloadingAttempt* preloading_attempt =
         preloading_data->AddPreloadingAttempt(
             ToPreloadingPredictor(
@@ -218,10 +220,36 @@ void AutocompleteActionPredictor::StartPrerendering(
                                                         *preloading_attempt);
   } else if (base::FeatureList::IsEnabled(
                  features::kOmniboxTriggerForNoStatePrefetch)) {
+    // Create new PreloadingAttempt and pass all the values corresponding to
+    // this preloading attempt for NoStatePrefetch.
+    content::PreloadingAttempt* preloading_attempt =
+        preloading_data->AddPreloadingAttempt(
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kOmniboxDirectURLInput),
+            content::PreloadingType::kNoStatePrefetch,
+            std::move(same_url_matcher));
+
     content::SessionStorageNamespace* session_storage_namespace =
         web_contents.GetController().GetDefaultSessionStorageNamespace();
     if (no_state_prefetch_handle_) {
       if (no_state_prefetch_handle_->prerender_url() == url) {
+        // In case NSP is already present for the URL, NoStatPrefetch is
+        // eligible but mark triggering outcome as a duplicate.
+        preloading_attempt->SetEligibility(
+            content::PreloadingEligibility::kEligible);
+
+        // Check and set the PreloadingHoldbackStatus before setting the
+        // TriggeringOutcome.
+        if (base::FeatureList::IsEnabled(features::kNoStatePrefetchHoldback)) {
+          preloading_attempt->SetHoldbackStatus(
+              content::PreloadingHoldbackStatus::kHoldback);
+          return;
+        }
+        preloading_attempt->SetHoldbackStatus(
+            content::PreloadingHoldbackStatus::kAllowed);
+        preloading_attempt->SetTriggeringOutcome(
+            content::PreloadingTriggeringOutcome::kDuplicate);
+
         // We've already started a prefetch for the target URL. Nothing to do.
         return;
       }
@@ -239,7 +267,7 @@ void AutocompleteActionPredictor::StartPrerendering(
     if (no_state_prefetch_manager) {
       no_state_prefetch_handle_ =
           no_state_prefetch_manager->StartPrefetchingFromOmnibox(
-              url, session_storage_namespace, size);
+              url, session_storage_namespace, size, preloading_attempt);
     }
   }
 }

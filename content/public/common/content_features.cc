@@ -695,6 +695,11 @@ BASE_FEATURE(kNotificationTriggers,
              "NotificationTriggers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature which holdbacks NoStatePrefetch on all surfaces.
+BASE_FEATURE(kNoStatePrefetchHoldback,
+             "NoStatePrefetchHoldback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the Origin-Agent-Cluster header. Tracking bug
 // https://crbug.com/1042415; flag removal bug (for when this is fully launched)
 // https://crbug.com/1148057.

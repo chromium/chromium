@@ -23,6 +23,7 @@
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
@@ -116,11 +117,14 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // those. The |session_storage_namespace| matches the namespace of the active
   // tab at the time the prefetch is started from the omnibox. Returns a
   // NoStatePrefetchHandle or NULL. If the prefetch fails, the prefetch manager
-  // may fallback and initiate a preconnect to |url|.
+  // may fallback and initiate a preconnect to |url|. PreloadingAttempt
+  // represents the attempt corresponding to this prerender to log the necessary
+  // metrics.
   std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingFromOmnibox(
       const GURL& url,
       content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Size& size);
+      const gfx::Size& size,
+      content::PreloadingAttempt* attempt);
 
   // Adds a prerender for the prefetch url from IsolatedPrerender on
   // page load, if NoStatePrefetch and prefetch_after_preconnect are true.
@@ -368,13 +372,18 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // prefetch was started. If |bounds| is empty, then
   // NoStatePrefetchContents::StartPrerendering will instead use a default from
   // PrerenderConfig. Returns a NoStatePrefetchHandle or NULL.
+  // PreloadingAttempt helps us to log various metrics associated with
+  // particular NoStatePrefetch attempt.
+  // TODO(crbug.com/1363358): Remove nullptr as default parameter once NSP is
+  // integrated with all different predictors.
   std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingWithPreconnectFallback(
       Origin origin,
       const GURL& url,
       const content::Referrer& referrer,
       const absl::optional<url::Origin>& initiator_origin,
       const gfx::Rect& bounds,
-      content::SessionStorageNamespace* session_storage_namespace);
+      content::SessionStorageNamespace* session_storage_namespace,
+      content::PreloadingAttempt* attempt = nullptr);
 
   void StartSchedulingPeriodicCleanups();
   void StopSchedulingPeriodicCleanups();

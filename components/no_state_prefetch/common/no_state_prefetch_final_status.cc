@@ -75,6 +75,7 @@ const char* kFinalStatusNames[] = {
     "Navigation Predictor Holdback",
     "Single Process Mode",
     "Link Rel Next Not Allowed",
+    "NoStatePrefetch Holdback",
     "Max",
 };
 static_assert(std::size(kFinalStatusNames) == FINAL_STATUS_MAX + 1,

@@ -625,7 +625,7 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       kUrl, absl::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_CANCELLED);
   EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kUrl, nullptr, gfx::Size()));
+      kUrl, nullptr, gfx::Size(), nullptr));
   // Cancel the prefetch so that it is not reused.
   no_state_prefetch_manager()->CancelAllPrerenders();
 
@@ -635,14 +635,14 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
   // Prefetch again before time_to_live aborts, because it is a duplicate.
   tick_clock()->Advance(base::Seconds(1));
   EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kUrl, nullptr, gfx::Size()));
+      kUrl, nullptr, gfx::Size(), nullptr));
   histogram_tester().ExpectBucketCount("Prerender.FinalStatus",
                                        FINAL_STATUS_DUPLICATE, 1);
 
   // Prefetch after time_to_live succeeds.
   tick_clock()->Advance(base::Minutes(net::HttpCache::kPrefetchReuseMins));
   EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kUrl, nullptr, gfx::Size()));
+      kUrl, nullptr, gfx::Size(), nullptr));
 }
 
 // Make sure that if we prerender more requests than we support, that we launch
@@ -898,7 +898,7 @@ TEST_F(NoStatePrefetchTest, OmniboxAllowedWhenNotDisabled) {
           FINAL_STATUS_PROFILE_DESTROYED);
 
   EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      GURL("http://www.example.com"), nullptr, gfx::Size()));
+      GURL("http://www.example.com"), nullptr, gfx::Size(), nullptr));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
 }
 
@@ -927,7 +927,7 @@ TEST_F(PrerenderFallbackToPreconnectDisabledTest,
   // Prefetch should be disabled on low memory devices.
   no_state_prefetch_manager()->SetIsLowEndDevice(true);
   EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kURL, nullptr, gfx::Size()));
+      kURL, nullptr, gfx::Size(), nullptr));
 
   EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
 }
@@ -958,7 +958,7 @@ TEST_F(PrerenderFallbackToPreconnectEnabledTest,
   // Prefetch should be disabled on low memory devices.
   no_state_prefetch_manager()->SetIsLowEndDevice(true);
   EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kURL, nullptr, gfx::Size()));
+      kURL, nullptr, gfx::Size(), nullptr));
 
   // Verify that the prefetch request falls back to a preconnect request.
   EXPECT_EQ(1u, loading_predictor->GetActiveHintsSizeForTesting());

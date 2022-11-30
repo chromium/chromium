@@ -351,7 +351,7 @@ TEST_F(TabLoadTrackerTest, NoStatePrefetchContentsDoesNotChangeUiTabCounts) {
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager->StartPrefetchingFromOmnibox(
           url, contents1()->GetController().GetDefaultSessionStorageNamespace(),
-          kSize));
+          kSize, nullptr));
   EXPECT_NE(nullptr, no_state_prefetch_handle);
   const std::vector<content::WebContents*> contentses =
       no_state_prefetch_manager->GetAllNoStatePrefetchingContentsForTesting();
