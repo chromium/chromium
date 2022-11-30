@@ -4,6 +4,7 @@
 
 #include "base/task/sequence_manager/work_deduplicator.h"
 
+#include <ostream>
 #include <utility>
 #include "base/check_op.h"
 

@@ -5,6 +5,7 @@
 #include "base/task/sequence_manager/test/mock_time_message_pump.h"
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/auto_reset.h"
 #include "base/notreached.h"
