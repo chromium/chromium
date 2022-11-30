@@ -5,7 +5,7 @@
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf_menu_model_adapter.h"
 #include "ash/shelf/shelf_widget.h"
-#include "ash/shelf/test/scrollable_shelf_test_base.h"
+#include "ash/shelf/test/shelf_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -13,11 +13,11 @@
 
 namespace ash {
 
-class ScrollableShelfViewPixelRTLTestBase : public ScrollableShelfTestBase {
+class ScrollableShelfViewPixelRTLTestBase : public ShelfTestBase {
  public:
   // ScrollableShelfTestBase:
   void SetUp() override {
-    ScrollableShelfTestBase::SetUp();
+    ShelfTestBase::SetUp();
     AddAppShortcutsUntilOverflow(/*use_alternative_color=*/true);
   }
 };
@@ -44,7 +44,7 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
 }
 
 class ScrollableShelfViewWithGuestModePixelTest
-    : public ScrollableShelfTestBase,
+    : public ShelfTestBase,
       public testing::WithParamInterface<bool /*use_guest_mode=*/> {
  public:
   // ScrollableShelfTestBase:
@@ -56,7 +56,7 @@ class ScrollableShelfViewWithGuestModePixelTest
   void SetUp() override {
     set_start_session(false);
 
-    ScrollableShelfTestBase::SetUp();
+    ShelfTestBase::SetUp();
     if (GetParam())
       SimulateGuestLogin();
     else

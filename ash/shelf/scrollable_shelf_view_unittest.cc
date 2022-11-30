@@ -17,7 +17,7 @@
 #include "ash/shelf/shelf_tooltip_manager.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
-#include "ash/shelf/test/scrollable_shelf_test_base.h"
+#include "ash/shelf/test/shelf_test_base.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
@@ -120,7 +120,7 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
   void Close() override {}
 };
 
-class ScrollableShelfViewTest : public ScrollableShelfTestBase {
+class ScrollableShelfViewTest : public ShelfTestBase {
  public:
   ScrollableShelfViewTest() = default;
   ~ScrollableShelfViewTest() override = default;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/shelf/test/scrollable_shelf_test_base.h"
+#include "ash/shelf/test/shelf_test_base.h"
 
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
@@ -13,12 +13,23 @@
 
 namespace ash {
 
-ScrollableShelfTestBase::ScrollableShelfTestBase() = default;
+ShelfTestBase::ShelfTestBase() = default;
 
-ScrollableShelfTestBase::~ScrollableShelfTestBase() = default;
+ShelfTestBase::~ShelfTestBase() = default;
 
-void ScrollableShelfTestBase::SetUp() {
+void ShelfTestBase::SetUp() {
   AshTestBase::SetUp();
+  UpdateShelfRelatedMembers();
+}
+
+void ShelfTestBase::TearDown() {
+  // When the test is completed, the page flip timer should be idle.
+  EXPECT_FALSE(scrollable_shelf_view_->IsPageFlipTimerBusyForTest());
+
+  AshTestBase::TearDown();
+}
+
+void ShelfTestBase::UpdateShelfRelatedMembers() {
   scrollable_shelf_view_ = GetPrimaryShelf()
                                ->shelf_widget()
                                ->hotseat_widget()
@@ -29,15 +40,8 @@ void ScrollableShelfTestBase::SetUp() {
   test_api_->SetAnimationDuration(base::Milliseconds(1));
 }
 
-void ScrollableShelfTestBase::TearDown() {
-  // When the test is completed, the page flip timer should be idle.
-  EXPECT_FALSE(scrollable_shelf_view_->IsPageFlipTimerBusyForTest());
-
-  AshTestBase::TearDown();
-}
-
-void ScrollableShelfTestBase::PopulateAppShortcut(int number,
-                                                  bool use_alternative_color) {
+void ShelfTestBase::PopulateAppShortcut(int number,
+                                        bool use_alternative_color) {
   for (int i = 0; i < number; i++)
     AddAppShortcutWithIconColor(
         TYPE_PINNED_APP, use_alternative_color
@@ -45,8 +49,7 @@ void ScrollableShelfTestBase::PopulateAppShortcut(int number,
                              : icon_color_generator_.default_color());
 }
 
-void ScrollableShelfTestBase::AddAppShortcutsUntilOverflow(
-    bool use_alternative_color) {
+void ShelfTestBase::AddAppShortcutsUntilOverflow(bool use_alternative_color) {
   while (scrollable_shelf_view_->layout_strategy_for_test() ==
          ScrollableShelfView::kNotShowArrowButtons) {
     AddAppShortcutWithIconColor(
@@ -56,9 +59,8 @@ void ScrollableShelfTestBase::AddAppShortcutsUntilOverflow(
   }
 }
 
-ShelfID ScrollableShelfTestBase::AddAppShortcutWithIconColor(
-    ShelfItemType item_type,
-    SkColor color) {
+ShelfID ShelfTestBase::AddAppShortcutWithIconColor(ShelfItemType item_type,
+                                                   SkColor color) {
   ShelfItem item = ShelfTestUtil::AddAppShortcutWithIcon(
       base::NumberToString(id_++), item_type,
       CreateSolidColorTestImage(gfx::Size(1, 1), color));

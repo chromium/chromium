@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SHELF_TEST_SCROLLABLE_SHELF_TEST_BASE_H_
-#define ASH_SHELF_TEST_SCROLLABLE_SHELF_TEST_BASE_H_
+#ifndef ASH_SHELF_TEST_SHELF_TEST_BASE_H_
+#define ASH_SHELF_TEST_SHELF_TEST_BASE_H_
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/test/ash_test_base.h"
@@ -15,16 +15,24 @@ class ShelfView;
 class ShelfViewTestAPI;
 
 // Shared by the scrollable shelf pixel and non-pixel tests.
-class ScrollableShelfTestBase : public AshTestBase {
+class ShelfTestBase : public AshTestBase {
  public:
-  ScrollableShelfTestBase();
-  ScrollableShelfTestBase(const ScrollableShelfTestBase&) = delete;
-  ScrollableShelfTestBase& operator=(const ScrollableShelfTestBase&) = delete;
-  ~ScrollableShelfTestBase() override;
+  template <typename... TaskEnvironmentTraits>
+  explicit ShelfTestBase(TaskEnvironmentTraits&&... traits)
+      : AshTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+
+  ShelfTestBase();
+  ShelfTestBase(const ShelfTestBase&) = delete;
+  ShelfTestBase& operator=(const ShelfTestBase&) = delete;
+  ~ShelfTestBase() override;
 
   // AshTestBase:
   void SetUp() override;
   void TearDown() override;
+
+  // Updates the shelf related data members. This method should be used when the
+  // primary shelf is recreated.
+  void UpdateShelfRelatedMembers();
 
  protected:
   // Pins some app icons to shelf. If `use_alternative_color` is true, the
@@ -51,4 +59,4 @@ class ScrollableShelfTestBase : public AshTestBase {
 
 }  // namespace ash
 
-#endif  // ASH_SHELF_TEST_SCROLLABLE_SHELF_TEST_BASE_H_
+#endif  // ASH_SHELF_TEST_SHELF_TEST_BASE_H_

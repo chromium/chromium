@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/test/ash_test_base.h"
+#include "ash/shelf/test/shelf_test_base.h"
 #include "ash/wm/workspace/workspace_types.h"
 #include "base/time/time.h"
 
@@ -20,11 +20,11 @@ namespace ash {
 
 class ShelfLayoutManager;
 
-class ShelfLayoutManagerTestBase : public AshTestBase {
+class ShelfLayoutManagerTestBase : public ShelfTestBase {
  public:
   template <typename... TaskEnvironmentTraits>
   explicit ShelfLayoutManagerTestBase(TaskEnvironmentTraits&&... traits)
-      : AshTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+      : ShelfTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
 
   // Calls the private SetState() function.
   void SetState(ShelfLayoutManager* layout_manager, ShelfVisibilityState state);
@@ -69,7 +69,7 @@ class ShelfLayoutManagerTestBase : public AshTestBase {
   void MouseDragShelfTo(const gfx::Point& start, const gfx::Point& target);
 
   // Move mouse to show Shelf in auto-hide mode.
-  void MouseMouseToShowAutoHiddenShelf();
+  void MoveMouseToShowAutoHiddenShelf();
 
   // Move mouse to |location| and do a two-finger scroll.
   void DoTwoFingerScrollAtLocation(gfx::Point location,

@@ -358,7 +358,7 @@ void ShelfLayoutManagerTestBase::MouseDragShelfTo(const gfx::Point& start,
 }
 
 // Move mouse to show Shelf in auto-hide mode.
-void ShelfLayoutManagerTestBase::MouseMouseToShowAutoHiddenShelf() {
+void ShelfLayoutManagerTestBase::MoveMouseToShowAutoHiddenShelf() {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   const int display_bottom = display.bounds().bottom();
   GetEventGenerator()->MoveMouseTo(1, display_bottom - 1);

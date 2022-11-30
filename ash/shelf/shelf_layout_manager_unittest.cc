@@ -2265,6 +2265,10 @@ TEST_F(ShelfLayoutManagerTest, ShelfLayoutInUnifiedDesktop) {
   Shell::Get()->display_manager()->SetUnifiedDesktopEnabled(true);
   UpdateDisplay("500x400, 500x400");
 
+  // When the unified desktop is enabled, UpdateDisplay() adds a display so the
+  // shelf is recreated. Therefore, update the shelf related data members.
+  UpdateShelfRelatedMembers();
+
   StatusAreaWidget* status_area_widget = GetShelfWidget()->status_area_widget();
   EXPECT_TRUE(status_area_widget->IsVisible());
   // Shelf should be in the first display's area.
