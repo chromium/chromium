@@ -1902,12 +1902,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CaptivePortal.DetectResult" enum="CaptivePortalDetectResult"
-    expires_after="2021-08-01">
-  <owner>meacer@chromium.org</owner>
-  <summary>Records the result of a captive portal probe.</summary>
-</histogram>
-
 <histogram name="Cast.Channel.Certificate" enum="CastCertificateStatus"
     expires_after="never">
 <!-- expires-never: Used for Cast device health monitoring. -->

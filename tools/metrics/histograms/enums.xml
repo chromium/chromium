@@ -14389,18 +14389,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="OPEN_LOGIN_PAGE"/>
 </enum>
 
-<enum name="CaptivePortalDetectResult">
-  <int value="0" label="INTERNET_CONNECTED"/>
-  <int value="1" label="NO_RESPONSE"/>
-  <int value="2" label="BEHIND_CAPTIVE_PORTAL"/>
-  <int value="3" label="NO_RESPONSE_HTTPS_LANDING_URL"/>
-  <int value="4" label="BEHIND_CAPTIVE_PORTAL_HTTPS_LANDING_URL"/>
-  <int value="5" label="NO_RESPONSE_IP_ADDRESS"/>
-  <int value="6" label="BEHIND_CAPTIVE_PORTAL_IP_ADDRESS"/>
-  <int value="7" label="NO_RESPONSE_HTTPS_LANDING_URL_IP_ADDRESS"/>
-  <int value="8" label="BEHIND_CAPTIVE_PORTAL_HTTPS_LANDING_URL_IP_ADDRESS"/>
-</enum>
-
 <enum name="CaptivePortalNetworkState">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="ONLINE"/>
