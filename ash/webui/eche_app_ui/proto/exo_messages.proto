@@ -19,12 +19,18 @@ message ExoMessage {
   }
 }
 
+message NetworkInfo {
+  bytes ssid = 1;
+  bool mobile_network = 2;
+}
+
 message SignalingRequest {
   bytes data = 1;
 }
 
 message SignalingResponse {
   bytes data = 1;
+  optional NetworkInfo network_info = 2;
 }
 
 message SignalingAction {
