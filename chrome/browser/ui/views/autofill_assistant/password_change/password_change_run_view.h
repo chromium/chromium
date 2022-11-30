@@ -95,6 +95,9 @@ class PasswordChangeRunView : public views::View,
   base::WeakPtr<PasswordChangeRunView> GetWeakPtr();
 
  private:
+  // For access to `GetBackgroundColor`.
+  friend class PasswordChangeRunViewTest;
+
   // Creates/initialises the view.
   void CreateView();
 

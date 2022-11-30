@@ -148,7 +148,7 @@ void PasswordChangeRunView::CreateView() {
               ui::kColorWindowBackground, kTopIconSize),
           ui::ImageModel::FromVectorIcon(
               GetApcTopIconFromEnum(TopIcon::TOP_ICON_OPEN_SITE_SETTINGS,
-                                    /*dark_mode=*/false),
+                                    /*dark_mode=*/true),
               ui::kColorWindowBackground, kTopIconSize),
           base::BindRepeating(&PasswordChangeRunView::GetBackgroundColor,
                               base::Unretained(this))));

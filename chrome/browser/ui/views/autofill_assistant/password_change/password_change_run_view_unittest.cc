@@ -37,6 +37,7 @@
 using autofill_assistant::password_change::TopIcon;
 using PromptChoice = PasswordChangeRunDisplay::PromptChoice;
 using testing::IsEmpty;
+using testing::NiceMock;
 using testing::SizeIs;
 using testing::StrictMock;
 
@@ -140,13 +141,14 @@ class PasswordChangeRunViewTest : public views::ViewsTestBase {
 
   ui::ImageModel GetExpectedTopIconModel(TopIcon top_icon) {
     return ui::ImageModel::FromVectorIcon(
-        GetApcTopIconFromEnum(top_icon, /*dark_mode=*/false),
+        GetApcTopIconFromEnum(
+            top_icon, color_utils::IsDark(view()->GetBackgroundColor())),
         ui::kColorWindowBackground, /*icon_size=*/96);
   }
 
  private:
   // Mock display delegate and controller.
-  MockAssistantDisplayDelegate display_delegate_;
+  NiceMock<MockAssistantDisplayDelegate> display_delegate_;
   StrictMock<MockPasswordChangeRunController> controller_;
 
   // Variable required to simulate the display delegate.
