@@ -991,7 +991,6 @@ public class IntentHandler {
             // Ignore all intents that specify a Chrome internal scheme if they did not come from
             // a trustworthy source.
             String scheme = getSanitizedUrlScheme(url);
-            recordFirstPartyToInternalScheme(scheme, url, intent, isInternal, isFromChrome);
             if (!isInternal) {
                 if (intentHasUnsafeInternalScheme(scheme, url, intent)) {
                     Log.w(TAG, "Ignoring internal Chrome URL from untrustworthy source.");
@@ -1547,18 +1546,6 @@ public class IntentHandler {
             newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), newIntent);
         }
-    }
-
-    /**
-     * Records whether the intent comes from a non-Chrome first party and contains a Chrome internal
-     * scheme. This is so we can determine whether we can cut the feature.
-     */
-    private static void recordFirstPartyToInternalScheme(
-            String scheme, String url, Intent intent, boolean isInternal, boolean isChrome) {
-        if (!isInternal || isChrome) return;
-
-        RecordHistogram.recordBooleanHistogram("MobileIntent.FirstPartyToInternalScheme",
-                intentHasUnsafeInternalScheme(scheme, url, intent));
     }
 
     /**

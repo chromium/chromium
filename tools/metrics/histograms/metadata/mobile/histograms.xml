@@ -1055,18 +1055,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileIntent.FirstPartyToInternalScheme" enum="Boolean"
-    expires_after="2023-01-01">
-  <owner>peconn@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Recorded when Chrome on Android is launched to an internal Chrome scheme
-    (chrome://, chrome-native://, about://) by a first party app (not Chrome).
-    This metric is to be used to determine whether any first party app uses the
-    feature, and whether we can remove it.
-  </summary>
-</histogram>
-
 <histogram name="MobileIntent.PageLoadDueToExternalApp" enum="ClientAppId"
     expires_after="never">
 <!-- expires-never: Navigation (external-apps) heartbeat metric for Android. -->
