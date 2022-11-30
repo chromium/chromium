@@ -156,9 +156,9 @@ void EditableComboboxTest::SetUp() {
   ViewsTestBase::SetUp();
 
 #if BUILDFLAG(IS_OZONE)
-  // TODO(crbug.com/1209477): Wayland bots use Weston with Headless backend that
-  // sets up XkbKeyboardLayoutEngine differently. When that is fixed, remove the
-  // workaround below.
+  // Setting up the keyboard layout engine depends on the implementation and may
+  // be asynchronous.  We ensure that it is ready to use so that tests could
+  // handle key events properly.
   ui::WaitUntilLayoutEngineIsReadyForTest();
 #endif
 }
