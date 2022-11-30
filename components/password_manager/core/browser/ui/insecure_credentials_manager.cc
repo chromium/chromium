@@ -44,9 +44,9 @@ bool SupportsMuteOperation(InsecureType insecure_type) {
 // The function is only used by the weak check.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 base::flat_set<std::u16string> ExtractPasswords(
-    SavedPasswordsPresenter::SavedPasswordsView password_forms) {
-  return base::MakeFlatSet<std::u16string>(password_forms, {},
-                                           &PasswordForm::password_value);
+    const std::vector<CredentialUIEntry>& credentials) {
+  return base::MakeFlatSet<std::u16string>(credentials, {},
+                                           &CredentialUIEntry::password);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -78,21 +78,20 @@ void InsecureCredentialsManager::StartWeakCheck(
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void InsecureCredentialsManager::SaveInsecureCredential(
-    const LeakCheckCredential& credential) {
+    const LeakCheckCredential& leak) {
   // Iterate over all currently saved credentials and mark those as insecure
   // that have the same canonicalized username and password.
   const std::u16string canonicalized_username =
-      CanonicalizeUsername(credential.username());
-  for (const PasswordForm& saved_password : presenter_->GetSavedPasswords()) {
-    if (saved_password.password_value == credential.password() &&
-        CanonicalizeUsername(saved_password.username_value) ==
-            canonicalized_username &&
-        !saved_password.password_issues.contains(InsecureType::kLeaked)) {
-      PasswordForm form_to_update = saved_password;
-      form_to_update.password_issues.insert_or_assign(
+      CanonicalizeUsername(leak.username());
+  for (const auto& credential : presenter_->GetSavedPasswords()) {
+    if (credential.password == leak.password() &&
+        CanonicalizeUsername(credential.username) == canonicalized_username &&
+        !credential.password_issues.contains(InsecureType::kLeaked)) {
+      CredentialUIEntry credential_to_update = credential;
+      credential_to_update.password_issues.insert_or_assign(
           InsecureType::kLeaked,
           InsecurityMetadata(base::Time::Now(), IsMuted(false)));
-      GetStoreFor(saved_password).UpdateLogin(form_to_update);
+      presenter_->EditSavedCredentials(credential, credential_to_update);
     }
   }
 }

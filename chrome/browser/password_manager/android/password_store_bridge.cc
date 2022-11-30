@@ -83,10 +83,9 @@ void PasswordStoreBridge::GetAllCredentials(
     const auto& credential = credentials[i];
     Java_PasswordStoreBridge_insertCredential(
         env, java_credentials, i,
-        url::GURLAndroid::FromNativeGURL(env, credential.url),
-        base::android::ConvertUTF16ToJavaString(env, credential.username_value),
-        base::android::ConvertUTF16ToJavaString(env,
-                                                credential.password_value));
+        url::GURLAndroid::FromNativeGURL(env, credential.GetURL()),
+        base::android::ConvertUTF16ToJavaString(env, credential.username),
+        base::android::ConvertUTF16ToJavaString(env, credential.password));
   }
 }
 

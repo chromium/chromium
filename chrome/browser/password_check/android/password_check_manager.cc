@@ -168,7 +168,7 @@ PasswordCheckManager::PasswordCheckProgress::PasswordCheckProgress() = default;
 PasswordCheckManager::PasswordCheckProgress::~PasswordCheckProgress() = default;
 
 void PasswordCheckManager::PasswordCheckProgress::IncrementCounts(
-    const password_manager::PasswordForm& password) {
+    const password_manager::CredentialUIEntry& password) {
   ++remaining_in_queue_;
   ++counts_[password];
 }

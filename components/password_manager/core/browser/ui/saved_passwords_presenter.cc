@@ -37,17 +37,18 @@ using password_manager::metrics_util::IsUsernameChanged;
 using password_manager::metrics_util::PasswordNoteAction;
 using PasswordNote = password_manager::PasswordNote;
 using Store = password_manager::PasswordForm::Store;
-using SavedPasswordsView =
-    password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 using EditResult = password_manager::SavedPasswordsPresenter::EditResult;
 
-bool IsUsernameAlreadyUsed(SavedPasswordsView all_forms,
-                           SavedPasswordsView forms_to_check,
-                           const std::u16string& new_username) {
+bool IsUsernameAlreadyUsed(
+    password_manager::SavedPasswordsPresenter::DuplicatePasswordsMap
+        key_to_forms,
+    const std::vector<password_manager::PasswordForm>& forms_to_check,
+    const std::u16string& new_username) {
   // In case the username changed, make sure that there exists no other
   // credential with the same signon_realm and username in the same store.
   auto has_conflicting_username = [&forms_to_check,
-                                   &new_username](const auto& form) {
+                                   &new_username](const auto& pair) {
+    const password_manager::PasswordForm form = pair.second;
     return new_username == form.username_value &&
            base::ranges::any_of(forms_to_check, [&form](const auto& old_form) {
              return form.signon_realm == old_form.signon_realm &&
@@ -55,7 +56,7 @@ bool IsUsernameAlreadyUsed(SavedPasswordsView all_forms,
                         old_form.IsUsingAccountStore();
            });
   };
-  return base::ranges::any_of(all_forms, has_conflicting_username);
+  return base::ranges::any_of(key_to_forms, has_conflicting_username);
 }
 
 password_manager::PasswordForm GenerateFormFromCredential(
@@ -210,31 +211,35 @@ SavedPasswordsPresenter::GetExpectedAddResult(
                credential.username == entry.username_value;
       };
   auto have_equal_username_and_realm_in_profile_store =
-      [&have_equal_username_and_realm](const PasswordForm& entry) {
-        return have_equal_username_and_realm(entry) &&
-               entry.IsUsingProfileStore();
+      [&have_equal_username_and_realm](
+          const DuplicatePasswordsMap::value_type& pair) {
+        return have_equal_username_and_realm(pair.second) &&
+               pair.second.IsUsingProfileStore();
       };
   auto have_equal_username_and_realm_in_account_store =
-      [&have_equal_username_and_realm](const PasswordForm& entry) {
-        return have_equal_username_and_realm(entry) &&
-               entry.IsUsingAccountStore();
+      [&have_equal_username_and_realm](
+          const DuplicatePasswordsMap::value_type& pair) {
+        return have_equal_username_and_realm(pair.second) &&
+               pair.second.IsUsingAccountStore();
       };
 
-  bool existing_credential_profile = base::ranges::any_of(
-      passwords_, have_equal_username_and_realm_in_profile_store);
-  bool existing_credential_account = base::ranges::any_of(
-      passwords_, have_equal_username_and_realm_in_account_store);
+  bool existing_credential_profile =
+      base::ranges::any_of(sort_key_to_password_forms_,
+                           have_equal_username_and_realm_in_profile_store);
+  bool existing_credential_account =
+      base::ranges::any_of(sort_key_to_password_forms_,
+                           have_equal_username_and_realm_in_account_store);
 
   if (!existing_credential_profile && !existing_credential_account)
     return AddResult::kSuccess;
 
-  auto have_exact_match =
-      [&credential, &have_equal_username_and_realm](const PasswordForm& entry) {
-        return have_equal_username_and_realm(entry) &&
-               credential.password == entry.password_value;
-      };
+  auto have_exact_match = [&credential, &have_equal_username_and_realm](
+                              const DuplicatePasswordsMap::value_type& pair) {
+    return have_equal_username_and_realm(pair.second) &&
+           credential.password == pair.second.password_value;
+  };
 
-  if (base::ranges::any_of(passwords_, have_exact_match))
+  if (base::ranges::any_of(sort_key_to_password_forms_, have_exact_match))
     return AddResult::kExactMatch;
 
   if (!existing_credential_profile)
@@ -361,8 +366,9 @@ SavedPasswordsPresenter::EditSavedCredentials(
     return EditResult::kEmptyPassword;
 
   // Username can't be changed to the existing one.
-  if (username_changed && IsUsernameAlreadyUsed(passwords_, forms_to_change,
-                                                updated_credential.username)) {
+  if (username_changed &&
+      IsUsernameAlreadyUsed(sort_key_to_password_forms_, forms_to_change,
+                            updated_credential.username)) {
     return EditResult::kAlreadyExisits;
   }
 
@@ -421,10 +427,6 @@ SavedPasswordsPresenter::EditSavedCredentials(
   return EditResult::kSuccess;
 }
 
-SavedPasswordsView SavedPasswordsPresenter::GetSavedPasswords() const {
-  return passwords_;
-}
-
 std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
     const {
   std::vector<CredentialUIEntry> credentials;
@@ -453,6 +455,15 @@ std::vector<AffiliatedGroup> SavedPasswordsPresenter::GetAffiliatedGroups() {
               return lhs.GetDisplayName() < rhs.GetDisplayName();
             });
   return affiliated_groups_;
+}
+
+std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedPasswords()
+    const {
+  auto credentials = GetSavedCredentials();
+  base::EraseIf(credentials, [](const auto& credential) {
+    return credential.blocked_by_user || !credential.federation_origin.opaque();
+  });
+  return credentials;
 }
 
 std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetBlockedSites() {
@@ -536,14 +547,6 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     PasswordForm form = std::move(*result);
     sort_key_to_password_forms_.insert(std::make_pair(
         CreateSortKey(form, IgnoreStore(true)), std::move(form)));
-  });
-
-  // Update |passwords_|.
-  passwords_.clear();
-  base::ranges::for_each(sort_key_to_password_forms_, [&](const auto& pair) {
-    PasswordForm form = pair.second;
-    if (!form.blocked_by_user && !form.IsFederatedCredential())
-      passwords_.push_back(std::move(form));
   });
 
   if (base::FeatureList::IsEnabled(

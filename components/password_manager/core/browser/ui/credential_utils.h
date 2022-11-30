@@ -14,15 +14,21 @@
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
 
 // Simple struct that stores a canonicalized credential. Allows implicit
-// constructon from PasswordForm and LeakCheckCredentail for convenience.
+// constructon from PasswordForm, CredentialUIEntry and LeakCheckCredentail for
+// convenience.
 struct CanonicalizedCredential {
   CanonicalizedCredential(const PasswordForm& form)  // NOLINT
       : canonicalized_username(CanonicalizeUsername(form.username_value)),
         password(form.password_value) {}
+
+  CanonicalizedCredential(const CredentialUIEntry& credential)  // NOLINT
+      : canonicalized_username(CanonicalizeUsername(credential.username)),
+        password(credential.password) {}
 
   CanonicalizedCredential(const LeakCheckCredential& credential)  // NOLINT
       : canonicalized_username(CanonicalizeUsername(credential.username())),

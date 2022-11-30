@@ -1952,7 +1952,7 @@ TEST_F(SavedPasswordsPresenterInitializationTest, PendingUpdatesProfileStore) {
   EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
   ProcessBackendTasks(profile_store_backend_runner());
   EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
-  EXPECT_THAT(presenter.GetSavedPasswords(), Contains(form));
+  EXPECT_THAT(presenter.GetSavedPasswords(), Contains(CredentialUIEntry(form)));
 }
 
 TEST_F(SavedPasswordsPresenterInitializationTest, PendingUpdatesAccountStore) {
@@ -1972,7 +1972,7 @@ TEST_F(SavedPasswordsPresenterInitializationTest, PendingUpdatesAccountStore) {
   EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
   ProcessBackendTasks(account_store_backend_runner());
   EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
-  EXPECT_THAT(presenter.GetSavedPasswords(), Contains(form));
+  EXPECT_THAT(presenter.GetSavedPasswords(), Contains(CredentialUIEntry(form)));
 }
 
 }  // namespace password_manager

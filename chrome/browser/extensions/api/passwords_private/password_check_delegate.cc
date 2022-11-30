@@ -102,7 +102,7 @@ class PasswordCheckProgress : public base::RefCounted<PasswordCheckProgress> {
 
   // Increments the counts corresponding to |password|. Intended to be called
   // for each credential that is passed to the bulk check.
-  void IncrementCounts(const PasswordForm& password) {
+  void IncrementCounts(const CredentialUIEntry& password) {
     ++remaining_in_queue_;
     ++counts_[password];
   }

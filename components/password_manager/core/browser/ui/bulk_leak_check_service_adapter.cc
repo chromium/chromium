@@ -42,10 +42,9 @@ bool BulkLeakCheckServiceAdapter::StartBulkLeakCheck(
 
   // Even though the BulkLeakCheckService performs canonicalization eventually
   // we do it here to de-dupe credentials that have the same canonicalized form.
-  SavedPasswordsPresenter::SavedPasswordsView saved_passwords =
-      presenter_->GetSavedPasswords();
-  base::flat_set<CanonicalizedCredential> canonicalized(saved_passwords.begin(),
-                                                        saved_passwords.end());
+  const auto passwords = presenter_->GetSavedPasswords();
+  base::flat_set<CanonicalizedCredential> canonicalized(passwords.begin(),
+                                                        passwords.end());
 
   // Build the list of LeakCheckCredentials and forward them to the service to
   // start the check.
