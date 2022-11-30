@@ -6,6 +6,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -49,7 +50,10 @@ void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
 
   SkPath path;
   flags.setAntiAlias(true);
-  float corner_radius_px = kCornerRadiusDp * dsf;
+  float corner_radius_px =
+      (features::IsChromeRefresh2023() ? kChromeRefresh2023CornerRadiusDp
+                                       : kCornerRadiusDp) *
+      dsf;
   path.addRoundRect(gfx::RectFToSkRect(rect), corner_radius_px,
                     corner_radius_px);
 

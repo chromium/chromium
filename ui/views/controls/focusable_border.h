@@ -22,6 +22,9 @@ class VIEWS_EXPORT FocusableBorder : public Border {
  public:
   static constexpr float kCornerRadiusDp = 2.f;
 
+  // TODO(crbug.com/1392549): Replace placeholder corner radius value.
+  static constexpr float kChromeRefresh2023CornerRadiusDp = 30.f;
+
   FocusableBorder();
 
   FocusableBorder(const FocusableBorder&) = delete;
