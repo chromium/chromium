@@ -86,16 +86,22 @@ constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
 ];
 
 /**
- * Name of the default crostini VM.
+ * Name of the default crostini VM: crostini::kCrostiniDefaultVmName
  * @const
  */
 constants.DEFAULT_CROSTINI_VM = 'termina';
 
 /**
- * Name of the Plugin VM.
+ * Name of the Plugin VM: plugin_vm::kPluginVmName.
  * @const
  */
 constants.PLUGIN_VM = 'PvmDefault';
+
+/**
+ * Name of the default bruschetta VM: bruschetta::kBruschettaVmName
+ * @const
+ */
+constants.DEFAULT_BRUSCHETTA_VM = 'bru';
 
 /**
  * DOMError type for crostini connection failure.

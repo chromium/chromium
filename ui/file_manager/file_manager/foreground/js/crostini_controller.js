@@ -109,23 +109,31 @@ export class CrostiniController {
       });
     };
 
-    const [crostiniShareCount, pluginVmShareCount] = await Promise.all([
-      getSharedPaths(constants.DEFAULT_CROSTINI_VM),
-      getSharedPaths(constants.PLUGIN_VM),
-    ]);
+    const [crostiniShareCount, pluginVmShareCount, bruschettaVmShareCount] =
+        await Promise.all([
+          getSharedPaths(constants.DEFAULT_CROSTINI_VM),
+          getSharedPaths(constants.PLUGIN_VM),
+          getSharedPaths(constants.DEFAULT_BRUSCHETTA_VM),
+        ]);
 
+    // Toasts are queued and shown one-at-a-time if multiple apply.
+    // TODO(b/260521400): Or at least, they will once this bug is fixed.
     toast(
         crostiniShareCount, 'FOLDER_SHARED_WITH_CROSTINI',
         'FOLDER_SHARED_WITH_CROSTINI_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'crostini/sharedPaths',
         CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING_TOAST_STARTUP);
-    // TODO(crbug.com/949356): UX to provide guidance for what to do
-    // when we have shared paths with both Linux and Plugin VM.
     toast(
         pluginVmShareCount, 'FOLDER_SHARED_WITH_PLUGIN_VM',
         'FOLDER_SHARED_WITH_PLUGIN_VM_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'app-management/pluginVm/sharedPaths',
         CommandHandler.MenuCommandsForUMA
             .MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
+    toast(
+        bruschettaVmShareCount, 'FOLDER_SHARED_WITH_BRUSCHETTA',
+        'FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
+        'bruschetta/sharedPaths',
+        CommandHandler.MenuCommandsForUMA
+            .MANAGE_BRUSCHETTA_SHARING_TOAST_STARTUP);
   }
 }

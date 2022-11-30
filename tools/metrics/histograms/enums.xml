@@ -43490,6 +43490,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="19" label="Manage Plugin VM sharing toast startup"/>
   <int value="20" label="Pin to holding space"/>
   <int value="21" label="Unpin from holding space"/>
+  <int value="22" label="Share with Bruschetta"/>
+  <int value="23" label="Manage Bruschetta sharing menu"/>
+  <int value="24" label="Manage Bruschetta sharing toast"/>
+  <int value="25" label="Manage Bruschetta sharing toast startup"/>
 </enum>
 
 <enum name="FileManagerNotificationType">

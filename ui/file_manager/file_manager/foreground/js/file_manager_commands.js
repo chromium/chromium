@@ -590,6 +590,11 @@ CommandHandler.MenuCommandsForUMA = {
       'manage-plugin-vm-sharing-toast-startup',
   PIN_TO_HOLDING_SPACE: 'pin-to-holding-space',
   UNPIN_FROM_HOLDING_SPACE: 'unpin-from-holding-space',
+  SHARE_WITH_BRUSCHETTA: 'share-with-bruschetta',
+  MANAGE_BRUSCHETTA_SHARING: 'manage-bruschetta-sharing',
+  MANAGE_BRUSCHETTA_SHARING_TOAST: 'manage-bruschetta-sharing-toast',
+  MANAGE_BRUSCHETTA_SHARING_TOAST_STARTUP:
+      'manage-bruschetta-sharing-toast-startup',
 };
 
 /**
@@ -623,6 +628,10 @@ CommandHandler.ValidMenuCommandsForUMA = [
   CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP,
   CommandHandler.MenuCommandsForUMA.PIN_TO_HOLDING_SPACE,
   CommandHandler.MenuCommandsForUMA.UNPIN_FROM_HOLDING_SPACE,
+  CommandHandler.MenuCommandsForUMA.SHARE_WITH_BRUSCHETTA,
+  CommandHandler.MenuCommandsForUMA.MANAGE_BRUSCHETTA_SHARING,
+  CommandHandler.MenuCommandsForUMA.MANAGE_BRUSCHETTA_SHARING_TOAST,
+  CommandHandler.MenuCommandsForUMA.MANAGE_BRUSCHETTA_SHARING_TOAST_STARTUP,
 ];
 console.assert(
     Object.keys(CommandHandler.MenuCommandsForUMA).length ===
@@ -2681,6 +2690,7 @@ class GuestOsManagingSharingCommand extends FilesCommand {
 
 const crostiniSettings = 'crostini/sharedPaths';
 const pluginVmSettings = 'app-management/pluginVm/sharedPaths';
+const bruschettaSettings = 'bruschetta/sharedPaths';
 
 CommandHandler.COMMANDS_['share-with-linux'] = new GuestOsShareCommand(
     constants.DEFAULT_CROSTINI_VM, 'CROSTINI', crostiniSettings,
@@ -2690,6 +2700,10 @@ CommandHandler.COMMANDS_['share-with-plugin-vm'] = new GuestOsShareCommand(
     constants.PLUGIN_VM, 'PLUGIN_VM', pluginVmSettings,
     CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING_TOAST,
     CommandHandler.MenuCommandsForUMA.SHARE_WITH_PLUGIN_VM);
+CommandHandler.COMMANDS_['share-with-bruschetta'] = new GuestOsShareCommand(
+    constants.DEFAULT_BRUSCHETTA_VM, 'BRUSCHETTA', bruschettaSettings,
+    CommandHandler.MenuCommandsForUMA.MANAGE_BRUSCHETTA_SHARING_TOAST,
+    CommandHandler.MenuCommandsForUMA.SHARE_WITH_BRUSCHETTA);
 
 CommandHandler.COMMANDS_['manage-linux-sharing-gear'] =
     new GuestOsManagingSharingGearCommand(
@@ -2699,6 +2713,10 @@ CommandHandler.COMMANDS_['manage-plugin-vm-sharing-gear'] =
     new GuestOsManagingSharingGearCommand(
         constants.PLUGIN_VM, pluginVmSettings,
         CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
+CommandHandler.COMMANDS_['manage-bruschetta-sharing-gear'] =
+    new GuestOsManagingSharingGearCommand(
+        constants.DEFAULT_BRUSCHETTA_VM, bruschettaSettings,
+        CommandHandler.MenuCommandsForUMA.MANAGE_BRUSCHETTA_SHARING);
 
 CommandHandler.COMMANDS_['manage-linux-sharing'] =
     new GuestOsManagingSharingCommand(
@@ -2708,6 +2726,10 @@ CommandHandler.COMMANDS_['manage-plugin-vm-sharing'] =
     new GuestOsManagingSharingCommand(
         constants.PLUGIN_VM, pluginVmSettings,
         CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
+CommandHandler.COMMANDS_['manage-bruschetta-sharing'] =
+    new GuestOsManagingSharingCommand(
+        constants.DEFAULT_BRUSCHETTA_VM, bruschettaSettings,
+        CommandHandler.MenuCommandsForUMA.MANAGE_BRUSCHETTA_SHARING);
 
 /**
  * Creates a shortcut of the selected folder (single only).
