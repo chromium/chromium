@@ -6,6 +6,7 @@ package org.chromium.net.impl;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log; // TODO(crbug/1394709): use org.chromium.base.Log instead
 
 import androidx.annotation.Nullable;
 
@@ -15,6 +16,7 @@ import org.chromium.net.impl.CronetLogger.CronetSource;
  * Takes care of instantiating the correct CronetLogger.
  */
 public final class CronetLoggerFactory {
+    private static final String TAG = CronetLoggerFactory.class.getSimpleName();
     private static final int SAMPLE_RATE_PER_SECOND = 1;
 
     private CronetLoggerFactory() {}
@@ -55,6 +57,7 @@ public final class CronetLoggerFactory {
                     SAMPLE_RATE_PER_SECOND);
         } catch (Exception e) {
             // Pass - since we dont want any failure, catch any exception that might arise.
+            Log.e(TAG, "Exception creating an instance of CronetLoggerImpl", e);
         }
         return sDefaultLogger;
     }
@@ -89,7 +92,8 @@ public final class CronetLoggerFactory {
         ClassLoader loader = CronetLoggerFactory.class.getClassLoader();
         try {
             return loader.loadClass(CRONET_LOGGER_IMPL_CLASS).asSubclass(CronetLogger.class);
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) { // catching all exceptions since we don't want to crash the client
+            Log.e(TAG, "Exception fetching LoggerImpl class", e);
             return null;
         }
     }
