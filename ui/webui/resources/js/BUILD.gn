@@ -116,7 +116,6 @@ group("closure_compile") {
 }
 
 js_type_check("js_resources") {
-  uses_legacy_modules = true
   deps = [ ":load_time_data_deprecated" ]
 
   if (is_ios) {

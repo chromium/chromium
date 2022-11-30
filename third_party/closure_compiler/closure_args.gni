@@ -40,11 +40,6 @@ default_closure_args = strict_error_checking_closure_args + [
                          "jscomp_off=duplicate",
                        ]
 
-legacy_modules_args = [
-  "chrome_pass",
-  "polymer_version=1",
-]
-
 js_modules_args = [
   "js_module_root=" + rebase_path("//ui/webui/resources/", root_build_dir),
   "js_module_root=gen/ui/webui/resources/",

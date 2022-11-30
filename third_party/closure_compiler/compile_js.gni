@@ -182,7 +182,6 @@ template("js_binary") {
                              "outputs",
                              "sources",
                              "testonly",
-                             "uses_legacy_modules",
                            ])
     args = [
       "--compiler",
@@ -248,15 +247,9 @@ template("js_binary") {
       closure_flags = default_closure_args
     }
 
-    uses_legacy_modules = defined(uses_legacy_modules) && uses_legacy_modules
-    if (!uses_legacy_modules) {
-      closure_flags += js_modules_args
-    } else {
-      closure_flags += legacy_modules_args
-    }
+    closure_flags += js_modules_args
 
     is_polymer3 = defined(is_polymer3) && is_polymer3
-    assert(!is_polymer3 || !uses_legacy_modules)
     if (is_polymer3) {
       closure_flags += polymer3_args
     }
@@ -305,7 +298,6 @@ template("js_type_check") {
                                "deps",
                                "is_polymer3",
                                "testonly",
-                               "uses_legacy_modules",
                              ])
     }
   } else {
