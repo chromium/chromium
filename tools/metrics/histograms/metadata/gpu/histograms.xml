@@ -351,31 +351,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.AppContainer.EnableState"
-    enum="GPUAppContainerEnableState" expires_after="2020-07-31">
-  <owner>forshaw@chromium.org</owner>
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    On Windows 10 version RS1 and above the GPU can be sandboxed using an
-    AppContainer. This is recorded every time the GPU sandbox is initialized and
-    enabling the AppContainer is requested, such as through a command line
-    option. The recorded value can indicate that the AppContainer was disabled
-    due to an incompatible configuration or the GPU process had previously
-    crashed resulting in the AppContainer being forcefully disabled.
-  </summary>
-</histogram>
-
-<histogram name="GPU.AppContainer.Status" enum="LaunchErrorCodes"
-    expires_after="2020-10-11">
-  <owner>forshaw@chromium.org</owner>
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    On Windows 10 version RS1 and above the GPU can be sandboxed using an
-    AppContainer. This indicates the status when initializing the sandbox
-    profile during process creation.
-  </summary>
-</histogram>
-
 <histogram name="GPU.AppHelpIsLoaded" enum="Boolean" expires_after="2023-04-23">
   <owner>zmo@chromium.org</owner>
   <owner>spvw@chromium.org</owner>
@@ -895,7 +870,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessTerminationOrigin" enum="GpuTerminationOrigin"
-    expires_after="2019-08-14">
+    expires_after="2023-05-29">
+  <owner>kbr@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <owner>msisov@igalia.com</owner>
   <summary>
@@ -903,7 +879,7 @@ chromium-metrics-reviews@google.com.
     TERMINATION_STATUS_PROCESS_WAS_KILLED TerminationStatus is set. The goal of
     this histogram is to get spikes of the above mentioned case when
     Ozone/Wayland terminates the GPU process due to invalid data it received if
-    any.
+    any. NOTE: this metric was expired from 2019-08-14 to crrev.com/c/4040947.
   </summary>
 </histogram>
 
@@ -1173,29 +1149,6 @@ chromium-metrics-reviews@google.com.
     how much time we spend compiling shaders during startup. Expired in June
     2022, and revived in M106. Data may be incomplete for the period during
     which the histogram was expired.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ProcessIntegrityResult" enum="ProcessIntegrityResult"
-    expires_after="2021-12-12">
-  <owner>zmo@chromium.org</owner>
-  <owner>ssmole@microsoft.com</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Summarize the configurations for the integrity level of GPU process, logged
-    by the Browser process before launching GPU process, used for configuring
-    the GPU sandbox.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ProcessLifetimeEvents.DisplayCompositor"
-    enum="GPUProcessLifetimeEvent" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    Recorded once for every GPU process launch and crash when GPU process is
-    started for the display compositor with software compositing. Crash buckets
-    are based on crash count for disabling features. No hardware acceleration
-    and no SwiftShader WebGL will be run.
   </summary>
 </histogram>
 

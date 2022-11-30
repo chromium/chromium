@@ -137,8 +137,6 @@ constexpr char kProcessLifetimeEventsHardwareAccelerated[] =
     "GPU.ProcessLifetimeEvents.HardwareAccelerated";
 constexpr char kProcessLifetimeEventsSwiftShader[] =
     "GPU.ProcessLifetimeEvents.SwiftShader";
-constexpr char kProcessLifetimeEventsDisplayCompositor[] =
-    "GPU.ProcessLifetimeEvents.DisplayCompositor";
 
 // Returns the UMA histogram name for the given GPU mode.
 const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
@@ -154,7 +152,7 @@ const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
     case gpu::GpuMode::SWIFTSHADER:
       return kProcessLifetimeEventsSwiftShader;
     case gpu::GpuMode::DISPLAY_COMPOSITOR:
-      return kProcessLifetimeEventsDisplayCompositor;
+      return nullptr;
   }
 }
 
@@ -381,20 +379,14 @@ class GpuSandboxedProcessLauncherDelegate
 
   bool GetAppContainerId(std::string* appcontainer_id) override {
     if (UseOpenGLRenderer()) {
-      base::UmaHistogramEnumeration("GPU.AppContainer.EnableState",
-                                    AC_DISABLED_GL, MAX_ENABLE_STATE);
       return false;
     }
 
     if (!enable_appcontainer_) {
-      base::UmaHistogramEnumeration("GPU.AppContainer.EnableState",
-                                    AC_DISABLED_FORCE, MAX_ENABLE_STATE);
       return false;
     }
 
     *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
-    base::UmaHistogramEnumeration("GPU.AppContainer.EnableState", AC_ENABLED,
-                                  MAX_ENABLE_STATE);
     return true;
   }
 
@@ -515,20 +507,14 @@ class GpuSandboxedProcessLauncherDelegate
 
   bool ShouldSetDelayedIntegrity() {
     if (UseOpenGLRenderer()) {
-      UMA_HISTOGRAM_ENUMERATION("GPU.ProcessIntegrityResult",
-                                ProcessIntegrityResult::kOpenGlMediumIl);
       return true;
     }
 
     // Desktop access is needed to load user32.dll, we can lower token in child
     // process after that's done.
     if (sandbox::CanLowIntegrityAccessDesktop()) {
-      UMA_HISTOGRAM_ENUMERATION("GPU.ProcessIntegrityResult",
-                                ProcessIntegrityResult::kLowIl);
       return false;
     }
-    UMA_HISTOGRAM_ENUMERATION("GPU.ProcessIntegrityResult",
-                              ProcessIntegrityResult::kDesktopAccessMediumIl);
     return true;
   }
 
@@ -537,17 +523,6 @@ class GpuSandboxedProcessLauncherDelegate
 
   base::CommandLine cmd_line_;
 };
-
-#if BUILDFLAG(IS_WIN)
-void RecordAppContainerStatus(int error_code, bool crashed_before) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!crashed_before &&
-      sandbox::policy::SandboxWin::IsAppContainerEnabledForSandbox(
-          *command_line, sandbox::mojom::Sandbox::kGpu)) {
-    base::UmaHistogramSparse("GPU.AppContainer.Status", error_code);
-  }
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 void BindDiscardableMemoryReceiverOnIO(
     mojo::PendingReceiver<
@@ -962,11 +937,6 @@ bool GpuProcessHost::Init() {
 void GpuProcessHost::OnProcessLaunched() {
   UMA_HISTOGRAM_TIMES("GPU.GPUProcessLaunchTime",
                       base::TimeTicks::Now() - init_start_time_);
-#if BUILDFLAG(IS_WIN)
-  if (kind_ == GPU_PROCESS_KIND_SANDBOXED)
-    RecordAppContainerStatus(sandbox::SBOX_ALL_OK, crashed_before_);
-#endif  // BUILDFLAG(IS_WIN)
-
   DCHECK(gpu_host_);
   if (in_process_) {
     // Don't set |process_id_| as it is publicly available through process_id().
@@ -979,10 +949,6 @@ void GpuProcessHost::OnProcessLaunched() {
 }
 
 void GpuProcessHost::OnProcessLaunchFailed(int error_code) {
-#if BUILDFLAG(IS_WIN)
-  if (kind_ == GPU_PROCESS_KIND_SANDBOXED)
-    RecordAppContainerStatus(error_code, crashed_before_);
-#endif  // BUILDFLAG(IS_WIN)
   LOG(ERROR) << "GPU process launch failed: error_code=" << error_code;
   RecordProcessCrash();
 }
@@ -1302,8 +1268,11 @@ bool GpuProcessHost::LaunchGpuProcess() {
   process_launched_ = true;
 
   if (kind_ == GPU_PROCESS_KIND_SANDBOXED) {
-    base::UmaHistogramEnumeration(GetProcessLifetimeUmaName(mode_), LAUNCHED,
-                                  GPU_PROCESS_LIFETIME_EVENT_MAX);
+    auto* const histogram = GetProcessLifetimeUmaName(mode_);
+    if (histogram) {
+      base::UmaHistogramEnumeration(histogram, LAUNCHED,
+                                    GPU_PROCESS_LIFETIME_EVENT_MAX);
+    }
   }
 
   return true;
@@ -1342,11 +1311,12 @@ void GpuProcessHost::RecordProcessCrash() {
   // It's possible GPU mode fallback has already happened. In this case, |mode_|
   // will still be the mode of the failed process.
   IncrementCrashCount(mode_);
-  base::UmaHistogramExactLinear(
-      GetProcessLifetimeUmaName(mode_),
-      DIED_FIRST_TIME + recent_crash_count_ - 1,
-      static_cast<int>(GPU_PROCESS_LIFETIME_EVENT_MAX));
-
+  auto* const histogram = GetProcessLifetimeUmaName(mode_);
+  if (histogram) {
+    base::UmaHistogramExactLinear(
+        histogram, DIED_FIRST_TIME + recent_crash_count_ - 1,
+        static_cast<int>(GPU_PROCESS_LIFETIME_EVENT_MAX));
+  }
   // GPU process initialization failed and fallback already happened.
   if (did_fail_initialize_)
     return;
