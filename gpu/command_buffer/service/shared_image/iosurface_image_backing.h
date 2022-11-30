@@ -154,7 +154,7 @@ class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
   OverlayIOSurfaceRepresentation(SharedImageManager* manager,
                                  SharedImageBacking* backing,
                                  MemoryTypeTracker* tracker,
-                                 scoped_refptr<gl::GLImage> gl_image);
+                                 gfx::ScopedIOSurface io_surface);
   ~OverlayIOSurfaceRepresentation() override;
 
  private:
@@ -163,7 +163,7 @@ class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
   gfx::ScopedIOSurface GetIOSurface() const override;
   bool IsInUseByWindowServer() const override;
 
-  scoped_refptr<gl::GLImage> gl_image_;
+  gfx::ScopedIOSurface io_surface_;
 };
 
 // This class is only put into unique_ptrs and is never copied or assigned.
@@ -187,15 +187,15 @@ class SharedEventAndSignalValue {
   uint64_t signaled_value_;
 };
 
-// Implementation of SharedImageBacking that creates a GL Texture that is backed
-// by a GLImage and stores it as a gles2::Texture. Can be used with the legacy
-// mailbox implementation.
 class GPU_GLES2_EXPORT IOSurfaceImageBacking
     : public SharedImageBacking,
       public IOSurfaceBackingEGLState::Client {
  public:
   IOSurfaceImageBacking(
-      scoped_refptr<gl::GLImage> image,
+      gfx::ScopedIOSurface io_surface,
+      uint32_t io_surface_plane,
+      gfx::BufferFormat io_surface_format,
+      gfx::GenericSharedMemoryId io_surface_id,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
       const gfx::Size& size,
@@ -259,7 +259,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   bool IsPassthrough() const { return true; }
 
-  scoped_refptr<gl::GLImage> image_;
+  gfx::ScopedIOSurface io_surface_;
+  const uint32_t io_surface_plane_;
+  const gfx::BufferFormat io_surface_format_;
+  const gfx::GenericSharedMemoryId io_surface_id_;
 
   // Used to determine whether to release the texture in EndAccess() in use
   // cases that need to ensure IOSurface synchronization.
