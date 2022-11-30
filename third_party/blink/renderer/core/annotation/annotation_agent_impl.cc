@@ -159,16 +159,15 @@ void AnnotationAgentImpl::DidFinishAttach(const RangeInFlatTree* range) {
     // be smarter about how we construct markers so they don't overlap - or we
     // could make DocumentMarkerController allow overlaps.
     // https://crbug.com/1327370.
-    if (!document->Markers()
-             .MarkersIntersectingRange(
-                 attached_range_->ToEphemeralRange(),
-                 DocumentMarker::MarkerTypes::TextFragment())
-             .empty()) {
-      return;
+    if (document->Markers()
+            .MarkersIntersectingRange(
+                attached_range_->ToEphemeralRange(),
+                DocumentMarker::MarkerTypes::TextFragment())
+            .empty()) {
+      // TODO(bokan): Add new marker types based on `type_`.
+      document->Markers().AddTextFragmentMarker(dom_range);
     }
 
-    // TODO(bokan): Add new marker types based on `type_`.
-    document->Markers().AddTextFragmentMarker(dom_range);
   } else {
     attached_range_.Clear();
   }
