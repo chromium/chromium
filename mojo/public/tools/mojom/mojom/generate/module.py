@@ -13,6 +13,7 @@
 # method.AddParameter('baz', 0, mojom.INT32)
 
 import pickle
+from collections import OrderedDict
 from uuid import UUID
 
 # pylint: disable=raise-missing-from
@@ -1446,11 +1447,11 @@ class Module:
     self.interfaces = []
     self.enums = []
     self.constants = []
-    self.kinds = {}
+    self.kinds = OrderedDict()
     self.attributes = attributes
     self.imports = []
-    self.imported_kinds = {}
-    self.metadata = {}
+    self.imported_kinds = OrderedDict()
+    self.metadata = OrderedDict()
 
   def __repr__(self):
     # Gives us a decent __repr__ for modules.

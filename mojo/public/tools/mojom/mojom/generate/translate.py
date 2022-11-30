@@ -13,6 +13,7 @@ import itertools
 import os
 import re
 
+from collections import OrderedDict
 from mojom.generate import generator
 from mojom.generate import module as mojom
 from mojom.parse import ast
@@ -1192,8 +1193,8 @@ def _Module(tree, path, imports):
                                                  all_defined_kinds.values())
   imported_kind_specs = set(all_referenced_kinds.keys()).difference(
       set(all_defined_kinds.keys()))
-  module.imported_kinds = dict(
-      (spec, all_referenced_kinds[spec]) for spec in imported_kind_specs)
+  module.imported_kinds = OrderedDict((spec, all_referenced_kinds[spec])
+                                      for spec in sorted(imported_kind_specs))
 
   generator.AddComputedData(module)
   for iface in module.interfaces:
