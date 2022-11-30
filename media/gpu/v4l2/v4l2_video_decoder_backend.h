@@ -54,7 +54,7 @@ class V4L2VideoDecoderBackend {
     // between calls to |InitiateFlush| and |CompleteFlush|.
     virtual void ChangeResolution(gfx::Size pic_size,
                                   gfx::Rect visible_rect,
-                                  size_t num_output_frames) = 0;
+                                  size_t num_codec_reference_frames) = 0;
     // Convert the frame and call the output callback.
     virtual void OutputFrame(scoped_refptr<VideoFrame> frame,
                              const gfx::Rect& visible_rect,
@@ -89,8 +89,7 @@ class V4L2VideoDecoderBackend {
   // to do something specific beyond applying these parameters to the CAPTURE
   // queue.
   virtual bool ApplyResolution(const gfx::Size& pic_size,
-                               const gfx::Rect& visible_rect,
-                               const size_t num_output_frames) = 0;
+                               const gfx::Rect& visible_rect) = 0;
   // Called when ChangeResolution is done. |status| indicates whether there is
   // any error occurs during the resolution change.
   virtual void OnChangeResolutionDone(CroStatus status) = 0;

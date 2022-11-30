@@ -49,8 +49,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   void OnServiceDeviceTask(bool event) override;
   void OnStreamStopped(bool stop_input_queue) override;
   bool ApplyResolution(const gfx::Size& pic_size,
-                       const gfx::Rect& visible_rect,
-                       const size_t num_output_frames) override;
+                       const gfx::Rect& visible_rect) override;
   void OnChangeResolutionDone(CroStatus status) override;
   void ClearPendingRequests(DecoderStatus status) override;
   bool StopInputQueueOnResChange() const override;
@@ -103,7 +102,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // to actually apply the resolution.
   void ContinueChangeResolution(const gfx::Size& pic_size,
                                 const gfx::Rect& visible_rect,
-                                const size_t num_output_buffers);
+                                const size_t num_codec_reference_frames);
 
   // Enqueue all output buffers that are available.
   void EnqueueOutputBuffers();

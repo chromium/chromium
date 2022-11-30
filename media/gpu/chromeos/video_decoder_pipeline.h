@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/cdm_context.h"
+#include "media/base/limits.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -78,6 +79,10 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     // if |allocator| is not absl::nullopt, the frame pool will be set
     // to use the allocator provided for allocating video frames.
     //
+    // The client also provides the |num_codec_reference_frames|, which is
+    // sometimes fixed (e.g. kVp9NumRefFrames) and sometimes variable (e.g.
+    // H.264, HEVC).
+    //
     // Note: after a call to this method, callers should assume that a pointer
     // returned by a prior call to GetVideoFramePool() is no longer valid.
     virtual CroStatus::Or<ImageProcessor::PixelLayoutCandidate>
@@ -86,7 +91,7 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
         const gfx::Rect& decoder_visible_rect,
         const gfx::Size& decoder_natural_size,
         absl::optional<gfx::Size> output_size,
-        size_t num_of_pictures,
+        size_t num_codec_reference_frames,
         bool use_protected,
         bool need_aux_frame_pool,
         absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator) = 0;
@@ -176,7 +181,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       const gfx::Rect& decoder_visible_rect,
       const gfx::Size& decoder_natural_size,
       absl::optional<gfx::Size> output_size,
-      size_t num_of_pictures,
+      size_t num_codec_reference_frames,
       bool use_protected,
       bool need_aux_frame_pool,
       absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator) override;
@@ -197,6 +202,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       CreateDecoderFunctionCB create_decoder_function_cb);
 
   void InitializeTask(const VideoDecoderConfig& config,
+                      bool low_delay,
                       CdmContext* cdm_context,
                       InitCB init_cb,
                       const OutputCB& output_cb,
@@ -326,6 +332,11 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // needed for protected content on Intel platforms.
   bool need_frame_pool_rebuild_ GUARDED_BY_CONTEXT(decoder_sequence_checker_) =
       false;
+
+  // Calculated upon Initialize(), to determine how many buffers to allocate for
+  // the Renderer pipeline.
+  size_t estimated_num_buffers_for_renderer_ GUARDED_BY_CONTEXT(
+      decoder_sequence_checker_) = limits::kMaxVideoFrames + 1;
 
   // Set to true to bypass checks for encrypted content support for testing.
   bool allow_encrypted_content_for_testing_ = false;
