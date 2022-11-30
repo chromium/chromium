@@ -161,7 +161,7 @@ TEST_F(HelpAppZeroStateProviderTest,
   ExpectReleaseNotesChip(result, IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE,
                          ash::SearchResultDisplayType::kContinue);
 
-  app_list_controller()->ShowAppList();
+  app_list_controller()->ShowAppList(ash::AppListShowSource::kSearchKey);
   EXPECT_EQ(3, profile()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
 

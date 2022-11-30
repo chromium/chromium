@@ -18,7 +18,7 @@ using AppListClientInteractiveTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(AppListClientInteractiveTest, ShowAndDismiss) {
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   ASSERT_FALSE(client->app_list_visible());
-  client->ShowAppList();
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
   ASSERT_TRUE(client->app_list_visible());
   client->DismissView();
   ASSERT_FALSE(client->app_list_target_visibility());

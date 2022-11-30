@@ -227,6 +227,7 @@ std::string GetAppListOpenMethod(AppListShowSource source) {
       return "Scroll";
     case AppListShowSource::kTabletMode:
     case AppListShowSource::kAssistantEntryPoint:
+    case AppListShowSource::kBrowser:
       return "Others";
   }
   NOTREACHED();

@@ -66,7 +66,7 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
       const std::set<ash::AppListSearchResultType>& result_types) {
     SearchResultsChangedWaiter results_waiter(GetClient()->search_controller(),
                                               result_types);
-    GetClient()->ShowAppList();
+    GetClient()->ShowAppList(ash::AppListShowSource::kSearchKey);
     ash::AppListTestApi().WaitForBubbleWindow(
         /*wait_for_opening_animation=*/false);
     results_waiter.Wait();

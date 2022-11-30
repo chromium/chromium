@@ -66,7 +66,7 @@ class ASH_PUBLIC_EXPORT AppListController {
       GetAppInfoDialogBoundsCallback callback) = 0;
 
   // Shows the app list.
-  virtual void ShowAppList() = 0;
+  virtual void ShowAppList(AppListShowSource source) = 0;
 
   // Returns the app list window or nullptr if it is not visible.
   virtual aura::Window* GetWindow() = 0;

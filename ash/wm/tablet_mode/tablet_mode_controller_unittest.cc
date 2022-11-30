@@ -1273,7 +1273,7 @@ TEST_F(TabletModeControllerTest, StartTabletActiveTransientChildOfLeftSnap) {
 TEST_F(TabletModeControllerTest, StartTabletActiveAppListPreviousLeftSnap) {
   std::unique_ptr<aura::Window> window = CreateDesktopWindowSnappedLeft();
   auto* app_list_controller = Shell::Get()->app_list_controller();
-  app_list_controller->ShowAppList();
+  app_list_controller->ShowAppList(AppListShowSource::kSearchKey);
   aura::Window* app_list_window = app_list_controller->GetWindow();
   ASSERT_TRUE(app_list_window);
   ASSERT_TRUE(wm::IsActiveWindow(app_list_window));
@@ -1470,7 +1470,7 @@ TEST_F(TabletModeControllerTest,
       Shell::Get()->app_list_controller();
   std::unique_ptr<aura::Window> window = CreateDesktopWindowSnappedLeft();
   tablet_mode_controller()->SetEnabledForTest(true);
-  app_list_controller->ShowAppList();
+  app_list_controller->ShowAppList(AppListShowSource::kSearchKey);
 
   EXPECT_FALSE(app_list_controller->IsVisible());
 }

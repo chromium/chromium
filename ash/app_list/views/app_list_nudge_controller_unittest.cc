@@ -79,7 +79,8 @@ class AppListNudgeControllerTest : public AshTestBase {
 
   // Show app list and wait long enough for the nudge to be considered shown.
   void ShowAppListAndWait() {
-    Shell::Get()->app_list_controller()->ShowAppList();
+    Shell::Get()->app_list_controller()->ShowAppList(
+        AppListShowSource::kSearchKey);
     task_environment()->AdvanceClock(base::Seconds(1));
   }
 

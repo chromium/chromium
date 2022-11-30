@@ -92,7 +92,7 @@ void AppListTestHelper::WaitForFolderAnimation() {
 }
 
 void AppListTestHelper::ShowAppList() {
-  app_list_controller_->ShowAppList();
+  app_list_controller_->ShowAppList(AppListShowSource::kSearchKey);
 }
 
 void AppListTestHelper::ShowAndRunLoop(uint64_t display_id) {
@@ -105,7 +105,7 @@ void AppListTestHelper::Show(uint64_t display_id) {
 
 void AppListTestHelper::ShowAndRunLoop(uint64_t display_id,
                                        AppListShowSource show_source) {
-  app_list_controller_->Show(display_id, show_source, base::TimeTicks());
+  app_list_controller_->Show(display_id, show_source, base::TimeTicks(), true);
   WaitUntilIdle();
 }
 

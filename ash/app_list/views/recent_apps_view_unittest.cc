@@ -61,7 +61,8 @@ class RecentAppsViewTest : public AshTestBase,
       test_api_ = std::make_unique<test::AppsGridViewTestApi>(
           GetAppListTestHelper()->GetRootPagedAppsGridView());
     } else {
-      Shell::Get()->app_list_controller()->ShowAppList();
+      Shell::Get()->app_list_controller()->ShowAppList(
+          AppListShowSource::kSearchKey);
       test_api_ = std::make_unique<test::AppsGridViewTestApi>(
           GetAppListTestHelper()->GetScrollableAppsGridView());
     }

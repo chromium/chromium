@@ -134,7 +134,7 @@ class AppListClientImpl
   // client is accessed or active user is changed.
   void UpdateProfile();
 
-  void ShowAppList();
+  void ShowAppList(ash::AppListShowSource source);
 
   bool app_list_target_visibility() const {
     return app_list_target_visibility_;

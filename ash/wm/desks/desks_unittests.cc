@@ -1520,7 +1520,7 @@ TEST_P(DesksTest, AppListStaysOpenInClamshell) {
 
   // Open the app list.
   auto* app_list_controller = Shell::Get()->app_list_controller();
-  app_list_controller->ShowAppList();
+  app_list_controller->ShowAppList(AppListShowSource::kSearchKey);
   ASSERT_TRUE(app_list_controller->IsVisible());
 
   // Switch back to desk 1. Test that the app list is still open.
@@ -7105,7 +7105,7 @@ TEST_P(PersistentDesksBarTest, BarStaysOpenWhenLauncherOpens) {
   EXPECT_TRUE(IsWidgetVisible());
 
   // The bar should still exist when the app list is opened.
-  app_list_controller->ShowAppList();
+  app_list_controller->ShowAppList(AppListShowSource::kSearchKey);
   EXPECT_TRUE(GetBarWidget());
   EXPECT_TRUE(IsWidgetVisible());
 

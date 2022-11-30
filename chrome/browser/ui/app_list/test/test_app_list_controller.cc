@@ -32,7 +32,7 @@ aura::Window* TestAppListController::GetWindow() {
   return nullptr;
 }
 
-void TestAppListController::ShowAppList() {
+void TestAppListController::ShowAppList(ash::AppListShowSource source) {
   visible_ = true;
   NotifyAppListVisibilityChanged();
 }

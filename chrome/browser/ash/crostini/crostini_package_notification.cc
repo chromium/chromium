@@ -300,7 +300,8 @@ void CrostiniPackageNotification::Click(
     LaunchCrostiniApp(profile_, app_id_,
                       display::Screen::GetScreen()->GetPrimaryDisplay().id());
   } else {
-    AppListClientImpl::GetInstance()->ShowAppList();
+    AppListClientImpl::GetInstance()->ShowAppList(
+        ash::AppListShowSource::kBrowser);
   }
 }
 

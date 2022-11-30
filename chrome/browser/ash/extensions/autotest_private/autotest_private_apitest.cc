@@ -580,7 +580,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
                        LauncherSearchBoxStateAPITest) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
-  test::GetAppListClient()->ShowAppList();
+  test::GetAppListClient()->ShowAppList(ash::AppListShowSource::kSearchKey);
   if (!GetParam()) {
     ash::AppListTestApi().WaitForBubbleWindow(
         /*wait_for_opening_animation=*/false);

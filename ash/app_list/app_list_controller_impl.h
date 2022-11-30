@@ -104,7 +104,7 @@ class ASH_EXPORT AppListControllerImpl
   void ClearActiveModel() override;
   void DismissAppList() override;
   void GetAppInfoDialogBounds(GetAppInfoDialogBoundsCallback callback) override;
-  void ShowAppList() override;
+  void ShowAppList(AppListShowSource source) override;
   aura::Window* GetWindow() override;
   bool IsVisible(const absl::optional<int64_t>& display_id) override;
   bool IsVisible() override;
@@ -116,9 +116,12 @@ class ASH_EXPORT AppListControllerImpl
 
   // Methods used in ash:
   bool GetTargetVisibility(const absl::optional<int64_t>& display_id) const;
+  // 'should_record_metrics' is false when transitioning to tablet mode with a
+  // visible window which is shown over, and thus hides, the app list.
   void Show(int64_t display_id,
-            absl::optional<AppListShowSource> show_source,
-            base::TimeTicks event_time_stamp);
+            AppListShowSource show_source,
+            base::TimeTicks event_time_stamp,
+            bool should_record_metrics);
   void UpdateAppListWithNewTemporarySortOrder(
       const absl::optional<AppListSortOrder>& new_order,
       bool animate,
@@ -361,7 +364,7 @@ class ASH_EXPORT AppListControllerImpl
 
   void ResetHomeLauncherIfShown();
 
-  void ShowHomeScreen();
+  void ShowHomeScreen(AppListShowSource show_source);
 
   // Updates the visibility of the home screen based on e.g. if the device is
   // in overview mode.
@@ -411,6 +414,9 @@ class ASH_EXPORT AppListControllerImpl
   HomeLauncherTransitionState home_launcher_transition_state_ = kFinished;
 
   AppListClient* client_ = nullptr;
+
+  // Tracks the most recent show source for the app list.
+  absl::optional<AppListShowSource> last_open_source_;
 
   // Tracks active app list and search models to app list UI stack. It can be
   // accessed outside AppListModelControllerImpl using

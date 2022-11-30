@@ -35,7 +35,7 @@ class TestAppListController : public ash::AppListController {
                       ash::AppListModel* model,
                       ash::SearchModel* search_model) override {}
   void ClearActiveModel() override {}
-  void ShowAppList() override;
+  void ShowAppList(ash::AppListShowSource source) override;
   void DismissAppList() override;
   void GetAppInfoDialogBounds(
       GetAppInfoDialogBoundsCallback callback) override {}

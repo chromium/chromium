@@ -2164,7 +2164,7 @@ TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
   ASSERT_FALSE(Shell::Get()->IsInTabletMode());
 
   AppListController* app_list_controller = AppListController::Get();
-  app_list_controller->ShowAppList();
+  app_list_controller->ShowAppList(AppListShowSource::kSearchKey);
   EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
   test_state()->reset_num_system_ui_area_changes();
 

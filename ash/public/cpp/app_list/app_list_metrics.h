@@ -40,6 +40,39 @@ ASH_PUBLIC_EXPORT extern const char
 ASH_PUBLIC_EXPORT extern const char
     kAppListSortDiscoveryDurationAfterActivation[];
 
+// The different ways the app list can be shown. These values are written to
+// logs.  New enum values can be added, but existing enums must never be
+// renumbered or deleted and reused.
+// TODO(crbug.com/1378658): Deprecate kSwipeFromShelf and correct the spell
+// of kShelfButtonFullscreen_DEPRACTED.
+enum class AppListShowSource {
+  kSearchKey = 0,
+  kShelfButton = 1,
+  kSwipeFromShelf = 2,
+  kTabletMode = 3,
+  kSearchKeyFullscreen_DEPRECATED = 4,   // Migrated to kSearchKey.
+  kShelfButtonFullscreen_DEPRACTED = 5,  // Obsolete on bubble launcher.
+  kAssistantEntryPoint = 6,
+  kScrollFromShelf = 7,
+  kBrowser = 8,
+  kMaxValue = kBrowser,
+};
+
+// Tracks the result of each search session starting from the search box.
+enum class SearchSessionResult {
+  kLaunch = 0,
+  kAnswerCardImpression = 1,
+  kQuit = 2,
+};
+
+// Tracks whether a best match result was shown and whether it was launched at
+// the conclusion of each search session.
+enum class SearchBestMatchState {
+  kBestMatchShownAndLaunched = 0,
+  kBestMatchShownAndIgnored = 1,
+  kBestMatchNotShown = 2,
+};
+
 // The type of the ChromeSearchResult. This is used for logging so do not
 // change the order of this enum. If you add to this enum update
 // AppListSearchResult in enums.xml.
