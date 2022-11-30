@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
@@ -286,6 +287,10 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
       return [];
     }
     return keyboard.topRowKeys.map((keyId: TopRowKey) => topRowKeyMap[keyId]);
+  }
+
+  protected getDescriptionLabel_(): TrustedHTML {
+    return this.i18nAdvanced('keyboardTesterInstruction', {attrs: ['id']});
   }
 
   private addEventListeners(): void {
