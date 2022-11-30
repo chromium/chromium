@@ -42,9 +42,6 @@ interface IBrowser {
   // Added in 90.
   void setDarkModeStrategy(in int strategy) = 16;
 
-  // Added in 91.
-  void setChangeVisibilityOnNextDetach(in boolean changeVisibility) = 18;
-
   // Added in 105
   int[] getTabIds() = 20;
 }

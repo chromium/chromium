@@ -80,12 +80,6 @@ public class BrowserImpl extends IBrowser.Stub {
     // the WebContents may be prematurely hidden.
     private boolean mInConfigurationChangeAndWasAttached;
 
-    // If true, the WebContents is forced visible. This value may be changed by the embedder for
-    // temporary detach operations (such as fullscreen or rotations) that should not impact the
-    // visibility of the WebContents (otherwise video may stop). As this value is only temporarily
-    // true, the value is implicitly reset on attach.
-    private boolean mForcedVisible = false;
-
     // Cache the value instead of querying system every time.
     private Boolean mPasswordEchoEnabled;
     private Boolean mDarkThemeEnabled;
@@ -184,7 +178,6 @@ public class BrowserImpl extends IBrowser.Stub {
         mViewAttachedToWindow = true;
         if (mFragmentStarted) {
             mInConfigurationChangeAndWasAttached = false;
-            mForcedVisible = false;
         }
     }
 
@@ -268,14 +261,6 @@ public class BrowserImpl extends IBrowser.Stub {
         // this.
         addTab(tab, /* alwaysAdd */ true);
         return tab;
-    }
-
-    @Override
-    public void setChangeVisibilityOnNextDetach(boolean changeVisibility) {
-        StrictModeWorkaround.apply();
-        if (isViewAttachedToWindow()) {
-            mForcedVisible = !changeVisibility;
-        }
     }
 
     // Only call this if it's guaranteed that Browser is attached to an activity.
@@ -577,7 +562,6 @@ public class BrowserImpl extends IBrowser.Stub {
 
         if (mViewAttachedToWindow) {
             mInConfigurationChangeAndWasAttached = false;
-            mForcedVisible = false;
         }
         BrowserImplJni.get().onFragmentStart(mNativeBrowser);
         updateAllTabs();
@@ -661,8 +645,7 @@ public class BrowserImpl extends IBrowser.Stub {
      * Returns true if the active tab should be considered visible.
      */
     public boolean isActiveTabVisible() {
-        return mForcedVisible || mInConfigurationChangeAndWasAttached
-                || (isStarted() && isViewAttachedToWindow());
+        return mInConfigurationChangeAndWasAttached || (isStarted() && isViewAttachedToWindow());
     }
 
     private void updateAllTabsAndSetActive() {
