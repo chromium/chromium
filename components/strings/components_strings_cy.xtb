@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Erioed wedi'i gadw</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Nodau Tudalen Bwrdd Gwaith</translation>
+<translation id="1067561478268651872">Ni ddefnyddir y polisi <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> oni bai bod y polisi <ph name="SECURE_DNS_SALT" /> wedi'i osod.</translation>
 <translation id="1068672505746868501">Peidio byth â chyfieithu tudalennau yn <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Cerbydau hybrid ac amgen</translation>
 <translation id="1070901266639972381">Nos</translation>
@@ -2099,6 +2100,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6328786501058569169">Mae'r wefan hon yn dwyllodrus</translation>
 <translation id="6337133576188860026">Yn creu llai na <ph name="SIZE" />. Mae'n bosib y bydd rhai gwefannau yn llwytho'n arafach ar eich ymweliad nesaf.</translation>
 <translation id="6337534724793800597">Hidlo polisïau yn ôl enw</translation>
+<translation id="633770708279464947">Mae'r gwerth <ph name="SECURE_DNS_SALT" /> yn annilys ac ni chaiff ei ddefnyddio.</translation>
 <translation id="6340739886198108203">Nid yw'r polisi gweinyddwr yn argymell cymryd sgrinluniau na recordiadau pan fydd cynnwys cyfrinachol yn weladwy:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeil hon i <ph name="DESTINATION_NAME" />}zero{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}two{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}few{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}many{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}other{Nid yw'r polisi gweinyddwr yn argymell uwchlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Amrywiadau Gweithredol</translation>
@@ -2994,6 +2996,7 @@ Manylion ychwanegol:
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Crynodeb o'r Archeb, <ph name="TOTAL_LABEL" />, Rhagor o Fanylion</translation>
 <translation id="8666678546361132282">Saesneg</translation>
+<translation id="8671519637524426245">Nid yw'r gwerth <ph name="SECURE_DNS_SALT" /> yn bodloni'r gofynion maint.</translation>
 <translation id="867224526087042813">Llofnod</translation>
 <translation id="8672264262457010862">Busnes a diwydiannol</translation>
 <translation id="8676424191133491403">Dim oedi</translation>
@@ -3093,6 +3096,7 @@ Manylion ychwanegol:
 <translation id="8913778647360618320">Botwm rheoli dulliau talu, pwyswch Enter i reoli eich taliadau a gwybodaeth cerdyn credyd yn Gosodiadau Chrome</translation>
 <translation id="8922013791253848639">Caniatáu hysbysebion ar y wefan hon bob amser</translation>
 <translation id="892588693504540538">Twll ar y dde uchaf</translation>
+<translation id="8930098617363288380">Nid yw'r gwerth <ph name="SECURE_DNS_SALT" /> yn berthnasol, ac ni chaiff ei ddefnyddio, oni bai bod y polisi <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> wedi'i osod.</translation>
 <translation id="8930330541574156305">Eiddo tiriog</translation>
 <translation id="8931333241327730545">Ydych chi am gadw'r cerdyn hwn i'ch Cyfrif Google?</translation>
 <translation id="8932102934695377596">Mae eich cloc yn araf</translation>

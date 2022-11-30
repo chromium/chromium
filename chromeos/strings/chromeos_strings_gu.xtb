@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">સમસ્યા નિવારણના પગલાં અજમાવી જુઓ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">કૃપા કરીને નેટવર્ક સાથે કનેક્ટ કરો અને સ્ક્રીન સેવર જોવા માટે પેજને ફરીથી લોડ કરો.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">વધુ સેટિંગ</translation>
 <translation id="2085089206770112532">ડિસ્પ્લેનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
 <translation id="2105810540595158374">ડિવાઇસ એક ગેમ કન્ટ્રોલર છે.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">કમ્પ્રેશન ઍલ્ગોરિધમ</translation>
 <translation id="4794140124556169553">CPUનું પરીક્ષણ ચલાવવાથી તમારી સિસ્ટમની કાર્યક્ષમતા પર અસર થઈ શકે છે</translation>
 <translation id="4800589996161293643">Chromebookનો સમુદાય</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" />ને પ્રિન્ટ કરવાનું રદ કર્યું</translation>
 <translation id="4809927044794281115">ઝાંખી થીમ</translation>
 <translation id="4813136279048157860">મારી છબીઓ</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">તાણ</translation>
 <translation id="4897058166682006107">ડિવાઇસના ડાબા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="4905998861748258752">સ્ક્રીન સેવરના વિકલ્પો પસંદ કરવા માટે ઍમ્બિઅન્ટ મોડની સુવિધા ચાલુ કરો</translation>
+<translation id="4910858703033903787">APNના પ્રકાર</translation>
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4917889632206600977">બંધ - કાગળ ખલાસ થઈ ગયા</translation>
 <translation id="491791267030419270">પ્રતિસાદ લખવા માટેની ટિપ</translation>
@@ -459,6 +462,7 @@
 <translation id="5358174242040570474">કંઈક ખોટું થયું. વૉલપેપર ફરીથી પસંદ કરવાનો પ્રયાસ કરો અથવા ઍપ ફરીથી ખોલો.</translation>
 <translation id="5372659122375744710">આ વાઇ-ફાઇ નેટવર્ક સુરક્ષિત નથી</translation>
 <translation id="5376354385557966694">ઑટોમૅટિક લાઇટ મોડ</translation>
+<translation id="5378184552853359930">IPનો પ્રકાર</translation>
 <translation id="5389159777326897627">વૉલપેપર અને સ્ટાઇલ</translation>
 <translation id="5389224261615877010">મેઘધનુષ</translation>
 <translation id="5400907029458559844">ડિવાઇસ કનેક્ટ થઈ રહ્યું છે.</translation>
@@ -742,6 +746,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> પસંદ કરો</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">જોડો</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8226628635270268143">તમારા મનગમતા ફોટા અને આલ્બમ પસંદ કરો</translation>
@@ -830,6 +835,7 @@
 <translation id="9025198690966128418">વ્યક્તિગત ડિવાઇસ તરીકે ઉપયોગ કરો</translation>
 <translation id="9028832514430399253">સ્ક્રીન સેવરના વિકલ્પો પસંદ કરવા માટે ટૉગલને ચાલુ કરો</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNSના રિઝોલ્યુશનની વિલંબતાનો સમય ઘણો વધુ છે</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>

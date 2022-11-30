@@ -834,7 +834,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="175772926354468439">Habilitar tema</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
 <translation id="1761845175367251960">Cuentas de <ph name="NAME" /></translation>
-<translation id="176193854664720708">El sensor de huellas digitales está situado en el botón de encendido. Tócalo ligeramente con un dedo.</translation>
 <translation id="176272781006230109">sugerencias de compra</translation>
 <translation id="1763046204212875858">Crear accesos directos a aplicaciones</translation>
 <translation id="1763808908432309942">Se abre en una nueva pestaña</translation>
@@ -1077,7 +1076,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1974821797477522211">Conéctate a la red</translation>
 <translation id="1975841812214822307">Quitar...</translation>
 <translation id="1976150099241323601">Iniciar sesión en al dispositivo de seguridad</translation>
-<translation id="1976928778492259496">El sensor de huellas digitales está en el lado izquierdo de tu <ph name="DEVICE_TYPE" />. Tócalo ligeramente con un dedo.</translation>
 <translation id="1977965994116744507">Acerca el teléfono para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Quitar dirección</translation>
 <translation id="1979095679518582070">Aunque esta opción esté desactivada, el dispositivo seguirá pudiendo enviar la información necesaria para realizar los servicios esenciales relacionados, por ejemplo, con la seguridad y las actualizaciones del sistema.</translation>
@@ -2846,7 +2844,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3612673635130633812">Descargado a través de &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Abrir en una pestaña nueva</translation>
-<translation id="3615073365085224194">Toca el sensor de huellas digitales con el dedo</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> se está analizando.</translation>
 <translation id="3615596877979647433">Falta la tecla. Pulsa una tecla del teclado para personalizarla.</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3835,7 +3832,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4533985347672295764">Tiempo de uso de la CPU</translation>
 <translation id="4534661889221639075">Inténtalo de nuevo.</translation>
 <translation id="4535127706710932914">Perfil predeterminado</translation>
-<translation id="4535767533210902251">El sensor de huellas digitales está en la tecla de arriba a la derecha de tu teclado. Tócalo ligeramente con un dedo.</translation>
 <translation id="4536140153723794651">Sitios que pueden usar cookies siempre</translation>
 <translation id="4536769240747010177">Funciones de conexión compartida:</translation>
 <translation id="4538417792467843292">Eliminar palabra</translation>
@@ -5480,7 +5476,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6087746524533454243">¿Buscas la página de información del navegador? Visita</translation>
 <translation id="6087960857463881712">Cara de emoción</translation>
 <translation id="608912389580139775">Para añadir esta página a tu lista de lectura, haz clic en el icono de marcadores</translation>
-<translation id="6091116443517744502">comprueba tu conexión a Internet y vuelve a intentarlo</translation>
 <translation id="6091761513005122595">El recurso compartido se ha activado correctamente.</translation>
 <translation id="6093803049406781019">Eliminar perfil</translation>
 <translation id="6093888419484831006">Cancelando la actualización...</translation>
@@ -6786,7 +6781,6 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7353261921908507769">Tus contactos pueden compartir archivos contigo cuando estén cerca de ti. Las transferencias no se iniciarán hasta que las aceptes.</translation>
 <translation id="735361434055555355">Instalando Linux...</translation>
-<translation id="7354341762311560488">El sensor de huellas digitales está en la tecla situada en la parte inferior izquierda del teclado. Tócalo ligeramente con un dedo.</translation>
 <translation id="7356908624372060336">Registros de la red</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7358324924540718595">Recuerdos de hoy ocultados</translation>
@@ -7954,7 +7948,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8398877366907290961">Continuar de todos modos</translation>
 <translation id="8399282673057829204">Ver contraseña</translation>
 <translation id="8401432541486058167">Introduce el PIN asociado a tu tarjeta inteligente.</translation>
-<translation id="8404893580027489425">El sensor de huellas digitales está en el lado derecho de tu <ph name="DEVICE_TYPE" />. Tócalo ligeramente con un dedo.</translation>
 <translation id="8405046151008197676">Consulta los aspectos destacados de la última actualización</translation>
 <translation id="8407199357649073301">Nivel de registro:</translation>
 <translation id="8408270600235826886">Puedes controlar qué datos se comparten con Google. Puedes cambiar esta opción en cualquier momento en Ajustes. Los datos se usan de acuerdo con la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de Google.</translation>
@@ -8041,7 +8034,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8487699605742506766">Compartir Internet</translation>
 <translation id="8489156414266187072">Las sugerencias personales solo se muestran en tu cuenta</translation>
 <translation id="8490896350101740396">Las siguientes aplicaciones de kiosco (<ph name="UPDATED_APPS" />) se han actualizado. Reinicia el dispositivo para completar el proceso de actualización.</translation>
-<translation id="8492685019009920170">Toca el sensor de huellas digitales con el dedo. Tus datos se almacenan de forma segura y nunca abandonan tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Los sitios pueden enviar ventanas emergentes y utilizar redirecciones</translation>
 <translation id="8492960370534528742">Comentarios sobre Google Cast</translation>
 <translation id="8493236660459102203">Micrófono:</translation>
@@ -8576,7 +8568,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="899384117894244799">Quitar usuario restringido</translation>
 <translation id="899403249577094719">URL base de certificado de Netscape</translation>
 <translation id="899657321862108550">Tu Chrome, siempre contigo</translation>
-<translation id="899676909165543803">El sensor de huellas digitales está en la tecla de abajo a la derecha de tu teclado. Tócalo ligeramente con un dedo.</translation>
 <translation id="8998078711690114234">Este tipo de archivo puede ser peligroso. Guarda este archivo solo si confías en <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Error de sintaxis de sección: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">La conexión con el servidor de administración de dispositivos ha fallado con el estado "<ph name="STATUS_TEXT" />" a las <ph name="FAILURE_TIME" /></translation>
@@ -8633,6 +8624,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9040661932550800571">¿Quieres actualizar la contraseña de <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Tu administrador ha inhabilitado el acceso a los archivos locales de tu equipo</translation>
 <translation id="904224458472510106">Esta operación no se puede deshacer</translation>
+<translation id="9042827002460091668">Comprueba tu conexión a Internet y vuelve a intentarlo</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9044646465488564462">Error al establecer conexión con la red: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Tu lista de lectura se ha movido al nuevo panel lateral. Pruébala.</translation>
@@ -8873,7 +8865,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="971510864672937292">¿Borrar datos del sitio y permisos de <ph name="SITE_NAME" /> y de todos los sitios que incluya?</translation>
 <translation id="971774202801778802">Añadir URL a marcadores</translation>
-<translation id="972996901592717370">Toca el botón de encendido con el dedo. Tus datos se almacenan de forma segura y nunca abandonan tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Salir</translation>
 <translation id="973558314812359997">Tamaño del ratón</translation>
 <translation id="975893173032473675">Idioma al que se va a traducir</translation>

@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{একটি অ্যাপের জন্য বন্ধ}one{#টি অ্যাপের জন্য বন্ধ}other{#টি অ্যাপের জন্য বন্ধ}}</translation>
 <translation id="4066027111132117168"><ph name="REMAINING_TIME" />-এ</translation>
 <translation id="4072264167173457037">মাঝারি সিগন্যাল</translation>
+<translation id="4086921558679520050">আপনার ডিভাইসে ফিজিক্যাল মাইকের সুইচ চালু করুন</translation>
 <translation id="4112140312785995938">পিছিয়ে যান</translation>
 <translation id="4114315158543974537">'ফোন হাব' ফিচার চালু করুন</translation>
 <translation id="4115378294792113321">ম্যাজেন্টা</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" /> শতাংশ</translation>
 <translation id="4378551569595875038">সংযুক্ত হচ্ছে...</translation>
 <translation id="4379531060876907730">এগুলি হল আপনার স্টাইলাস টুল</translation>
+<translation id="4381031910344220229">এটি মাইক্রোফোন অনুমতি সহ <ph name="APP_NAME" /> এবং সমস্ত অ্যাপ এবং ওয়েবসাইটগুলির জন্য মাইক্রোফোন অ্যাক্সেসের অনুমতি দেয়</translation>
 <translation id="4389184120735010762">ডক করা ম্যাগনিফায়ারের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
 <translation id="439598569299422042">পজ করা হয়েছে, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">স্ক্রিনকাস্ট সেভ করা যাচ্ছে না</translation>
@@ -728,6 +730,7 @@
 <translation id="4987738733603015246">ডেস্ক ১৬</translation>
 <translation id="5003993274120026347">পরের বাক্য</translation>
 <translation id="5016558321564993266">মার্কার টগল করুন। <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">ডিভাইস মাইক্রোফোন অ্যাক্সেস চালু আছে</translation>
 <translation id="5030687792513154421">সময় শেষ</translation>
 <translation id="5033299697334913360">সম্পূর্ণ স্ক্রিন ক্যাপচার করতে যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />টি নতুন ফোনে কানেক্ট করা হয়েছে</translation>
@@ -959,9 +962,11 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> এমন একটি ম্যানেজ করা সেশন যা <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> কানেক্ট করা হয়েছে</translation>
 <translation id="6351032674660237738">অ্যাপের প্রস্তাবনা</translation>
+<translation id="6352082849089527770">অজানা নেটওয়ার্ক</translation>
 <translation id="6359587239691116345">লেটেস্ট ফিচার এবং নিরাপত্তা সংক্রান্ত উন্নতি পান। আপনি এই আপডেটটি বাতিল করলে, আপনার ডিভাইস আর সঠিকভাবে কাজ নাও করতে পারে এবং আপনি নিরাপত্তা এবং পারফর্ম্যান্স সংক্রান্ত সমস্যার সম্মুখীন হতে পারেন।</translation>
 <translation id="6376931439017688372">ব্লুটুথ চালু আছে</translation>
 <translation id="6381109794406942707">ডিভাইস আনলক করতে, আপনার পিন এন্টার করুন।</translation>
+<translation id="638716340450135524">ক্যামেরার অ্যাক্সেস চালু করুন</translation>
 <translation id="639644700271529076">CAPS LOCK বন্ধ আছে</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -969,6 +974,7 @@
 <translation id="642644398083277086">সমস্ত বিজ্ঞপ্তি মুছে ফেলুন</translation>
 <translation id="643147933154517414">সব সম্পন্ন!</translation>
 <translation id="6431865393913628856">স্ক্রিন রেকর্ড</translation>
+<translation id="6442259747294754014">ডিভাইস মাইক্রোফোন অ্যাক্সেস বন্ধ আছে</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" />টি ইভেন্ট</translation>
 <translation id="6449483711453944360">বর্তমানে Linux অ্যাপ ও ছদ্মবেশী উইন্ডো ব্যবহারের সুবিধা নেই</translation>
@@ -1133,6 +1139,7 @@
 <translation id="7360036564632145207">পেরিফেরাল সেটিংসের জন্য আপনার 'ডেটা অ্যাক্সেস সুরক্ষা' ব্যবস্থায় পরিবর্তন করলে পারফর্ম্যান্স অপ্টিমাইজ হতে পারে</translation>
 <translation id="736045644501761622">'ওয়ালপেপার ও স্টাইল' ফিচার সেট করুন</translation>
 <translation id="7371404428569700291">উইন্ডো রেকর্ড করুন</translation>
+<translation id="737315737514430195">এটি মাইক্রোফোন অনুমতি সহ সমস্ত অ্যাপ এবং ওয়েবসাইটগুলির জন্য মাইক্রোফোন অ্যাক্সেসের অনুমতি দেয়</translation>
 <translation id="7377169924702866686">Caps Lock চালু আছে৷</translation>
 <translation id="7377481913241237033">কোড ব্যবহার করে কানেক্ট করুন</translation>
 <translation id="7378203170292176219">রেকর্ড করতে ড্র্যাগ করে কিছুটা জায়গা বেছে নিন</translation>
@@ -1201,6 +1208,7 @@
 <translation id="7671610481353807627">আইকনের রঙ অনুযায়ী অ্যাপ সাজানো হয়েছে</translation>
 <translation id="7672095158465655885"><ph name="NAME" />-এর সাথে কানেক্ট করা রয়েছে, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">ক্যামেরা ইনপুট <ph name="CAMERA_NAME" />-এ সেট করা আছে।</translation>
+<translation id="7689817529363080918">এটি মাইক্রোফোন অনুমতি সহ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> এবং সমস্ত অ্যাপ এবং ওয়েবসাইটগুলির জন্য মাইক্রোফোন অ্যাক্সেসের অনুমতি দেয়</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">নতুন মোবাইল নেটওয়ার্ক যোগ করুন</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> পর্যন্ত চালু আছে</translation>
@@ -1364,6 +1372,7 @@
 <translation id="8598235756057743477">নাম বা রঙ অনুযায়ী অ্যাপ সাজান</translation>
 <translation id="8614517853887502247">ভিউ সংক্রান্ত নিরাপত্তা চালু থাকার জন্য <ph name="APP_1_TITLE" /> এবং <ph name="APP_2_TITLE" />-এর বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />-এর সাথে কানেক্ট হয়েছে</translation>
+<translation id="8630991711272431708">ক্যামেরা অ্যাক্সেস বন্ধ করুন</translation>
 <translation id="8631727435199967028">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> বাকি আছে</translation>

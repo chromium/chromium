@@ -730,6 +730,7 @@
 <translation id="4987738733603015246">ଡେସ୍କ 16</translation>
 <translation id="5003993274120026347">ପରବର୍ତ୍ତୀ ବାକ୍ୟ</translation>
 <translation id="5016558321564993266">ମାର୍କରକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">ଡିଭାଇସ ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସ ଚାଲୁ ଅଛି</translation>
 <translation id="5030687792513154421">ସମୟ ଶେଷ ହୋ‍ଇଛି</translation>
 <translation id="5033299697334913360">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବାକୁ ସ୍କ୍ରିନର ଯେ କୌଣସି ସ୍ଥାନରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ଏକ ନୂଆ ଫୋନ୍ ସହ ସଂଯୁକ୍ତ ହୋଇଛି</translation>
@@ -965,6 +966,7 @@
 <translation id="6359587239691116345">ନବୀନତମ ଫିଚର ଏବଂ ସୁରକ୍ଷା ଉନ୍ନତିଗୁଡ଼ିକୁ ପାଆନ୍ତୁ। ଯଦି ଆପଣ ଏହି ଅପଡେଟକୁ ଅଗ୍ରାହ୍ୟ କରନ୍ତି, ତେବେ ଆପଣଙ୍କ ଡିଭାଇସ ଆଉ ସଠିକ୍ ଭାବେ କାମ କରିନପାରେ ଏବଂ ଆପଣ ସୁରକ୍ଷା ଓ ପରଫରମାନ୍ସ ସମସ୍ୟାଗୁଡ଼ିକର ସମ୍ମୁଖୀନ ହୋଇପାରନ୍ତି।</translation>
 <translation id="6376931439017688372">ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="6381109794406942707">ଡିଭାଇସକୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣଙ୍କର PIN ଲେଖନ୍ତୁ।</translation>
+<translation id="638716340450135524">କେମେରା ଆକ୍ସେସ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="639644700271529076">କ୍ୟାପସ୍ ଲକ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -972,6 +974,7 @@
 <translation id="642644398083277086">ସମସ୍ତ ବିଜ୍ଞପ୍ତି ଖାଲି କରନ୍ତୁ।</translation>
 <translation id="643147933154517414">ସମସ୍ତ କାମ ହୋଇଗଲା!</translation>
 <translation id="6431865393913628856">ସ୍କ୍ରିନ୍ ରେକର୍ଡ</translation>
+<translation id="6442259747294754014">ଡିଭାଇସ ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସ ବନ୍ଦ ଅଛି</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />ରେ<ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" />ଟି ଇଭେଣ୍ଟ</translation>
 <translation id="6449483711453944360">Linux ଆପ୍ସ ଏବଂ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ସମର୍ଥିତ ନୁହେଁ</translation>
@@ -1368,6 +1371,7 @@
 <translation id="8598235756057743477">ଆପଣଙ୍କ ଆପଗୁଡ଼ିକୁ ନାମ କିମ୍ବା ରଙ୍ଗ ଅନୁସାରେ ସର୍ଟ କରନ୍ତୁ</translation>
 <translation id="8614517853887502247">"ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା" ସୁବିଧା ଚାଲୁ ଥିବା ଯୋଗୁଁ <ph name="APP_1_TITLE" /> ଏବଂ <ph name="APP_2_TITLE" /> ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ସହିତ ସଂଯୋଗ କରାଯାଇଛି</translation>
+<translation id="8630991711272431708">କେମେରା ଆକ୍ସେସକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8631727435199967028">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ବାକି ଅଛି</translation>

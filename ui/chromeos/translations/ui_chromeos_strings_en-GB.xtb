@@ -45,6 +45,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1395262318152388157">Seek slider</translation>
 <translation id="1399511500114202393">No user certificate</translation>
+<translation id="1403008701842173542">Everywhere</translation>
 <translation id="1404323374378969387">Norwegian</translation>
 <translation id="1433628812591023318">To drop files in Parallels Desktop, the file must be moved to Windows files.</translation>
 <translation id="1435838927755162558">Share folder with Parallels Desktop</translation>
@@ -133,6 +134,7 @@
 <translation id="2143778271340628265">Manual proxy configuration</translation>
 <translation id="2148716181193084225">Today</translation>
 <translation id="2163152940313951844">Invalid character: <ph name="CHARACTER_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2184934335987813305">Portuguese with US international PC keyboard</translation>
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> used</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
@@ -447,6 +449,7 @@
 <translation id="4850886885716139402">View</translation>
 <translation id="485316830061041779">German</translation>
 <translation id="4867079195717347957">Click to sort the column in descending order.</translation>
+<translation id="4867297348137739678">Last week</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4874569719830985133">Delete forever</translation>
 <translation id="4880214202172289027">Volume slider</translation>
@@ -710,6 +713,7 @@
 <translation id="6973630695168034713">Folders</translation>
 <translation id="6976795442547527108">Lion</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979737339423435258">All time</translation>
 <translation id="6989942356279143254">Swedish</translation>
 <translation id="6990081529015358884">You have run out of space</translation>
 <translation id="6993826899923627728">These items are in your bin</translation>

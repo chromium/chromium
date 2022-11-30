@@ -553,6 +553,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{خاموش برای یک برنامه}one{خاموش برای # برنامه}other{خاموش برای # برنامه}}</translation>
 <translation id="4066027111132117168">در، <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">سیگنال متوسط</translation>
+<translation id="4086921558679520050">کلید فیزیکی میکروفون را روی دستگاهتان روشن کنید</translation>
 <translation id="4112140312785995938">رفتن به عقب</translation>
 <translation id="4114315158543974537">روشن کردن «مرکز تلفن»</translation>
 <translation id="4115378294792113321">سرخابی</translation>
@@ -605,6 +606,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
 <translation id="4378551569595875038">در حال اتصال..</translation>
 <translation id="4379531060876907730">این‌ها ابزارهای قلم شما هستند</translation>
+<translation id="4381031910344220229">با این کار، دسترسی به میکروفون برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه میکروفون مجاز می‌شود</translation>
 <translation id="4389184120735010762">میان‌بر صفحه‌کلید مربوط به ذره‌بین متصل را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
 <translation id="439598569299422042">موقتاً متوقف شده است، <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ضبط ویدیویی از صفحه ذخیره نشد</translation>
@@ -727,6 +729,7 @@
 <translation id="4987738733603015246">میزکار ۱۶</translation>
 <translation id="5003993274120026347">جمله بعدی</translation>
 <translation id="5016558321564993266">روشن/ خاموش کردن نشانگر. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">دسترسی به میکروفون دستگاه روشن شد</translation>
 <translation id="5030687792513154421">وقت تمام شد</translation>
 <translation id="5033299697334913360">برای گرفتن عکس از کل صفحه، روی هرجایی که می‌خواهید کلیک کنید</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> به تلفن جدیدی متصل است</translation>
@@ -958,9 +961,11 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> جلسه مدیریت‌شده‌ای است که توسط <ph name="MANAGER" /> مدیریت می‌شود</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> متصل شد</translation>
 <translation id="6351032674660237738">پیشنهادات برنامه</translation>
+<translation id="6352082849089527770">شبکه‌های ناشناس</translation>
 <translation id="6359587239691116345">جدیدترین ویژگی‌ها و قابلیت‌های امنیتی بهبودیافته را دریافت کنید. اگر این به‌روزرسانی را رد کنید، ممکن است دستگاهتان دیگر به‌درستی کار نکند و احتمال دارد با مشکلات امنیتی و عملکردی مواجه شوید.</translation>
 <translation id="6376931439017688372">بلوتوث روشن است</translation>
 <translation id="6381109794406942707">برای باز کردن قفل دستگاه، پین را وارد کنید.</translation>
+<translation id="638716340450135524">روشن کردن دسترسی به دوربین</translation>
 <translation id="639644700271529076">‏CAPS LOCK خاموش است</translation>
 <translation id="6406704438230478924">دگرساز راست</translation>
 <translation id="6417265370957905582">‏دستیار Google</translation>
@@ -968,6 +973,7 @@
 <translation id="642644398083277086">پاک کردن همه اعلان‌ها</translation>
 <translation id="643147933154517414">کاملاً انجام شد</translation>
 <translation id="6431865393913628856">ضبط کردن صفحه‌نمایش</translation>
+<translation id="6442259747294754014">دسترسی به میکروفون دستگاه خاموش شد</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> به <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />، <ph name="NUMBER" /> رویداد</translation>
 <translation id="6449483711453944360">‏درحال‌حاضر از برنامه‌های Linux و پنجره‌های «ناشناس» پشتیبانی نمی‌شود</translation>
@@ -1132,6 +1138,7 @@
 <translation id="7360036564632145207">تغییر تنظیم محافظت از دسترسی به داده‌ها برای لوازم جانبی ممکن است عملکرد را بهینه‌سازی کند</translation>
 <translation id="736045644501761622">تنظیم کاغذدیواری و سبک</translation>
 <translation id="7371404428569700291">پنجره ضبط</translation>
+<translation id="737315737514430195">با این کار، دسترسی به میکروفون برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه میکروفون مجاز می‌شود</translation>
 <translation id="7377169924702866686">‏Caps Lock روشن است.</translation>
 <translation id="7377481913241237033">اتصال با کد</translation>
 <translation id="7378203170292176219">برای انتخاب ناحیه ضبط، بکشید</translation>
@@ -1200,6 +1207,7 @@
 <translation id="7671610481353807627">برنامه‌ها براساس رنگ مرتب شده‌اند</translation>
 <translation id="7672095158465655885">متصل به <ph name="NAME" />، <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">ورودی دوربین روی <ph name="CAMERA_NAME" /> تنظیم شد.</translation>
+<translation id="7689817529363080918">با این کار، دسترسی به میکروفون برای <ph name="APP1_NAME" />، <ph name="APP2_NAME" />، و همه برنامه‌ها و وب‌سایت‌های دارای اجازه میکروفون مجاز می‌شود</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">افزودن شبکه تلفن همراه جدید</translation>
 <translation id="7720400844887872976">روشن تا <ph name="TIME" /></translation>
@@ -1363,6 +1371,7 @@
 <translation id="8598235756057743477">مرتب‌سازی برنامه‌ها براساس نام یا رنگ</translation>
 <translation id="8614517853887502247">اعلان‌های <ph name="APP_1_TITLE" /> و <ph name="APP_2_TITLE" /> پنهان شده است زیرا «محافظت دربرابر مشاهده» روشن است</translation>
 <translation id="8627191004499078455">متصل به <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">خاموش کردن دسترسی به دوربین</translation>
 <translation id="8631727435199967028">تنظیمات دسترس‌پذیری</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> باقی‌مانده</translation>

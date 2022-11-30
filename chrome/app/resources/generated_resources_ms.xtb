@@ -845,7 +845,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="175772926354468439">Dayakan tema</translation>
 <translation id="17584710573359123">Lihat di Gedung Web Chrome</translation>
 <translation id="1761845175367251960">Akaun <ph name="NAME" /></translation>
-<translation id="176193854664720708">Penderia cap jari terletak di dalam butang kuasa. Sentuh dengan lembut menggunakan mana-mana jari.</translation>
 <translation id="176272781006230109">cadangan beli-belah</translation>
 <translation id="1763046204212875858">Cipta pintasan aplikasi</translation>
 <translation id="1763808908432309942">Membuka dalam tab baharu</translation>
@@ -1089,7 +1088,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1974821797477522211">Sambung ke rangkaian</translation>
 <translation id="1975841812214822307">Alih keluar...</translation>
 <translation id="1976150099241323601">Log masuk ke Peranti Keselamatan</translation>
-<translation id="1976928778492259496">Penderia cap jari terletak di sisi sebelah kiri <ph name="DEVICE_TYPE" /> anda. Sentuh dengan lembut menggunakan mana-mana jari.</translation>
 <translation id="1977965994116744507">Rapatkan telefon anda untuk membuka kunci <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1978057560491495741">Alih keluar alamat</translation>
 <translation id="1979095679518582070">Tindakan mematikan ciri ini tidak menjejaskan keupayaan peranti ini untuk menghantar maklumat yang diperlukan untuk perkhidmatan penting seperti kemas kini sistem dan keselamatan.</translation>
@@ -2644,7 +2642,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3406396172897554194">Cari mengikut bahasa atau nama masukan</translation>
 <translation id="3406605057700382950">&amp;Tunjukkan bar penanda halaman</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 kata laluan diimport pada Google Password Manager untuk <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} kata laluan diimport pada Google Password Manager untuk <ph name="USER_EMAIL" />}}</translation>
-<translation id="3409785640040772790">Peta</translation>
+<translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Lompat ke Pemilihan</translation>
 <translation id="3413122095806433232">Pengeluar CA: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Saiz:</translation>
@@ -2860,7 +2858,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3612673635130633812">Dimuat turun oleh &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Tunjukkan <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Buka dalam tab baharu</translation>
-<translation id="3615073365085224194">Sentuh penderia cap jari menggunakan jari anda</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> sedang diimbas.</translation>
 <translation id="3615596877979647433">Tiada kekunci. Tekan kekunci papan kekunci untuk menyesuaikan</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3851,7 +3848,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4533985347672295764">Masa CPU</translation>
 <translation id="4534661889221639075">Cuba lagi.</translation>
 <translation id="4535127706710932914">Profil Lalai</translation>
-<translation id="4535767533210902251">Penderia cap jari ialah kekunci sebelah kanan bahagian atas pada papan kekunci anda. Sentuh dengan lembut menggunakan mana-mana jari.</translation>
 <translation id="4536140153723794651">Tapak yang boleh menggunakan kuki pada setiap masa</translation>
 <translation id="4536769240747010177">Keupayaan Penambatan:</translation>
 <translation id="4538417792467843292">Padam perkataan</translation>
@@ -5496,7 +5492,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6087746524533454243">Mencari halaman perihalan penyemak imbas? Lawati</translation>
 <translation id="6087960857463881712">Wajah hebat</translation>
 <translation id="608912389580139775">Untuk menambahkan halaman ini pada senarai bacaan anda, klik ikon Penanda Halaman</translation>
-<translation id="6091116443517744502">sila periksa sambungan Internet anda dan cuba lagi</translation>
 <translation id="6091761513005122595">Perkongsian berjaya dilekapkan.</translation>
 <translation id="6093803049406781019">Padam profil</translation>
 <translation id="6093888419484831006">Membatalkan kemas kini...</translation>
@@ -6802,7 +6797,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7353261921908507769">Kenalan anda boleh berkongsi dengan anda apabila mereka berada berdekatan. Pemindahan tidak akan bermula sehinggalah anda menerima perkongsian.</translation>
 <translation id="735361434055555355">Memasang Linux...</translation>
-<translation id="7354341762311560488">Penderia cap jari ialah kekunci pada bahagian bawah sebelah kiri papan kekunci anda. Sentuh dengan lembut menggunakan mana-mana jari.</translation>
 <translation id="7356908624372060336">Log Rangkaian</translation>
 <translation id="735745346212279324">VPN diputuskan sambungan</translation>
 <translation id="7358324924540718595">Memori disembunyikan untuk hari ini</translation>
@@ -7971,7 +7965,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8398877366907290961">Teruskan juga</translation>
 <translation id="8399282673057829204">Lihat kata laluan</translation>
 <translation id="8401432541486058167">Sediakan PIN yang dikaitkan dengan kad pintar anda.</translation>
-<translation id="8404893580027489425">Penderia cap jari terletak di sisi sebelah kanan <ph name="DEVICE_TYPE" /> anda. Sentuh dengan lembut menggunakan mana-mana jari.</translation>
 <translation id="8405046151008197676">Dapatkan sorotan daripada kemas kini terbaharu</translation>
 <translation id="8407199357649073301">Tahap Log:</translation>
 <translation id="8408270600235826886">Anda boleh mengawal data yang dikongsi dengan Google. Anda boleh menukar pilihan ini pada bila-bila masa dalam Tetapan. Data akan digunakan menurut <ph name="BEGIN_LINK" />Dasar Privasi<ph name="END_LINK" /> Google.</translation>
@@ -8058,7 +8051,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8487699605742506766">Tempat liputan</translation>
 <translation id="8489156414266187072">Cadangan peribadi hanya dipaparkan pada akaun anda</translation>
 <translation id="8490896350101740396">Apl kiosk berikut "<ph name="UPDATED_APPS" />" telah dikemas kini. Sila mulakan semula peranti untuk melengkapkan proses kemas kini.</translation>
-<translation id="8492685019009920170">Sentuh penderia cap jari dengan jari anda. Data anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="8492822722330266509">Tapak boleh menghantar tetingkap timbul dan menggunakan ubah hala</translation>
 <translation id="8492960370534528742">Maklum Balas Google Cast</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
@@ -8446,6 +8438,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8859174528519900719">Subbingkai: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Syarat Perkhidmatan tidak dapat dimuatkan</translation>
 <translation id="8859662783913000679">Akaun ibu bapa</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} akaun}other{{COUNT} akaun}}</translation>
 <translation id="8861568709166518036">Gunakan butang pada skrin untuk menavigasi laman utama, kembali dan menukar apl. Dihidupkan secara automatik jika ChromeVox atau klik automatik dihidupkan.</translation>
 <translation id="8862003515646449717">Tukar kepada penyemak imbas yang pantas</translation>
 <translation id="8863753581171631212">Buka pautan dalam <ph name="APP" /> baharu</translation>
@@ -8593,7 +8586,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="899384117894244799">Alih keluar pengguna yang disekat</translation>
 <translation id="899403249577094719">URL Tapak Sijil Netscape</translation>
 <translation id="899657321862108550">Chrome Anda, di Mana-mana</translation>
-<translation id="899676909165543803">Penderia cap jari ialah kekunci sebelah kanan bahagian bawah pada papan kekunci anda. Sentuh dengan lembut menggunakan mana-mana jari.</translation>
 <translation id="8998078711690114234">Fail jenis ini boleh membahayakan. Simpan fail ini hanya jika anda percaya <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Ralat sintaks seksyen: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Sambungan ke Pelayan Pengurusan Peranti gagal dengan status '<ph name="STATUS_TEXT" />' pada <ph name="FAILURE_TIME" /></translation>
@@ -8650,6 +8642,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="9040661932550800571">Kemas kini kata laluan untuk <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Akses kepada fail setempat pada mesin anda dilumpuhkan oleh pentadbir anda</translation>
 <translation id="904224458472510106">Operasi ini tidak boleh dibuat asal</translation>
+<translation id="9042827002460091668">Periksa sambungan Internet anda, kemudian cuba lagi</translation>
 <translation id="9042893549633094279">Privasi dan keselamatan</translation>
 <translation id="9044646465488564462">Gagal bersambung ke rangkaian: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Senarai bacaan anda telah dialihkan ke panel sisi baharu. Cuba di sini.</translation>
@@ -8890,7 +8883,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 Tab}other{# Tab}}</translation>
 <translation id="971510864672937292">Kosongkan data dan kebenaran laman untuk <ph name="SITE_NAME" /> dan semua laman di bawahnya?</translation>
 <translation id="971774202801778802">URL Penanda Halaman</translation>
-<translation id="972996901592717370">Sentuh butang kuasa dengan jari anda. Data anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="973473557718930265">Keluar</translation>
 <translation id="973558314812359997">Saiz tetikus</translation>
 <translation id="975893173032473675">Bahasa Sasaran Terjemahan</translation>

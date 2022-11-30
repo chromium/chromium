@@ -554,6 +554,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Uit voor een app}other{Uit voor # apps}}</translation>
 <translation id="4066027111132117168">Aan, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Normaal signaal</translation>
+<translation id="4086921558679520050">Zet de fysieke microfoonschakelaar aan op je apparaat</translation>
 <translation id="4112140312785995938">Achteruit zoeken</translation>
 <translation id="4114315158543974537">Phone Hub aanzetten</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -606,6 +607,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4379531060876907730">Dit zijn je stylustools</translation>
+<translation id="4381031910344220229">Hierdoor wordt microfoontoegang toegestaan voor <ph name="APP_NAME" /> en alle apps en websites met microfoonrechten</translation>
 <translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="439598569299422042">Onderbroken, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Kan screencast niet opslaan</translation>
@@ -960,6 +962,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> gekoppeld</translation>
 <translation id="6351032674660237738">APP-SUGGESTIES</translation>
+<translation id="6352082849089527770">Onbekende netwerken</translation>
 <translation id="6359587239691116345">Krijg de nieuwste functies en beveiligingsverbeteringen. Als je deze update weigert, werkt je apparaat misschien niet meer goed en kun je beveiligings- en prestatieproblemen ondervinden.</translation>
 <translation id="6376931439017688372">Bluetooth staat aan</translation>
 <translation id="6381109794406942707">Geef je pincode op om het apparaat te ontgrendelen.</translation>
@@ -1133,6 +1136,7 @@ Nieuwe installatie</translation>
 <translation id="7360036564632145207">Als je de instelling 'Beveiliging voor gegevenstoegang voor randapparaten' wijzigt, kun je de prestaties optimaliseren</translation>
 <translation id="736045644501761622">Achtergrond en stijl instellen</translation>
 <translation id="7371404428569700291">Opname van venster maken</translation>
+<translation id="737315737514430195">Hierdoor wordt microfoontoegang toegestaan voor alle apps en websites met microfoonrechten</translation>
 <translation id="7377169924702866686">Caps Lock staat aan.</translation>
 <translation id="7377481913241237033">Koppelen met een code</translation>
 <translation id="7378203170292176219">Sleep om het gedeelte te selecteren dat je wilt opnemen</translation>
@@ -1201,6 +1205,7 @@ Nieuwe installatie</translation>
 <translation id="7671610481353807627">Apps zijn gesorteerd op kleur</translation>
 <translation id="7672095158465655885">Verbonden met <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Camera-invoer ingesteld op <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Hierdoor wordt microfoontoegang toegestaan voor <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met microfoonrechten</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Een nieuw mobiel netwerk toevoegen</translation>
 <translation id="7720400844887872976">Aan tot <ph name="TIME" /></translation>

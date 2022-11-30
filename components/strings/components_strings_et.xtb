@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Ei ole kunagi salvestatud</translation>
 <translation id="1064054731605354900">A3 × 5</translation>
 <translation id="106701514854093668">Töölaua järjehoidjad</translation>
+<translation id="1067561478268651872">Reeglit <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ei kasutata, kui reeglit <ph name="SECURE_DNS_SALT" /> pole määratud.</translation>
 <translation id="1068672505746868501">Ära tõlgi kunagi <ph name="SOURCE_LANGUAGE" /> keeles olevaid lehti</translation>
 <translation id="1070853536588271387">Alternatiivkütusega ja hübriidsõidukid</translation>
 <translation id="1070901266639972381">öö</translation>
@@ -2099,6 +2100,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6328786501058569169">See sait on petturlik</translation>
 <translation id="6337133576188860026">Vabastab alla <ph name="SIZE" />. Mõne saidi laadimine võib järgmisel külastusel rohkem aega võtta.</translation>
 <translation id="6337534724793800597">Reeglite filtreerimine nime järgi</translation>
+<translation id="633770708279464947">Reegli <ph name="SECURE_DNS_SALT" /> väärtus on sobimatu ja seda ei kasutata.</translation>
 <translation id="6340739886198108203">Administraatori reegel ei soovita konfidentsiaalse sisu kuvamise ajal jäädvustada ekraanipilte ega salvestisi:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> üles laadida}other{Administraatori reegel ei soovita neid faile sihtkohta <ph name="DESTINATION_NAME" /> üles laadida}}</translation>
 <translation id="6348220984832452017">Aktiivsed variatsioonid</translation>
@@ -2994,6 +2996,7 @@ Lisateave:
 <translation id="8654126188050905496">55 × 91 mm</translation>
 <translation id="8663226718884576429">Tellimuse kokkuvõte, <ph name="TOTAL_LABEL" />, rohkem üksikasju</translation>
 <translation id="8666678546361132282">inglise keel</translation>
+<translation id="8671519637524426245">Reegli <ph name="SECURE_DNS_SALT" /> väärtus ei vasta suuruse nõuetele.</translation>
 <translation id="867224526087042813">Allkiri</translation>
 <translation id="8672264262457010862">Ettevõtlus ja tööstus</translation>
 <translation id="8676424191133491403">Viivituseta</translation>
@@ -3093,6 +3096,7 @@ Lisateave:
 <translation id="8913778647360618320">Nupp Makseviiside haldamine, vajutage Chrome'i seadetes maksete ja krediitkaarditeabe haldamiseks sisestusklahvi</translation>
 <translation id="8922013791253848639">Luba sellel saidil alati reklaamid</translation>
 <translation id="892588693504540538">Auk ülal paremal</translation>
+<translation id="8930098617363288380">Reegli <ph name="SECURE_DNS_SALT" /> väärtus pole asjakohane ja seda ei kasutata, kui reegli <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> väärtust pole määratud.</translation>
 <translation id="8930330541574156305">Kinnisvara</translation>
 <translation id="8931333241327730545">Kas soovite selle kaardi salvestada oma Google'i kontole?</translation>
 <translation id="8932102934695377596">Teie kell on taga</translation>

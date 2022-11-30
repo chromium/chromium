@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">সমস্যার সমাধান করার বিভিন্ন ধাপ অনুসরণ করে দেখুন</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">স্ক্রিনসেভার দেখার জন্য কোনও নেটওয়ার্কে কানেক্ট করে পৃষ্ঠা আবার লোড করুন।</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">আরও সেটিংস</translation>
 <translation id="2085089206770112532">ডিসপ্লে উজ্জ্বলতা কমান</translation>
 <translation id="2105810540595158374">ডিভাইস একটি গেম কন্ট্রোলার।</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">কম্প্রেশন অ্যালগরিদম</translation>
 <translation id="4794140124556169553">সিপিইউ পরীক্ষা চালালে তার ফলে আপনার সিস্টেম পারফর্ম্যান্সে প্রভাব পড়তে পারে</translation>
 <translation id="4800589996161293643">Chromebook কমিউনিটি</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> প্রিন্ট করার কাজ বাতিল করা হয়েছে</translation>
 <translation id="4809927044794281115">হালকা থিম</translation>
 <translation id="4813136279048157860">আমার ছবি</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">স্ট্রেস</translation>
 <translation id="4897058166682006107">ডিভাইসের বাঁদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="4905998861748258752">স্ক্রিন সেভার বিকল্প বেছে নেওয়ার জন্য ফিচার চালু করুন</translation>
+<translation id="4910858703033903787">APN ধরন</translation>
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4917889632206600977">বন্ধ হয়ে গেছে - কাগজ শেষ হয়ে গেছে</translation>
 <translation id="491791267030419270">প্রতিক্রিয়া লেখা সংক্রান্ত পরামর্শ</translation>
@@ -459,6 +462,7 @@
 <translation id="5358174242040570474">কোনও সমস্যা হয়েছে। কোনও ওয়ালপেপার বেছে নিয়ে চেষ্টা করুন বা অ্যাপ আবার খুলুন।</translation>
 <translation id="5372659122375744710">ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত নয়</translation>
 <translation id="5376354385557966694">অটোমেটিক 'লাইট মোড'</translation>
+<translation id="5378184552853359930">IP ধরন</translation>
 <translation id="5389159777326897627">ওয়ালপেপার ও স্টাইল</translation>
 <translation id="5389224261615877010">রামধনু</translation>
 <translation id="5400907029458559844">ডিভাইস কানেক্ট করা হচ্ছে।</translation>
@@ -742,6 +746,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> বেছে নিন</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">অ্যাটাচ করুন</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
 <translation id="8226628635270268143">আপনার পছন্দের ফটো ও অ্যালবাম বাছুন</translation>
@@ -830,6 +835,7 @@
 <translation id="9025198690966128418">ব্যক্তিগত ডিভাইস হিসেবে ব্যবহার করুন</translation>
 <translation id="9028832514430399253">স্ক্রিনসেভার বিকল্পগুলি বেছে নিতে টগলটি চালু করুন</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">ডিএনএস রেজোলিউশনে খুব বেশি ল্যাটেন্সি আছে</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>

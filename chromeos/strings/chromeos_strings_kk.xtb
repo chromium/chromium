@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Ақауларды жою қадамдарын орындап көріңіз</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Скринсейверді көру үшін желіге қосылып, бетті қайта жүктеңіз.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Қосымша параметрлер</translation>
 <translation id="2085089206770112532">Дисплей жарықтығын азайту</translation>
 <translation id="2105810540595158374">Бұл — ойын контроллері.</translation>
@@ -384,6 +385,7 @@
 <translation id="4793756956024303490">Сығу алгоритмі</translation>
 <translation id="4794140124556169553">Орталық процессор сынағын қоссаңыз, жүйенің өнімділігіне кері әсер болуы мүмкін.</translation>
 <translation id="4800589996161293643">Chromebook қауымдастығы</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> құжатын басып шығарудан бас тартылды.</translation>
 <translation id="4809927044794281115">Жарық режим</translation>
 <translation id="4813136279048157860">Суреттерім</translation>
@@ -404,6 +406,7 @@
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4897058166682006107">Сол құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4905998861748258752">Скринсейвер опцияларын таңдау үшін функцияны қосыңыз</translation>
+<translation id="4910858703033903787">APN түрлері</translation>
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
 <translation id="491791267030419270">Пікір жазу туралы кеңестер</translation>
@@ -458,6 +461,7 @@
 <translation id="5358174242040570474">Бірдеңе дұрыс болмады. Тұсқағазды қайта таңдап көріңіз немесе қолданбаны қайта ашыңыз.</translation>
 <translation id="5372659122375744710">WiFi желісі қауіпсіз емес.</translation>
 <translation id="5376354385557966694">Автоматты жарық режим</translation>
+<translation id="5378184552853359930">IP түрі</translation>
 <translation id="5389159777326897627">Тұсқағаз және стиль</translation>
 <translation id="5389224261615877010">Кемпірқосақ</translation>
 <translation id="5400907029458559844">Құрылғы жалғануда.</translation>
@@ -741,6 +745,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> таңдау</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Тіркеу</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8226628635270268143">Өзіңізге ұнайтын фотосуреттер мен альбомдарды таңдау</translation>
@@ -829,6 +834,7 @@
 <translation id="9025198690966128418">Жеке құрылғы ретінде пайдалану</translation>
 <translation id="9028832514430399253">Скринсейвер параметрлерін таңдау үшін ауыстырғышты басыңыз</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS ажыратымдылығының кідірісі жоғары.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

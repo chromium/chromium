@@ -845,7 +845,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="175772926354468439">Bật chủ đề</translation>
 <translation id="17584710573359123">Xem trong Cửa hàng Chrome trực tuyến</translation>
 <translation id="1761845175367251960">Tài khoản của <ph name="NAME" /></translation>
-<translation id="176193854664720708">Cảm biến vân tay nằm trong nút nguồn. Hãy chạm nhẹ vào nút này bằng ngón tay bất kỳ.</translation>
 <translation id="176272781006230109">các đề xuất mua sắm</translation>
 <translation id="1763046204212875858">Tạo các lối tắt cho ứng dụng</translation>
 <translation id="1763808908432309942">Mở trong một thẻ mới</translation>
@@ -1089,7 +1088,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1974821797477522211">Kết nối mạng</translation>
 <translation id="1975841812214822307">Xóa...</translation>
 <translation id="1976150099241323601">Đăng nhập vào thiết bị bảo mật</translation>
-<translation id="1976928778492259496">Cảm biến vân tay nằm ở bên trái <ph name="DEVICE_TYPE" />. Hãy chạm nhẹ ngón tay bất kỳ vào đó.</translation>
 <translation id="1977965994116744507">Mang điện thoại tới gần hơn để mở khóa <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="1978057560491495741">Xóa địa chỉ</translation>
 <translation id="1979095679518582070">Việc tắt tính năng này sẽ không ảnh hưởng đến khả năng thiết bị gửi thông tin cần thiết cho các dịch vụ thiết yếu như bảo mật và cập nhật hệ thống.</translation>
@@ -2862,7 +2860,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3612673635130633812">Đã tải xuống bởi &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Hiển thị <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Mở trong thẻ mới</translation>
-<translation id="3615073365085224194">Chạm ngón tay của bạn vào cảm biến vân tay</translation>
 <translation id="3615579745882581859">Đang quét <ph name="FILE_NAME" />.</translation>
 <translation id="3615596877979647433">Thiếu khóa. Nhấn một phím trên bàn phím để tùy chỉnh</translation>
 <translation id="3616113530831147358">Âm thanh</translation>
@@ -3856,7 +3853,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4533985347672295764">Thời gian của CPU</translation>
 <translation id="4534661889221639075">Hãy thử lại.</translation>
 <translation id="4535127706710932914">Hồ sơ mặc định</translation>
-<translation id="4535767533210902251">Cảm biến vân tay là phím trên cùng bên phải của bàn phím. Hãy chạm nhẹ ngón tay bất kỳ vào đó.</translation>
 <translation id="4536140153723794651">Các trang web luôn có thể dùng cookie</translation>
 <translation id="4536769240747010177">Các chức năng chia sẻ Internet:</translation>
 <translation id="4538417792467843292">Xóa từ</translation>
@@ -5502,7 +5498,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6087746524533454243">Bạn đang tìm trình duyệt giới thiệu trang? Hãy truy cập</translation>
 <translation id="6087960857463881712">Khuôn mặt vui nhộn</translation>
 <translation id="608912389580139775">Để thêm trang này vào danh sách đọc, hãy nhấp vào biểu tượng Dấu trang</translation>
-<translation id="6091116443517744502">vui lòng kiểm tra kết nối Internet của bạn và thử lại</translation>
 <translation id="6091761513005122595">Đã kết nối thành công với thư mục chia sẻ.</translation>
 <translation id="6093803049406781019">Xóa hồ sơ</translation>
 <translation id="6093888419484831006">Đang hủy cập nhật...</translation>
@@ -6808,7 +6803,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7353261921908507769">Những người liên hệ của bạn có thể chia sẻ với bạn khi họ ở gần. Quá trình truyền tệp sẽ bắt đầu khi bạn chấp nhận.</translation>
 <translation id="735361434055555355">Đang cài đặt Linux...</translation>
-<translation id="7354341762311560488">Cảm biến vân tay là phím dưới cùng bên trái của bàn phím. Hãy chạm nhẹ ngón tay bất kỳ vào đó.</translation>
 <translation id="7356908624372060336">Nhật ký mạng</translation>
 <translation id="735745346212279324">Đã ngắt kết nối VPN</translation>
 <translation id="7358324924540718595">Đã ẩn những kỷ niệm cho hôm nay</translation>
@@ -7979,7 +7973,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8398877366907290961">Tiếp tục truy cập</translation>
 <translation id="8399282673057829204">Xem mật khẩu</translation>
 <translation id="8401432541486058167">Hãy cung cấp mã PIN liên kết với thẻ thông minh của bạn.</translation>
-<translation id="8404893580027489425">Cảm biến vân tay nằm ở bên phải <ph name="DEVICE_TYPE" />. Hãy chạm nhẹ ngón tay bất kỳ vào đó.</translation>
 <translation id="8405046151008197676">Xem những điểm nổi bật của bản cập nhật mới nhất</translation>
 <translation id="8407199357649073301">Cấp độ nhật ký:</translation>
 <translation id="8408270600235826886">Bạn có thể kiểm soát những dữ liệu nào được chia sẻ với Google. Bạn có thể thay đổi lựa chọn này bất cứ lúc nào trong phần Cài đặt. <ph name="BEGIN_LINK" />Chính sách quyền riêng tư<ph name="END_LINK" /> của Google chi phối việc dùng dữ liệu.</translation>
@@ -8066,7 +8059,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8487699605742506766">Điểm phát sóng</translation>
 <translation id="8489156414266187072">Nội dung đề xuất cá nhân chỉ hiển thị trên tài khoản của bạn</translation>
 <translation id="8490896350101740396">Các ứng dụng kiosk sau đây "<ph name="UPDATED_APPS" />" đã được cập nhật. Hãy khởi động lại thiết bị để hoàn tất quá trình cập nhật.</translation>
-<translation id="8492685019009920170">Dùng ngón tay chạm vào cảm biến vân tay. Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên chiếc <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="8492822722330266509">Các trang web có thể gửi cửa sổ bật lên và sử dụng lệnh chuyển hướng</translation>
 <translation id="8492960370534528742">Ý kiến phản hồi về Google Cast</translation>
 <translation id="8493236660459102203">Micrô:</translation>
@@ -8601,7 +8593,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="899384117894244799">Xóa người dùng bị hạn chế</translation>
 <translation id="899403249577094719">URL Cơ sở Chứng chỉ Netscape</translation>
 <translation id="899657321862108550">Chrome. Luôn bên bạn</translation>
-<translation id="899676909165543803">Cảm biến vân tay là phím dưới cùng bên phải của bàn phím. Hãy chạm nhẹ ngón tay bất kỳ vào đó.</translation>
 <translation id="8998078711690114234">Loại tệp này có thể gây nguy hiểm. Chỉ lưu tệp này nếu bạn tin tưởng <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Lỗi cú pháp trong phần: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Không kết nối được với Máy chủ quản lý thiết bị do trạng thái "<ph name="STATUS_TEXT" />" vào <ph name="FAILURE_TIME" /></translation>
@@ -8658,6 +8649,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9040661932550800571">Bạn có muốn cập nhật mật khẩu cho <ph name="ORIGIN" /> không?</translation>
 <translation id="9041692268811217999">Quản trị viên đã vô hiệu hóa quyền truy cập vào tệp cục bộ trên máy của bạn</translation>
 <translation id="904224458472510106">Bạn không thể hủy thao tác này</translation>
+<translation id="9042827002460091668">Kiểm tra kết nối Internet rồi thử lại</translation>
 <translation id="9042893549633094279">Quyền riêng tư và bảo mật</translation>
 <translation id="9044646465488564462">Không kết nối được với mạng: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Danh sách đọc của bạn đã chuyển sang bảng điều khiển bên mới. Hãy thử tại đây.</translation>
@@ -8898,7 +8890,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 thẻ}other{# thẻ}}</translation>
 <translation id="971510864672937292">Xóa tất cả dữ liệu trang web và quyền của <ph name="SITE_NAME" /> cũng như mọi trang web thuộc nhóm này?</translation>
 <translation id="971774202801778802">URL dấu trang</translation>
-<translation id="972996901592717370">Dùng ngón tay chạm vào nút nguồn. Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên chiếc <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="973473557718930265">Thoát</translation>
 <translation id="973558314812359997">Kích thước chuột</translation>
 <translation id="975893173032473675">Ngôn ngữ cần dịch sang</translation>

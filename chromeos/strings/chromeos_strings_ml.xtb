@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">ട്രബിള്‍ഷൂട്ടിംഗ് ഘട്ടങ്ങൾ പരീക്ഷിക്കുക</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">സ്ക്രീൻ സേവർ കാണാൻ ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">കൂടുതൽ ക്രമീകരണങ്ങൾ</translation>
 <translation id="2085089206770112532">ഡിസ്‌പ്ലേ തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="2105810540595158374">ഉപകരണം ഒരു ഗെയിം കൺട്രോളറാണ്.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">കംപ്രഷൻ അൽഗോരിതം</translation>
 <translation id="4794140124556169553">CPU ടെസ്‌റ്റ് റൺ ചെയ്യുന്നത് സിസ്‌റ്റത്തിന്റെ പ്രകടനത്തെ ബാധിച്ചേക്കാം</translation>
 <translation id="4800589996161293643">Chromebook കമ്മ്യൂണിറ്റി</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> എന്ന പ്രിന്റ് ജോലി റദ്ദാക്കി</translation>
 <translation id="4809927044794281115">ലൈറ്റ് തീം</translation>
 <translation id="4813136279048157860">എന്റെ ചിത്രങ്ങൾ</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">സമ്മർദ്ദം</translation>
 <translation id="4897058166682006107">ഉപകരണത്തിന്റെ ഇടത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="4905998861748258752">സ്ക്രീൻ സേവർ ഓപ്ഷനുകൾ തിരഞ്ഞെടുക്കാൻ ഫീച്ചർ ഓണാക്കുക</translation>
+<translation id="4910858703033903787">APN തരങ്ങൾ</translation>
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4917889632206600977">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പറില്ല</translation>
 <translation id="491791267030419270">ഫീഡ്ബാക്ക് എഴുതുന്നതിനുള്ള നുറുങ്ങുകൾ</translation>
@@ -459,6 +462,7 @@
 <translation id="5358174242040570474">എന്തോ കുഴപ്പമുണ്ടായി. വാൾപേപ്പർ വീണ്ടും തിരഞ്ഞെടുത്ത് നോക്കുക അല്ലെങ്കിൽ ആപ്പ് വീണ്ടും തുറക്കുക.</translation>
 <translation id="5372659122375744710">വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമല്ല</translation>
 <translation id="5376354385557966694">സ്വയമേവയുള്ള ലൈറ്റ് മോഡ്</translation>
+<translation id="5378184552853359930">IP തരം</translation>
 <translation id="5389159777326897627">വാൾപേപ്പറും സ്റ്റൈലും</translation>
 <translation id="5389224261615877010">റെയിൻബോ</translation>
 <translation id="5400907029458559844">ഉപകരണം കണക്റ്റ് ചെയ്യുന്നു.</translation>
@@ -742,6 +746,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
 <translation id="8226628635270268143">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഫോട്ടോകളും ആൽബങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
@@ -830,6 +835,7 @@
 <translation id="9025198690966128418">വ്യക്തിപര ഉപകരണമായി ഉപയോഗിക്കുക</translation>
 <translation id="9028832514430399253">സ്ക്രീൻ സേവർ ഓപ്ഷനുകൾ തിരഞ്ഞെടുക്കാൻ ടോഗിൾ ഓണാക്കുക</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS റെസല്യൂഷൻ പ്രതികരിക്കാൻ കൂടുതൽ സമയമെടുക്കുന്നു</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

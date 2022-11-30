@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">ลองทำตามขั้นตอนการแก้ปัญหา</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าเว็บซ้ำเพื่อดูโปรแกรมรักษาหน้าจอ</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2085089206770112532">ลดความสว่างของหน้าจอ</translation>
 <translation id="2105810540595158374">อุปกรณ์เป็นอุปกรณ์ควบคุมเกม</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">อัลกอริทึมการบีบอัด</translation>
 <translation id="4794140124556169553">การทดสอบ CPU อาจส่งผลต่อประสิทธิภาพของระบบ</translation>
 <translation id="4800589996161293643">ชุมชน Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">ยกเลิกงานพิมพ์ <ph name="DOCUMENT_TITLE" /> แล้ว</translation>
 <translation id="4809927044794281115">ธีมสว่าง</translation>
 <translation id="4813136279048157860">รูปภาพของฉัน</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">ประสิทธิภาพเมื่อเพิ่มแรงกดดัน</translation>
 <translation id="4897058166682006107">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างซ้าย <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4905998861748258752">เปิดฟีเจอร์นี้เพื่อเลือกตัวเลือกโปรแกรมรักษาหน้าจอ</translation>
+<translation id="4910858703033903787">ประเภท APN</translation>
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4917889632206600977">หยุดพิมพ์ - กระดาษหมด</translation>
 <translation id="491791267030419270">เคล็ดลับในการเขียนความคิดเห็น</translation>
@@ -460,6 +463,7 @@
 <translation id="5358174242040570474">เกิดข้อผิดพลาด ลองเลือกวอลเปเปอร์อีกครั้งหรือเปิดแอปใหม่</translation>
 <translation id="5372659122375744710">เครือข่าย WiFi ไม่ปลอดภัย</translation>
 <translation id="5376354385557966694">โหมดสว่างอัตโนมัติ</translation>
+<translation id="5378184552853359930">ประเภท IP</translation>
 <translation id="5389159777326897627">วอลเปเปอร์และสไตล์</translation>
 <translation id="5389224261615877010">สีรุ้ง</translation>
 <translation id="5400907029458559844">อุปกรณ์กำลังเชื่อมต่อ</translation>
@@ -743,6 +747,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">เลือก <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">แนบ</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>
@@ -831,6 +836,7 @@
 <translation id="9025198690966128418">ใช้เป็นอุปกรณ์ส่วนบุคคล</translation>
 <translation id="9028832514430399253">เปิดตัวสลับเพื่อเลือกตัวเลือกของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">การแปลง DNS มีเวลาในการตอบสนองสูง</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>

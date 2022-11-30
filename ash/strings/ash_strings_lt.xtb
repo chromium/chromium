@@ -554,6 +554,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Prog. pr. išj.}one{# prog. pr. išj.}few{# prog. pr. išj.}many{# prog. pr. išj.}other{# prog. pr. išj.}}</translation>
 <translation id="4066027111132117168">Įjungta, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Vidutinio stiprumo signalas</translation>
+<translation id="4086921558679520050">Įjunkite įrenginio fizinį mikrofono jungiklį</translation>
 <translation id="4112140312785995938">Prasukti atgal</translation>
 <translation id="4114315158543974537">„Phone Hub“ įjungimas</translation>
 <translation id="4115378294792113321">Purpurinė</translation>
@@ -606,6 +607,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4378479437904450384">„<ph name="WIRELESS_PROVIDER" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc.</translation>
 <translation id="4378551569595875038">Jungiamasi...</translation>
 <translation id="4379531060876907730">Tai yra jūsų rašiklio įrankiai</translation>
+<translation id="4381031910344220229">Tai leis pasiekti mikrofoną programai „<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms mikrofono leidimą</translation>
 <translation id="4389184120735010762">Paspaudėte prie doko prijungto didintuvo spartųjį klavišą. Ar norite jį įjungti?</translation>
 <translation id="439598569299422042">Pristabdyta, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nepavyko išsaugoti ekrano vaizdo įrašo</translation>
@@ -728,6 +730,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4987738733603015246">16 darbalaukis</translation>
 <translation id="5003993274120026347">Kitas sakinys</translation>
 <translation id="5016558321564993266">Perjunkite žymeklį. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Prieiga prie įrenginio mikrofono įjungta</translation>
 <translation id="5030687792513154421">Laikas baigėsi</translation>
 <translation id="5033299697334913360">Spustelėkite bet kur, kad užfiksuotumėte visą ekraną</translation>
 <translation id="5035236842988137213">„<ph name="DEVICE_NAME" />“ įrenginys buvo susietas su telefonu</translation>
@@ -959,9 +962,11 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> yra valdomas seansas, kurį valdo <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Prijungta: <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">PROGRAMŲ PASIŪLYMAI</translation>
+<translation id="6352082849089527770">Nežinomi tinklai</translation>
 <translation id="6359587239691116345">Gaukite naujausias funkcijas ir saugos patobulinimus. Jei atmesite šį naujinį, įrenginys gali tinkamai nebeveikti ir gali kilti saugos bei našumo problemų.</translation>
 <translation id="6376931439017688372">„Bluetooth“ įjungtas</translation>
 <translation id="6381109794406942707">Jei norite atrakinti įrenginį, įveskite PIN kodą.</translation>
+<translation id="638716340450135524">Įjungti prieigą prie vaizdo kameros</translation>
 <translation id="639644700271529076">DIDŽIŲJŲ RAIDŽIŲ RAŠYMAS išjungtas</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">„Google“ padėjėjas</translation>
@@ -969,6 +974,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="642644398083277086">Visų pranešimų išvalymas</translation>
 <translation id="643147933154517414">Viskas atlikta</translation>
 <translation id="6431865393913628856">Ekrano įrašas</translation>
+<translation id="6442259747294754014">Prieiga prie įrenginio mikrofono išjungta</translation>
 <translation id="6445835306623867477">„<ph name="ROUTE_TITLE" />“ („<ph name="RECEIVER_NAME" />“)</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, įvykių: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">„Linux“ programos ir inkognito langai šiuo metu nepalaikomi</translation>
@@ -1133,6 +1139,7 @@ Naujas įdiegimas</translation>
 <translation id="7360036564632145207">Našumą gali pavykti optimizuoti pakeičiant duomenų prieigos apsaugos išoriniams įrenginiams nustatymą</translation>
 <translation id="736045644501761622">Nustatyti ekrano foną ir stilių</translation>
 <translation id="7371404428569700291">Įrašymo langas</translation>
+<translation id="737315737514430195">Tai leis pasiekti mikrofoną visoms programoms ir svetainėms, turinčioms mikrofono leidimą</translation>
 <translation id="7377169924702866686">Įjungtas didžiųjų raidžių klavišas.</translation>
 <translation id="7377481913241237033">Susieti naudojant kodą</translation>
 <translation id="7378203170292176219">Vilkdami pasirinkite norimą įrašyti vietą</translation>
@@ -1201,6 +1208,7 @@ Naujas įdiegimas</translation>
 <translation id="7671610481353807627">Programos rūšiuojamos pagal spalvą</translation>
 <translation id="7672095158465655885">Prisijungta prie „<ph name="NAME" />“, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Fotoaparato įvestis nustatyta kaip <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Tai leis pasiekti mikrofoną programoms „<ph name="APP1_NAME" />“, „<ph name="APP2_NAME" />“ ir visoms programoms bei svetainėms, turinčioms mikrofono leidimą</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Pridėti naują mobiliojo ryšio tinklą</translation>
 <translation id="7720400844887872976">Įjungta iki <ph name="TIME" /></translation>
@@ -1364,6 +1372,7 @@ Naujas įdiegimas</translation>
 <translation id="8598235756057743477">Rūšiuokite programas pagal pavadinimą arba spalvą</translation>
 <translation id="8614517853887502247">„<ph name="APP_1_TITLE" />“ ir „<ph name="APP_2_TITLE" />“ pranešimai paslėpti, nes įjungta peržiūros apsauga</translation>
 <translation id="8627191004499078455">Prisijungta prie „<ph name="DEVICE_NAME" />“</translation>
+<translation id="8630991711272431708">Išjungti prieigą prie vaizdo kameros</translation>
 <translation id="8631727435199967028">Pritaikymo neįgaliesiems nustatymai</translation>
 <translation id="8637598503828012618">„<ph name="CONNECTION_STATUS" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" />, tvarko administratorius</translation>
 <translation id="8639760480004882931">Liko <ph name="PERCENTAGE" /></translation>

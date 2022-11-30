@@ -834,7 +834,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="175772926354468439">Gaitu gaia</translation>
 <translation id="17584710573359123">Ikusi Chrome Web Store dendan</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> erabiltzailearen kontuak</translation>
-<translation id="176193854664720708">Etengailuan dago hatz-marken sentsorea. Ezarri edozein hatz leuntasunez.</translation>
 <translation id="176272781006230109">erosketei buruzko iradokizunak</translation>
 <translation id="1763046204212875858">Sortu aplikazioetarako lasterbideak</translation>
 <translation id="1763808908432309942">Beste fitxa batean irekiko da</translation>
@@ -1077,7 +1076,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1974821797477522211">Konektatu sarera</translation>
 <translation id="1975841812214822307">Kendu…</translation>
 <translation id="1976150099241323601">Hasi saioa segurtasun-gailuan</translation>
-<translation id="1976928778492259496"><ph name="DEVICE_TYPE" /> gailuaren ezkerreko aldean dago hatz-marken sentsorea. Uki ezazu edozein hatzekin leuntasunez.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> gailua desblokeatzeko, hurbildu telefonoa.</translation>
 <translation id="1978057560491495741">Kendu helbidea</translation>
 <translation id="1979095679518582070">Eginbidea desaktibatuta ere, gailu honek beharrezko informazioa bidaltzen jarraitu ahal izango du funtsezko zerbitzuak jasotzeko, hala nola sistemaren eguneratzeak eta segurtasuna.</translation>
@@ -2845,7 +2843,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; luzapenetik deskargatu da</translation>
 <translation id="3613134908380545408">Erakutsi <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">I&amp;reki fitxa berrian</translation>
-<translation id="3615073365085224194">Ukitu hatz-marken sentsorea hatzarekin</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> aztertzen ari gara.</translation>
 <translation id="3615596877979647433">Tekla falta da. Sakatu teklatuko tekla bat fokuratuta dagoena pertsonalizatzeko</translation>
 <translation id="3616113530831147358">Audioa</translation>
@@ -3835,7 +3832,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4533985347672295764">PUZaren denbora</translation>
 <translation id="4534661889221639075">Saiatu berriro.</translation>
 <translation id="4535127706710932914">Profil lehenetsia</translation>
-<translation id="4535767533210902251">Teklatuaren goialdean eskuinetara dagoen tekla da hatz-marken sentsorea. Uki ezazu edozein hatzekin leuntasunez.</translation>
 <translation id="4536140153723794651">Webguneek beti erabil ditzakete cookieak</translation>
 <translation id="4536769240747010177">Konexioa partekatzeko aukeraren gaitasunak:</translation>
 <translation id="4538417792467843292">Ezabatu hitza</translation>
@@ -5477,7 +5473,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6087746524533454243">Arakatzailearen "Honi buruz" orriaren bila zabiltza? Joan helbide honetara:</translation>
 <translation id="6087960857463881712">Aurpegi zoragarria</translation>
 <translation id="608912389580139775">Orria irakurketa-zerrendan gehitzeko, sakatu laster-markaren ikonoa</translation>
-<translation id="6091116443517744502">egiaztatu Internetera konektatuta zaudela eta saiatu berriro</translation>
 <translation id="6091761513005122595">Muntatu da fitxategiak partekatzeko biltegia.</translation>
 <translation id="6093803049406781019">Ezabatu profila</translation>
 <translation id="6093888419484831006">Eguneratzea bertan behera uzten…</translation>
@@ -6783,7 +6778,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7352651011704765696">Arazo bat izan da</translation>
 <translation id="7353261921908507769">Zure inguruan dauden kontaktuek edukia parteka dezakete zurekin. Transferentziak ez dira abiaraziko onartzen dituzun arte.</translation>
 <translation id="735361434055555355">Linux instalatzen…</translation>
-<translation id="7354341762311560488">Teklatuaren behealdean ezkerretara dagoen tekla da hatz-marken sentsorea. Uki ezazu edozein hatzekin leuntasunez.</translation>
 <translation id="7356908624372060336">Sarearen erregistroak</translation>
 <translation id="735745346212279324">VPN deskonektatu da</translation>
 <translation id="7358324924540718595">Ezkutatu dira oroitzapenak gaurkoz</translation>
@@ -7950,7 +7944,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8398877366907290961">Jarraitu, hala ere</translation>
 <translation id="8399282673057829204">Ikusi pasahitza</translation>
 <translation id="8401432541486058167">Eman txartel adimendunarekin lotutako PINa.</translation>
-<translation id="8404893580027489425"><ph name="DEVICE_TYPE" /> gailuaren eskuineko aldean dago hatz-marken sentsorea. Uki ezazu edozein hatzekin leuntasunez.</translation>
 <translation id="8405046151008197676">Irakurri azken eguneratzeari buruzko datu aipagarriak</translation>
 <translation id="8407199357649073301">Erregistro-maila:</translation>
 <translation id="8408270600235826886">Google-rekin zer datu partekatzen diren kontrola dezakezu. Ezarpenetan alda dezakezu aukera hori. Google-ren <ph name="BEGIN_LINK" />Pribatutasun-gidalerroen<ph name="END_LINK" /> arabera erabiliko dira datuak.</translation>
@@ -8037,7 +8030,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8487699605742506766">Wifi-gunea</translation>
 <translation id="8489156414266187072">Iradokizun pertsonalak zure kontuan soilik agertzen dira</translation>
 <translation id="8490896350101740396">"<ph name="UPDATED_APPS" />" kiosko-aplikazioak eguneratu egin dira. Berrabiarazi gailua eguneratze-prozesua osatzeko.</translation>
-<translation id="8492685019009920170">Ukitu hatz-marken sentsorea hatzarekin. Zure datuak modu seguruan gordeko dira eta ez dira inoiz aterako <ph name="DEVICE_TYPE" /> gailutik.</translation>
 <translation id="8492822722330266509">Webguneek leiho gainerakorrak bidali, eta birbideratzeak erabil ditzakete</translation>
 <translation id="8492960370534528742">Google Cast-i buruzko oharrak</translation>
 <translation id="8493236660459102203">Mikrofonoa:</translation>
@@ -8425,6 +8417,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8859174528519900719">Azpimarkoa: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Ezin izan dira kargatu Zerbitzu-baldintzak</translation>
 <translation id="8859662783913000679">Guraso-kontua</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} kontu}other{{COUNT} kontu}}</translation>
 <translation id="8861568709166518036">Erabili pantailako botoiak orri nagusira joateko, atzera egiteko eta aplikazioz aldatzeko. Ezarpena automatikoki aktibatzen da ChromeVox edo klik automatikoak aktibatuta daudenean.</translation>
 <translation id="8862003515646449717">Aldatu arakatzaile bizkor batera</translation>
 <translation id="8863753581171631212">Ireki esteka <ph name="APP" /> aplikazio berrian</translation>
@@ -8572,7 +8565,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="899384117894244799">Kendu murriztapenak dituen erabiltzaile bat</translation>
 <translation id="899403249577094719">Netscape ziurtagiriaren oinarrizko URLa</translation>
 <translation id="899657321862108550">Zeure Chrome, edonon</translation>
-<translation id="899676909165543803">Teklatuaren behealdean eskuinetara dagoen tekla da hatz-marken sentsorea. Saka ezazu edozein hatzekin leuntasunez.</translation>
 <translation id="8998078711690114234">Baliteke fitxategi mota hau arriskutsua izatea. Gorde fitxategia <ph name="ORIGIN" /> fidagarritzat jotzen baduzu soilik.</translation>
 <translation id="8999560016882908256">Sintaxi-errore bat dago atal honetan: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Data honetan, gailuak kudeatzeko zerbitzariarekiko konexioak huts egin du: <ph name="FAILURE_TIME" />. Egoera: <ph name="STATUS_TEXT" />.</translation>
@@ -8629,6 +8621,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9040661932550800571"><ph name="ORIGIN" /> webguneko pasahitza eguneratu nahi duzu?</translation>
 <translation id="9041692268811217999">Administratzaileak ordenagailuko fitxategi lokaletarako sarbidea desgaitu du</translation>
 <translation id="904224458472510106">Ezin da desegin eragiketa</translation>
+<translation id="9042827002460091668">Egiaztatu Internetera konektatuta zaudela eta saiatu berriro</translation>
 <translation id="9042893549633094279">Pribatutasuna eta segurtasuna</translation>
 <translation id="9044646465488564462">Ezin izan da sarera konektatu: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Irakurketa-zerrenda alboko panel berrira eraman da. Proba ezazu hemen.</translation>
@@ -8869,7 +8862,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="970047733946999531">{NUM_TABS,plural, =1{Fitxa bat}other{# fitxa}}</translation>
 <translation id="971510864672937292"><ph name="SITE_NAME" /> webguneko eta haren mendeko webgune guztietako datuak eta baimenak garbitu nahi dituzu?</translation>
 <translation id="971774202801778802">Laster-markaren URLa</translation>
-<translation id="972996901592717370">Sakatu etengailua hatzarekin. Zure datuak modu seguruan gordeko dira eta ez dira inoiz aterako <ph name="DEVICE_TYPE" /> gailutik.</translation>
 <translation id="973473557718930265">Irten</translation>
 <translation id="973558314812359997">Sagu-kurtsorearen tamaina</translation>
 <translation id="975893173032473675">Itzulpenaren xede-hizkuntza</translation>

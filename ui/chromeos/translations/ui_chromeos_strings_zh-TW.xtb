@@ -45,6 +45,7 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1395262318152388157">播放進度控制滑桿</translation>
 <translation id="1399511500114202393">不使用使用者憑證</translation>
+<translation id="1403008701842173542">不限地理區域</translation>
 <translation id="1404323374378969387">挪威文</translation>
 <translation id="1433628812591023318">如要將檔案拖曳到 Parallels Desktop，必須先將檔案移動到 Windows 檔案中。</translation>
 <translation id="1435838927755162558">與 Parallels Desktop 共用資料夾</translation>
@@ -447,6 +448,7 @@
 <translation id="4850886885716139402">檢視</translation>
 <translation id="485316830061041779">德文</translation>
 <translation id="4867079195717347957">按一下即可依遞減順序排列資料欄。</translation>
+<translation id="4867297348137739678">一週內</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> 位元組</translation>
 <translation id="4874569719830985133">永久刪除</translation>
 <translation id="4880214202172289027">音量滑桿</translation>
@@ -710,6 +712,7 @@
 <translation id="6973630695168034713">資料夾</translation>
 <translation id="6976795442547527108">獅子</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
+<translation id="6979737339423435258">不限時間</translation>
 <translation id="6989942356279143254">瑞典文</translation>
 <translation id="6990081529015358884">沒有可用的空間</translation>
 <translation id="6993826899923627728">這些項目位於垃圾桶中</translation>

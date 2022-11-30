@@ -831,7 +831,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="175772926354468439">Design aktivieren</translation>
 <translation id="17584710573359123">Im Chrome Web Store ansehen</translation>
 <translation id="1761845175367251960">Konten von <ph name="NAME" /></translation>
-<translation id="176193854664720708">Der Fingerabdrucksensor ist in die Ein-/Aus-Taste integriert. Berühre diese leicht mit dem Finger.</translation>
 <translation id="176272781006230109">Shopping-Vorschläge</translation>
 <translation id="1763046204212875858">App-Verknüpfungen erstellen</translation>
 <translation id="1763808908432309942">Wird in einem neuen Tab geöffnet</translation>
@@ -1074,7 +1073,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1974821797477522211">Mit Netzwerk verbinden</translation>
 <translation id="1975841812214822307">Entfernen...</translation>
 <translation id="1976150099241323601">In Sicherheitsgerät anmelden</translation>
-<translation id="1976928778492259496">Der Fingerabdrucksensor befindet sich auf der linken Seite deines <ph name="DEVICE_TYPE" />. Berühre ihn leicht mit dem Finger.</translation>
 <translation id="1977965994116744507">Verringere den Abstand zwischen Smartphone und <ph name="DEVICE_TYPE" />, um das Gerät zu entsperren.</translation>
 <translation id="1978057560491495741">Adresse entfernen</translation>
 <translation id="1979095679518582070">Wenn du diese Funktion deaktivierst, kann dieses Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.</translation>
@@ -2842,7 +2840,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3612673635130633812">Heruntergeladen von &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">"<ph name="FOLDER_NAME" />" anzeigen</translation>
 <translation id="3613422051106148727">In &amp;neuem Tab öffnen</translation>
-<translation id="3615073365085224194">Berühre den Fingerabdrucksensor mit dem Finger</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> wird gegenwärtig gescannt</translation>
 <translation id="3615596877979647433">Keine Taste zugewiesen. Drücke zum Anpassen eine Taste auf der Tastatur.</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3832,7 +3829,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4533985347672295764">CPU-Zeit</translation>
 <translation id="4534661889221639075">Versuche es noch einmal.</translation>
 <translation id="4535127706710932914">Standardprofil</translation>
-<translation id="4535767533210902251">Der Fingerabdrucksensor ist die Taste rechts oben auf der Tastatur. Berühre ihn leicht mit dem Finger.</translation>
 <translation id="4536140153723794651">Websites, die immer Cookies verwenden dürfen</translation>
 <translation id="4536769240747010177">Tethering-Funktionen:</translation>
 <translation id="4538417792467843292">Wort löschen</translation>
@@ -5474,7 +5470,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6087746524533454243">Suchst du die Seite „Über den Browser“? Gehe zu</translation>
 <translation id="6087960857463881712">Cooles Gesicht</translation>
 <translation id="608912389580139775">Wenn du deiner Leseliste diese Seite hinzufügen möchtest, klicke auf das Lesezeichensymbol</translation>
-<translation id="6091116443517744502">Prüfe die Internetverbindung und versuch es noch einmal</translation>
 <translation id="6091761513005122595">Freigabe wurde erfolgreich bereitgestellt.</translation>
 <translation id="6093803049406781019">Profil löschen</translation>
 <translation id="6093888419484831006">Aktualisierung wird abgebrochen...</translation>
@@ -6780,7 +6775,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
 <translation id="7353261921908507769">Deine Kontakte können Daten mit dir teilen, wenn sie in der Nähe sind. Die Übertragung beginnt erst, nachdem du die Einladung angenommen hast.</translation>
 <translation id="735361434055555355">Linux wird installiert…</translation>
-<translation id="7354341762311560488">Der Fingerabdrucksensor ist die Taste links unten auf der Tastatur. Berühre ihn leicht mit dem Finger.</translation>
 <translation id="7356908624372060336">Netzwerkprotokolle</translation>
 <translation id="735745346212279324">VPN-Verbindung getrennt</translation>
 <translation id="7358324924540718595">Erinnerungen heute ausgeblendet</translation>
@@ -7948,7 +7942,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8398877366907290961">Trotzdem fortfahren</translation>
 <translation id="8399282673057829204">Passwort anzeigen</translation>
 <translation id="8401432541486058167">Gib die PIN für deine Smartcard an.</translation>
-<translation id="8404893580027489425">Der Fingerabdrucksensor befindet sich auf der rechten Seite deines <ph name="DEVICE_TYPE" />. Berühre ihn leicht mit dem Finger.</translation>
 <translation id="8405046151008197676">Wichtiges zum letzten Update ansehen</translation>
 <translation id="8407199357649073301">Protokollebene:</translation>
 <translation id="8408270600235826886">Du legst selbst fest, auf welche Daten Google zugreifen kann. In den Einstellungen kannst du dies jederzeit ändern. Die Daten werden gemäß der <ph name="BEGIN_LINK" />Datenschutzerklärung<ph name="END_LINK" /> von Google genutzt.</translation>
@@ -8035,7 +8028,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Persönliche Vorschläge werden nur in deinem Konto angezeigt</translation>
 <translation id="8490896350101740396">Die folgenden Kiosk-Apps wurden aktualisiert: <ph name="UPDATED_APPS" />. Starte das Gerät neu, um die Aktualisierung abzuschließen.</translation>
-<translation id="8492685019009920170">Berühre den Fingerabdrucksensor mit dem Finger. Deine Daten werden sicher und niemals außerhalb deines <ph name="DEVICE_TYPE" /> gespeichert.</translation>
 <translation id="8492822722330266509">Websites dürfen Pop-ups senden und Weiterleitungen verwenden</translation>
 <translation id="8492960370534528742">Feedback zu Google Cast</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
@@ -8570,7 +8562,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="899384117894244799">Nutzer mit eingeschränktem Zugriff entfernen</translation>
 <translation id="899403249577094719">Basis-URL für Netscape-Zertifikate</translation>
 <translation id="899657321862108550">Dein persönlicher Chrome-Browser – auf allen Geräten</translation>
-<translation id="899676909165543803">Der Fingerabdrucksensor ist die Taste rechts unten auf der Tastatur. Berühre ihn leicht mit dem Finger.</translation>
 <translation id="8998078711690114234">Dieser Dateityp kann gefährlich sein. Speichere diese Datei nur, wenn du dieser Website vertraust: <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Syntaxfehler in Abschnitt: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Fehler bei Verbindung zum Geräteverwaltungsserver mit dem Status „<ph name="STATUS_TEXT" />“ am <ph name="FAILURE_TIME" /></translation>
@@ -8627,6 +8618,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="9040661932550800571">Passwort für <ph name="ORIGIN" /> aktualisieren?</translation>
 <translation id="9041692268811217999">Der Zugriff auf lokale Dateien auf deinem Gerät wurde von deinem Administrator deaktiviert</translation>
 <translation id="904224458472510106">Dieser Vorgang kann nicht rückgängig gemacht werden</translation>
+<translation id="9042827002460091668">Prüfe deine Internetverbindung und versuch es noch einmal</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
 <translation id="9044646465488564462">Fehler beim Herstellen einer Verbindung mit dem Netzwerk: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Deine Leseliste wurde in die neue Seitenliste verschoben. Hier kannst du die Funktion testen.</translation>
@@ -8867,7 +8859,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 Tab}other{# Tabs}}</translation>
 <translation id="971510864672937292">Websitedaten und Berechtigungen für <ph name="SITE_NAME" /> und alle ihr untergeordneten Websites öffnen?</translation>
 <translation id="971774202801778802">URL als Lesezeichen speichern</translation>
-<translation id="972996901592717370">Berühre die Ein-/Aus-Taste mit dem Finger. Deine Daten werden sicher und niemals außerhalb deines <ph name="DEVICE_TYPE" /> gespeichert.</translation>
 <translation id="973473557718930265">Beenden</translation>
 <translation id="973558314812359997">Cursorgröße</translation>
 <translation id="975893173032473675">Sprache, in die übersetzt wird</translation>

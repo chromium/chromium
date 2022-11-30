@@ -730,6 +730,7 @@
 <translation id="4987738733603015246">ڈیسک 16</translation>
 <translation id="5003993274120026347">اگلا جملہ</translation>
 <translation id="5016558321564993266">مارکر ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">آلے کے مائیکروفون تک رسائی آن ہے</translation>
 <translation id="5030687792513154421">وقت ختم ہو گیا</translation>
 <translation id="5033299697334913360">فُل اسکرین کیپچر کرنے کیلئے کہیں بھی کلک کریں</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> نئے فون سے منسلک ہو گیا</translation>
@@ -965,6 +966,7 @@
 <translation id="6359587239691116345">تازہ ترین خصوصیات اور سیکیورٹی میں بہتریاں حاصل کریں۔ اگر آپ اس اپ ڈیٹ کو مسترد کرتے ہیں تو ہو سکتا ہے کہ آپ کا آلہ اب مزید ٹھیک سے کام نہ کرے اور آپ کو سیکیورٹی اور کارکردگی کے مسائل کا سامنا کرنا پڑے۔</translation>
 <translation id="6376931439017688372">بلوٹوتھ آن ہے</translation>
 <translation id="6381109794406942707">‏آلہ غیر مقفل کرنے کے لیے، اپنا PIN درج کریں۔</translation>
+<translation id="638716340450135524">کیمرا تک رسائی آن کریں</translation>
 <translation id="639644700271529076">‏CAPS LOCK آف ہے</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">‏Google اسسٹنٹ</translation>
@@ -972,6 +974,7 @@
 <translation id="642644398083277086">تمام اطلاعات صاف کریں</translation>
 <translation id="643147933154517414">سب ہو گیا</translation>
 <translation id="6431865393913628856">اسکرین ریکارڈر</translation>
+<translation id="6442259747294754014">آلے کے مائیکروفون تک رسائی آف ہے</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />، <ph name="NUMBER" /> ایونٹ</translation>
 <translation id="6449483711453944360">‏Linux ایپس اور پوشیدگی ونڈوز فی الحال تعاون یافتہ نہیں ہیں</translation>
@@ -1368,6 +1371,7 @@
 <translation id="8598235756057743477">اپنی ایپس کو نام یا رنگ کے لحاظ سے ترتیب دیں</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> اور <ph name="APP_2_TITLE" /> اطلاعات پوشیدہ ہیں کیونکہ دیکھنے کا تحفظ آن ہے</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> سے منسلک ہے</translation>
+<translation id="8630991711272431708">کیمرا تک رسائی کو آف کریں</translation>
 <translation id="8631727435199967028">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> باقی</translation>

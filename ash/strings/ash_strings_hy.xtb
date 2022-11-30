@@ -729,6 +729,7 @@
 <translation id="4987738733603015246">Աշխատասեղան 16</translation>
 <translation id="5003993274120026347">Հաջորդ նախադասությունը</translation>
 <translation id="5016558321564993266">Միացնել/անջատել նշիչը։ <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Սարքի տեսախցիկի օգտագործման թույլտվությունը միացված է</translation>
 <translation id="5030687792513154421">Ժամանակը սպառվեց</translation>
 <translation id="5033299697334913360">Լիաէկրան ռեժիմում լուսանկարելու համար սեղմեք էկրանի որևէ կետ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> սարքը կապվեց նոր հեռախոսի հետ</translation>
@@ -964,6 +965,7 @@
 <translation id="6359587239691116345">Օգտվեք վերջին գործառույթներից և բարելավված անվտանգությունից։ Եթե չընդունեք այս թարմացումը, հնարավոր է՝ ձեր սարքն այլևս չաշխատի պատշաճ կերպով, և ձեզ մոտ կարող են առաջանալ անվտանգության և արդյունավետության խնդիրներ։</translation>
 <translation id="6376931439017688372">Bluetooth-ը միացված է</translation>
 <translation id="6381109794406942707">Սարքն ապակողպելու համար մուտքագրեք ձեր PIN կոդը։</translation>
+<translation id="638716340450135524">Միացնել տեսախցիկի օգտագործման թույլտվությունը</translation>
 <translation id="639644700271529076">CAPS LOCK-ն անջատված է</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Օգնական</translation>
@@ -971,6 +973,7 @@
 <translation id="642644398083277086">Մաքրել բոլոր ծանուցումները</translation>
 <translation id="643147933154517414">Ամեն ինչ պատրաստ է</translation>
 <translation id="6431865393913628856">Էկրանի տեսագրում</translation>
+<translation id="6442259747294754014">Սարքի տեսախցիկի օգտագործման թույլտվությունն անջատված է</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ներդիրը հեռարձակվում է «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> միջոցառում</translation>
 <translation id="6449483711453944360">Լինուքսի հավելվածներն ու ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում</translation>
@@ -1367,6 +1370,7 @@
 <translation id="8598235756057743477">Դասավորեք ձեր հավելվածներն ըստ անվանման կամ գույնի</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> և <ph name="APP_2_TITLE" /> հավելվածների ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="8627191004499078455">Միացված է <ph name="DEVICE_NAME" /> սարքին</translation>
+<translation id="8630991711272431708">Անջատել տեսախցիկի օգտագործման թույլտվությունը</translation>
 <translation id="8631727435199967028">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="8639760480004882931">Մնացել է <ph name="PERCENTAGE" /></translation>

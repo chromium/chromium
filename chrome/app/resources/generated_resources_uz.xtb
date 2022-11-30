@@ -832,7 +832,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="175772926354468439">Mavzuni yoqish</translation>
 <translation id="17584710573359123">Chrome internet-do‘konida ochish</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> hisoblari</translation>
-<translation id="176193854664720708">Barmoq izi sensori quvvat tugmasida joylashgan. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="176272781006230109">xarid tavsiyalari</translation>
 <translation id="1763046204212875858">Ilova yorliqlarini yaratish</translation>
 <translation id="1763808908432309942">Yangi varaqda ochiladi</translation>
@@ -1076,7 +1075,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1974821797477522211">Tarmoqqa ulanish</translation>
 <translation id="1975841812214822307">O‘chirish...</translation>
 <translation id="1976150099241323601">Havfsizlik qurilmasiga kirish</translation>
-<translation id="1976928778492259496">Barmoq izi sensori <ph name="DEVICE_TYPE" /> qurilmasining chap orqasida joylashgan. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqarish uchun telefoningizni yaqinlashtiring.</translation>
 <translation id="1978057560491495741">Manzilni olib tashlash</translation>
 <translation id="1979095679518582070">Bu funksiya faol boʻlmasa ham tizim yangilanishlari va xavfsizlik kabi asosiy xizmatlarni yaxshilash maqsadida qurilma axborotlari yuborilaveradi.</translation>
@@ -2849,7 +2847,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; orqali yuklab olingan</translation>
 <translation id="3613134908380545408">“<ph name="FOLDER_NAME" />” jildini ko‘rsatish</translation>
 <translation id="3613422051106148727">&amp;Yangi ichki oynada ochish</translation>
-<translation id="3615073365085224194">Barmoq izi skaneriga barmogʻingizni tekizing</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> tekshirilmoqda.</translation>
 <translation id="3615596877979647433">Tugma topilmadi. Moslashtirish uchun klaviatura tugmasini bosing</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3843,7 +3840,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4533985347672295764">CPU vaqti</translation>
 <translation id="4534661889221639075">Qaytadan urining.</translation>
 <translation id="4535127706710932914">Birlamchi profil</translation>
-<translation id="4535767533210902251">Barmoq izi sensori klaviaturaning tepa oʻng burchagidagi tugma. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="4536140153723794651">Har doim cookie fayllarini ishlata oladigan saytlar</translation>
 <translation id="4536769240747010177">Modem rejimi imkoniyati:</translation>
 <translation id="4538417792467843292">So‘zni o‘chirish</translation>
@@ -5489,7 +5485,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6087746524533454243">Brauzer haqida sahifasini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="6087960857463881712">Hayratdagi yuz</translation>
 <translation id="608912389580139775">Bu sahifani Saqlangan sahifalarga kiritish uchun Bukmark belgisini bosing</translation>
-<translation id="6091116443517744502">internet aloqasini tekshiring va qayta urining</translation>
 <translation id="6091761513005122595">Umumiy ruxsat berildi.</translation>
 <translation id="6093803049406781019">Profilni oʻchirish</translation>
 <translation id="6093888419484831006">Yangilash bekor qilinmoqda...</translation>
@@ -6795,7 +6790,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
 <translation id="7353261921908507769">Kontaktlaringiz sizga yaqinligida sizga fayl ulasha oladi. Uzatmalar qabul qilinmaguncha boshlanmaydi.</translation>
 <translation id="735361434055555355">Linux o‘rnatilmoqda...</translation>
-<translation id="7354341762311560488">Barmoq izi sensori klaviaturaning quyi chap burchagidagi tugma. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="7356908624372060336">Tarmoq jurnallari</translation>
 <translation id="735745346212279324">VPN aloqasi uzildi</translation>
 <translation id="7358324924540718595">Xotiralar bugun chiqmaydi</translation>
@@ -7964,7 +7958,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8398877366907290961">Davom etish</translation>
 <translation id="8399282673057829204">Parolni ochish</translation>
 <translation id="8401432541486058167">Smart kartangiz PIN kodini kiriting.</translation>
-<translation id="8404893580027489425">Barmoq izi sensori <ph name="DEVICE_TYPE" /> qurilmasining oʻng orqasida joylashgan. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="8405046151008197676">Oxirgi yangilanishdagi asosiy oʻzgarishlar</translation>
 <translation id="8407199357649073301">Jurnalga yozish darajasi:</translation>
 <translation id="8408270600235826886">Qaysi maʼlumotlarni Googlega ulashishni tanlay olasiz. Buni istalgan vaqtda sozlamalardan oʻzgartirish mumkin. Maʼlumotlardan Google <ph name="BEGIN_LINK" />maxfiylik siyosatiga<ph name="END_LINK" /> muvofiq foydalaniladi.</translation>
@@ -8051,7 +8044,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Shaxsiy takliflar faqat sizning hisobda chiqadi</translation>
 <translation id="8490896350101740396">Quyidagi kiosk ilovalar "<ph name="UPDATED_APPS" />" yangilandi. Yangilash jarayonini tugallash uchun qurilmani qayta yuklang.</translation>
-<translation id="8492685019009920170">Barmoq izi skaneriga barmoqni tekizing. Maʼlumotlaringiz himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmangizda saqlanadi.</translation>
 <translation id="8492822722330266509">Saytlar oynalarni qalqib chiqarishi va sahifalarni yoʻnaltirishi mumkin</translation>
 <translation id="8492960370534528742">Google Cast – fikr-mulohaza</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
@@ -8586,7 +8578,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="899384117894244799">Cheklangan foydalanuvchini olib tashlash</translation>
 <translation id="899403249577094719">Netscape sertifikatlar omborining URL manzili</translation>
 <translation id="899657321862108550">Chrome – barcha qurilmalaringizda</translation>
-<translation id="899676909165543803">Barmoq izi sensori klaviaturaning quyi oʻng burchagidagi tugma. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="8998078711690114234">Bunday turdagi fayl xavfli boʻlishi mumkin. <ph name="ORIGIN" /> saytiga ishonsangiz, bu faylni saqlang</translation>
 <translation id="8999560016882908256">Boʻlim bilan bogʻliq imloviy xato: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Qurilmalar boshqaruvi serveriga ulanish “<ph name="STATUS_TEXT" />” holati bilan <ph name="FAILURE_TIME" /> da amalga oshmadi</translation>
@@ -8643,6 +8634,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9040661932550800571"><ph name="ORIGIN" /> uchun parol yangilansinmi?</translation>
 <translation id="9041692268811217999">Kompyuteringizdagi fayllarga kirish administrator tomonidan taqiqlab qo‘yilgan</translation>
 <translation id="904224458472510106">Bu amalni bekor qilish imkonsiz</translation>
+<translation id="9042827002460091668">Internet aloqasini tekshiring va qayta urining</translation>
 <translation id="9042893549633094279">Maxfiylik va xavfsizlik</translation>
 <translation id="9044646465488564462">Tarmoqqa ulanmadi: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Mutolaa roʻyxatingiz yangi yon panelga koʻchdi. Bu yerda sinang.</translation>
@@ -8883,7 +8875,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 ta ichki oyna}other{# ta ichki oyna}}</translation>
 <translation id="971510864672937292"><ph name="SITE_NAME" /> saytlari, ruxsatlari va pastidagi barcha saytlar tozalansinmi?</translation>
 <translation id="971774202801778802">Xatcho‘p URL manzili</translation>
-<translation id="972996901592717370">Quvvat tugmasiga barmoq bilan tegining. Maʼlumotlaringiz himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmangizda saqlanadi.</translation>
 <translation id="973473557718930265">Chiqish</translation>
 <translation id="973558314812359997">Sichqoncha hajmi</translation>
 <translation id="975893173032473675">Tarjima qilinadigan til</translation>

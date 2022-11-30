@@ -1966,6 +1966,7 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_OS_NAME" /> standaardhandl
           |created_time_millis| is de UTC-tijdstempel voor het maken van de overschrijving en wordt als reeks verzonden omdat de tijdstempel niet in een geheel getal past. Deze variabele wordt gebruikt om te bepalen of deze overschrijving nog steeds moet worden toegepast. Als de momenteel actieve tijdslimietfunctie (time_usage_limit of time_window_limit) is gestart nadat de overschrijving is gemaakt, onderneemt deze geen actie. Daarnaast is het zo dat de overschrijving niet wordt toegepast als deze is gemaakt vóór de laatste wijziging van de actieve time_window_limit of time_usage_window.
 
           Er kunnen meerdere overschrijvingen worden verzonden. De nieuwste geldige invoer is de invoer die wordt toegepast.</translation>
+<translation id="290041922664761002">Geef een saltwaarde op om te gebruiken in <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> bij de evaluatie van identificatiegegevens</translation>
 <translation id="2901725272378498025">Beveiligingswaarschuwingen voor opdrachtregelmarkeringen aanzetten</translation>
 <translation id="2905984450136807296">Levensduur van verificatiegegevens in cachegeheugen</translation>
 <translation id="2906874737073861391">Lijst met app-pakketextensies</translation>
@@ -3112,6 +3113,7 @@ Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden
 <translation id="3943930334592166130">Met dit beleid bepaal je of de gebruiker wordt gevraagd een clientcertificaat te selecteren als meerdere certificaten overeenkomen met <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Als je dit beleid toepast, wordt de gebruiker gevraagd een clientcertificaat te selecteren als het beleid voor automatisch selecteren overeenkomt met meerdere certificaten.
       Als je dit beleid niet toepast of niet instelt, wordt de gebruiker misschien alleen gevraagd een clientcertificaat te selecteren als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
+<translation id="3947897854999940598">Geef de URI-template op voor de gewenste DNS-over-HTTPS-resolver met identiteitsgegevens</translation>
 <translation id="3950110092991281616">Ambient-verificatie alleen in normale sessies aanzetten.</translation>
 <translation id="3950239119790560549">Tijdsbeperkingen voor updates</translation>
 <translation id="3953860513079094502">Informatie over XDR-gebeurtenissen (Extended Detection and Response) rapporteren</translation>
@@ -7402,6 +7404,17 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="8316940611391250886">Certificaten zonder de extensie subjectAlternativeName niet toestaan</translation>
 <translation id="8319678975002906774">Stelt waarden voor beheerde configuraties voor websites in voor specifieke herkomsten</translation>
 <translation id="8320149248919453401">Batterijoplaadmodus</translation>
+<translation id="8327201984026238850">De URI-template van de gewenste DNS-over-HTTPS-resolver. Als je meerdere DNS-over-HTTPS-resolvers wilt opgeven, scheid je de overeenkomstige URI-templates met een spatie. Dit beleid lijkt sterk op <ph name="DOH_TEMPLATES_POLICY_NAME" />, dat wordt overschreven als dit is opgegeven. Daarentegen ondersteunt het beleid het opgeven van identificatiegegevens.
+
+  Als <ph name="DOH_MODE_POLICY_NAME" /> is ingesteld op <ph name="SECURE_DNS_MODE_SECURE" />, moet je dit beleid of <ph name="DOH_TEMPLATES_POLICY_NAME" /> instellen en niet leeg houden.
+
+  Als de <ph name="DOH_MODE_POLICY_NAME" /> is ingesteld op <ph name="SECURE_DNS_MODE_AUTOMATIC" /> en dit beleid is ingesteld, worden de opgegeven URI-templates gebruikt. Als dit beleid niet is ingesteld, worden hardgecodeerde toewijzingen gebruikt om te proberen de huidige DNS-resolver van de gebruiker te upgraden naar een DoH-resolver van dezelfde provider.
+
+  Als de URI-template een variabele <ph name="HTTP_VARIABLE_DNS" /> bevat, wordt voor verzoeken aan de resolver <ph name="HTTP_METHOD_GET" /> gebruikt; anders wordt voor verzoeken <ph name="HTTP_METHOD_POST" /> gebruikt.
+
+  Als je dit beleid instelt, moet je ook <ph name="DOH_SALT_POLICY_NAME" /> instellen.
+
+  Onjuist opgemaakte templates worden genegeerd.</translation>
 <translation id="8327651196906278510">Tabbladopname door deze oorsprongen toestaan</translation>
 <translation id="8329434144708110">Verificatieprocessen activeren om wachtwoorden te synchroniseren met SSO-providers</translation>
 <translation id="8329984337216493753">Dit beleid wordt alleen toegepast in de winkelmodus.
@@ -7871,6 +7884,8 @@ Dit beleid biedt een overzicht van configuratie-ID's die zijn toegewezen aan VM-
 
           Dit beleid heeft geen effect als het niet is ingesteld. In dat geval is er geen maximale duur voor verbindingen voor externe toegang op deze machine.</translation>
 <translation id="8800453707696044281">Een custom batterijoplaadstop opgeven in procenten</translation>
+<translation id="880110452941793016">Deze salt wordt gebruikt als saltwaarde als de identiteitsgegevens in de tekenreeks <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> worden gehasht.
+   Als de <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> wordt gebruikt, moet deze worden ingesteld en moet de tekenreeks uit 8 tot 32 tekens bestaan.</translation>
 <translation id="8801680448782904838">Een gebruiker laten weten dat het aanbevolen of vereist is om de browser of het apparaat opnieuw op te starten</translation>
 <translation id="8804685015028424497">Incognitomodus uitzetten</translation>
 <translation id="8806478127647484805">Gebruikers niet toestaan processen te beëindigen met taakbeheer van Chrome</translation>
@@ -8135,6 +8150,15 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
       Als dit beleid niet wordt ingesteld, wordt voor geen enkele site automatische selectie uitgevoerd.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
+<translation id="9066311316566875681">De URI-template van de gewenste DNS-over-HTTPS-resolver. Als je meerdere DNS-over-HTTPS-resolvers wilt opgeven, scheid je de overeenkomstige URI-templates met een spatie.
+
+      Als de DnsOverHttpsMode is ingesteld op <ph name="SECURE_DNS_MODE_SECURE" />, moet dit beleid worden ingesteld en mag het niet leeg blijven. Alleen op <ph name="PRODUCT_OS_NAME" />: dit beleid of de <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> moet worden ingesteld, anders mislukt de DNS-omzetting.
+
+      Als de DnsOverHttpsMode is ingesteld op <ph name="SECURE_DNS_MODE_AUTOMATIC" /> en dit beleid is ingesteld, worden de opgegeven URI-templates gebruikt. Als dit beleid niet is ingesteld, worden hardgecodeerde toewijzingen gebruikt om te proberen de huidige DNS-resolver van de gebruiker te upgraden naar een DoH-resolver van dezelfde provider.
+
+      Als de URI-template een variabele <ph name="HTTP_VARIABLE_DNS" /> bevat, wordt voor verzoeken aan de resolver <ph name="HTTP_METHOD_GET" /> gebruikt; anders wordt voor verzoeken <ph name="HTTP_METHOD_POST" /> gebruikt.
+
+      Onjuist opgemaakte templates worden genegeerd.</translation>
 <translation id="9068629430243705879">poort 6566 (blokkering kan worden opgeheven tot 15-10-2021)</translation>
 <translation id="9069588907259547232">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten het audiovolume van het apparaat.
 

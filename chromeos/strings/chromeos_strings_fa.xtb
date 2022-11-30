@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">مراحل عیب‌یابی را امتحان کنید</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">لطفاً برای مشاهده محافظ صفحه، به شبکه متصل شوید و صفحه را مجدد بار کنید.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2085089206770112532">کاهش روشنایی نمایشگر</translation>
 <translation id="2105810540595158374">دستگاه کنترل بازی است.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">الگوریتم فشرده‌سازی</translation>
 <translation id="4794140124556169553">‏انجام آزمایش CPU ممکن است بر عملکرد سیستم تأثیر بگذارد</translation>
 <translation id="4800589996161293643">‏انجمن Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">کار چاپ <ph name="DOCUMENT_TITLE" /> لغو شد</translation>
 <translation id="4809927044794281115">زمینه روشن</translation>
 <translation id="4813136279048157860">تصاویر من</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">استرس</translation>
 <translation id="4897058166682006107">باتری هدفون توگوشی سمت چپ دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="4905998861748258752">برای انتخاب گزینه‌های محافظ صفحه‌نمایش، این ویژگی را روشن کنید</translation>
+<translation id="4910858703033903787">‏انواع APN</translation>
 <translation id="4917385247580444890">قوی</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
 <translation id="491791267030419270">نکاتی برای ارائه بازخورد</translation>
@@ -460,6 +463,7 @@
 <translation id="5358174242040570474">مشکلی پیش آمد. دوباره کاغذدیواری را انتخاب کنید یا برنامه را مجدداً باز کنید.</translation>
 <translation id="5372659122375744710">‏شبکه Wi-Fi ایمن نیست</translation>
 <translation id="5376354385557966694">حالت روشن خودکار</translation>
+<translation id="5378184552853359930">‏نوع IP</translation>
 <translation id="5389159777326897627">کاغذدیواری و سبک</translation>
 <translation id="5389224261615877010">رنگین‌کمان</translation>
 <translation id="5400907029458559844">دستگاه درحال برقراری اتصال است.</translation>
@@ -743,6 +747,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">انتخاب <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">ورود</translation>
+<translation id="8183974620058026102">پیوست</translation>
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
 <translation id="8226628635270268143">انتخاب عکس‌ها و آلبوم‌های دلخواه</translation>
@@ -831,6 +836,7 @@
 <translation id="9025198690966128418">استفاده به‌عنوان دستگاه شخصی</translation>
 <translation id="9028832514430399253">برای انتخاب گزینه‌های محافظ صفحه‌نمایش، کلید تغییر وضعیت را روشن کنید</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">تفکیک ساناد تأخیر زیادی دارد</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">بلوتوث</translation>

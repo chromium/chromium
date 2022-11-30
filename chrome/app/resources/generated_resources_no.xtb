@@ -839,7 +839,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="175772926354468439">Aktiver temaet</translation>
 <translation id="17584710573359123">Se i Chrome Nettmarked</translation>
 <translation id="1761845175367251960">Kontoene til <ph name="NAME" /></translation>
-<translation id="176193854664720708">Fingeravtrykkssensoren er i av/på-knappen. Trykk på den forsiktig.</translation>
 <translation id="176272781006230109">handelsforslag</translation>
 <translation id="1763046204212875858">Opprett snarveier</translation>
 <translation id="1763808908432309942">Åpner en ny fane</translation>
@@ -1081,7 +1080,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1974821797477522211">Koble til nettverk</translation>
 <translation id="1975841812214822307">Fjern</translation>
 <translation id="1976150099241323601">Logg på sikkerhetsenhet</translation>
-<translation id="1976928778492259496">Fingeravtrykkssensoren er på venstre side av <ph name="DEVICE_TYPE" />. Trykk forsiktig på den med hvilken som helst finger.</translation>
 <translation id="1977965994116744507">Hold telefonen nærmere for å låse opp <ph name="DEVICE_TYPE" />-enheten.</translation>
 <translation id="1978057560491495741">Fjern adresse</translation>
 <translation id="1979095679518582070">Enhetens evne til å sende informasjonen som kreves for nødvendige tjenester, for eksempel systemoppdateringer og sikkerhet, påvirkes ikke hvis du slår av denne funksjonen.</translation>
@@ -2854,7 +2852,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3612673635130633812">Lastet ned via &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Vis <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Åpne i ny fane</translation>
-<translation id="3615073365085224194">Trykk på fingeravtrykkssensoren med fingeren</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> skannes.</translation>
 <translation id="3615596877979647433">Tast mangler Trykk på en tastaturtast for å tilpasse</translation>
 <translation id="3616113530831147358">Lyd</translation>
@@ -3840,7 +3837,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4533985347672295764">CPU-tid</translation>
 <translation id="4534661889221639075">Prøv på nytt.</translation>
 <translation id="4535127706710932914">Standardprofil</translation>
-<translation id="4535767533210902251">Fingeravtrykkssensoren er knappen øverst til høyre på tastaturet. Trykk forsiktig på den med hvilken som helst finger.</translation>
 <translation id="4536140153723794651">Nettsteder som alltid kan bruke informasjonskapsler</translation>
 <translation id="4536769240747010177">Funksjonalitet for internettdeling:</translation>
 <translation id="4538417792467843292">Slett ord</translation>
@@ -5483,7 +5479,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6087746524533454243">Ser du etter nettleserens Om-side? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-fjes</translation>
 <translation id="608912389580139775">For å legge til denne siden på leselisten din, klikk på Bokmerke-ikonet</translation>
-<translation id="6091116443517744502">kontroller internettilkoblingen din, og prøv på nytt</translation>
 <translation id="6091761513005122595">Delingen er aktivert.</translation>
 <translation id="6093803049406781019">Slett profil</translation>
 <translation id="6093888419484831006">Avbryter oppdatering …</translation>
@@ -6788,7 +6783,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7353261921908507769">Kontaktene dine kan dele med deg når de er i nærheten. Overføringer starter ikke før du godtar.</translation>
 <translation id="735361434055555355">Installerer Linux ...</translation>
-<translation id="7354341762311560488">Fingeravtrykkssensoren er knappen nederst til venstre på tastaturet. Trykk forsiktig på den med hvilken som helst finger.</translation>
 <translation id="7356908624372060336">Nettverkslogger</translation>
 <translation id="735745346212279324">VPN frakoblet</translation>
 <translation id="7358324924540718595">Minner er skjult for i dag</translation>
@@ -7957,7 +7951,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8398877366907290961">Fortsett likevel</translation>
 <translation id="8399282673057829204">Se passordet</translation>
 <translation id="8401432541486058167">Oppgi PIN-koden som er tilknyttet smartkortet ditt.</translation>
-<translation id="8404893580027489425">Fingeravtrykkssensoren er på høyre side av <ph name="DEVICE_TYPE" />. Trykk forsiktig på den med hvilken som helst finger.</translation>
 <translation id="8405046151008197676">Se høydepunktene i den nyeste oppdateringen</translation>
 <translation id="8407199357649073301">Loggnivå:</translation>
 <translation id="8408270600235826886">Du kan kontrollere hvilke data som deles med Google. Du kan når som helst endre dette i innstillingene. Dataene brukes i henhold til Googles <ph name="BEGIN_LINK" />personvernregler<ph name="END_LINK" />.</translation>
@@ -8044,7 +8037,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8487699605742506766">Wifi-sone</translation>
 <translation id="8489156414266187072">Personlige forslag vises kun på kontoen din</translation>
 <translation id="8490896350101740396">Kioskappene «<ph name="UPDATED_APPS" />» er oppdatert. Start opp enheten på nytt for å fullføre oppdateringsprosessen.</translation>
-<translation id="8492685019009920170">Trykk på fingeravtrykkssensoren med fingeren. Dataene dine lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Nettsteder kan sende forgrunnsvinduer og bruke viderekoblinger</translation>
 <translation id="8492960370534528742">Tilbakemeldinger for Google Cast</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
@@ -8431,6 +8423,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8859174528519900719">Underramme: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Kunne ikke laste inn vilkårene for bruk</translation>
 <translation id="8859662783913000679">Foreldrekonto</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} konto}other{{COUNT} kontoer}}</translation>
 <translation id="8861568709166518036">Bruk knappene på skjermen for å navigere til appoversikten, gå tilbake og bytte app. Slås på automatisk hvis ChromeVox eller automatiske klikk er slått på.</translation>
 <translation id="8862003515646449717">Bytt til en raskere nettleser</translation>
 <translation id="8863753581171631212">Åpne linken i ny <ph name="APP" /></translation>
@@ -8577,7 +8570,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="899384117894244799">Fjern begrenset bruker</translation>
 <translation id="899403249577094719">Primære nettadresse for Netscape-sertifikat</translation>
 <translation id="899657321862108550">Din egen Chrome – uansett hvor du er</translation>
-<translation id="899676909165543803">Fingeravtrykkssensoren er knappen nederst til høyre på tastaturet. Trykk forsiktig på den med hvilken som helst finger.</translation>
 <translation id="8998078711690114234">Denne filtypen kan være farlig. Du bør bare lagre denne filen hvis du stoler på <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Syntaksfeil i seksjon: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Tilkoblingen til tjeneren for enhetsadministrasjon mislyktes med statusen «<ph name="STATUS_TEXT" />» <ph name="FAILURE_TIME" /></translation>
@@ -8874,7 +8866,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 fane}other{# faner}}</translation>
 <translation id="971510864672937292">Vil du slette nettstedsdata og -tillatelser for <ph name="SITE_NAME" /> og alle undernettsteder?</translation>
 <translation id="971774202801778802">Bokmerkenettadresse</translation>
-<translation id="972996901592717370">Legg fingeren på av/på-knappen. Dataene dine lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Avslutt</translation>
 <translation id="973558314812359997">Musestørrelse</translation>
 <translation id="975893173032473675">Språket du vil oversette til</translation>

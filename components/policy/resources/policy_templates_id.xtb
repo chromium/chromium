@@ -1874,6 +1874,15 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan disetel ke Nonaktif, pengaktifan daya baterai akan tetap nonaktif.
 
       Jika tidak disetel, pengaktifan daya baterai akan nonaktif terlebih dahulu. Pengguna tidak dapat mengubah setelan ini.</translation>
+<translation id="2773036462435523078">Memicu tindakan saat komputer sedang tidak ada aktivitas.
+
+      Jika disetel, kebijakan ini akan menentukan durasi waktu tanpa input pengguna (dalam menit) sebelum <ph name="PRODUCT_NAME" /> menjalankan tindakan yang dikonfigurasi melalui kebijakan <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
+
+      Jika kebijakan ini tidak disetel, tidak ada tindakan yang akan dijalankan.
+
+      Batas minimum adalah 5 menit.
+
+      "Input pengguna" ditentukan oleh Operating System API, dan menyertakan hal-hal seperti menggerakkan mouse atau mengetik di keyboard.</translation>
 <translation id="2773288106548584039">Dukungan Browser Lama</translation>
 <translation id="2780840673734667062">Nonaktifkan login dengan Akun Google tambahan</translation>
 <translation id="2784880732336446591">Menghapus Data Penjelajahan saat Keluar</translation>
@@ -1997,6 +2006,7 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> dapat memilih pengen
           |created_time_millis| adalah stempel waktu UTC untuk pembuatan opsi penggantian, dikirim sebagai String karena stempel waktu tidak dapat ditampilkan dalam bilangan bulat. Ini digunakan untuk menentukan apakah penggantian ini harus tetap diterapkan. Jika fitur batas waktu aktif saat ini (batas penggunaan waktu atau batas durasi waktu) dimulai setelah penggantian dibuat, maka tidak akan dilakukan tindakan. Selain itu, jika penggantian dibuat sebelum perubahan terakhir time_window_limit atau time_usage_window yang aktif, maka tidak akan diterapkan.
 
           Beberapa penggantian dapat dikirim, entri valid terbaru akan diterapkan.</translation>
+<translation id="290041922664761002">Menentukan nilai salt yang akan digunakan di <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> saat mengevaluasi informasi identitas</translation>
 <translation id="2901725272378498025">Aktifkan peringatan keamanan untuk tanda command line</translation>
 <translation id="2905984450136807296">Masa berlaku cache data autentikasi</translation>
 <translation id="2906874737073861391">Daftar ekstensi AppPack</translation>
@@ -2309,6 +2319,7 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
 <translation id="3171369832001535378">Template hostname jaringan perangkat</translation>
 <translation id="3173844121395372156">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />'.</translation>
 <translation id="3177802893484440532">Mewajibkan pemeriksaan OCSP/CRL online untuk trust anchor lokal</translation>
+<translation id="3179533009079100620">Tampilkan Pemilih Profil</translation>
 <translation id="3180671894201217988">Jika kebijakan disetel ke Aktif atau tidak disetel, software pihak ketiga tidak dapat memasukkan kode yang dapat dieksekusi ke dalam proses <ph name="PRODUCT_NAME" />.
 
       Jika kebijakan disetel ke Nonaktif, software pihak ketiga akan diizinkan memasukkan kode tersebut ke dalam proses <ph name="PRODUCT_NAME" />.</translation>
@@ -2733,6 +2744,7 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 <translation id="3540846231645422635">Nonaktifkan pelaporan antarmuka jaringan perangkat</translation>
 <translation id="3540935459049973317">Batas Waktu per Aplikasi</translation>
 <translation id="3547954654003013442">Setelan proxy</translation>
+<translation id="3548064438634502368">Tutup Browser</translation>
 <translation id="3548642468619496972">Blokir download berbahaya, download tidak biasa atau tidak diinginkan, dan jenis file berbahaya.</translation>
 <translation id="3550122827225052130">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2789,6 +2801,19 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
 <translation id="3593905652755912452">Perilaku lama pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
 <translation id="3596112486106491038">Aktifkan akses command line mesin virtual</translation>
+<translation id="3596335476793146071">Daftar tindakan yang akan dijalankan saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai.
+
+      Jika kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tidak disetel, kebijakan ini tidak akan berpengaruh.
+
+      Saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai, <ph name="PRODUCT_NAME" /> akan menjalankan tindakan yang dikonfigurasi di kebijakan ini.
+
+      Jika kebijakan ini disetel ke kosong atau tidak disetel, kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tidak akan berpengaruh.
+
+      Tindakan yang didukung adalah:
+
+      '<ph name="CLOSE_BROWSERS_ACTION" />': menutup semua jendela browser dan PWA untuk profil ini.
+
+      '<ph name="SHOW_PROFILE_PICKER_ACTION" />': menampilkan jendela Pemilih Profil.</translation>
 <translation id="3603469950773500315">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> baru, sehingga memungkinkan Ekstensi tetap kompatibel dan mengizinkan <ph name="PRODUCT_NAME" /> mengirim header tertentu tanpa pemeriksaan <ph name="CORS" />.
 
       Jika daftar ini dibiarkan kosong, <ph name="PRODUCT_NAME" /> akan mencoba menjalankan Ekstensi secara kompatibel, dan tidak menerapkan perubahan <ph name="API" /> untuk <ph name="PRODUCT_NAME" /> 79 seperti yang dijelaskan dalam <ph name="WEB_REQUEST_API_MANUAL" />.
@@ -3138,6 +3163,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="3943930334592166130">Kebijakan ini mengontrol apakah pengguna akan diminta memilih sertifikat klien saat lebih dari satu sertifikat cocok dengan <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Jika kebijakan ini disetel ke Aktif, pengguna akan diminta memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna mungkin hanya diminta saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
+<translation id="3947897854999940598">Menentukan template URI resolver DNS-over-HTTPS yang diinginkan dengan informasi identitas</translation>
 <translation id="3950110092991281616">Mengaktifkan autentikasi pasif di sesi reguler saja.</translation>
 <translation id="3950239119790560549">Memperbarui Batasan Waktu</translation>
 <translation id="3953860513079094502">Laporkan informasi tentang peristiwa deteksi dan respons yang diperluas (XDR)</translation>
@@ -3938,6 +3964,7 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
 
       Jika kebijakan ini tidak disetel, secara default pengguna yang dikelola perusahaan tidak akan diizinkan dan pengguna yang tidak dikelola perusahaan akan diizinkan.</translation>
 <translation id="4783415902268741066">Mengizinkan halaman hasil penelusuran mesin telusur default terbaru ditampilkan di panel samping Browser</translation>
+<translation id="4786784434769279324">Tindakan yang akan dijalankan saat komputer sedang tidak ada aktivitas</translation>
 <translation id="4787763197941188108">Mengganti ukuran halaman pencetakan default.
 
       <ph name="PAGE_SIZE_NAME" /> harus berisi salah satu format yang tercantum atau 'kustom' jika ukuran kertas yang diminta tidak ada dalam daftar. Jika nilai 'kustom' ditetapkan, properti <ph name="PAGE_SIZE_CUSTOM_SIZE" /> harus ditentukan. Nilai ini menjelaskan tinggi dan lebar yang diinginkan dalam satuan mikrometer. Jika tidak, properti <ph name="PAGE_SIZE_CUSTOM_SIZE" /> tidak harus ditentukan. Kebijakan yang melanggar aturan ini akan diabaikan.
@@ -5306,6 +5333,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ditetapkan ke false atau tidak ditetapkan, informasi laporan kerusakan
       tidak akan dilaporkan. Jika ditetapkan ke true, informasi laporan kerusakan akan
       dilaporkan.</translation>
+<translation id="624219423122512710">Tindakan Browser Tidak Ada Aktivitas</translation>
 <translation id="6244061205361004687">Izinkan pengguna memutuskan koneksi atau mengubah VPN secara manual</translation>
 <translation id="6244210204546589761">URL untuk membuka saat permulaan</translation>
 <translation id="624595269193747921">Apakah ingin membatasi penelusuran printer yang cocok untuk satu set printer tertentu.</translation>
@@ -5670,6 +5698,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Catatan: Saat ini, mulai ulang otomatis hanya diaktifkan ketika layar login ditampilkan atau sesi aplikasi kios sedang berlangsung.</translation>
 <translation id="6556586932263358975">Izinkan penguncian layar</translation>
+<translation id="6558013557780651644">Penundaan sebelum menjalankan tindakan tidak ada aktivitas</translation>
 <translation id="6559057113164934677">Jangan izinkan situs apa pun mengakses kamera dan mikrofon</translation>
 <translation id="65591220958874949">Gunakan klien DNS bawaan di Windows, macOS, Android, dan Chrome OS</translation>
 <translation id="6559221564468029245">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna tidak akan dianggap tidak ada aktivitas saat audio diputar. Hal ini mencegah tercapainya waktu tunggu tidak ada aktivitas dan mencegah diambilnya tindakan tidak ada aktivitas. Namun, peredupan layar, penonaktifan layar, dan penguncian layar akan tetap terjadi setelah waktu tunggu yang dikonfigurasi tercapai, meski terdapat aktivitas audio.
@@ -7513,6 +7542,17 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 <translation id="8316940611391250886">Larang sertifikat yang tidak dilengkapi ekstensi subjectAlternativeName</translation>
 <translation id="8319678975002906774">Menyetel nilai konfigurasi terkelola bagi situs untuk sumber tertentu</translation>
 <translation id="8320149248919453401">Mode pengisian daya baterai</translation>
+<translation id="8327201984026238850">Template URI pada resolver DNS-over-HTTPS yang diinginkan. Untuk menentukan beberapa resolver DNS-over-HTTPS, pisahkan template URI terkait dengan spasi. Kebijakan ini sangat mirip dengan <ph name="DOH_TEMPLATES_POLICY_NAME" /> yang akan diganti jika ditentukan. Berbeda dengan kebijakan sebelumnya, kebijakan ini mendukung penentuan informasi identitas.
+
+  Jika <ph name="DOH_MODE_POLICY_NAME" /> disetel ke <ph name="SECURE_DNS_MODE_SECURE" />, kebijakan ini atau <ph name="DOH_TEMPLATES_POLICY_NAME" /> harus disetel dan tidak boleh kosong.
+
+  Jika <ph name="DOH_MODE_POLICY_NAME" /> disetel ke <ph name="SECURE_DNS_MODE_AUTOMATIC" /> dan kebijakan ini disetel, template URI yang ditentukan akan digunakan. Namun, jika kebijakan ini tidak disetel, pemetaan hardcode akan digunakan sebagai upaya untuk mengupgrade resolver DNS pengguna saat ini ke resolver DoH yang dioperasikan oleh penyedia yang sama.
+
+  Jika template URI berisi variabel <ph name="HTTP_VARIABLE_DNS" />, permintaan untuk resolver akan menggunakan <ph name="HTTP_METHOD_GET" />. Jika tidak, permintaan akan menggunakan <ph name="HTTP_METHOD_POST" />.
+
+  Jika kebijakan ini disetel, <ph name="DOH_SALT_POLICY_NAME" /> juga harus disetel.
+
+  Template dengan format yang salah akan diabaikan.</translation>
 <translation id="8327651196906278510">Mengizinkan tangkapan Tab berdasarkan asal berikut</translation>
 <translation id="8329434144708110">Picu alur autentikasi untuk menyinkronkan sandi dengan penyedia SSO</translation>
 <translation id="8329984337216493753">Kebijakan ini aktif dalam mode eceran saja.
@@ -7670,6 +7710,8 @@ Kebijakan akan dihapus pada M75.</translation>
       Peringatan: Sebaiknya Anda tidak mengonfigurasi batasan versi karena dapat mencegah pengguna dari menerima update software dan perbaikan keamanan kritis. Membatasi update ke prefiks versi spesifik dapat menimbulkan risiko bagi pengguna.</translation>
 <translation id="8508489378025029342">Aktifkan pelaporan waktu aktivitas perangkat</translation>
 <translation id="8511192250554640451">Izinkan throttling timer JavaScript latar belakang dikontrol oleh logika Chrome dan dikonfigurasi oleh pengguna</translation>
+<translation id="8511708772548158302">Roll back perangkat ke versi target jika versi OS saat ini lebih baru dari target. Perangkat di-powerwash, tetapi konfigurasi jaringan seluruh perangkat tanpa sertifikat akan dipertahankan dan perangkat akan otomatis didaftarkan ulang.
+Rollback ke <ph name="PRODUCT_OS_NAME" /> versi 106 atau yang lebih lama tidak didukung.</translation>
 <translation id="8519264904050090490">URL pengecualian manual pengguna yang dikelola</translation>
 <translation id="8519516251436131647">Mengaktifkan pintasan fitur aksesibilitas.
 
@@ -7987,6 +8029,8 @@ VM tersebut. Beberapa VM dapat diinstal dari konfigurasi yang sama di perangkat 
 
           Kebijakan ini tidak berpengaruh jika tidak disetel. Dalam hal ini, koneksi akses jarak jauh tidak akan memiliki durasi maksimum di perangkat ini.</translation>
 <translation id="8800453707696044281">Menetapkan nilai akhir pengisian daya baterai kustom dalam persen</translation>
+<translation id="880110452941793016">Salt ini digunakan sebagai nilai salt saat informasi identitas hashing disertakan dalam string <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />.
+   Jika <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> digunakan, nilai salt ini harus disetel dan harus berupa string antara 8 dan 32 karakter.</translation>
 <translation id="8801680448782904838">Beri tahu pengguna bahwa meluncurkan ulang browser atau memulai ulang perangkat direkomendasikan atau diperlukan</translation>
 <translation id="8804685015028424497">Nonaktifkan mode Samaran</translation>
 <translation id="8806478127647484805">Blokir pengguna agar tidak mengakhiri proses dengan pengelola tugas Chrome</translation>
@@ -8117,6 +8161,7 @@ VM tersebut. Beberapa VM dapat diinstal dari konfigurasi yang sama di perangkat 
       Jika kebijakan ini ditetapkan ke False atau tidak ditetapkan, elemen kontrol formulir akan diaktifkan saat diluncurkan di M81, M82, dan M83.
 
       Kebijakan ini akan dihapus setelah Chrome 84.</translation>
+<translation id="8940173892071872775">Mengontrol tindakan yang akan dijalankan saat browser tidak ada aktivitas.</translation>
 <translation id="8942616385591203339">Kebijakan ini mengontrol apakah Izin Sinkronisasi dapat ditampilkan ke pengguna saat login pertama kali. Kebijakan ini harus disetel ke false jika Izin Sinkronisasi tidak diperlukan bagi pengguna.
       Jika disetel ke false, Izin Sinkronisasi tidak akan ditampilkan.
       Jika disetel ke true atau tidak disetel, Izin Sinkronisasi dapat ditampilkan.</translation>
@@ -8253,6 +8298,15 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
       Jika kebijakan ini tidak disetel, pemilihan otomatis tidak akan dilakukan untuk situs apa pun.
 
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="9066311316566875681">Template URI pada resolver DNS-over-HTTPS yang diinginkan. Untuk menentukan beberapa resolver DNS-over-HTTPS, pisahkan template URI terkait dengan spasi.
+
+      Jika DnsOverHttpsMode disetel ke <ph name="SECURE_DNS_MODE_SECURE" />, kebijakan ini harus disetel dan tidak boleh kosong. Khusus di <ph name="PRODUCT_OS_NAME" />, kebijakan ini atau <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> harus disetel. Jika tidak, resolusi DNS akan gagal.
+
+      Jika DnsOverHttpsMode disetel ke <ph name="SECURE_DNS_MODE_AUTOMATIC" /> dan kebijakan ini disetel, template URI yang ditentukan akan digunakan. Namun, jika kebijakan ini tidak disetel, pemetaan hardcode akan digunakan sebagai upaya untuk mengupgrade DNS resolver pengguna saat ini ke DoH resolver yang dioperasikan oleh penyedia yang sama.
+
+      Jika template URI berisi variabel <ph name="HTTP_VARIABLE_DNS" />, permintaan untuk resolver akan menggunakan <ph name="HTTP_METHOD_GET" />. Jika tidak, permintaan akan menggunakan <ph name="HTTP_METHOD_POST" />.
+
+      Template dengan format yang salah akan diabaikan.</translation>
 <translation id="9068629430243705879">port 6566 (blokir dapat dibatalkan hingga 15/10/2021)</translation>
 <translation id="9069588907259547232">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat terdaftar akan melaporkan volume audio perangkat.
 

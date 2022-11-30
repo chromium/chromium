@@ -38,6 +38,7 @@
 <translation id="10614374240317010">هرگز ذخیره نمی‌شود</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">نشانک‌های دسک‌تاپ</translation>
+<translation id="1067561478268651872">خط‌مشی <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> استفاده نمی‌شود مگراینکه خط‌مشی <ph name="SECURE_DNS_SALT" /> تنظیم شده باشد.</translation>
 <translation id="1068672505746868501">هرگز صفحه‌های <ph name="SOURCE_LANGUAGE" /> ترجمه نشوند</translation>
 <translation id="1070853536588271387">وسیله نقلیه دوگانه‌سوز و با سوخت جایگزین</translation>
 <translation id="1070901266639972381">شب</translation>
@@ -2099,6 +2100,7 @@
 <translation id="6328786501058569169">این سایت گول‌زننده است</translation>
 <translation id="6337133576188860026">کمتر از <ph name="SIZE" /> از فضا را آزاد می‌کند. ممکن است برخی از سایت‌ها در بازدیدهای بعدی کندتر بارگیری شوند.</translation>
 <translation id="6337534724793800597">فیلتر کردن خط‌مشی‌ها براساس نام</translation>
+<translation id="633770708279464947">مقدار <ph name="SECURE_DNS_SALT" /> نامعتبر است و استفاده نخواهد شد.</translation>
 <translation id="6340739886198108203">خط‌مشی سرپرست توصیه می‌کند وقتی محتوای محرمانه قابل‌مشاهده است نماگرفت نگیرید یا ضبط نکنید:</translation>
 <translation id="6341434961864773665">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}}</translation>
 <translation id="6348220984832452017">گونه‌های فعال</translation>
@@ -2994,6 +2996,7 @@
 <translation id="8654126188050905496">۹۱ × ۵۵ میلی‌متر</translation>
 <translation id="8663226718884576429">خلاصه سفارش، <ph name="TOTAL_LABEL" />، جزئيات بیشتر</translation>
 <translation id="8666678546361132282">انگلیسی</translation>
+<translation id="8671519637524426245">مقدار <ph name="SECURE_DNS_SALT" /> با الزامات اندازه مطابقت ندارد.</translation>
 <translation id="867224526087042813">امضا</translation>
 <translation id="8672264262457010862">تجارت و صنعت</translation>
 <translation id="8676424191133491403">بدون تأخیر</translation>
@@ -3093,6 +3096,7 @@
 <translation id="8913778647360618320">‏دکمه «مدیریت روش‌های پرداخت»، برای مدیریت اطلاعات کارت اعتباری و پرداخت‌ها در تنظیمات Chrome، کلید Enter (ورود) را فشار دهید</translation>
 <translation id="8922013791253848639">آگهی‌ها همیشه در این سایت مجاز باشند</translation>
 <translation id="892588693504540538">سوراخ در بالا سمت راست</translation>
+<translation id="8930098617363288380">مقدار <ph name="SECURE_DNS_SALT" /> مرتبط نیست و استفاده نخواهد شد، مگراینکه خط‌مشی <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> تنظیم شده باشد.</translation>
 <translation id="8930330541574156305">املاک و مستغلات</translation>
 <translation id="8931333241327730545">‏می‌خواهید این کارت را در حساب Google خود ذخیره کنید؟</translation>
 <translation id="8932102934695377596">ساعت شما عقب است</translation>

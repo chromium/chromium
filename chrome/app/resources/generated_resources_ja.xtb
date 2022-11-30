@@ -620,6 +620,7 @@
 <translation id="1573117025466282241">QR コードでスマートフォンを使用する</translation>
 <translation id="1575741822946219011">言語と入力方法</translation>
 <translation id="1576594961618857597">デフォルトの白のアバター</translation>
+<translation id="1576729678809834061">この検索結果を報告</translation>
 <translation id="1578558981922970608">強制終了</translation>
 <translation id="1580772913177567930">管理者にお問い合わせください</translation>
 <translation id="1581962803218266616">Finder で表示</translation>
@@ -832,7 +833,6 @@
 <translation id="175772926354468439">テーマを有効にする</translation>
 <translation id="17584710573359123">Chrome ウェブストアのページに移動</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> さんのアカウント</translation>
-<translation id="176193854664720708">指紋認証センサーは電源ボタンに搭載されています。いずれかの指で軽く触れてください。</translation>
 <translation id="176272781006230109">おすすめのショッピング情報</translation>
 <translation id="1763046204212875858">アプリケーションのショートカットを作成</translation>
 <translation id="1763808908432309942">新しいタブで開きます</translation>
@@ -1008,6 +1008,7 @@
 <translation id="1909880997794698664">このデバイスをキオスク モードに固定してもよろしいですか？</translation>
 <translation id="1910721550319506122">ようこそ！</translation>
 <translation id="1910736334623230603">複数の画像を検索することはできません。一度につき画像を 1 つだけ追加してください。</translation>
+<translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> は、自動テスト専用です。通常のブラウジングには、自動的に更新される標準版の Chrome をご使用ください。</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1916502483199172559">デフォルトの赤のアバター</translation>
@@ -1072,7 +1073,6 @@
 <translation id="1974821797477522211">ネットワークへの接続</translation>
 <translation id="1975841812214822307">削除...</translation>
 <translation id="1976150099241323601">セキュリティ デバイスへのログイン</translation>
-<translation id="1976928778492259496">指紋認証センサーは <ph name="DEVICE_TYPE" /> の左側にあります。いずれかの指で軽く触れてください。</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> のロックを解除するにはスマートフォンを近づけます。</translation>
 <translation id="1978057560491495741">住所を削除</translation>
 <translation id="1979095679518582070">この機能を OFF にしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
@@ -2836,7 +2836,6 @@
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; によりダウンロードされました</translation>
 <translation id="3613134908380545408">「<ph name="FOLDER_NAME" />」を表示</translation>
 <translation id="3613422051106148727">新しいタブで開く(&amp;O)</translation>
-<translation id="3615073365085224194">指紋認証センサーを指でタッチしてください</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> をスキャンしています。</translation>
 <translation id="3615596877979647433">キーが設定されていません。カスタマイズするには、キーボードのキーを押してください</translation>
 <translation id="3616113530831147358">音声</translation>
@@ -3044,6 +3043,7 @@
 <translation id="3798449238516105146">バージョン</translation>
 <translation id="3798632811625902122">Bluetooth デバイス <ph name="DEVICE" /> がペア設定の権限をリクエストしています。</translation>
 <translation id="3799128412641261490">スイッチ アクセスの設定</translation>
+<translation id="3800030395703848668">リストのオプションを表示</translation>
 <translation id="3800806661949714323">すべてを表示（推奨）</translation>
 <translation id="3800828618615365228">Google Chrome および Chrome OS 追加利用規約</translation>
 <translation id="3802486193901166966">この拡張機能では、特別な権限は必要なく、追加のサイトアクセスは行われません</translation>
@@ -3238,6 +3238,7 @@
 <translation id="3965811923470826124">次を使用</translation>
 <translation id="3965965397408324205">「<ph name="PROFILE_NAME" />」を終了</translation>
 <translation id="3966072572894326936">別のフォルダを選択...</translation>
+<translation id="3966094581547899417">アクセス ポイントの詳細</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3967841595862839006">言語とキーボードの選択</translation>
 <translation id="3968739731834770921">かな</translation>
@@ -3289,6 +3290,7 @@
 <translation id="4014432863917027322">「<ph name="EXTENSION_NAME" />」を修復しますか？</translation>
 <translation id="4015163439792426608">拡張機能はご利用ですか？<ph name="BEGIN_LINK" />拡張機能の管理<ph name="END_LINK" />は 1 か所で簡単に行うことができます。</translation>
 <translation id="4017225831995090447">このリンクの QR コードを作成</translation>
+<translation id="4019983356493507433">ブックマーク リストを編集</translation>
 <translation id="4020327272915390518">オプション メニュー</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="402184264550408568">（TCP）</translation>
@@ -3500,6 +3502,7 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{この拡張機能は許可されていません}other{一部の拡張機能は許可されていません}}</translation>
 <translation id="4231095370974836764">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">ゲーム操作キーを閉じる</translation>
+<translation id="4231542173270219144">試用期間中、スパムと不正行為の削減はプライベート ステート トークンに依拠して行われ、サイトが不正行為に対処し、bot と人間を区別できるようにします。</translation>
 <translation id="4232375817808480934">Kerberos の設定</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
 <translation id="4236163961381003811">他の拡張機能を見る</translation>
@@ -3695,6 +3698,7 @@
 <translation id="4412698727486357573">ヘルプセンター</translation>
 <translation id="44141919652824029">接続された USB デバイスのリストを「<ph name="APP_NAME" />」が取得することを許可しますか？</translation>
 <translation id="4414232939543644979">新しいシークレット ウインドウ(&amp;I)</translation>
+<translation id="4414648713167199100">Chromebook のモバイルデータを使用します。携帯通信会社によっては追加料金が発生する場合があります。バッテリー使用量が増える可能性があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> を使用する準備ができました。</translation>
 <translation id="4415245286584082850">デバイスが見つかりませんでした。新しいタブでヘルプセンター記事を開いてください。</translation>
 <translation id="4415276339145661267">Google アカウントの管理</translation>
@@ -3820,7 +3824,6 @@
 <translation id="4533985347672295764">CPU 時間</translation>
 <translation id="4534661889221639075">もう一度お試しください。</translation>
 <translation id="4535127706710932914">デフォルトのプロフィール</translation>
-<translation id="4535767533210902251">指紋認証センサーはキーボードの右上のキーに搭載されています。いずれかの指で軽く触れてください。</translation>
 <translation id="4536140153723794651">常に Cookie を使用できるサイト</translation>
 <translation id="4536769240747010177">テザリング機能:</translation>
 <translation id="4538417792467843292">1 語削除する</translation>
@@ -4203,6 +4206,7 @@
 <translation id="4885692421645694729">この拡張機能では、追加のサイトアクセスは行われません</translation>
 <translation id="4887424188275796356">システム ビューアで開く</translation>
 <translation id="488785315393301722">詳細を表示</translation>
+<translation id="488862352499217187">新規フォルダを作成</translation>
 <translation id="4890773143211625964">プリンタの詳細オプションを表示</translation>
 <translation id="4891089016822695758">ベータ版フォーラム</translation>
 <translation id="4892229439761351791">サイトに Bluetooth の使用が許可されています</translation>
@@ -4324,6 +4328,7 @@
 <translation id="5009463889040999939">プロファイルの名前を変更しています。この処理には数分かかることがあります。</translation>
 <translation id="5010043101506446253">認証局</translation>
 <translation id="501057610015570208">マニフェスト属性が kiosk_only のアプリをインストールするには ChromeOS Flex でキオスクモードを有効にする必要があります</translation>
+<translation id="5010886807652684893">ビジュアル表示</translation>
 <translation id="5015344424288992913">プロキシを解決しています...</translation>
 <translation id="5016491575926936899">パソコンからメッセージを送信したり、インターネット接続を共有したり、チャットの通知に返信したり、スマートフォンから <ph name="DEVICE_TYPE" /> のロックを解除したりできます。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">テキスト カーソルを使ってページ間を移動できます。オフにするには Ctrl+検索+7 キーを押します。</translation>
@@ -5461,7 +5466,6 @@
 <translation id="6087746524533454243">ブラウザ情報のページをお探しですか？次にアクセスしてください</translation>
 <translation id="6087960857463881712">エピック スマイリー</translation>
 <translation id="608912389580139775">リーディング リストにこのページを追加するには、ブックマーク アイコンをクリックしてください</translation>
-<translation id="6091116443517744502">インターネット接続を確認し、もう一度お試しください</translation>
 <translation id="6091761513005122595">共有フォルダが正常にマウントされました。</translation>
 <translation id="6093803049406781019">プロフィールを削除</translation>
 <translation id="6093888419484831006">更新をキャンセルしています...</translation>
@@ -6068,6 +6072,7 @@
 <translation id="6674571176963658787">同期を開始するには、パスフレーズを入力してください</translation>
 <translation id="6675665718701918026">ポインティング デバイスが接続されました</translation>
 <translation id="6676212663108450937">音声を認識させる場合はヘッドフォンの使用をご検討ください</translation>
+<translation id="6677942524382973058">プライベート ステート トークンはウェブ上のプライバシー保護を強化するもので、ユーザーの特定に使用することはできません。</translation>
 <translation id="6678717876183468697">クエリ URL</translation>
 <translation id="6680442031740878064">空き容量: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">速度</translation>
@@ -6763,7 +6768,6 @@
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7353261921908507769">近くにいる連絡先から共有を受けられます。許可するまで転送は行われません。</translation>
 <translation id="735361434055555355">Linux をインストールしています...</translation>
-<translation id="7354341762311560488">指紋認証センサーはキーボードの左下のキーに搭載されています。いずれかの指で軽く触れてください。</translation>
 <translation id="7356908624372060336">ネットワーク ログ</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>
 <translation id="7358324924540718595">今日の思い出を非表示にしました</translation>
@@ -6895,6 +6899,7 @@
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{現在開いているタブは # 個で、このボタンを押すとタブバーを切り替えます}other{現在開いているタブは # 個で、このボタンを押すとタブバーを切り替えます}}</translation>
 <translation id="7465635034594602553">エラーが発生しました。数分後にもう一度 <ph name="APP_NAME" /> を実行してください。</translation>
 <translation id="7465778193084373987">Netscape 証明書取り消し URL</translation>
+<translation id="7466431077154602932">コンパクト表示</translation>
 <translation id="746861123368584540">拡張機能を読み込みました</translation>
 <translation id="7470424110735398630">クリップボードの読み取りを許可するサイト</translation>
 <translation id="747114903913869239">エラー: 拡張機能をデコードできません</translation>
@@ -7813,6 +7818,7 @@
 <translation id="8288539437195337464">デバイスが最新の状態になっていることを確認してから、もう一度お試しください</translation>
 <translation id="8289128870594824098">ディスクサイズ</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> へようこそ</translation>
+<translation id="8291415872436043161">Chrome をダウンロードする</translation>
 <translation id="8293206222192510085">ブックマークの追加</translation>
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8298429963694909221">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で受信できるようになりました。<ph name="DEVICE_TYPE" /> で通知を非表示にすると、その通知はスマートフォンでも表示されなくなります。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi もオンになっていることを確認してください。</translation>
@@ -7928,7 +7934,6 @@
 <translation id="8398877366907290961">このまま続行</translation>
 <translation id="8399282673057829204">パスワードを表示</translation>
 <translation id="8401432541486058167">スマートカードに関連付けられている PIN を入力してください。</translation>
-<translation id="8404893580027489425">指紋認証センサーは <ph name="DEVICE_TYPE" /> の右側にあります。いずれかの指で軽く触れてください。</translation>
 <translation id="8405046151008197676">最新のアップデートの概要をご確認ください</translation>
 <translation id="8407199357649073301">ログレベル:</translation>
 <translation id="8408270600235826886">各ユーザーは Google と共有するデータを設定できるようになっています。これは [設定] でいつでも変更できます。データは Google の<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />に従って使用されます。</translation>
@@ -8015,7 +8020,6 @@
 <translation id="8487699605742506766">アクセス ポイント</translation>
 <translation id="8489156414266187072">候補はお客様のアカウントにのみ表示されます</translation>
 <translation id="8490896350101740396">キオスクアプリ「<ph name="UPDATED_APPS" />」を更新しました。更新処理を完了するためにデバイスを再起動してください。</translation>
-<translation id="8492685019009920170">指紋認証センサーに指を置いてください。お客様のデータは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="8492822722330266509">サイトがポップアップを送信したりリダイレクトを使用したりできるようにする</translation>
 <translation id="8492960370534528742">Google Cast についてのフィードバック</translation>
 <translation id="8493236660459102203">マイク:</translation>
@@ -8116,6 +8120,7 @@
 <translation id="8602674530529411098">アプリ（ベータ版）</translation>
 <translation id="8602851771975208551">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のあるアプリが追加されました。</translation>
 <translation id="8605428685123651449">SQLite メモリ</translation>
+<translation id="8607326572516521315">スパムと不正行為の削減はプライベート ステート トークンに依拠して行われ、サイトが不正行為に対処し、bot と人間を区別できるようにします。</translation>
 <translation id="8608618451198398104">Kerberos チケットの追加</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8610103157987623234">無効な形式です。もう一度お試しください</translation>
@@ -8440,6 +8445,7 @@
 <translation id="8890170499370378450">モバイルデータ通信料が発生することがあります</translation>
 <translation id="8890516388109605451">ソース</translation>
 <translation id="8890529496706615641">プロファイルの名前を変更できませんでした。もう一度お試しいただくか、ご利用の携帯通信会社のテクニカル サポートにお問い合わせください。</translation>
+<translation id="8891996167592415151">アカウントへの定期的なログインなどのやり取りに基づき、サイトはブラウザにプライベート ステート トークンを発行できます。その後、アクセスした他のサイトが有効なプライベート ステート トークンを確認して検出した場合、そのサイトはユーザーを bot ではなく人間として扱う可能性が高くなります。</translation>
 <translation id="8892168913673237979">設定完了。</translation>
 <translation id="8893801527741465188">アンインストールが完了しました</translation>
 <translation id="8893928184421379330">デバイス <ph name="DEVICE_LABEL" /> を認識できませんでした。</translation>
@@ -8548,7 +8554,6 @@
 <translation id="899384117894244799">制限付きユーザーの削除</translation>
 <translation id="899403249577094719">Netscape 証明書基本 URL</translation>
 <translation id="899657321862108550">あなたの Chrome をいつでもどこでも</translation>
-<translation id="899676909165543803">指紋認証センサーはキーボードの右下のキーに搭載されています。いずれかの指で軽く触れてください。</translation>
 <translation id="8998078711690114234">この種類のファイルは危険な可能性があります。<ph name="ORIGIN" /> を信頼できる場合のみ、このファイルを保存してください</translation>
 <translation id="8999560016882908256">セクションの構文エラーです: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">デバイス管理サーバーに接続できませんでした（ステータス「<ph name="STATUS_TEXT" />」、<ph name="FAILURE_TIME" />）</translation>
@@ -8605,6 +8610,7 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" /> のパスワードを更新しますか？</translation>
 <translation id="9041692268811217999">パソコンのローカル ファイルへのアクセスは管理者によって無効にされています</translation>
 <translation id="904224458472510106">この操作は元に戻せません</translation>
+<translation id="9042827002460091668">インターネット接続を確認してもう一度お試しください</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
 <translation id="9044646465488564462">ネットワークに接続できませんでした: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">リーディング リストは新しいサイドパネルに移動しました。こちらをお使いください。</translation>
@@ -8845,7 +8851,6 @@
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
 <translation id="971510864672937292"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限を削除しますか？</translation>
 <translation id="971774202801778802">ブックマーク URL</translation>
-<translation id="972996901592717370">電源ボタンを指でタップしてください。お客様のデータは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="973473557718930265">終了</translation>
 <translation id="973558314812359997">マウスのサイズ</translation>
 <translation id="975893173032473675">翻訳先の言語</translation>

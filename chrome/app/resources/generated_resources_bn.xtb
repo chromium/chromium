@@ -846,7 +846,6 @@
 <translation id="175772926354468439">থিম সক্ষম করুন</translation>
 <translation id="17584710573359123">Chrome ওয়েব স্টোরে দেখুন</translation>
 <translation id="1761845175367251960"><ph name="NAME" />-এর অ্যাকাউন্ট</translation>
-<translation id="176193854664720708">পাওয়ার বোতামে আঙ্গুলের ছাপের সেন্সরটি আছে। যেকোনও আঙ্গুল দিয়ে আলতো করে এটিকে টাচ করুন।</translation>
 <translation id="176272781006230109">শপিং করার জন্য সাজেশন</translation>
 <translation id="1763046204212875858">অ্যাপ্লিকেশন শর্টকাটগুলি তৈরি করুন</translation>
 <translation id="1763808908432309942">একটি নতুন ট্যাবে খোলে</translation>
@@ -1090,7 +1089,6 @@
 <translation id="1974821797477522211">নেটওয়ার্কে সংযোগ করুন</translation>
 <translation id="1975841812214822307">সরান...</translation>
 <translation id="1976150099241323601">সিকিউরিটি ডিভাইসে সাইন-ইন করুন</translation>
-<translation id="1976928778492259496">আপনার <ph name="DEVICE_TYPE" />-এর বাঁদিকে আঙ্গুলের ছাপের সেন্সর আছে। যেকোনও আঙ্গুল দিয়ে সেটি আলতো করে টাচ করুন।</translation>
 <translation id="1977965994116744507">আপনার <ph name="DEVICE_TYPE" /> আনলক করতে আপনার ফোন কাছাকাছি আনুন।</translation>
 <translation id="1978057560491495741">ঠিকানা সরিয়ে দিন</translation>
 <translation id="1979095679518582070">এই ফিচারটি বন্ধ করে দিলেও এই ডিভাইসটি সিস্টেম আপডেট এবং নিরাপত্তার জন্য প্রয়োজনীয় পরিষেবা সম্পর্কিত তথ্য পাঠাতে পারে।</translation>
@@ -1300,6 +1298,7 @@
 <translation id="2157875535253991059">পৃষ্ঠাটি এখন পূর্ণ পর্দায় রয়েছে</translation>
 <translation id="2158475082070321257">হাইলাইট করা টেক্সটের লিঙ্ক কপি করুন</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758"><ph name="EXTENSION_NAME" />-এর জন্য <ph name="SHORTCUT" />-এর স্কোপ</translation>
 <translation id="216169395504480358">Wi-fi জুড়ুন ...</translation>
 <translation id="2162155940152307086">আপনি সিঙ্ক সেটিংস পৃষ্ঠাটি ছেড়ে গেলে সিঙ্ক করা শুরু হবে</translation>
 <translation id="2162705204091149050">আপনার ব্রাউজার, OS, ডিভাইস, ইনস্টল করা সফ্টওয়্যার এবং ফাইলের ব্যাপারে তথ্য পড়ুন</translation>
@@ -2688,6 +2687,7 @@
 <translation id="3445047461171030979">Google Assistant-এর ঝটপট উত্তর</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="344537926140058498">এই ফাইলে সংবেদনশীল বা বিপদজনক কন্টেন্ট থাকার জন্য আপনার সংস্থা ফাইলটি ব্লক করে দিয়েছে। ফাইলের মালিককে সেটি ঠিক করতে বলুন।</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{আপনি সম্প্রতি ভিজিট করেননি এমন <ph name="BEGIN_BOLD" />১টি সাইট<ph name="END_BOLD" /> থেকে অনুমতি সরিয়ে দেওয়া হয়েছে}one{আপনি সম্প্রতি ভিজিট করেননি এমন <ph name="BEGIN_BOLD" />{NUM_SITES}টি সাইট থেকে অনুমতি সরিয়ে দেওয়া হয়েছে<ph name="END_BOLD" />}other{আপনি সম্প্রতি ভিজিট করেননি এমন <ph name="BEGIN_BOLD" />{NUM_SITES}টি সাইট থেকে অনুমতি সরিয়ে দেওয়া হয়েছে<ph name="END_BOLD" />}}</translation>
 <translation id="3445925074670675829">USB-C ডিভাইস</translation>
 <translation id="3446274660183028131">Windows ইনস্টল করতে Parallels Desktop চালু করুন।</translation>
 <translation id="344630545793878684">কতগুলি ওয়েবসাইটে আপনার ডেটা পড়ে</translation>
@@ -2861,7 +2861,6 @@
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; এর দ্বারা ডাউনলোড হয়েছে</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> দেখান</translation>
 <translation id="3613422051106148727">&amp;নতুন ট্যাবে খুলুন</translation>
-<translation id="3615073365085224194">আঙ্গুলের ছাপের সেন্সরটিকে আপনার আঙ্গুল দিয়ে টাচ করুন</translation>
 <translation id="3615579745882581859">এই <ph name="FILE_NAME" /> স্ক্যান করা হচ্ছে।</translation>
 <translation id="3615596877979647433">কোনও 'কী' নেই কাস্টমাইজ করতে, কীবোর্ডের কোনও 'কী' প্রেস করুন</translation>
 <translation id="3616113530831147358">অডিও</translation>
@@ -2899,6 +2898,7 @@
 <translation id="3642699533549879077">যখন অন্য কেউ আপনার স্ক্রিনের দিকে তাকায়, আপনি একটি সতর্কতা পাবেন এবং বিজ্ঞপ্তি সংক্রান্ত কন্টেন্ট লুকানো হবে।</translation>
 <translation id="3643962751030964445"><ph name="DEVICE_MANAGER" /> এই ডিভাইস ম্যানেজ করে। <ph name="USER_EMAIL_ADDRESS" /> অ্যাকাউন্টের জন্য, <ph name="DEVICE_MANAGER" />-এর একটি নতুন প্রোফাইল প্রয়োজন</translation>
 <translation id="3645372836428131288">আঙ্গুলের ছাপের বিভিন্ন অংশ ক্যাপচার করতে একটু এদিক-ওদিক সরান৷</translation>
+<translation id="3647051300407077858">বিজ্ঞপ্তির অনুমতি পর্যালোচনা করুন</translation>
 <translation id="3647654707956482440">এই লিঙ্ক ব্যবহার করা যাচ্ছে না। লিখতে গিয়ে কিছু ভুল হয়েছে কিনা চেক করুন অথবা আবার চেষ্টা করতে অন্য একটি লিঙ্ক ব্যবহার করুন।</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> এসেছে}one{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> এসেছে}other{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> এসেছে}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> শনাক্ত হয়েছে</translation>
@@ -3078,6 +3078,7 @@
 <translation id="380408572480438692">কার্য-সম্পাদনা ডেটার সংগ্রহ চালু করলে দিনে দিনে এটি Google কে তার সিস্টেম উন্নত করতে সাহায্য করবে৷ আপনি যতক্ষণ না কোনও প্রতিবার্তা রিপোর্ট (Alt-Shift-I) এবং কার্য-সম্পাদনার ডেটা অন্তর্ভুক্ত করবেন ততক্ষণ কোনও ডেটা পাঠানো হয় না৷ সংগ্রহ বন্ধ করতে আপনি যেকোনও সময়ে এই স্ক্রিনে ফিরে আসতে পারেন৷</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is not allowed on a login screen.</translation>
 <translation id="3807747707162121253">&amp;বাতিল</translation>
+<translation id="3808202562160426447">ব্য়াকগ্রাউন্ড কন্টেন্টকে অস্পষ্ট করে দিন</translation>
 <translation id="3808443763115411087">Crostini Android অ্যাপ উন্নত করা</translation>
 <translation id="38089336910894858">⌘Q টিপে বেরিয়ে যাওয়ার আগে সতর্কতা দেখান</translation>
 <translation id="3809272675881623365">খরগোশ</translation>
@@ -3669,6 +3670,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> একটি উইন্ডো শেয়ার করছে।</translation>
 <translation id="4364830672918311045">বিজ্ঞপ্তিগুলি প্রদর্শন করুন</translation>
 <translation id="4366138410738374926">প্রিন্ট করার প্রক্রিয়া শুরু করা হয়েছে</translation>
+<translation id="4367513928820380646">সরিয়ে দেওয়া অনুমতি পর্যালোচনা করুন</translation>
 <translation id="4369121877634339065">সার্চ করতে যেকোনও ছবির উপরে টেনে আনুন</translation>
 <translation id="4369215744064167350">ওয়েবসাইট অ্যাক্সেস করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4370975561335139969">আপনার লেখা ইমেল আইডি এবং পাসওয়ার্ড মিলছে না</translation>
@@ -3852,7 +3854,6 @@
 <translation id="4533985347672295764">সিপিইউ টাইম</translation>
 <translation id="4534661889221639075">আবার চেষ্টা করুন।</translation>
 <translation id="4535127706710932914">ডিফল্ট প্রোফাইল</translation>
-<translation id="4535767533210902251">আপনার কীবোর্ডের সবচেয়ে উপরে ডানদিকের বোতামটি হল আঙ্গুলের ছাপের সেন্সর। যেকোনও আঙ্গুল দিয়ে সেটি আলতো করে টাচ করুন।</translation>
 <translation id="4536140153723794651">এমন সাইট যা সবসময় কুকি ব্যবহার করে</translation>
 <translation id="4536769240747010177">টেথারিংয়ের কার্যক্ষমতা:</translation>
 <translation id="4538417792467843292">শব্দ মুছুন </translation>
@@ -4390,6 +4391,7 @@
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
 <translation id="504561833207953641">আগে থেকে থাকা ব্রাউজার সেশনে খোলা হচ্ছে।</translation>
 <translation id="5049614114599109018">ইনপুট ইতিহাস ব্যবহার করুন</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{এই সাইটটি সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠিয়েছে। আপনি সাইট থেকে বিজ্ঞপ্তি পাওয়া বন্ধ করতে পারেন।}one{এই সাইটগুলি সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠিয়েছে। আপনি সাইট থেকে বিজ্ঞপ্তি পাওয়া বন্ধ করতে পারেন।}other{এই সাইটগুলি সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠিয়েছে। আপনি সাইট থেকে বিজ্ঞপ্তি পাওয়া বন্ধ করতে পারেন।}}</translation>
 <translation id="5051836348807686060">আপনার বেছে নেওয়া ভাষায় বানান পরীক্ষা করা যাবে না</translation>
 <translation id="5052499409147950210">সাইট সম্পাদনা করুন</translation>
 <translation id="505347685865235222">নামহীন গ্রুপ - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5499,7 +5501,6 @@
 <translation id="6087746524533454243">ব্রাউজার সম্পর্কিত পৃষ্ঠা খুঁজছেন? দেখুন</translation>
 <translation id="6087960857463881712">দুর্দান্ত চেহারা</translation>
 <translation id="608912389580139775">আপনার পড়ার তালিকায় এই পৃষ্ঠাটি যোগ করতে বুকমার্ক আইকনে ক্লিক করুন</translation>
-<translation id="6091116443517744502">আপনার ইন্টারনেট কানেকশন পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="6091761513005122595">শেয়ার মাউন্ট করা হয়েছে।</translation>
 <translation id="6093803049406781019">প্রোফাইল মুছুন</translation>
 <translation id="6093888419484831006">আপডেট বাতিল হচ্ছে...</translation>
@@ -6808,7 +6809,6 @@
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7353261921908507769">আপনার পরিচিতি তালিকার কেউ আশেপাশে থাকলে তবেই তারা আপনার সাথে শেয়ার করতে পারবে। আপনি সম্মতি না দেওয়া পর্যন্ত ট্রান্সফার চালু করা যাবে না।</translation>
 <translation id="735361434055555355">Linux ইনস্টল করা হচ্ছে...</translation>
-<translation id="7354341762311560488">আপনার কীবোর্ডের নিচে বাঁদিকের কী হল আঙ্গুলের ছাপের সেন্সর। যেকোনও আঙ্গুল দিয়ে সেটি আলতো করে টাচ করুন।</translation>
 <translation id="7356908624372060336">নেটওয়ার্ক লগ</translation>
 <translation id="735745346212279324">VPN ডিসকানেক্ট করা হয়েছে</translation>
 <translation id="7358324924540718595">আজকের দিনের জন্য মেমোরি লুকানো আছে</translation>
@@ -7290,6 +7290,7 @@
 <translation id="7775694664330414886">নামবিহীন গ্রুপে ট্যাব সরানো হয়েছে - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> ফোল্ডারের ফাইলগুলি দেখতে পারবে, যতক্ষণ না আপনি এই সাইটের জন্য সব ট্যাব বন্ধ করে দিচ্ছেন</translation>
 <translation id="7776701556330691704">কোনও ভয়েস নেই</translation>
+<translation id="7777624210360383048"><ph name="EXTENSION_NAME" />-এর জন্য শর্টকাট <ph name="SHORTCUT" /></translation>
 <translation id="7781335840981796660">সব ব্যবহারকারী অ্যাকাউন্ট ও স্থানীয় ডেটা সরানো হবে।</translation>
 <translation id="7782102568078991263">Google থেকে আর কোনো পরামর্শ নেই</translation>
 <translation id="7782717250816686129">লগ-ইন স্ক্রিনে বারবার ব্যবহার করা ডেটা স্টোর করুন এবং সেশনে ক্রেডেনশিয়াল যোগ করুন।</translation>
@@ -7321,6 +7322,7 @@
 <translation id="7807711621188256451"><ph name="HOST" /> কে সর্বদা আপনার ক্যামেরা অ্যাক্সেস করতে অনুমতি দিন</translation>
 <translation id="7810202088502699111">এই পৃষ্ঠাতে পপ-আপগুলি ব্লক করা হয়েছে৷</translation>
 <translation id="7814458197256864873">&amp;কপি করুন</translation>
+<translation id="7815583197273433531"><ph name="EXTENSION_NAME" />-এর জন্য শর্টকাট <ph name="SHORTCUT" /> এডিট করুন</translation>
 <translation id="7815680994978050279">ক্ষতিকারক ডাউনলোড ব্লক করা হয়েছে</translation>
 <translation id="7817361223956157679">এখনও Linux অ্যাপে স্ক্রিনের কীবোর্ড কাজ করে না।</translation>
 <translation id="7818135753970109980">নতুন থিম জোড়া হয়েছে (<ph name="EXTENSION_NAME" />)</translation>
@@ -7395,6 +7397,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">আ্যাকাউন্ট দেখুন</translation>
 <translation id="7883792253546618164">যেকোনও সময় আনসাবস্ক্রাইব করুন।</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{১টি সাইট পর্যালোচনা করুন যেখান থেকে প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}one{{NUM_SITES}টি সাইট পর্যালোচনা করুন যেখান থেকে প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}other{{NUM_SITES}টি সাইট পর্যালোচনা করুন যেখান থেকে প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}}</translation>
 <translation id="788453346724465748">অ্যাকাউন্টের তথ্য লোড করা হচ্ছে...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{একটি আইটেম}one{#টি আইটেম}other{#টি আইটেম}}</translation>
 <translation id="7886605625338676841">ই-সিম (eSIM)</translation>
@@ -7975,7 +7978,6 @@
 <translation id="8398877366907290961">যাইহোক এগিয়ে যান</translation>
 <translation id="8399282673057829204">পাসওয়ার্ড দেখুন</translation>
 <translation id="8401432541486058167">আপনার স্মার্ট কার্ডের পিন নম্বরটি দিন।</translation>
-<translation id="8404893580027489425">আপনার <ph name="DEVICE_TYPE" />-এর ডানদিকে আঙ্গুলের ছাপের সেন্সর আছে। যেকোনও আঙ্গুল দিয়ে সেটি আলতো করে টাচ করুন।</translation>
 <translation id="8405046151008197676">লেটেস্ট আপডেটের হাইলাইটগুলি দেখুন</translation>
 <translation id="8407199357649073301">লগ লেভেল:</translation>
 <translation id="8408270600235826886">Google-এর সাথে কোন ডেটা শেয়ার করা হবে আপনি সেটি নিয়ন্ত্রণ করতে পারেন। আপনি সেটিংস থেকে এটি যেকোনও সময় পরিবর্তন করতে পারেন। Google-এর <ph name="BEGIN_LINK" />গোপনীয়তা নীতি<ph name="END_LINK" /> অনুযায়ী ডেটা ব্যবহার করা হবে।</translation>
@@ -8062,7 +8064,6 @@
 <translation id="8487699605742506766">হটস্পট</translation>
 <translation id="8489156414266187072">ব্যক্তিগত সাজেশন কেবলমাত্র আপনার অ্যাকাউন্টেই দেখানো হয়</translation>
 <translation id="8490896350101740396">নিম্নলিখিত কিয়স্ক অ্যাপগুলি "<ph name="UPDATED_APPS" />" আপডেট হয়েছে৷ আপডেট প্রসেস সম্পূর্ণ করতে অনুগ্রহ করে ডিভাইসটি রিবুট করুন৷</translation>
-<translation id="8492685019009920170">আঙুলের ছাপের সেন্সরটিকে আপনার আঙুল দিয়ে টাচ করুন। আপনার আঙুলের ছাপ সংক্রান্ত ডেটা সুরক্ষিতভাবে স্টোর করে রাখা হয় এবং তা <ph name="DEVICE_TYPE" /> থেকে কখনও শেয়ার করা হয় না।</translation>
 <translation id="8492822722330266509">সাইট পপ-আপ পাঠাতে ও রিডাইরেক্ট করতে পারে</translation>
 <translation id="8492960370534528742">Google Cast সম্পর্কে মতামত</translation>
 <translation id="8493236660459102203">মাইক্রোফোন:</translation>
@@ -8598,7 +8599,6 @@
 <translation id="899384117894244799">বিধিনিষেধযুক্ত ব্যবহারকারীকে সরান</translation>
 <translation id="899403249577094719">Netscape সার্টিফিকেট বেস ইউআরএল</translation>
 <translation id="899657321862108550">যেকোনও জায়গায় আপনার পছন্দের ব্রাউজার Chrome ব্যবহার করুন</translation>
-<translation id="899676909165543803">আপনার কীবোর্ডের সবচেয়ে নিচে ডানদিকের কী হল আঙ্গুলের ছাপের সেন্সর। যেকোনও আঙ্গুল দিয়ে সেটি আলতো করে টাচ করুন।</translation>
 <translation id="8998078711690114234">এই ধরনের ফাইল বিপজ্জনক হতে পারে। আপনি <ph name="ORIGIN" />-কে বিশ্বাস করলে শুধুমাত্র তখনই এই ফাইল সেভ করুন</translation>
 <translation id="8999560016882908256">বিভাগের সিন্ট্যাক্সে সমস্যা হয়েছে: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" />-এ '<ph name="STATUS_TEXT" />' স্ট্যাটাস সহ 'ডিভাইস ম্যানেজার' সার্ভারে কানেক্ট করা যায়নি</translation>
@@ -8655,6 +8655,7 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" />-এর জন্য পাসওয়ার্ড আপডেট করবেন?</translation>
 <translation id="9041692268811217999">আপনার মেশিনে স্থানীয় ফাইলগুলিতে অ্যাক্সেস আপনার অ্যাডমিনিস্ট্রেটর বন্ধ করেছেন</translation>
 <translation id="904224458472510106">এই কাজটি আর আগের অবস্থায় ফেরানো যাবে না</translation>
+<translation id="9042827002460091668">ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন</translation>
 <translation id="9042893549633094279">গোপনীয়তা এবং নিরাপত্তা</translation>
 <translation id="9044646465488564462">নেটওয়ার্কের সাথে সংযোগ করতে ব্যর্থ: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">আপনার পড়ার তালিকা নতুন সাইড প্যানেলে আছে। এটি এখানে দেখুন।</translation>
@@ -8895,7 +8896,6 @@
 <translation id="970047733946999531">{NUM_TABS,plural, =1{১টি ট্যাব}one{#টি ট্যাব}other{#টি ট্যাব}}</translation>
 <translation id="971510864672937292"><ph name="SITE_NAME" /> ও এটির অধীনে সব সাইটের জন্য সাইট ডেটা এবং অনুমতি মুছে দিতে চান?</translation>
 <translation id="971774202801778802">বুকমার্ক URL</translation>
-<translation id="972996901592717370">আঙুল দিয়ে পাওয়ার বোতামে টাচ করুন আপনার আঙুলের ছাপ সংক্রান্ত ডেটা সুরক্ষিতভাবে স্টোর করে রাখা হয় এবং তা <ph name="DEVICE_TYPE" /> থেকে কখনও শেয়ার করা হয় না।</translation>
 <translation id="973473557718930265">প্রস্থান করুন</translation>
 <translation id="973558314812359997">মাউসের সাইজ</translation>
 <translation id="975893173032473675">যে ভাষায় অনুবাদ করতে হবে</translation>

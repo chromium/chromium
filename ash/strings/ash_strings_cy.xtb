@@ -554,6 +554,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Wedi'i ddiffodd ar gyfer ap}zero{Wedi'i ddiffodd ar gyfer # ap}two{Wedi'i ddiffodd ar gyfer # ap}few{Wedi'i ddiffodd ar gyfer # ap}many{Wedi'i ddiffodd ar gyfer # ap}other{Wedi'i ddiffodd ar gyfer # ap}}</translation>
 <translation id="4066027111132117168">Ymlaen, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Signal canolig</translation>
+<translation id="4086921558679520050">Trowch switsh meic ffisegol ymlaen ar eich dyfais</translation>
 <translation id="4112140312785995938">Mynd yn ôl</translation>
 <translation id="4114315158543974537">Troi Phone Hub ymlaen</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -606,6 +607,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, cryfder signal <ph name="SIGNAL_STRENGTH" /> y cant</translation>
 <translation id="4378551569595875038">Yn cysylltu...</translation>
 <translation id="4379531060876907730">Dyma'ch offer pwyntil</translation>
+<translation id="4381031910344220229">Mae hyn yn caniatáu mynediad meicroffon ar gyfer <ph name="APP_NAME" /> a phob ap a gwefan gyda'r caniatâd meicroffon</translation>
 <translation id="4389184120735010762">Gwnaethoch bwyso'r llwybr byr bysellfwrdd ar gyfer y chwyddwydr sydd wedi'i docio. Ydych chi am ei droi ymlaen?</translation>
 <translation id="439598569299422042">Seibiwyd, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Methu â chadw'r sgrinlediad</translation>
@@ -959,6 +961,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6338485349199627913">Mae <ph name="DISPLAY_NAME" /> yn sesiwn a reolir gan <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Mae <ph name="DEVICE_NAME" /> wedi'i chysylltu</translation>
 <translation id="6351032674660237738">AWGRYMIADAU APIAU</translation>
+<translation id="6352082849089527770">Rhwydweithiau anhysbys</translation>
 <translation id="6359587239691116345">Cewch y nodweddion a'r gwelliannau diogelwch diweddaraf. Os byddwch yn gwrthod y diweddariad hwn, mae'n bosib na fydd eich dyfais yn gweithio'n iawn mwyach ac mae'n bosib y byddwch yn profi problemau diogelwch a pherfformiad.</translation>
 <translation id="6376931439017688372">Mae Bluetooth ymlaen</translation>
 <translation id="6381109794406942707">Rhowch eich PIN i ddatgloi'r ddyfais hon.</translation>
@@ -1133,6 +1136,7 @@ Gosodiad newydd</translation>
 <translation id="7360036564632145207">Mae'n bosib y bydd newid eich diogelwch mynediad data ar gyfer gosodiadau perifferolion un optimeiddio perfformiad</translation>
 <translation id="736045644501761622">Gosod papur wal ac arddull</translation>
 <translation id="7371404428569700291">Recordio'r ffenestr</translation>
+<translation id="737315737514430195">Mae hyn yn caniatáu mynediad meicroffon ar gyfer pob ap a gwefan gyda'r caniatâd meicroffon</translation>
 <translation id="7377169924702866686">Mae Caps Lock wedi'i droi ymlaen.</translation>
 <translation id="7377481913241237033">Cysylltu gyda chod</translation>
 <translation id="7378203170292176219">Llusgwch i ddewis ardal i'w recordio</translation>
@@ -1201,6 +1205,7 @@ Gosodiad newydd</translation>
 <translation id="7671610481353807627">Mae apiau'n cael eu trefnu yn ôl lliw</translation>
 <translation id="7672095158465655885">Wedi cysylltu â <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Mae mewnbwn y camera wedi'i osod i <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Mae hyn yn caniatáu mynediad meicroffon ar gyfer <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a phob ap a gwefan gyda'r caniatâd meicroffon</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Ychwanegu rhwydwaith symudol newydd</translation>
 <translation id="7720400844887872976">Ymlaen tan <ph name="TIME" /></translation>

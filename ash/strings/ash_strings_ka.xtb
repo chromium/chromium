@@ -730,6 +730,7 @@
 <translation id="4987738733603015246">სამუშაო მაგიდა 16</translation>
 <translation id="5003993274120026347">შემდეგი წინადადება</translation>
 <translation id="5016558321564993266">მარკერის გადართვა. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">მოწყობილობის მიკროფონზე წვდომა ჩართულია</translation>
 <translation id="5030687792513154421">დრო ამოიწურა</translation>
 <translation id="5033299697334913360">სრული ეკრანის აღსაბეჭდად დააწკაპუნეთ ნებისმიერ ადგილზე</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> დაკავშირებულია ახალ ტელეფონთან</translation>
@@ -965,6 +966,7 @@
 <translation id="6359587239691116345">ისარგებლეთ უახლესი ფუნქციებითა და უსაფრთხოების გაუმჯობესებებით. თუ ამ განახლებას უარყოფთ, თქვენმა მოწყობილობამ, შესაძლოა, სათანადოდ აღარ იმუშაოს, უსაფრთხოებასა და წარმადობასთან დაკავშირებით კი გარკვეული პრობლემები შეგექმნათ.</translation>
 <translation id="6376931439017688372">Bluetooth ჩართულია</translation>
 <translation id="6381109794406942707">მოწყობილობის განსაბლოკად შეიყვანეთ PIN-კოდი.</translation>
+<translation id="638716340450135524">კამერაზე წვდომის ჩართვა</translation>
 <translation id="639644700271529076">CAPS LOCK გამორთულია</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google ასისტენტი</translation>
@@ -972,6 +974,7 @@
 <translation id="642644398083277086">ყველა შეტყობინების გასუფთავება</translation>
 <translation id="643147933154517414">ყველაფერი მზად არის</translation>
 <translation id="6431865393913628856">ეკრანის ჩანაწერი</translation>
+<translation id="6442259747294754014">მოწყობილობის მიკროფონზე წვდომა გამორთულია</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> „<ph name="RECEIVER_NAME" />“-ში</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> მოვლენა</translation>
 <translation id="6449483711453944360">Linux აპები და ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია</translation>
@@ -1369,6 +1372,7 @@
 <translation id="8598235756057743477">დაალაგეთ თქვენი აპები სახელის ან ფერის მიხედვით</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" />-ისა და <ph name="APP_2_TITLE" />-ის შეტყობინებები დამალულია, რადგან ჩართულია ნახვის დაცვა</translation>
 <translation id="8627191004499078455">დაკავშირებულია <ph name="DEVICE_NAME" />-თან</translation>
+<translation id="8630991711272431708">კამერაზე წვდომის გამორთვა</translation>
 <translation id="8631727435199967028">მარტივი წვდომის პარამეტრები</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="8639760480004882931">დარჩენილია <ph name="PERCENTAGE" /></translation>

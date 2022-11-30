@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1981118202195772574">मोबाइल</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
+<translation id="1990820278544963435">शोधा</translation>
 <translation id="199425419756152024">पासवर्ड पहा</translation>
 <translation id="2010008505735295285">रीलोड करा</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
@@ -877,6 +878,7 @@
 <translation id="7531345132340165516">सध्याची साइट</translation>
 <translation id="7537586195939242955">क्षमस्व, यावेळी तुमचा पास पासबुकमध्ये इंस्टॉल केला जाऊ शकत नाही.</translation>
 <translation id="7553234618121028547">बंद करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> उघडा आणि पासवर्ड पर्याय वर जा.</translation>
+<translation id="7554645225856321710">सर्व बंद करा</translation>
 <translation id="7554791636758816595">नवीन टॅब</translation>
 <translation id="7561196759112975576">नेहमी</translation>
 <translation id="7583004045319035904">तुमचे गुप्त टॅब अनलॉक करण्यासाठी <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरा.</translation>
@@ -1090,6 +1092,7 @@
 <translation id="9188680907066685419">व्यवस्थापित केलेल्या खात्यामधून साइन आउट करा</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> दिवसांपूर्वी</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">टॅब शोधा…</translation>
 <translation id="9223358826628549784">क्रॅश अहवाल पाठवला.</translation>
 <translation id="941747855997058526">पासवर्ड निवडा...</translation>
 <translation id="952704832371081537">रद्द करा</translation>

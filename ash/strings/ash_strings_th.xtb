@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ปิดไว้ 1 แอป}other{ปิดไว้ # แอป}}</translation>
 <translation id="4066027111132117168">เปิดอยู่ <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">สัญญาณแรงปานกลาง</translation>
+<translation id="4086921558679520050">เปิดสวิตช์ไมค์ในอุปกรณ์</translation>
 <translation id="4112140312785995938">ย้อนกลับ</translation>
 <translation id="4114315158543974537">เปิด Phone Hub</translation>
 <translation id="4115378294792113321">สีม่วงแดง</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /> เปอร์เซ็นต์</translation>
 <translation id="4378551569595875038">กำลังเชื่อมต่อ</translation>
 <translation id="4379531060876907730">นี่คือเครื่องมือสไตลัส</translation>
+<translation id="4381031910344220229">การตั้งค่านี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟนได้</translation>
 <translation id="4389184120735010762">คุณกดแป้นพิมพ์ลัดสำหรับแว่นขยายหน้าจอบางส่วน จะเปิดแว่นขยายไหม</translation>
 <translation id="439598569299422042">หยุดชั่วคราว <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">บันทึก Screencast ไม่ได้</translation>
@@ -960,6 +962,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> เป็นเซสชันที่มีการจัดการซึ่งจัดการโดย <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">เชื่อมต่อ <ph name="DEVICE_NAME" /> แล้ว</translation>
 <translation id="6351032674660237738">คำแนะนำเกี่ยวกับแอป</translation>
+<translation id="6352082849089527770">เครือข่ายที่ไม่รู้จัก</translation>
 <translation id="6359587239691116345">รับฟีเจอร์และการปรับปรุงด้านความปลอดภัยล่าสุด หากปฏิเสธการอัปเดตนี้ อุปกรณ์อาจทำงานไม่ถูกต้องอีกต่อไป และคุณอาจพบปัญหาด้านความปลอดภัยและประสิทธิภาพ</translation>
 <translation id="6376931439017688372">บลูทูธเปิดอยู่</translation>
 <translation id="6381109794406942707">ป้อน PIN เพื่อปลดล็อกอุปกรณ์</translation>
@@ -1136,6 +1139,7 @@
 <translation id="7360036564632145207">การเปลี่ยนการตั้งค่าการป้องกันการเข้าถึงข้อมูลของอุปกรณ์ต่อพ่วงช่วยเพิ่มประสิทธิภาพได้</translation>
 <translation id="736045644501761622">ตั้งค่าวอลเปเปอร์และสไตล์</translation>
 <translation id="7371404428569700291">หน้าต่างการบันทึก</translation>
+<translation id="737315737514430195">การตั้งค่านี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟนได้</translation>
 <translation id="7377169924702866686">Caps Lock เปิดอยู่</translation>
 <translation id="7377481913241237033">เชื่อมต่อด้วยรหัส</translation>
 <translation id="7378203170292176219">ลากเพื่อเลือกพื้นที่ที่จะบันทึก</translation>
@@ -1204,6 +1208,7 @@
 <translation id="7671610481353807627">จัดเรียงแอปตามสีแล้ว</translation>
 <translation id="7672095158465655885">เชื่อมต่อกับ <ph name="NAME" /> แล้ว <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">ตั้ง <ph name="CAMERA_NAME" /> เป็นกล้องที่ใช้ป้อนข้อมูล</translation>
+<translation id="7689817529363080918">การตั้งค่านี้ช่วยให้ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟนได้</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">เพิ่มเครือข่ายมือถือใหม่</translation>
 <translation id="7720400844887872976">เปิดจนถึง <ph name="TIME" /></translation>

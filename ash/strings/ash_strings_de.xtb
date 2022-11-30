@@ -727,6 +727,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4987738733603015246">Desktop 16</translation>
 <translation id="5003993274120026347">Nächster Satz</translation>
 <translation id="5016558321564993266">Filzstift aktivieren oder deaktivieren. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Gerätemikrofonzugriff ist aktiviert</translation>
 <translation id="5030687792513154421">Die Zeit ist abgelaufen</translation>
 <translation id="5033299697334913360">Auf eine beliebige Stelle klicken, um den ganzen Bildschirm aufzuzeichnen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ist mit einem neuen Smartphone verbunden</translation>
@@ -961,6 +962,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6359587239691116345">Hol dir die neuesten Funktionen und Sicherheitsoptimierungen. Wenn du dieses Update ablehnst, funktioniert dein Gerät möglicherweise nicht mehr richtig und es können Sicherheits- und Leistungsprobleme auftreten.</translation>
 <translation id="6376931439017688372">Bluetooth ist aktiviert</translation>
 <translation id="6381109794406942707">Gib deine PIN ein, um das Gerät zu entsperren.</translation>
+<translation id="638716340450135524">Kamerazugriff aktivieren</translation>
 <translation id="639644700271529076">Feststelltaste Aus</translation>
 <translation id="6406704438230478924">AltGr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -968,6 +970,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="642644398083277086">Alle Benachrichtigungen löschen</translation>
 <translation id="643147933154517414">Fertig</translation>
 <translation id="6431865393913628856">Bildschirm aufzeichnen</translation>
+<translation id="6442259747294754014">Gerätemikrofonzugriff ist deaktiviert</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> Termin</translation>
 <translation id="6449483711453944360">Linux-Apps und Inkognitofenster werden derzeit nicht unterstützt</translation>
@@ -1363,6 +1366,7 @@ Neuinstallation</translation>
 <translation id="8598235756057743477">Apps nach Name oder Farbe sortieren</translation>
 <translation id="8614517853887502247">Benachrichtigungen von <ph name="APP_1_TITLE" /> und <ph name="APP_2_TITLE" /> wurden ausgeblendet, da der Spionageschutz aktiviert ist</translation>
 <translation id="8627191004499078455">Verbunden mit <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Kamerazugriff deaktivieren</translation>
 <translation id="8631727435199967028">Einstellungen für Bedienungshilfen</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von deinem Administrator verwaltet</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> verbleibend</translation>

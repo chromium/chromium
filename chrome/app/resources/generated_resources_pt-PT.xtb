@@ -592,6 +592,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1546280085599573572">Esta extensão alterou a página apresentada quando clica no botão Página inicial.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> pretende instalar um tipo de extensão <ph name="EXTENSION_TYPE" /> que pode:</translation>
 <translation id="1547808936554660006">Compreendo que os perfis de eSIM instalados não serão removidos pela função Powerwash</translation>
+<translation id="1547936895218027488">Clique no ícone do painel lateral para o abrir</translation>
 <translation id="1549275686094429035">ARC ativado</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> pretende aceder a <ph name="VOLUME_NAME" />. Pode modificar ou eliminar os seus ficheiros.</translation>
 <translation id="1552301827267621511">A extensão "<ph name="EXTENSION_NAME" />" alterou a pesquisa para utilizar <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
@@ -834,7 +835,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="175772926354468439">Ativar tema</translation>
 <translation id="17584710573359123">Ver na Web Store do Chrome</translation>
 <translation id="1761845175367251960">Contas de <ph name="NAME" /></translation>
-<translation id="176193854664720708">O sensor de impressões digitais está no botão ligar/desligar. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="176272781006230109">sugestões de compras</translation>
 <translation id="1763046204212875858">Criar atalhos da aplicação</translation>
 <translation id="1763808908432309942">Abre-se num novo separador.</translation>
@@ -1077,7 +1077,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1974821797477522211">Ligar à rede</translation>
 <translation id="1975841812214822307">Remover...</translation>
 <translation id="1976150099241323601">Iniciar sessão no Dispositivo de segurança</translation>
-<translation id="1976928778492259496">O sensor de impressões digitais está do lado esquerdo do <ph name="DEVICE_TYPE" />. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="1977965994116744507">Aproxime o telemóvel para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Remover endereço</translation>
 <translation id="1979095679518582070">A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.</translation>
@@ -1418,6 +1417,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2287944065963043964">Ecrã de início de sessão</translation>
 <translation id="2289270750774289114">Perguntar quando um site pretende detetar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2290615375132886363">Botões de navegação do tablet</translation>
+<translation id="2291452790265535215">Experimente usar o painel lateral para marcadores, percursos e muito mais</translation>
 <translation id="229182044471402145">Não foi encontrado qualquer tipo de letra correspondente.</translation>
 <translation id="2292848386125228270">Inicie o <ph name="PRODUCT_NAME" /> como um utilizador normal. Se precisar de executar com acesso máximo para programação, volte a executar com a sinalização --no-sandbox.</translation>
 <translation id="2294081976975808113">Privacidade do ecrã</translation>
@@ -2848,7 +2848,6 @@ Pretende pará-lo?</translation>
 <translation id="3612673635130633812">Transferido por &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Abrir num novo separador</translation>
-<translation id="3615073365085224194">Toque no sensor de impressões digitais com o dedo.</translation>
 <translation id="3615579745882581859">O ficheiro <ph name="FILE_NAME" /> está a ser analisado.</translation>
 <translation id="3615596877979647433">A tecla está em falta. Prima uma tecla do teclado para personalizar</translation>
 <translation id="3616113530831147358">Áudio</translation>
@@ -3841,7 +3840,6 @@ Pretende pará-lo?</translation>
 <translation id="4533985347672295764">Tempo da CPU</translation>
 <translation id="4534661889221639075">Tente novamente.</translation>
 <translation id="4535127706710932914">Perfil Predefinido</translation>
-<translation id="4535767533210902251">O sensor de impressões digitais é a tecla superior direita no seu teclado. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="4536140153723794651">Sites que podem utilizar cookies sempre</translation>
 <translation id="4536769240747010177">Capacidades de ligação (à Internet) via telemóvel:</translation>
 <translation id="4538417792467843292">Eliminar palavra</translation>
@@ -3908,6 +3906,7 @@ Pretende pará-lo?</translation>
 <translation id="459204634473266369">Nenhum dispositivo guardado em <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">App de desenho com a caneta stylus</translation>
 <translation id="4593021220803146968">&amp;Ir para <ph name="URL" /></translation>
+<translation id="4594218792629569101">Selecione "Marcar como lida" para mover a página para o fim da lista</translation>
 <translation id="4594577641390224176">Está à procura da página Acerca do sistema? Visite</translation>
 <translation id="4595560905247879544">Apenas o gestor (<ph name="CUSTODIAN_NAME" />) pode modificar as aplicações e as extensões.</translation>
 <translation id="4596295440756783523">Tem certificados em arquivo que identificam estes servidores</translation>
@@ -4415,6 +4414,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5084328598860513926">O fluxo de Administração de contas foi interrompido. Tente novamente ou contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">A verificar existência de atualizações</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">A nota tem mais de 1000 carateres</translation>
 <translation id="5086874064903147617">Pretende restaurar a página inicial predefinida?</translation>
 <translation id="5087249366037322692">Adicionada por terceiros</translation>
 <translation id="5087580092889165836">Adicionar cartão</translation>
@@ -5488,7 +5488,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6087746524533454243">Está à procura da página Acerca do navegador? Visite</translation>
 <translation id="6087960857463881712">Cara de fantástico</translation>
 <translation id="608912389580139775">Para adicionar esta página à sua Lista de leitura, clique no ícone de marcador</translation>
-<translation id="6091116443517744502">verifique a sua ligação à Internet e tente novamente</translation>
 <translation id="6091761513005122595">A partilha foi montada com êxito.</translation>
 <translation id="6093803049406781019">Eliminar perfil</translation>
 <translation id="6093888419484831006">A cancelar a atualização...</translation>
@@ -6579,6 +6578,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7111822978084196600">Dê um nome a esta janela</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> item</translation>
 <translation id="7113502843173351041">Saber o seu endereço de email</translation>
+<translation id="7113974454301513811">Agora, adicione o separador atual à sua lista</translation>
 <translation id="7114054701490058191">As palavras-passe não coincidem</translation>
 <translation id="7114648273807173152">Para utilizar o Smart Lock para iniciar sessão na sua Conta Google, aceda a Definições &gt; Dispositivos ligados &gt; O seu telemóvel &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nenhum contacto alcançável</translation>
@@ -6794,7 +6794,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7353261921908507769">Os seus contactos podem partilhar consigo quando estiver nas proximidades. As transferências só irão começar quando aceitar.</translation>
 <translation id="735361434055555355">A instalar o Linux…</translation>
-<translation id="7354341762311560488">O sensor de impressões digitais é a tecla inferior esquerda no seu teclado. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="7356908624372060336">Registos de rede</translation>
 <translation id="735745346212279324">VPN desligado</translation>
 <translation id="7358324924540718595">Memórias ocultas para hoje</translation>
@@ -7965,7 +7964,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8398877366907290961">Prosseguir</translation>
 <translation id="8399282673057829204">Ver palavra-passe</translation>
 <translation id="8401432541486058167">Indique o PIN que está associado ao seu cartão inteligente.</translation>
-<translation id="8404893580027489425">O sensor de impressões digitais está do lado direito do <ph name="DEVICE_TYPE" />. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="8405046151008197676">Obtenha os destaques da atualização mais recente.</translation>
 <translation id="8407199357649073301">Nível de registo:</translation>
 <translation id="8408270600235826886">Pode controlar os dados que são partilhados com a Google. Pode alterar esta definição em qualquer altura nas Definições. Os dados são utilizados em conformidade com a <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> da Google.</translation>
@@ -8052,7 +8050,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8487699605742506766">Zona Wi-Fi</translation>
 <translation id="8489156414266187072">As sugestões pessoais apenas são mostradas na sua conta.</translation>
 <translation id="8490896350101740396">As seguintes aplicações de quiosque "<ph name="UPDATED_APPS" />" foram atualizadas. Reinicie o dispositivo para concluir o processo de atualização.</translation>
-<translation id="8492685019009920170">Toque no sensor de impressões digitais com o dedo. Os seus dados são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Os sites podem enviar pop-ups e utilizar redirecionamentos</translation>
 <translation id="8492960370534528742">Feedback sobre o Google Cast</translation>
 <translation id="8493236660459102203">Microfone:</translation>
@@ -8440,6 +8437,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8859174528519900719">Subestrutura: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Não foi possível carregar os Termos de Utilização</translation>
 <translation id="8859662783913000679">Conta parental</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} conta}other{{COUNT} contas}}</translation>
 <translation id="8861568709166518036">Use os botões no ecrã para navegar para a página inicial, voltar atrás e alternar entre apps. Ativa-se automaticamente se o ChromeVox ou os cliques automáticos estiverem ativados.</translation>
 <translation id="8862003515646449717">Mude para um navegador rápido</translation>
 <translation id="8863753581171631212">Abrir link numa nova janela da aplicação <ph name="APP" /></translation>
@@ -8587,7 +8585,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="899384117894244799">Remover utilizador restrito</translation>
 <translation id="899403249577094719">URL base do certificado Netscape</translation>
 <translation id="899657321862108550">O seu Chrome, em qualquer lugar</translation>
-<translation id="899676909165543803">O sensor de impressões digitais é a tecla inferior direita no seu teclado. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="8998078711690114234">Este tipo de ficheiro pode ser perigoso. Guarde este ficheiro apenas se confiar em <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Erro de sintaxe da secção: <ph name="ERROR_LINE" />.</translation>
 <translation id="9003185744423389627">Falha na ligação ao servidor de gestão de dispositivos com o estado "<ph name="STATUS_TEXT" />" a <ph name="FAILURE_TIME" /></translation>
@@ -8644,6 +8641,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9040661932550800571">Pretende atualizar a palavra-passe para <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">O acesso a ficheiros locais no seu computador foi desativado pelo seu administrador.</translation>
 <translation id="904224458472510106">Não é possível anular esta operação.</translation>
+<translation id="9042827002460091668">Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9044646465488564462">Não foi possível ligar à rede: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">A sua lista de leitura foi movida para o novo painel lateral. Experimente-a aqui.</translation>
@@ -8813,6 +8811,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9201842707396338580">Ocorreu um erro. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">Criação de &amp;perfis ativada</translation>
 <translation id="9203904171912129171">Selecionar um dispositivo</translation>
+<translation id="920410963177453528">Clique no menu pendente para escolher outro painel</translation>
 <translation id="9206889157914079472">Tirar notas com a caneta stylus a partir do ecrã de bloqueio</translation>
 <translation id="9208192193641542858">Os dados locais estão protegidos pela sua palavra-passe antiga. Se alterou a sua palavra-passe recentemente, experimente a palavra-passe antiga novamente.</translation>
 <translation id="9209563766569767417">A verificar a configuração do contentor do Linux…</translation>
@@ -8884,7 +8883,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 separador}other{# separadores}}</translation>
 <translation id="971510864672937292">Pretende limpar os dados e as autorizações do site <ph name="SITE_NAME" /> e de todos os sites associados ao mesmo?</translation>
 <translation id="971774202801778802">URL do marcador</translation>
-<translation id="972996901592717370">Toque no botão ligar/desligar com o dedo. Os seus dados são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Sair</translation>
 <translation id="973558314812359997">Tamanho do rato</translation>
 <translation id="975893173032473675">Idioma de destino da tradução</translation>

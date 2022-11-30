@@ -335,6 +335,13 @@ La disponibilità delle estensioni è comunque controllata da altri criteri.</tr
 <translation id="1317658068839330898">Non consentire l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web</translation>
 <translation id="1327466551276625742">Attivazione richiesta di configurazione della rete offline</translation>
 <translation id="1330145147221172764">Attiva tastiera sullo schermo</translation>
+<translation id="1330957570904024655">Se il criterio viene impostato su Enabled o se non viene configurato, i file scaricati vengono inviati per essere analizzati da Navigazione sicura, anche se provengono da una fonte attendibile.
+
+Se il criterio viene impostato su Disabled, i file scaricati non vengono inviati per essere analizzati da Navigazione sicura se provengono da una fonte attendibile.
+
+Queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione del menu Link di download. Non vengono applicate al salvataggio o al download della pagina attualmente visualizzata né alle opzioni di stampa relative al salvataggio come file PDF.
+
+Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="13356285923490863">Nome criterio</translation>
 <translation id="1338603603553894503">Consente di specificare se il selettore profilo è attivato, disattivato o forzato all'avvio del browser.
 

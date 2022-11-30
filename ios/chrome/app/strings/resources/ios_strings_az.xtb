@@ -133,6 +133,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1974060860693918893">Qabaqcıl</translation>
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Baxın</translation>
+<translation id="1990820278544963435">Tapın</translation>
 <translation id="199425419756152024">Parola Baxın</translation>
 <translation id="2010008505735295285">Yenidən yükləyin</translation>
 <translation id="2015722694326466240">Parollara baxmaq üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
@@ -875,6 +876,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7531345132340165516">Cari sayt</translation>
 <translation id="7537586195939242955">Üzr istəyirik, Parolunuz indi Passbook'a yüklənilə bilmir.</translation>
 <translation id="7553234618121028547">Deaktiv etmək üçün <ph name="BEGIN_LINK" />Ayarları<ph name="END_LINK" /> açın və Parol Seçmlərinə keçin.</translation>
+<translation id="7554645225856321710">Hamısını Bağlayın</translation>
 <translation id="7554791636758816595">Yeni Panel</translation>
 <translation id="7561196759112975576">Həmişə</translation>
 <translation id="7583004045319035904">Anonim tabları kiliddən çıxarmaq üçün <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> istifadə edin.</translation>
@@ -1088,6 +1090,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9188680907066685419">İdarə olunan hesabdan çıxın</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> gün əvvəl</translation>
 <translation id="9203116392574189331">Əldən-ələ</translation>
+<translation id="9219154867334666734">Tabları axtarın…</translation>
 <translation id="9223358826628549784">Xəta hesabatı göndərildi.</translation>
 <translation id="941747855997058526">Parol seçin...</translation>
 <translation id="952704832371081537">Ləğv edin</translation>

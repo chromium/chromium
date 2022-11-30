@@ -38,6 +38,7 @@
 <translation id="10614374240317010">ક્યારેય ન સચવાયેલું</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ડેસ્કટૉપ બુકમાર્ક</translation>
+<translation id="1067561478268651872">જ્યાં સુધી <ph name="SECURE_DNS_SALT" /> પૉલિસી સેટ કરવામાં ન આવે, ત્યાં સુધી <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> પૉલિસીનો ઉપયોગ કરવામાં આવતો નથી.</translation>
 <translation id="1068672505746868501">પેજનો ક્યારેય પણ <ph name="SOURCE_LANGUAGE" />માં અનુવાદ કરશો નહીં</translation>
 <translation id="1070853536588271387">હાઇબ્રિડ અને વૈકલ્પિક વાહનો</translation>
 <translation id="1070901266639972381">રાત</translation>
@@ -2099,6 +2100,7 @@
 <translation id="6328786501058569169">આ સાઇટ ભ્રામક છે</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> કરતાં ઓછી જગ્યા ખાલી કરે છે. તમારી આગલી મુલાકાત સમયે કેટલીક સાઇટ વધુ ધીમે લોડ થઈ શકે છે.</translation>
 <translation id="6337534724793800597">નામ દ્વારા નીતિઓને ફિલ્ટર કરો</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" />નું મૂલ્ય અમાન્ય છે અને તેનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
 <translation id="6340739886198108203">જ્યારે ગોપનીય કન્ટેન્ટ દેખાતું હોય, ત્યારે ઍડમિનિસ્ટ્રેટરની પૉલિસી સ્ક્રીનશૉટ અથવા રેકોર્ડિંગ લેવાનો સુઝાવ આપતી નથી:</translation>
 <translation id="6341434961864773665">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર અપલોડ કરવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર અપલોડ કરવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર અપલોડ કરવાનો સુઝાવ આપતી નથી}}</translation>
 <translation id="6348220984832452017">સક્રિય વિવિધતાઓ</translation>
@@ -2994,6 +2996,7 @@
 <translation id="8654126188050905496">55 x 91 મિમી</translation>
 <translation id="8663226718884576429">ઑર્ડરનો સારાંશ, <ph name="TOTAL_LABEL" />, વધુ વિગતો</translation>
 <translation id="8666678546361132282">અંગ્રેજી</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />નું મૂલ્ય કદની આવશ્યકતાઓ પૂરી કરતું નથી.</translation>
 <translation id="867224526087042813">સહી</translation>
 <translation id="8672264262457010862">વેપાર અને ઔદ્યોગિક</translation>
 <translation id="8676424191133491403">કોઈ વિલંબ વિના</translation>
@@ -3093,6 +3096,7 @@
 <translation id="8913778647360618320">ચુકવણી પદ્ધતિ મેનેજ કરો બટન, Chrome સેટિંગમાં તમારી ચુકવણીઓ અને ક્રેડિટ કાર્ડની માહિતી મેનેજ કરવા માટે Enter દબાવો</translation>
 <translation id="8922013791253848639">આ સાઇટ પર જાહેરાતો માટે હંમેશાં પરવાનગી આપે છે</translation>
 <translation id="892588693504540538">ઉપર જમણી બાજુએ કાણું પાડો</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" />નું મૂલ્ય સુસંગત નથી અને જ્યાં સુધી <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> પૉલિસી સેટ કરવામાં ન આવે, ત્યાં સુધી તેનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
 <translation id="8930330541574156305">રિઅલ એસ્ટેટ</translation>
 <translation id="8931333241327730545">શું તમે આ કાર્ડને તમારા Google એકાઉન્ટમાં સાચવવા માગો છો?</translation>
 <translation id="8932102934695377596">તમારી ઘડિયાળ પાછળ છે</translation>

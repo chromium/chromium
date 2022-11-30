@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Nooit opgeslagen</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Desktopbookmarks</translation>
+<translation id="1067561478268651872">Het beleid <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> wordt alleen gebruikt als het beleid <ph name="SECURE_DNS_SALT" /> is ingesteld.</translation>
 <translation id="1068672505746868501">Pagina's in het <ph name="SOURCE_LANGUAGE" /> nooit vertalen</translation>
 <translation id="1070853536588271387">Hybride voertuigen en voertuigen op alternatieve brandstof</translation>
 <translation id="1070901266639972381">Nacht</translation>
@@ -2093,6 +2094,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6328786501058569169">Deze site is misleidend</translation>
 <translation id="6337133576188860026">Hiermee wordt minder dan <ph name="SIZE" /> vrijgemaakt. Sommige sites kunnen langzamer worden geladen wanneer je ze weer bezoekt.</translation>
 <translation id="6337534724793800597">Beleid filteren op naam</translation>
+<translation id="633770708279464947">De waarde <ph name="SECURE_DNS_SALT" /> is ongeldig en wordt niet gebruikt.</translation>
 <translation id="6340739886198108203">Op basis van het beheerdersbeleid wordt afgeraden screenshots of opnamen te maken als er vertrouwelijke content zichtbaar is:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te uploaden naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te uploaden naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Actieve variaties</translation>
@@ -2988,6 +2990,7 @@ Aanvullende informatie:
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Besteloverzicht, <ph name="TOTAL_LABEL" />, meer informatie</translation>
 <translation id="8666678546361132282">Engels</translation>
+<translation id="8671519637524426245">De waarde <ph name="SECURE_DNS_SALT" /> voldoet niet aan de afmetingsvereisten.</translation>
 <translation id="867224526087042813">Handtekening</translation>
 <translation id="8672264262457010862">Zakelijk en industrie</translation>
 <translation id="8676424191133491403">Geen vertraging</translation>
@@ -3087,6 +3090,7 @@ Aanvullende informatie:
 <translation id="8913778647360618320">Knop 'Betaalmethoden beheren'. Druk op Enter om je betalingen en creditcardgegevens te beheren in de Chrome-instellingen.</translation>
 <translation id="8922013791253848639">Altijd advertenties op deze site toestaan</translation>
 <translation id="892588693504540538">Perforatie rechtsboven</translation>
+<translation id="8930098617363288380">De waarde <ph name="SECURE_DNS_SALT" /> is niet relevant en wordt niet gebruikt, tenzij het beleid <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> is ingesteld.</translation>
 <translation id="8930330541574156305">Onroerend goed</translation>
 <translation id="8931333241327730545">Wil je deze pas opslaan in je Google-account?</translation>
 <translation id="8932102934695377596">Je klok loopt achter</translation>

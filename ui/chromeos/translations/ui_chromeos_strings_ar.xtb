@@ -45,6 +45,7 @@
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1395262318152388157">شريط تمرير البحث</translation>
 <translation id="1399511500114202393">لا توجد شهادة مستخدم.</translation>
+<translation id="1403008701842173542">كل مكان</translation>
 <translation id="1404323374378969387">النرويجية</translation>
 <translation id="1433628812591023318">‏لإفلات ملفات في Parallels Desktop، يجب نقل الملف إلى مجلد ملفات Windows.</translation>
 <translation id="1435838927755162558">‏مشاركة المجلد مع نظام Parallels Desktop</translation>
@@ -447,6 +448,7 @@
 <translation id="4850886885716139402">عرض</translation>
 <translation id="485316830061041779">الألمانية</translation>
 <translation id="4867079195717347957">انقر لترتيب محتوى العمود ترتيبًا تنازليًا.</translation>
+<translation id="4867297348137739678">الأسبوع الماضي</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بايت</translation>
 <translation id="4874569719830985133">الحذف نهائيًا</translation>
 <translation id="4880214202172289027">شريط تمرير مستوى الصوت</translation>
@@ -710,6 +712,7 @@
 <translation id="6973630695168034713">المجلدات</translation>
 <translation id="6976795442547527108">أسد</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6989942356279143254">السويدية</translation>
 <translation id="6990081529015358884">لقد نفدت المساحة</translation>
 <translation id="6993826899923627728">هذه العناصر موضوعة في "المهملات"</translation>

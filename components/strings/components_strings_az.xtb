@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Heç vaxt saxlanılmır</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Masaüstü əlfəcinləri</translation>
+<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> siyasəti ayarlanana qədər <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> siyasəti istifadə edilmir.</translation>
 <translation id="1068672505746868501">Heç vaxt <ph name="SOURCE_LANGUAGE" /> dilində olan səhifələri tərcümə etməyin</translation>
 <translation id="1070853536588271387">Hibrid və alternativ avtomobillər</translation>
 <translation id="1070901266639972381">Gecə</translation>
@@ -2095,6 +2096,7 @@
 <translation id="6328786501058569169">Bu sayt aldadıcıdır</translation>
 <translation id="6337133576188860026">Maksimum <ph name="SIZE" /> boşaldılır. Növbəti dəfə daxil olarkən bəzi saytlar daha yavaş yüklənə bilər.</translation>
 <translation id="6337534724793800597">Siyasətləri adlara əsasən filtrləyin</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> dəyəri yanlışdır və istifadə edilməyəcək.</translation>
 <translation id="6340739886198108203">Administrator siyasəti məxfi kontent göründükdə skrinşot çəkməyi və ya nəsə qeydə almağı tövsiyə etmir:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrator siyasəti bu faylı <ph name="DESTINATION_NAME" /> bölməsinə yükləməyi tövsiyə etmir}other{Administrator siyasəti bu faylları <ph name="DESTINATION_NAME" /> bölməsinə yükləməyi tövsiyə etmir}}</translation>
 <translation id="6348220984832452017">Aktiv Variasiyalar</translation>
@@ -2990,6 +2992,7 @@
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Sifarişin Yekunu, <ph name="TOTAL_LABEL" />, Daha Çox Məlumat</translation>
 <translation id="8666678546361132282">Ingilis</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> dəyəri ölçü tələblərinə cavab vermir.</translation>
 <translation id="867224526087042813">İmza</translation>
 <translation id="8672264262457010862">Biznes və sənaye</translation>
 <translation id="8676424191133491403">Gecikmə yoxdur</translation>
@@ -3089,6 +3092,7 @@
 <translation id="8913778647360618320">"Ödəniş metodlarını idarə edin" düyməsi, Chrome ayarlarında ödənişlərinizi və kredit kartı məlumatlarınızı idarə etmək üçün Enter düyməsinə basın</translation>
 <translation id="8922013791253848639">Həmişə bu saytdakı reklamlara icazə verin</translation>
 <translation id="892588693504540538">Yuxarı sağdan deşik açın</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> dəyəri uyğun deyil və <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> siyasəti ayarlanana qədər istifadə edilməyəcək.</translation>
 <translation id="8930330541574156305">Daşınmaz əmlak</translation>
 <translation id="8931333241327730545">Bu kartı Google Hesabınızda yadda saxlamaq istəyirsiniz?</translation>
 <translation id="8932102934695377596">Saatınız geridədir</translation>

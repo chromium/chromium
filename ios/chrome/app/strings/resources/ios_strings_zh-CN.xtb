@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1981118202195772574">移动版</translation>
 <translation id="1989112275319619282">浏览</translation>
+<translation id="1990820278544963435">查找</translation>
 <translation id="199425419756152024">查看密码</translation>
 <translation id="2010008505735295285">重新加载</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
@@ -1089,6 +1090,7 @@
 <translation id="9188680907066685419">退出受管理的帐号</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">搜索标签页…</translation>
 <translation id="9223358826628549784">已发送崩溃报告。</translation>
 <translation id="941747855997058526">选择密码…</translation>
 <translation id="952704832371081537">取消</translation>

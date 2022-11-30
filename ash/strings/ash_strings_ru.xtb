@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Откл. 1 прил.}one{Откл. # прил.}few{Откл. # прил.}many{Откл. # прил.}other{Откл. # прил.}}</translation>
 <translation id="4066027111132117168">Включен, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">сигнал средней мощности</translation>
+<translation id="4086921558679520050">Переключите физический выключатель микрофона на устройстве</translation>
 <translation id="4112140312785995938">Перемотать назад</translation>
 <translation id="4114315158543974537">Включите Phone Hub</translation>
 <translation id="4115378294792113321">Пурпурный</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Подключение…</translation>
 <translation id="4379531060876907730">Инструменты для работы со стилусом</translation>
+<translation id="4381031910344220229">Доступ к микрофону получит приложение "<ph name="APP_NAME" />", а также все приложения и сайты с разрешением "Микрофон".</translation>
 <translation id="4389184120735010762">Вы нажали сочетание клавиш для включения закрепленной лупы. Выполнить это действие?</translation>
 <translation id="439598569299422042">Приостановлено, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Не удалось сохранить скринкаст</translation>
@@ -728,6 +730,7 @@
 <translation id="4987738733603015246">Рабочий стол 16</translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
 <translation id="5016558321564993266">Статус фломастера: <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Доступ к микрофону разрешен.</translation>
 <translation id="5030687792513154421">Время вышло</translation>
 <translation id="5033299697334913360">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
@@ -959,9 +962,11 @@
 <translation id="6338485349199627913">Сеансом "<ph name="DISPLAY_NAME" />" управляет <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Подключено устройство "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6351032674660237738">ПРЕДЛАГАЕМЫЕ ПРИЛОЖЕНИЯ</translation>
+<translation id="6352082849089527770">Неизвестные сети</translation>
 <translation id="6359587239691116345">Получите доступ к новым функциям и улучшениям безопасности. Если вы откажетесь от этого обновления, могут возникнуть сбои в работе устройства, а также проблемы с безопасностью и производительностью.</translation>
 <translation id="6376931439017688372">Bluetooth включен</translation>
 <translation id="6381109794406942707">Чтобы разблокировать устройство, введите PIN-код.</translation>
+<translation id="638716340450135524">Разрешить доступ к камере</translation>
 <translation id="639644700271529076">CAPS LOCK отключен</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Ассистент</translation>
@@ -969,6 +974,7 @@
 <translation id="642644398083277086">Удалить все уведомления</translation>
 <translation id="643147933154517414">Уведомлений больше нет</translation>
 <translation id="6431865393913628856">Запись видео с экрана</translation>
+<translation id="6442259747294754014">Доступ к микрофону запрещен.</translation>
 <translation id="6445835306623867477">Трансляция <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, мероприятий: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Приложения для Linux и окна в режиме инкогнито пока не поддерживаются</translation>
@@ -1133,6 +1139,7 @@
 <translation id="7360036564632145207">Чтобы оптимизировать производительность, измените настройки доступа к данным для периферийных устройств.</translation>
 <translation id="736045644501761622">Выбрать обои и стиль</translation>
 <translation id="7371404428569700291">Запись контента в окне</translation>
+<translation id="737315737514430195">Доступ к микрофону получат все приложения и сайты с разрешением "Микрофон".</translation>
 <translation id="7377169924702866686">Включен режим Caps Lock.</translation>
 <translation id="7377481913241237033">Подключиться с помощью кода</translation>
 <translation id="7378203170292176219">Выделите область для записи с помощью перетаскивания</translation>
@@ -1201,6 +1208,7 @@
 <translation id="7671610481353807627">Приложения упорядочены по цвету.</translation>
 <translation id="7672095158465655885">Подключено к сети <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Используется камера "<ph name="CAMERA_NAME" />".</translation>
+<translation id="7689817529363080918">Доступ к микрофону получат приложения "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также все приложения и сайты с разрешением "Микрофон".</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавить мобильную сеть</translation>
 <translation id="7720400844887872976">Вкл. до <ph name="TIME" /></translation>
@@ -1364,6 +1372,7 @@
 <translation id="8598235756057743477">Упорядочить приложения по названию или цвету</translation>
 <translation id="8614517853887502247">Уведомления "<ph name="APP_1_TITLE" />" и "<ph name="APP_2_TITLE" />" скрыты, потому что включен режим безопасного просмотра.</translation>
 <translation id="8627191004499078455">Подключено устройство "<ph name="DEVICE_NAME" />"</translation>
+<translation id="8630991711272431708">Запретить доступ к камере</translation>
 <translation id="8631727435199967028">Настройки специальных возможностей</translation>
 <translation id="8637598503828012618">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="8639760480004882931">Батарея заряжена на <ph name="PERCENTAGE" /></translation>

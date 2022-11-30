@@ -836,7 +836,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="175772926354468439">Aktivovat motiv</translation>
 <translation id="17584710573359123">Zobrazit v Internetovém obchodu Chrome</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> – účty</translation>
-<translation id="176193854664720708">Snímač otisků prstů je součástí vypínače. Zlehka se ho dotkněte jakýmkoli prstem.</translation>
 <translation id="176272781006230109">návrhy nákupů</translation>
 <translation id="1763046204212875858">Vytvořit zástupce aplikací</translation>
 <translation id="1763808908432309942">Otevře se na nové kartě</translation>
@@ -1079,7 +1078,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1974821797477522211">Připojení k síti</translation>
 <translation id="1975841812214822307">Odebrat...</translation>
 <translation id="1976150099241323601">Přihlášení do zabezpečeného zařízení</translation>
-<translation id="1976928778492259496">Snímač otisků prstů je na levé straně zařízení <ph name="DEVICE_TYPE" />. Zlehka se ho dotkněte kterýmkoliv prstem.</translation>
 <translation id="1977965994116744507">Chcete-li odemknout své zařízení <ph name="DEVICE_TYPE" />, umístěte telefon blíže k němu.</translation>
 <translation id="1978057560491495741">Odstranění adresy</translation>
 <translation id="1979095679518582070">Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které potřebuje pro základní služby, jako jsou aktualizace systému a zabezpečení.</translation>
@@ -2847,7 +2845,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3612673635130633812">Staženo pomocí rozšíření &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Zobrazit <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Otevřít v nové kartě</translation>
-<translation id="3615073365085224194">Dotkněte se prstem snímače otisků prstů</translation>
 <translation id="3615579745882581859">Probíhá kontrola souboru <ph name="FILE_NAME" />.</translation>
 <translation id="3615596877979647433">Klávesa chybí. Stisknutím klávesy přizpůsobíte</translation>
 <translation id="3616113530831147358">Zvuk</translation>
@@ -3836,7 +3833,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4533985347672295764">Doba využití procesoru</translation>
 <translation id="4534661889221639075">Zkuste to znovu.</translation>
 <translation id="4535127706710932914">Výchozí profil</translation>
-<translation id="4535767533210902251">Snímač otisků prstů je klávesa v pravém horním rohu klávesnice. Zlehka se ho dotkněte jakýmkoli prstem.</translation>
 <translation id="4536140153723794651">Weby, které mohou vždy používat soubory cookie</translation>
 <translation id="4536769240747010177">Možnosti sdílení datového připojení:</translation>
 <translation id="4538417792467843292">Smazat slovo</translation>
@@ -5478,7 +5474,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6087746524533454243">Hledáte stránku s informacemi o prohlížeči? Přejděte na stránku</translation>
 <translation id="6087960857463881712">Paráda</translation>
 <translation id="608912389580139775">Pokud tuto stránku chcete přidat do seznamu ke čtení, klikněte na ikonu záložky</translation>
-<translation id="6091116443517744502">Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="6091761513005122595">Sdílená složka byla úspěšně připojena.</translation>
 <translation id="6093803049406781019">Smazat profil</translation>
 <translation id="6093888419484831006">Rušení aktualizace...</translation>
@@ -6788,7 +6783,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7353261921908507769">Kontakty s vámi mohou sdílet obsah, když jsou v okolí. Přenosy nezačnou, dokud je nepotvrdíte.</translation>
 <translation id="735361434055555355">Probíhá instalace systému Linux...</translation>
-<translation id="7354341762311560488">Snímač otisků prstů je klávesa v levém dolním rohu klávesnice. Zlehka se ho dotkněte jakýmkoli prstem.</translation>
 <translation id="7356908624372060336">Síťové protokoly</translation>
 <translation id="735745346212279324">Síť VPN je odpojena</translation>
 <translation id="7358324924540718595">Vzpomínky jsou dnes skryté</translation>
@@ -7956,7 +7950,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8398877366907290961">Přesto pokračovat</translation>
 <translation id="8399282673057829204">Zobrazit heslo</translation>
 <translation id="8401432541486058167">Zadejte kód PIN přidružený k vaší chytré kartě.</translation>
-<translation id="8404893580027489425">Snímač otisků prstů je na pravé straně zařízení <ph name="DEVICE_TYPE" />. Zlehka se ho dotkněte kterýmkoliv prstem.</translation>
 <translation id="8405046151008197676">Zobrazit hlavní změny v poslední aktualizaci</translation>
 <translation id="8407199357649073301">Úroveň protokolu:</translation>
 <translation id="8408270600235826886">Můžete určit, jaké údaje jsou s Googlem sdíleny. Tuto možnost můžete kdykoli změnit v Nastavení. Údaje budou využívány v souladu se <ph name="BEGIN_LINK" />zásadami ochrany soukromí<ph name="END_LINK" /> společnosti Google.</translation>
@@ -8043,7 +8036,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Osobní návrhy jsou zobrazovány jen ve vašem účtu</translation>
 <translation id="8490896350101740396">Byly aktualizovány následující terminálové aplikace: <ph name="UPDATED_APPS" />. Chcete-li proces aktualizace dokončit, restartujte zařízení.</translation>
-<translation id="8492685019009920170">Dotkněte se prstem snímače otisků prstů. Vaše data jsou bezpečně uložena a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Weby mohou zobrazovat vyskakovací okna a používat přesměrování</translation>
 <translation id="8492960370534528742">Zpětná vazba k rozšíření Google Cast</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
@@ -8433,6 +8425,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8859174528519900719">Podrámec: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Smluvní podmínky nelze načíst</translation>
 <translation id="8859662783913000679">Účet rodiče</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} účet}few{{COUNT} účty}many{{COUNT} účtu}other{{COUNT} účtů}}</translation>
 <translation id="8861568709166518036">Pomocí tlačítek na obrazovce můžete přejít na plochu, zpět a přepínat mezi aplikacemi. Zapne se automaticky, pokud je zapnuta čtečka ChromeVox nebo automatická kliknutí.</translation>
 <translation id="8862003515646449717">Přejděte na rychlý prohlížeč</translation>
 <translation id="8863753581171631212">Otevřít odkaz v novém okně aplikace <ph name="APP" /></translation>
@@ -8580,7 +8573,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="899384117894244799">Odstranit uživatele s omezenými oprávněními</translation>
 <translation id="899403249577094719">Základní adresa URL certifikátu Netscape</translation>
 <translation id="899657321862108550">Váš Chrome, všude</translation>
-<translation id="899676909165543803">Snímač otisků prstů je klávesa v pravém dolním rohu klávesnice. Zlehka se ho dotkněte jakýmkoli prstem.</translation>
 <translation id="8998078711690114234">Tento typ souboru může být nebezpečný. Soubor uložte, pouze pokud webu <ph name="ORIGIN" /> důvěřujete</translation>
 <translation id="8999560016882908256">Chyba syntaxe sekce: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Připojení k serveru Správce zařízení se nezdařilo, stav: <ph name="STATUS_TEXT" /> v <ph name="FAILURE_TIME" /></translation>
@@ -8637,6 +8629,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="9040661932550800571">Aktualizovat heslo pro web <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Správce přístup k místním souborům v tomto počítači zakázal</translation>
 <translation id="904224458472510106">Tuto akci nelze vrátit zpět</translation>
+<translation id="9042827002460091668">Zkontrolujte připojení k internetu a zkuste to znovu</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
 <translation id="9044646465488564462">Připojení k síti se nezdařilo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Seznam četby byl přesunut na nový postranní panel. Vyzkoušejte si to zde.</translation>
@@ -8877,7 +8870,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="971510864672937292">Vymazat data a oprávnění webu <ph name="SITE_NAME" /> a všech jeho podřízených webů?</translation>
 <translation id="971774202801778802">Adresa URL záložky</translation>
-<translation id="972996901592717370">Položte prst na vypínač. Vaše data jsou bezpečně uložena a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Ukončit</translation>
 <translation id="973558314812359997">Velikost myši</translation>
 <translation id="975893173032473675">Cílový jazyk překladu</translation>

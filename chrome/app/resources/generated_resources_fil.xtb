@@ -846,7 +846,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="175772926354468439">Paganahin ang tema</translation>
 <translation id="17584710573359123">Tingnan sa Chrome Web Store</translation>
 <translation id="1761845175367251960">Mga Account ni <ph name="NAME" /></translation>
-<translation id="176193854664720708">Nasa power button ang sensor para sa fingerprint. Pundutin ito nang magaan gamit ang alinmang daliri.</translation>
 <translation id="176272781006230109">mga suhestyon sa pamimili</translation>
 <translation id="1763046204212875858">Gumawa ng mga shortcut ng application</translation>
 <translation id="1763808908432309942">Magbubukas sa bagong tab</translation>
@@ -1090,7 +1089,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1974821797477522211">Kumonekta sa network</translation>
 <translation id="1975841812214822307">Alisin...</translation>
 <translation id="1976150099241323601">Mag-sign in sa Pangseguridad na Device</translation>
-<translation id="1976928778492259496">Nasa kaliwang gilid ng iyong <ph name="DEVICE_TYPE" /> ang sensor para sa fingerprint. Pindutin ito nang magaan gamit ang alinmang daliri.</translation>
 <translation id="1977965994116744507">Ilapit pa ang iyong telepono upang ma-unlock ang <ph name="DEVICE_TYPE" /> mo.</translation>
 <translation id="1978057560491495741">Alisin ang address</translation>
 <translation id="1979095679518582070">Ang pag-off sa feature na ito ay hindi nakakaapekto sa kakayahan ng device na ito na ipadala ang impormasyong kinakailangan para sa mahahalagang serbisyo tulad ng mga pag-update ng system at seguridad.</translation>
@@ -2863,7 +2861,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3612673635130633812">Na-download ng &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Ipakita ang <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Buksan sa bagong tab</translation>
-<translation id="3615073365085224194">Pindutin ang sensor para sa fingerprint gamit ang iyong daliri</translation>
 <translation id="3615579745882581859">Sina-scan ang <ph name="FILE_NAME" />.</translation>
 <translation id="3615596877979647433">Nawawala ang key. Pumindot ng key sa keyboard para mag-customize</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3857,7 +3854,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4533985347672295764">Oras ng CPU</translation>
 <translation id="4534661889221639075">Subukang muli.</translation>
 <translation id="4535127706710932914">Default na Profile</translation>
-<translation id="4535767533210902251">Ang sensor para sa fingerprint ay ang key sa kanang bahagi sa itaas ng iyong keyboard. Pindutin ito nang magaan gamit ang alinmang daliri.</translation>
 <translation id="4536140153723794651">Mga site na palaging puwedeng gumamit ng cookies</translation>
 <translation id="4536769240747010177">Mga Kakayahan sa Pag-tether:</translation>
 <translation id="4538417792467843292">Magtanggal ng salita</translation>
@@ -5503,7 +5499,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6087746524533454243">Hinahanap ang page na tungkol sa browser? Bisitahin ang</translation>
 <translation id="6087960857463881712">Astig na mukha</translation>
 <translation id="608912389580139775">Para idagdag ang page na ito sa iyong listahan ng babasahin, i-click ang icon ng Bookmark</translation>
-<translation id="6091116443517744502">pakitingnan ang iyong koneksyon sa internet at subukan ulit</translation>
 <translation id="6091761513005122595">Matagumpay na na-mount ang share</translation>
 <translation id="6093803049406781019">Tanggalin ang profile</translation>
 <translation id="6093888419484831006">Kinakansela ang pag-update...</translation>
@@ -6811,7 +6806,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7353261921908507769">Makakapagbahagi sa iyo ang mga contact mo kapag malapit sila. Hindi magsisimula ang mga paglilipat hangga't hindi mo tinatanggap ang mga ito.</translation>
 <translation id="735361434055555355">Ini-install ang Linux...</translation>
-<translation id="7354341762311560488">Ang sensor para sa fingerprint ay ang key sa kaliwang bahagi sa ibaba ng iyong keyboard. Pindutin ito nang magaan gamit ang alinmang daliri.</translation>
 <translation id="7356908624372060336">Mga Log ng Network</translation>
 <translation id="735745346212279324">Nakadiskonekta ang VPN</translation>
 <translation id="7358324924540718595">Nakatago ang mga alaala para sa ngayong araw</translation>
@@ -7982,7 +7976,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8398877366907290961">Magpatuloy</translation>
 <translation id="8399282673057829204">Tingnan ang password</translation>
 <translation id="8401432541486058167">Ibigay ang PIN na nauugnay sa iyong smart card.</translation>
-<translation id="8404893580027489425">Nasa kanang gilid ng iyong <ph name="DEVICE_TYPE" /> ang sensor para sa fingerprint. Pindutin ito nang magaan gamit ang alinmang daliri.</translation>
 <translation id="8405046151008197676">Kunin ang mga highlight mula sa pinakabagong update</translation>
 <translation id="8407199357649073301">Antas ng Log:</translation>
 <translation id="8408270600235826886">Makokontrol mo kung anong data ang ibinabahagi sa Google. Puwede mo itong baguhin anumang oras sa Mga Setting. Gagamitin ang data alinsunod sa <ph name="BEGIN_LINK" />Patakaran sa Privacy<ph name="END_LINK" /> ng Google.</translation>
@@ -8070,7 +8063,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Ipinapakita lang ang mga personal na suhestyon sa iyong account</translation>
 <translation id="8490896350101740396">Na-update ang mga sumusunod na kiosk app "<ph name="UPDATED_APPS" />." Mangyaring i-reboot ang device upang makumpleto ang proseso ng pag-update.</translation>
-<translation id="8492685019009920170">Pindutin ang sensor para sa fingerprint gamit ang iyong daliri. Secure na sino-store ang iyong data at sa <ph name="DEVICE_TYPE" /> mo lang ito nakalagay.</translation>
 <translation id="8492822722330266509">Puwedeng magpadala ng mga pop-up at gumamit ng mga pag-redirect ang mga site</translation>
 <translation id="8492960370534528742">Feedback sa Google Cast</translation>
 <translation id="8493236660459102203">Mikropono:</translation>
@@ -8459,6 +8451,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8859174528519900719">Subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Hindi ma-load ang Mga Tuntunin ng Serbisyo</translation>
 <translation id="8859662783913000679">Account ng magulang</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} account}one{{COUNT} account}other{{COUNT} na account}}</translation>
 <translation id="8861568709166518036">Gumamit ng mga button sa screen para mag-navigate sa home, pabalik, at magpalit ng app. Awtomatikong nag-o-on kung naka-on ang ChromeVox o awtomatikong nagki-click.</translation>
 <translation id="8862003515646449717">Lumipat sa isang mabilis na browser</translation>
 <translation id="8863753581171631212">Buksan ang link sa bagong <ph name="APP" /></translation>
@@ -8607,7 +8600,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="899384117894244799">Alisin ang pinaghihigpitang user</translation>
 <translation id="899403249577094719">URL ng Netscape Certificate Base</translation>
 <translation id="899657321862108550">Ang Iyong Chrome, Sa Lahat ng Lugar</translation>
-<translation id="899676909165543803">Ang sensor para sa fingerprint ay ang key sa kanang bahagi sa ibaba ng iyong keyboard. Pindutin ito nang magaan gamit ang alinmang daliri.</translation>
 <translation id="8998078711690114234">Posibleng mapanganib ang ganitong uri ng file. I-save lang ang file na ito kung pinagkakatiwalaan mo ang <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Error sa syntax sa seksyon: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Hindi nagtagumpay ang Pagkonekta sa Pamamahala sa Device na may status na '<ph name="STATUS_TEXT" />' nang <ph name="FAILURE_TIME" /></translation>
@@ -8664,6 +8656,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9040661932550800571">I-update ang password para sa <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Na-disable ng iyong administrator ang access sa mga lokal na file sa iyong machine</translation>
 <translation id="904224458472510106">Hindi maa-undo ang operation na ito</translation>
+<translation id="9042827002460091668">Tingnan ang iyong koneksyon sa internet at subukan ulit</translation>
 <translation id="9042893549633094279">Privacy at seguridad</translation>
 <translation id="9044646465488564462">Nabigong kumonekta sa network: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Inilipat ang iyong listahan ng babasahin sa bagong panel sa gilid. Subukan ito rito.</translation>
@@ -8904,7 +8897,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 Tab}one{# Tab}other{# na Tab}}</translation>
 <translation id="971510864672937292">I-clear ang data ng site at mga pahintulot para sa <ph name="SITE_NAME" /> at lahat ng site sa ilalim nito?</translation>
 <translation id="971774202801778802">URL ng Bookmark</translation>
-<translation id="972996901592717370">Pindutin ang power button gamit ang iyong daliri. Secure na sino-store ang iyong data at sa <ph name="DEVICE_TYPE" /> mo lang ito nakalagay.</translation>
 <translation id="973473557718930265">Isara</translation>
 <translation id="973558314812359997">Laki ng mouse</translation>
 <translation id="975893173032473675">Wika kung saan Isasalin</translation>

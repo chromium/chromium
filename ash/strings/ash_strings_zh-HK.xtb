@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{在 1 個應用程式上停止}other{在 # 個應用程式上停止}}</translation>
 <translation id="4066027111132117168">已開啟，<ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">訊號中等</translation>
+<translation id="4086921558679520050">開啟裝置上的實體麥克風開關</translation>
 <translation id="4112140312785995938">向後回轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
 <translation id="4115378294792113321">洋紅色</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，訊號強度為 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4379531060876907730">這是您的觸控筆工具</translation>
+<translation id="4381031910344220229">此操作會允許「<ph name="APP_NAME" />」和具備麥克風權限的所有應用程式和網站存取麥克風</translation>
 <translation id="4389184120735010762">您已按下固定放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="439598569299422042">已暫停，下載進度：<ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">無法儲存螢幕錄影</translation>
@@ -727,6 +729,7 @@
 <translation id="4987738733603015246">桌面 16</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5016558321564993266">切換標記。<ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">裝置的麥克風存取權已開啟</translation>
 <translation id="5030687792513154421">使用時間結束</translation>
 <translation id="5033299697334913360">點擊任何一處即可擷取全螢幕畫面</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> 已連接至新手機</translation>
@@ -958,9 +961,11 @@
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>
 <translation id="6344138931392227467">已連結 <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">應用程式建議</translation>
+<translation id="6352082849089527770">不明網絡</translation>
 <translation id="6359587239691116345">取得最新功能和改善安全性的資訊。如果拒絕此更新，裝置可能無法再正常運作，您亦可能會遇到安全性和效能問題。</translation>
 <translation id="6376931439017688372">藍牙已開啟</translation>
 <translation id="6381109794406942707">如要解鎖裝置，請輸入 PIN。</translation>
+<translation id="638716340450135524">開啟相機存取權</translation>
 <translation id="639644700271529076">大寫鍵已關閉</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google 助理</translation>
@@ -968,6 +973,7 @@
 <translation id="642644398083277086">清除所有通知</translation>
 <translation id="643147933154517414">沒有通知</translation>
 <translation id="6431865393913628856">螢幕錄影</translation>
+<translation id="6442259747294754014">裝置的麥克風存取權已關閉</translation>
 <translation id="6445835306623867477">在<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="6449483711453944360">目前不支援 Linux 應用程式和無痕式視窗</translation>
@@ -1131,6 +1137,7 @@
 <translation id="7360036564632145207">變更周邊裝置的資料存取保護可以優化效能</translation>
 <translation id="736045644501761622">設定桌布和樣式</translation>
 <translation id="7371404428569700291">記錄視窗</translation>
+<translation id="737315737514430195">此操作會允許具備麥克風權限的所有應用程式和網站存取麥克風</translation>
 <translation id="7377169924702866686">已啟用大寫鍵。</translation>
 <translation id="7377481913241237033">使用代碼進行連結</translation>
 <translation id="7378203170292176219">拖曳以選取要錄影的範圍</translation>
@@ -1199,6 +1206,7 @@
 <translation id="7671610481353807627">應用程式已按顏色排序</translation>
 <translation id="7672095158465655885">連咗線去 <ph name="NAME" />，<ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">攝錄機輸入裝置設定咗做「<ph name="CAMERA_NAME" />」。</translation>
+<translation id="7689817529363080918">此操作會允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」和具備麥克風權限的所有應用程式和網站存取麥克風</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">新增流動網絡</translation>
 <translation id="7720400844887872976">開啟，直到<ph name="TIME" /></translation>
@@ -1362,6 +1370,7 @@
 <translation id="8598235756057743477">按名稱或顏色將應用程式排序</translation>
 <translation id="8614517853887502247">檢視保護功能已開啟，因此系統已隱藏 <ph name="APP_1_TITLE" /> 和 <ph name="APP_2_TITLE" /> 的通知</translation>
 <translation id="8627191004499078455">已連接<ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">關閉相機存取權</translation>
 <translation id="8631727435199967028">無障礙功能設定</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="8639760480004882931">剩餘電量：<ph name="PERCENTAGE" /></translation>

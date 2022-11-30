@@ -833,7 +833,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="175772926354468439">Omogući temu</translation>
 <translation id="17584710573359123">Prikaži u Chrome veb-prodavnici</translation>
 <translation id="1761845175367251960">Nalozi korisnika <ph name="NAME" /></translation>
-<translation id="176193854664720708">Senzor za otisak prsta je u dugmetu za napajanje. Lagano ga dodirnite bilo kojim prstom.</translation>
 <translation id="176272781006230109">predloge za kupovinu</translation>
 <translation id="1763046204212875858">Napravite prečice za aplikacije</translation>
 <translation id="1763808908432309942">Otvara se na novoj kartici</translation>
@@ -1076,7 +1075,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1974821797477522211">Povežite se sa mrežom</translation>
 <translation id="1975841812214822307">Ukloni...</translation>
 <translation id="1976150099241323601">Prijava na bezbednosni uređaj</translation>
-<translation id="1976928778492259496">Senzor za otisak prsta se nalazi na levoj strani uređaja <ph name="DEVICE_TYPE" />. Lagano ga dodirnite bilo kojim prstom.</translation>
 <translation id="1977965994116744507">Približite telefon da biste otključali <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Uklonite adresu</translation>
 <translation id="1979095679518582070">Isključivanje ove funkcije ne utiče na mogućnost ovog uređaja da šalje informacije potrebne za osnovne usluge, na primer, ažuriranja sistema i bezbednost.</translation>
@@ -2846,7 +2844,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3612673635130633812">Dodatak &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; je preuzeo</translation>
 <translation id="3613134908380545408">Prikaži <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Otvori na novoj kartici</translation>
-<translation id="3615073365085224194">Dodirnite prstom senzor za otisak prsta</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> se skenira.</translation>
 <translation id="3615596877979647433">Taster nedostaje. Pritisnite taster na tastaturi da biste prilagodili</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3839,7 +3836,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4533985347672295764">CPU vreme</translation>
 <translation id="4534661889221639075">Probajte ponovo.</translation>
 <translation id="4535127706710932914">Podrazumevani profil</translation>
-<translation id="4535767533210902251">Senzor za otisak prsta je taster u gornjem desnom uglu tastature. Lagano ga dodirnite prstom.</translation>
 <translation id="4536140153723794651">Sajtovi koji uvek mogu da koriste kolačiće</translation>
 <translation id="4536769240747010177">Mogućnosti privezivanja:</translation>
 <translation id="4538417792467843292">Brisanje reči</translation>
@@ -5485,7 +5481,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6087746524533454243">Tražite stranicu sa osnovnim podacima o pregledaču? Posetite</translation>
 <translation id="6087960857463881712">Zadovoljno lice</translation>
 <translation id="608912389580139775">Da biste dodali ovu stranicu na listu za čitanje, kliknite na ikonu obeleživača</translation>
-<translation id="6091116443517744502">proverite internet vezu i probajte ponovo</translation>
 <translation id="6091761513005122595">Deljena datoteka je učitana.</translation>
 <translation id="6093803049406781019">Brisanje profila</translation>
 <translation id="6093888419484831006">Otkazivanje ažuriranja...</translation>
@@ -6795,7 +6790,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7353261921908507769">Kontakti mogu da dele sa vama kada su u blizini. Prenosi neće započeti dok ne prihvatite.</translation>
 <translation id="735361434055555355">Instalira se Linux...</translation>
-<translation id="7354341762311560488">Senzor za otisak prsta je taster u donjem levom uglu tastature. Lagano ga dodirnite prstom.</translation>
 <translation id="7356908624372060336">Evidencija mreže</translation>
 <translation id="735745346212279324">Veza sa VPN-om je prekinuta</translation>
 <translation id="7358324924540718595">Uspomene su sakrivene za danas</translation>
@@ -7966,7 +7960,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8398877366907290961">Ipak nastavi</translation>
 <translation id="8399282673057829204">Prikaži lozinku</translation>
 <translation id="8401432541486058167">Navedite PIN koji je povezan sa pametnom karticom.</translation>
-<translation id="8404893580027489425">Senzor za otisak prsta se nalazi na desnoj strani uređaja <ph name="DEVICE_TYPE" />. Lagano ga dodirnite bilo kojim prstom.</translation>
 <translation id="8405046151008197676">Pogledajte rezime najnovijeg ažuriranja</translation>
 <translation id="8407199357649073301">Nivo evidencije:</translation>
 <translation id="8408270600235826886">Možete da kontrolišete koji podaci se dele sa Google-om. Ovo možete da promenite u svakom trenutku u Podešavanjima. Koristićemo podatke u skladu sa Google <ph name="BEGIN_LINK" />politikom privatnosti<ph name="END_LINK" />.</translation>
@@ -8053,7 +8046,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Lični predlozi se prikazuju samo na vašem nalogu</translation>
 <translation id="8490896350101740396">Sledeće kiosk aplikacije „<ph name="UPDATED_APPS" />“ su ažurirane. Restartujte uređaj da biste završili proces ažuriranja.</translation>
-<translation id="8492685019009920170">Dodirnite prstom senzor za otisak prsta. Podaci se bezbedno čuvaju isključivo na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Sajtovi mogu da prikazuju iskačuće prozore i koriste preusmeravanja</translation>
 <translation id="8492960370534528742">Povratne informacije o Google Cast-u</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
@@ -8590,7 +8582,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="899384117894244799">Uklonite korisnika sa ograničenim pristupom</translation>
 <translation id="899403249577094719">Osnovna URL adresa za Netscape sertifikat</translation>
 <translation id="899657321862108550">Vaš Chrome, svuda</translation>
-<translation id="899676909165543803">Senzor za otisak prsta je taster u donjem desnom uglu tastature. Lagano ga dodirnite prstom.</translation>
 <translation id="8998078711690114234">Ovaj tip fajla može da bude opasan. Sačuvajte ovaj fajl samo ako je <ph name="ORIGIN" /> pouzdan izvor.</translation>
 <translation id="8999560016882908256">Sintaksička greška sa odeljkom: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Veza sa serverom za upravljanje uređajima nije uspela uz status <ph name="STATUS_TEXT" /> u <ph name="FAILURE_TIME" /></translation>
@@ -8647,6 +8638,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9040661932550800571">Želite li da ažurirate lozinku za <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Administrator je onemogućio pristup lokalnim datotekama na računaru</translation>
 <translation id="904224458472510106">Ova operacija ne može da se opozove</translation>
+<translation id="9042827002460091668">Proverite internet vezu i probajte ponovo</translation>
 <translation id="9042893549633094279">Privatnost i bezbednost</translation>
 <translation id="9044646465488564462">Povezivanje sa mrežom nije uspelo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lista za čitanje je premeštena u novu bočnu tabelu. Isprobajte ovde.</translation>
@@ -8887,7 +8879,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="971510864672937292">Želite da obrišete podatke o sajtovima i dozvole za <ph name="SITE_NAME" /> i sve podređene sajtove?</translation>
 <translation id="971774202801778802">URL obeleživača</translation>
-<translation id="972996901592717370">Prstom dodirnite dugme za uključivanje. Podaci se bezbedno čuvaju isključivo na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Izađi</translation>
 <translation id="973558314812359997">Veličina miša</translation>
 <translation id="975893173032473675">Jezik na koji želite da prevodite</translation>

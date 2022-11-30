@@ -845,7 +845,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="175772926354468439">Aktiveer tema</translation>
 <translation id="17584710573359123">Bekyk in Chrome Webwinkel</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> se rekeninge</translation>
-<translation id="176193854664720708">Die vingerafdruksensor is in die aan/af-skakelaar. Raak dit liggies met enige vinger.</translation>
 <translation id="176272781006230109">inkopievoorstelle</translation>
 <translation id="1763046204212875858">Skep programkortpaaie</translation>
 <translation id="1763808908432309942">Maak in 'n nuwe oortjie oop</translation>
@@ -1089,7 +1088,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1974821797477522211">Koppel aan netwerk</translation>
 <translation id="1975841812214822307">Verwyder …</translation>
 <translation id="1976150099241323601">Meld aan op sekuriteitstoestel</translation>
-<translation id="1976928778492259496">Die vingerafdruksensor is aan die linkerkant van jou <ph name="DEVICE_TYPE" />. Raak met enige vinger liggies daaraan.</translation>
 <translation id="1977965994116744507">Bring jou foon nader om jou <ph name="DEVICE_TYPE" /> te ontsluit.</translation>
 <translation id="1978057560491495741">Verwyder adres</translation>
 <translation id="1979095679518582070">As jy hierdie kenmerk afskakel, beïnvloed dit nie hierdie toestel se vermoë om die inligting te stuur wat nodig is vir noodsaaklike dienste soos stelselopdaterings en sekuriteit nie.</translation>
@@ -2862,7 +2860,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3612673635130633812">Afgelaai deur &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Wys <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">Maak in nuwe oortjie oop</translation>
-<translation id="3615073365085224194">Raak met jou vinger aan die vingerafdruksensor</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> word tans geskandeer.</translation>
 <translation id="3615596877979647433">Sleutel word vermis. Druk ’n sleutelbordsleutel om te pasmaak</translation>
 <translation id="3616113530831147358">Oudio</translation>
@@ -3856,7 +3853,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4533985347672295764">CPU-tyd</translation>
 <translation id="4534661889221639075">Probeer weer.</translation>
 <translation id="4535127706710932914">Verstekprofiel</translation>
-<translation id="4535767533210902251">Die vingerafdruksensor is die sleutel bo regs op jou sleutelbord. Raak met enige vinger liggies daaraan.</translation>
 <translation id="4536140153723794651">Werwe wat altyd webkoekies kan gebruik</translation>
 <translation id="4536769240747010177">Verbindingvermoëns:</translation>
 <translation id="4538417792467843292">Vee woord uit</translation>
@@ -5503,7 +5499,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6087746524533454243">Soek jy na die blaaier se Meer Oor Bladsy? Besoek</translation>
 <translation id="6087960857463881712">Ongelooflike gesig</translation>
 <translation id="608912389580139775">Klik die Boekmerk-ikoon om hierdie bladsy by jou leeslys te voeg</translation>
-<translation id="6091116443517744502">gaan jou internetverbinding na en probeer weer</translation>
 <translation id="6091761513005122595">Deling is suksesvol gemonteer.</translation>
 <translation id="6093803049406781019">Vee profiel uit</translation>
 <translation id="6093888419484831006">Kanselleer tans opdatering …</translation>
@@ -6809,7 +6804,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
 <translation id="7353261921908507769">Jou kontakte kan met jou deel wanneer hulle in die omtrek is. Oordragte sal nie begin voordat jy aanvaar het nie.</translation>
 <translation id="735361434055555355">Installeer tans Linux …</translation>
-<translation id="7354341762311560488">Die vingerafdruksensor is die sleutel onder links op jou sleutelbord. Raak met enige vinger liggies daaraan.</translation>
 <translation id="7356908624372060336">Netwerkloglêers</translation>
 <translation id="735745346212279324">VPN ontkoppel</translation>
 <translation id="7358324924540718595">Herinneringe vir vandag word versteek</translation>
@@ -7979,7 +7973,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8398877366907290961">Gaan nogtans voort</translation>
 <translation id="8399282673057829204">Bekyk wagwoord</translation>
 <translation id="8401432541486058167">Verskaf die PIN wat met jou slimkaart geassosieer word.</translation>
-<translation id="8404893580027489425">Die vingerafdruksensor is aan die regterkant van jou <ph name="DEVICE_TYPE" />. Raak met enige vinger liggies daaraan.</translation>
 <translation id="8405046151008197676">Kry hoogtepunte van die jongste opdatering</translation>
 <translation id="8407199357649073301">Loglêervlak:</translation>
 <translation id="8408270600235826886">Jy kan beheer watter data met Google gedeel word. Jy kan dit enige tyd in Instellings verander. Data sal ingevolge Google se <ph name="BEGIN_LINK" />privaatheidsbeleid<ph name="END_LINK" /> gebruik word.</translation>
@@ -8066,7 +8059,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8487699605742506766">Warmkol</translation>
 <translation id="8489156414266187072">Persoonlike voorstelle word net in jou rekening gewys</translation>
 <translation id="8490896350101740396">Die volgende kioskprogramme "<ph name="UPDATED_APPS" />" is opgedateer. Herselflaai die toestel om die opdateringproses te voltooi.</translation>
-<translation id="8492685019009920170">Raak met jou vinger aan die vingerafdruksensor. Jou data word veilig geberg en verlaat nooit jou <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="8492822722330266509">Werwe kan opspringers stuur en herleidings gebruik</translation>
 <translation id="8492960370534528742">Google Cast-terugvoer</translation>
 <translation id="8493236660459102203">Mikrofoon:</translation>
@@ -8602,7 +8594,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="899384117894244799">Verwyder gebruiker met beperkte gebruik</translation>
 <translation id="899403249577094719">Netscape-sertifikaatbasis se URL</translation>
 <translation id="899657321862108550">Jou Chrome, oral</translation>
-<translation id="899676909165543803">Die vingerafdruksensor is die sleutel onder regs op jou sleutelbord. Raak met enige vinger liggies daaraan.</translation>
 <translation id="8998078711690114234">Hierdie soort lêer kan gevaarlik wees. Stoor hierdie lêer net as jy <ph name="ORIGIN" /> vertrou</translation>
 <translation id="8999560016882908256">Afdelingsinsboufout: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Koppeling aan toestelbestuurbediener het om <ph name="FAILURE_TIME" /> met status "<ph name="STATUS_TEXT" />" misluk</translation>
@@ -8659,6 +8650,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9040661932550800571">Dateer wagwoord op vir <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Toegang tot plaaslike lêers op jou masjien is deur jou administrateur gedeaktiveer</translation>
 <translation id="904224458472510106">Hierdie handeling kan nie ontdoen word nie</translation>
+<translation id="9042827002460091668">Gaan jou internetverbinding na en probeer weer</translation>
 <translation id="9042893549633094279">Privaatheid en sekuriteit</translation>
 <translation id="9044646465488564462">Kon nie aan die netwerk koppel nie: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Jou leeslys het na die nuwe kantpaneel toe geskuif. Probeer dit hier.</translation>
@@ -8899,7 +8891,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 oortjie}other{# oortjies}}</translation>
 <translation id="971510864672937292">Vee werfdata en toestemmings vir <ph name="SITE_NAME" /> en alle werwe onder dit uit?</translation>
 <translation id="971774202801778802">Boekmerk-URL</translation>
-<translation id="972996901592717370">Raak die aan/af-skakelaar met jou vinger. Jou data word veilig geberg en verlaat nooit jou <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="973473557718930265">Gaan uit</translation>
 <translation id="973558314812359997">Muisgrootte</translation>
 <translation id="975893173032473675">Taal om in te vertaal</translation>

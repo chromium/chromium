@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{앱 1개에서 사용 중지됨}other{앱 #개에서 사용 중지됨}}</translation>
 <translation id="4066027111132117168">사용, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">신호 보통</translation>
+<translation id="4086921558679520050">기기의 마이크 스위치를 켜세요</translation>
 <translation id="4112140312785995938">뒤로 탐색</translation>
 <translation id="4114315158543974537">휴대전화 허브 사용 설정</translation>
 <translation id="4115378294792113321">자홍색</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />퍼센트</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4379531060876907730">스타일러스 도구입니다</translation>
+<translation id="4381031910344220229">마이크 권한이 있는 모든 앱 및 웹사이트와 <ph name="APP_NAME" />의 마이크 액세스를 허용합니다.</translation>
 <translation id="4389184120735010762">고정 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="439598569299422042">일시중지됨, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">스크린캐스트를 저장할 수 없음</translation>
@@ -960,6 +962,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> 세션은 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> 기기가 연결됨</translation>
 <translation id="6351032674660237738">앱 추천</translation>
+<translation id="6352082849089527770">알 수 없는 네트워크</translation>
 <translation id="6359587239691116345">최신 기능과 보안 개선 사항을 받습니다. 이 업데이트를 거부하면 기기가 더 이상 제대로 작동하지 않을 수 있으며 보안 및 성능 문제가 발생할 수 있습니다.</translation>
 <translation id="6376931439017688372">블루투스 사용 중</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
@@ -1136,6 +1139,7 @@
 <translation id="7360036564632145207">주변기기 데이터 액세스 보호 설정을 변경하면 성능을 최적화할 수 있습니다.</translation>
 <translation id="736045644501761622">배경화면 및 스타일 설정</translation>
 <translation id="7371404428569700291">창 녹화</translation>
+<translation id="737315737514430195">마이크 권한이 있는 모든 앱 및 웹사이트의 마이크 액세스를 허용합니다.</translation>
 <translation id="7377169924702866686">Caps Lock이 켜져 있습니다.</translation>
 <translation id="7377481913241237033">코드를 사용한 연결</translation>
 <translation id="7378203170292176219">드래그하여 녹화할 영역을 선택하세요.</translation>
@@ -1204,6 +1208,7 @@
 <translation id="7671610481353807627">앱이 색상별로 정렬됩니다.</translation>
 <translation id="7672095158465655885"><ph name="NAME" />에 연결됨, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">카메라 입력이 <ph name="CAMERA_NAME" /> 카메라로 설정되었습니다.</translation>
+<translation id="7689817529363080918">마이크 권한이 있는 모든 앱 및 웹사이트와 <ph name="APP1_NAME" />, <ph name="APP2_NAME" />의 마이크 액세스를 허용합니다.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">새 셀룰러 네트워크 추가</translation>
 <translation id="7720400844887872976"><ph name="TIME" />까지 켜기</translation>

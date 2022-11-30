@@ -848,7 +848,6 @@
 <translation id="175772926354468439">Увімкнути тему</translation>
 <translation id="17584710573359123">Переглянути у Веб-магазині Chrome</translation>
 <translation id="1761845175367251960"><ph name="NAME" />: облікові записи</translation>
-<translation id="176193854664720708">Сканер відбитків пальців знаходиться на кнопці живлення. Легко торкніться його будь-яким пальцем.</translation>
 <translation id="176272781006230109">пропозиції покупок</translation>
 <translation id="1763046204212875858">Створити ярлики програми</translation>
 <translation id="1763808908432309942">Відкриється в новій вкладці</translation>
@@ -1092,7 +1091,6 @@
 <translation id="1974821797477522211">Під’єднатися до мережі</translation>
 <translation id="1975841812214822307">Видалити…</translation>
 <translation id="1976150099241323601">Увійти в пристрій безпеки</translation>
-<translation id="1976928778492259496">Сканер відбитків пальців розташовано на лівому боці пристрою <ph name="DEVICE_TYPE" />. Злегка торкніться його будь-яким пальцем.</translation>
 <translation id="1977965994116744507">Щоб розблокувати свій пристрій <ph name="DEVICE_TYPE" />, розташуйте телефон ближче.</translation>
 <translation id="1978057560491495741">Видалити адресу</translation>
 <translation id="1979095679518582070">Якщо вимкнути цю функцію, пристрій усе одно зможе надсилати інформацію, потрібну для отримання важливих послуг, як-от оновлень системи та засобів безпеки.</translation>
@@ -1302,6 +1300,7 @@
 <translation id="2157875535253991059">Ця сторінка зараз у повноекранному режимі.</translation>
 <translation id="2158475082070321257">Копіювати посилання на виділений текст</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">Область дії комбінації клавіш <ph name="SHORTCUT" /> для розширення <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">Додати Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронізація почнеться, щойно ви вийдете з її налаштувань</translation>
 <translation id="2162705204091149050">Перегляд інформації про ваш веб-переглядач, ОС, пристрій, установлене програмне забезпечення та файли</translation>
@@ -2690,6 +2689,7 @@
 <translation id="3445047461171030979">Швидкі відповіді Google Асистента</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="344537926140058498">Ваша організація заблокувала цей файл, оскільки він містить конфіденційний або небезпечний контент. Попросіть його власника вирішити цю проблему.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{Дозволи скасовано для <ph name="BEGIN_BOLD" />1 сайту<ph name="END_BOLD" />, який ви не відвідували останнім часом}one{Дозволи скасовано для <ph name="BEGIN_BOLD" />{NUM_SITES} сайту<ph name="END_BOLD" />, який ви не відвідували останнім часом}few{Дозволи скасовано для <ph name="BEGIN_BOLD" />{NUM_SITES} сайтів<ph name="END_BOLD" />, які ви не відвідували останнім часом}many{Дозволи скасовано для <ph name="BEGIN_BOLD" />{NUM_SITES} сайтів<ph name="END_BOLD" />, які ви не відвідували останнім часом}other{Дозволи скасовано для <ph name="BEGIN_BOLD" />{NUM_SITES} сайту<ph name="END_BOLD" />, які ви не відвідували останнім часом}}</translation>
 <translation id="3445925074670675829">Пристрій із портом USB типу C</translation>
 <translation id="3446274660183028131">Щоб установити Windows, запустіть додаток Parallels Desktop.</translation>
 <translation id="344630545793878684">Переглядати ваші дані на декількох веб-сайтах</translation>
@@ -2863,7 +2863,6 @@
 <translation id="3612673635130633812">Завантажило розширення &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Показати "<ph name="FOLDER_NAME" />"</translation>
 <translation id="3613422051106148727">&amp;Відкрити в новій вкладці</translation>
-<translation id="3615073365085224194">Торкніться пальцем сканера відбитків</translation>
 <translation id="3615579745882581859">Сканується файл "<ph name="FILE_NAME" />".</translation>
 <translation id="3615596877979647433">Клавішу на зв’язано. Щоб налаштувати прив’язку, натисніть клавішу клавіатури.</translation>
 <translation id="3616113530831147358">Аудіо</translation>
@@ -2901,6 +2900,7 @@
 <translation id="3642699533549879077">Якщо хтось дивиться на ваш екран, вас повідомлять про це, а вміст сповіщення буде приховано.</translation>
 <translation id="3643962751030964445">Цим пристроєм керує <ph name="DEVICE_MANAGER" />. Адміністратор <ph name="DEVICE_MANAGER" /> просить створити новий профіль для облікового запису <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3645372836428131288">Трохи перемістіть палець, щоб зісканувати іншу частину відбитка.</translation>
+<translation id="3647051300407077858">Переглянути дозволи на надсилання сповіщень</translation>
 <translation id="3647654707956482440">Не вдалося використати це посилання. Перевірте, чи правильно ви ввели посилання або спробуйте вказати інше.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Виявлено пристрій <ph name="USB_DEVICE_NAME" /></translation>
@@ -3080,6 +3080,7 @@
 <translation id="380408572480438692">Увімкнення збору даних про ефективність допоможе Google із часом покращити систему. Дані не надсилаються, доки ви не напишете відгук (Alt-Shift-I) і не включите дані про ефективність. Можна будь-коли повернутися на цей екран і вимкнути збір даних.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ідентифікатор "<ph name="EXTENSION_ID" />") не можна використовувати на екрані входу.</translation>
 <translation id="3807747707162121253">&amp;Скасувати</translation>
+<translation id="3808202562160426447">Зробити контент на фоні менш яскравим</translation>
 <translation id="3808443763115411087">Розробка додатків для Android у Crostini</translation>
 <translation id="38089336910894858">Показувати застереження перед виходом за допомогою комбінації клавіш ⌘Q</translation>
 <translation id="3809272675881623365">Кролик</translation>
@@ -3671,6 +3672,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> транслює вікно.</translation>
 <translation id="4364830672918311045">Показувати сповіщення</translation>
 <translation id="4366138410738374926">Початок друку</translation>
+<translation id="4367513928820380646">Переглянути скасовані дозволи</translation>
 <translation id="4369121877634339065">Перетягніть зображення на екран, щоб шукати</translation>
 <translation id="4369215744064167350">Запит на доступ до веб-сайту схвалено</translation>
 <translation id="4370975561335139969">Введені електронна адреса та пароль не збігаються</translation>
@@ -3854,7 +3856,6 @@
 <translation id="4533985347672295764">Процесорний час</translation>
 <translation id="4534661889221639075">Повторіть спробу.</translation>
 <translation id="4535127706710932914">Профіль за умовчанням</translation>
-<translation id="4535767533210902251">Сканер відбитків пальців – це верхня клавіша праворуч на клавіатурі. Легко торкніться її будь-яким пальцем.</translation>
 <translation id="4536140153723794651">Сайти, які завжди можуть використовувати файли cookie</translation>
 <translation id="4536769240747010177">Можливості використання телефона як модема</translation>
 <translation id="4538417792467843292">Видалити слово</translation>
@@ -4391,6 +4392,7 @@
 <translation id="5045550434625856497">Неправильний пароль</translation>
 <translation id="504561833207953641">Відкривається в наявному сеансі веб-переглядача.</translation>
 <translation id="5049614114599109018">Використовувати історію введень</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{Останнім часом цей сайт надсилав багато сповіщень. Ви можете скасувати таку розсилку.}one{Останнім часом ці сайти надсилали багато сповіщень. Ви можете скасувати таку розсилку.}few{Останнім часом ці сайти надсилали багато сповіщень. Ви можете скасувати таку розсилку.}many{Останнім часом ці сайти надсилали багато сповіщень. Ви можете скасувати таку розсилку.}other{Останнім часом ці сайти надсилали багато сповіщень. Ви можете скасувати таку розсилку.}}</translation>
 <translation id="5051836348807686060">Перевірка орфографії не підтримується для вибраних мов</translation>
 <translation id="5052499409147950210">Редагувати сайт</translation>
 <translation id="505347685865235222">Група без назви – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5496,7 +5498,6 @@
 <translation id="6087746524533454243">Шукаєте сторінку з інформацією про веб-переглядач? Перейдіть на сторінку</translation>
 <translation id="6087960857463881712">Гарне обличчя</translation>
 <translation id="608912389580139775">Щоб додати цю сторінку в список читання, натисніть значок закладки</translation>
-<translation id="6091116443517744502">перевірте інтернет-з’єднання й повторіть спробу</translation>
 <translation id="6091761513005122595">Спільний доступ надано.</translation>
 <translation id="6093803049406781019">Видалити профіль</translation>
 <translation id="6093888419484831006">Скасування оновлення...</translation>
@@ -6808,7 +6809,6 @@
 <translation id="7352651011704765696">Виникли проблеми</translation>
 <translation id="7353261921908507769">Користувачі з вашого списку контактів можуть надсилати вам дані, коли перебувають неподалік. Передача інформації розпочнеться, лише коли ви приймете запит.</translation>
 <translation id="735361434055555355">Встановлюється Linux…</translation>
-<translation id="7354341762311560488">Сканер відбитків пальців – це нижня клавіша ліворуч на клавіатурі. Легко натисніть її будь-яким пальцем.</translation>
 <translation id="7356908624372060336">Журнали мережі</translation>
 <translation id="735745346212279324">VPN від’єднано</translation>
 <translation id="7358324924540718595">На сьогодні спогади приховано</translation>
@@ -7290,6 +7290,7 @@
 <translation id="7775694664330414886">Вкладку переміщено в групу без назви — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> зможе переглядати файли в папці "<ph name="FOLDERNAME" />", поки ви не закриєте всі вкладки для цього сайту</translation>
 <translation id="7776701556330691704">Голосів не знайдено</translation>
+<translation id="7777624210360383048">Комбінація клавіш <ph name="SHORTCUT" /> для розширення <ph name="EXTENSION_NAME" /></translation>
 <translation id="7781335840981796660">Усі облікові записи користувачів і локальні дані буде видалено.</translation>
 <translation id="7782102568078991263">Більше немає пропозицій від Google</translation>
 <translation id="7782717250816686129">Зберігати постійні дані на екрані входу та вводити облікові дані для сеансу.</translation>
@@ -7322,6 +7323,7 @@
 <translation id="7807711621188256451">Завжди дозволяти хосту <ph name="HOST" /> доступ до вашої камери</translation>
 <translation id="7810202088502699111">На цій сторінці спливаючі вікна заблоковано.</translation>
 <translation id="7814458197256864873">&amp;Копіювати</translation>
+<translation id="7815583197273433531">Змінити комбінацію клавіш <ph name="SHORTCUT" /> для розширення <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Заблоковано небезпечне завантаження</translation>
 <translation id="7817361223956157679">Додатки Linux ще не підтримують екранну клавіатуру</translation>
 <translation id="7818135753970109980">Додано нову тему (<ph name="EXTENSION_NAME" />)</translation>
@@ -7396,6 +7398,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Переглянути обліковий запис</translation>
 <translation id="7883792253546618164">Ви можете будь-коли скасувати підписку.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{Перегляньте 1 сайт, який надсилав багато сповіщень}one{Перегляньте {NUM_SITES} сайт, який надсилав багато сповіщень}few{Перегляньте {NUM_SITES} сайти, які надсилали багато сповіщень}many{Перегляньте {NUM_SITES} сайтів, які надсилали багато сповіщень}other{Перегляньте {NUM_SITES} сайту, які надсилали багато сповіщень}}</translation>
 <translation id="788453346724465748">Завантаження даних облікового запису…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{елемент}one{# елемент}few{# елементи}many{# елементів}other{# елемента}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -7976,7 +7979,6 @@
 <translation id="8398877366907290961">Продовжити</translation>
 <translation id="8399282673057829204">Переглянути пароль</translation>
 <translation id="8401432541486058167">Укажіть PIN-код, зв'язаний із вашою розумною карткою.</translation>
-<translation id="8404893580027489425">Сканер відбитків пальців розташовано на правому боці пристрою <ph name="DEVICE_TYPE" />. Злегка торкніться його будь-яким пальцем.</translation>
 <translation id="8405046151008197676">Отримайте інформацію про останнє оновлення</translation>
 <translation id="8407199357649073301">Рівень журналу:</translation>
 <translation id="8408270600235826886">Ви самі вирішуєте, які дані доступні Google. Вибір можна будь-коли змінити в Налаштуваннях. Дані використовуватимуться відповідно до <ph name="BEGIN_LINK" />Політики конфіденційності<ph name="END_LINK" /> Google.</translation>
@@ -8063,7 +8065,6 @@
 <translation id="8487699605742506766">Точка доступу</translation>
 <translation id="8489156414266187072">Персональні підказки з'являються лише у вашому обліковому записі</translation>
 <translation id="8490896350101740396">Оновлено такі додатки-термінали: <ph name="UPDATED_APPS" />. Перезавантажте пристрій, щоб завершити оновлення.</translation>
-<translation id="8492685019009920170">Торкніться пальцем сканера відбитків. <ph name="DEVICE_TYPE" /> надійно зберігає ваші дані й нікуди не надсилає їх.</translation>
 <translation id="8492822722330266509">Сайти можуть показувати спливаючі вікна та використовувати переспрямування</translation>
 <translation id="8492960370534528742">Відгук про Google Cast</translation>
 <translation id="8493236660459102203">Мікрофон:</translation>
@@ -8601,7 +8602,6 @@
 <translation id="899384117894244799">Видалити користувача з обмеженими правами</translation>
 <translation id="899403249577094719">Основна URL-адреса сертифіката Netscape</translation>
 <translation id="899657321862108550">Ваші персоналізовані налаштування Chrome – будь-де</translation>
-<translation id="899676909165543803">Сканер відбитків пальців – це нижня клавіша праворуч на клавіатурі. Легко натисніть її будь-яким пальцем.</translation>
 <translation id="8998078711690114234">Цей тип файлу може бути небезпечним. Зберігайте цей файл, лише якщо довіряєте джерелу <ph name="ORIGIN" />.</translation>
 <translation id="8999560016882908256">Синтаксична помилка в розділі: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Не вдалося підключитися до сервера керування пристроями. Статус станом на <ph name="FAILURE_TIME" />: "<ph name="STATUS_TEXT" />".</translation>
@@ -8658,6 +8658,7 @@
 <translation id="9040661932550800571">Оновити пароль для <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Адміністратор вимкнув доступ до локальних файлів на вашому комп’ютері</translation>
 <translation id="904224458472510106">Цю операцію не можна відмінити</translation>
+<translation id="9042827002460091668">Перевірте інтернет-з’єднання й повторіть спробу</translation>
 <translation id="9042893549633094279">Конфіденційність і безпека</translation>
 <translation id="9044646465488564462">Помилка під’єднання до мережі: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Список читання переміщено на нову бічну панель. Перегляньте його там.</translation>
@@ -8898,7 +8899,6 @@
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="971510864672937292">Очистити дані та дозволи для сайту <ph name="SITE_NAME" /> і всіх сайтів його групи?</translation>
 <translation id="971774202801778802">URL-адреса закладки</translation>
-<translation id="972996901592717370">Торкніться кнопки живлення пальцем. <ph name="DEVICE_TYPE" /> надійно зберігає ваші дані й нікуди не надсилає їх.</translation>
 <translation id="973473557718930265">Вийти</translation>
 <translation id="973558314812359997">Розмір курсора</translation>
 <translation id="975893173032473675">Мова перекладу</translation>

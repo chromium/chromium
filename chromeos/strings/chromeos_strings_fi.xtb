@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Kokeile ongelmanratkaisuohjeita</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Muodosta verkkoyhteys ja päivitä sivu nähdäksesi näytönsäästäjän.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Lisää asetuksia</translation>
 <translation id="2085089206770112532">Vähennä näytön kirkkautta</translation>
 <translation id="2105810540595158374">Laite on peliohjain.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Pakkausalgoritmi</translation>
 <translation id="4794140124556169553">CPU-testin suorittaminen voi vaikuttaa järjestelmän suorituskykyyn</translation>
 <translation id="4800589996161293643">Chromebook-yhteisö</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Peruutettu tulostustyö: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Vaalea teema</translation>
 <translation id="4813136279048157860">Omat kuvat</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Rasitus</translation>
 <translation id="4897058166682006107">Laitteen vasemman kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Laita ominaisuus päälle, jotta voit valita näytönsäästäjän asetukset</translation>
+<translation id="4910858703033903787">APN-tyypit</translation>
 <translation id="4917385247580444890">Vahva</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
 <translation id="491791267030419270">Vinkkejä palautteen kirjoittamiseen</translation>
@@ -460,6 +463,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5358174242040570474">Jotain meni pieleen. Kokeile valita taustakuva uudelleen tai avaa sovellus.</translation>
 <translation id="5372659122375744710">Wi-Fi-verkko ei ole suojattu</translation>
 <translation id="5376354385557966694">Automaattinen vaalea tila</translation>
+<translation id="5378184552853359930">IP-tyyppi</translation>
 <translation id="5389159777326897627">Taustakuva ja tyyli</translation>
 <translation id="5389224261615877010">Sateenkaari</translation>
 <translation id="5400907029458559844">Laite muodostaa yhteyttä.</translation>
@@ -743,6 +747,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Valitse <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Liitä</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8208861521865154048">Edut</translation>
 <translation id="8226628635270268143">Valitse suosikkikuvat ja ‑albumit</translation>
@@ -831,6 +836,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="9025198690966128418">Käytä henkilökohtaisena laitteena</translation>
 <translation id="9028832514430399253">Laita valitsin päälle-asentoon, niin voit valita näytönsäästäjän asetukset</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-selvityksen viive on pitkä</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

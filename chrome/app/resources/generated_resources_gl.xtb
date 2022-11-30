@@ -833,7 +833,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="175772926354468439">Activar tema</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
 <translation id="1761845175367251960">Contas de <ph name="NAME" /></translation>
-<translation id="176193854664720708">O sensor de impresión dixital está no botón de acendido. Tócao suavemente con calquera dedo.</translation>
 <translation id="176272781006230109">suxestións de compras</translation>
 <translation id="1763046204212875858">Crear atallos de aplicacións</translation>
 <translation id="1763808908432309942">Ábrese nunha nova pestana</translation>
@@ -1076,7 +1075,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1974821797477522211">Conectarse á rede</translation>
 <translation id="1975841812214822307">Eliminar...</translation>
 <translation id="1976150099241323601">Iniciar sesión no dispositivo de seguranza</translation>
-<translation id="1976928778492259496">O sensor de impresión dixital atópase no lateral esquerdo do dispositivo (<ph name="DEVICE_TYPE" />). Tócao suavemente con calquera dedo.</translation>
 <translation id="1977965994116744507">Achega o teléfono para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Quitar enderezo</translation>
 <translation id="1979095679518582070">A desactivación desta función non afecta á capacidade deste dispositivo de enviar a información necesaria para servizos esenciais, como as actualizacións do sistema e a seguranza.</translation>
@@ -2844,7 +2842,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3612673635130633812">Descargouse a través de &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Abrir nunha pestana nova</translation>
-<translation id="3615073365085224194">Toca o sensor de impresión dixital co dedo</translation>
 <translation id="3615579745882581859">Estase analizando <ph name="FILE_NAME" />.</translation>
 <translation id="3615596877979647433">Falta a tecla. Preme unha tecla para personalizala</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3834,7 +3831,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4533985347672295764">Tempo de CPU</translation>
 <translation id="4534661889221639075">Téntao de novo.</translation>
 <translation id="4535127706710932914">Perfil predeterminado</translation>
-<translation id="4535767533210902251">O sensor de impresión dixital está na tecla situada na parte superior dereita do teclado. Tócaa suavemente con calquera dedo.</translation>
 <translation id="4536140153723794651">Sitios que sempre poden utilizar cookies</translation>
 <translation id="4536769240747010177">Funcións de conexión compartida:</translation>
 <translation id="4538417792467843292">Eliminar palabra</translation>
@@ -5476,7 +5472,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6087746524533454243">Buscas a páxina de información do navegador? Visita</translation>
 <translation id="6087960857463881712">Cara de sorpresa</translation>
 <translation id="608912389580139775">Para engadir esta páxina á túa lista de lectura, fai clic na icona dos marcadores</translation>
-<translation id="6091116443517744502">comproba a conexión a Internet e téntao de novo</translation>
 <translation id="6091761513005122595">A localización compartida montouse correctamente.</translation>
 <translation id="6093803049406781019">Eliminar perfil</translation>
 <translation id="6093888419484831006">Cancelando a actualización...</translation>
@@ -6782,7 +6777,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7353261921908507769">Os teus contactos poden compartir ficheiros contigo cando estean preto. As transferencias non comezarán ata que as aceptes.</translation>
 <translation id="735361434055555355">Instalando Linux…</translation>
-<translation id="7354341762311560488">O sensor de impresión dixital está na tecla situada na parte inferior esquerda do teclado. Tócaa suavemente con calquera dedo.</translation>
 <translation id="7356908624372060336">Rexistros de rede</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7358324924540718595">Ocultáronse as lembranzas de hoxe</translation>
@@ -7949,7 +7943,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8398877366907290961">Continuar igualmente</translation>
 <translation id="8399282673057829204">Ver contrasinal</translation>
 <translation id="8401432541486058167">Introduce o PIN asociado á túa tarxeta intelixente.</translation>
-<translation id="8404893580027489425">O sensor de impresión dixital atópase no lateral dereito do dispositivo (<ph name="DEVICE_TYPE" />). Tócao suavemente con calquera dedo.</translation>
 <translation id="8405046151008197676">Descubre o máis destacado da última actualización</translation>
 <translation id="8407199357649073301">Nivel de rexistro:</translation>
 <translation id="8408270600235826886">Podes controlar os datos que se comparten con Google. Podes cambiar esta opción en calquera momento en Configuración. Os datos utilizaranse de acordo coa <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" /> de Google.</translation>
@@ -8036,7 +8029,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8487699605742506766">Zona wifi</translation>
 <translation id="8489156414266187072">As suxestións persoais só se mostran na túa conta</translation>
 <translation id="8490896350101740396">Actualizáronse as seguintes aplicacións de quiosco: "<ph name="UPDATED_APPS" />". Reinicia o dispositivo para completar o proceso de actualización.</translation>
-<translation id="8492685019009920170">Toca o sensor de impresión dixital co dedo. Os teus datos almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="8492822722330266509">Os sitios poden mostrar ventás emerxentes e usar redireccións</translation>
 <translation id="8492960370534528742">Comentarios sobre Google Cast</translation>
 <translation id="8493236660459102203">Micrófono:</translation>
@@ -8571,7 +8563,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="899384117894244799">Quitar usuario restrinxido</translation>
 <translation id="899403249577094719">URL de base de certificado de Netscape</translation>
 <translation id="899657321862108550">Desfruta de Chrome en todas partes</translation>
-<translation id="899676909165543803">O sensor de impresión dixital está na tecla situada na parte inferior dereita do teclado. Tócaa suavemente con calquera dedo.</translation>
 <translation id="8998078711690114234">Este tipo de ficheiro pode ser perigoso. Gárdao soamente se confías en <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Produciuse un erro na sintaxe da sección: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Produciuse un erro ("<ph name="STATUS_TEXT" />") ao establecer conexión co servidor de xestión de dispositivos. Hora: <ph name="FAILURE_TIME" /></translation>
@@ -8628,6 +8619,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="9040661932550800571">Queres actualizar o contrasinal de <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">O acceso aos ficheiros locais do teu equipo está desactivado polo teu administrador</translation>
 <translation id="904224458472510106">Esta operación non se pode desfacer</translation>
+<translation id="9042827002460091668">Comproba a conexión a Internet e téntao de novo</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="9044646465488564462">Erro ao conectar coa rede: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">A túa lista de lectura trasladouse ao novo panel lateral. Próbaa aquí.</translation>
@@ -8868,7 +8860,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="970047733946999531">{NUM_TABS,plural, =1{Unha pestana}other{# pestanas}}</translation>
 <translation id="971510864672937292">Queres borrar os datos dos sitios e os permisos de <ph name="SITE_NAME" />, así como todos os sitios que inclúa?</translation>
 <translation id="971774202801778802">URL do marcador</translation>
-<translation id="972996901592717370">Toca co dedo o botón de acendido. Os teus datos almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="973473557718930265">Saír</translation>
 <translation id="973558314812359997">Tamaño do rato</translation>
 <translation id="975893173032473675">Idioma ao que queres traducir o contido</translation>

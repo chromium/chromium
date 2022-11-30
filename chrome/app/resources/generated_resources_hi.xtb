@@ -845,7 +845,6 @@
 <translation id="175772926354468439">थीम चालू करें</translation>
 <translation id="17584710573359123">Chrome वेब स्टोर में देखें</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> के खाते</translation>
-<translation id="176193854664720708">पावर बटन में फ़िंगरप्रिंट सेंसर मौजूद होता है. किसी भी उंगली से इसे हल्के से छुएं.</translation>
 <translation id="176272781006230109">खरीदारी के लिए सुझाव</translation>
 <translation id="1763046204212875858">ऐप्स  शॉर्टकट बनाएं</translation>
 <translation id="1763808908432309942">नए टैब में खुलता है</translation>
@@ -1088,7 +1087,6 @@
 <translation id="1974821797477522211">नेटवर्क से कनेक्ट करें</translation>
 <translation id="1975841812214822307">निकालें...</translation>
 <translation id="1976150099241323601">सुरक्षा डिवाइस में साइन इन करें</translation>
-<translation id="1976928778492259496">फ़िंगरप्रिंट सेंसर, आपके <ph name="DEVICE_TYPE" /> की बाईं ओर है. इसे किसी भी उंगली से हल्के से छुएं.</translation>
 <translation id="1977965994116744507">अपने <ph name="DEVICE_TYPE" /> को अनलॉक करने के लिए अपने फ़ोन को पास लाएं.</translation>
 <translation id="1978057560491495741">पता हटाएं</translation>
 <translation id="1979095679518582070">इस सुविधा को बंद करने के बाद भी यह डिवाइस, सिस्टम अपडेट, और सुरक्षा जैसी ज़रूरी सेवाएं पाने के लिए जानकारी भेज सकेगा.</translation>
@@ -2859,7 +2857,6 @@
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; के द्वारा डाउनलोड किया गया</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> दिखाएं</translation>
 <translation id="3613422051106148727">नए टैब में &amp;खोलें</translation>
-<translation id="3615073365085224194">उंगली से फ़िंगरप्रिंट सेंसर को छुएं</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> स्कैन हो रही है.</translation>
 <translation id="3615596877979647433">किसी कुंजी को नहीं दबाया गया. पसंद के मुताबिक बनाने के लिए, कीबोर्ड की कुंजी को दबाएं</translation>
 <translation id="3616113530831147358">ऑडियो</translation>
@@ -3844,7 +3841,6 @@
 <translation id="4533985347672295764">CPU समय</translation>
 <translation id="4534661889221639075">फिर से कोशिश करें.</translation>
 <translation id="4535127706710932914">सामान्य प्रोफ़ाइल</translation>
-<translation id="4535767533210902251">फ़िंगरप्रिंट सेंसर, आपके कीबोर्ड पर सबसे ऊपर दाईं ओर दिया गया बटन होता है. किसी भी उंगली से इसे हल्के से छुएं.</translation>
 <translation id="4536140153723794651">वे साइटें जो हमेशा कुकी का इस्तेमाल कर सकती हैं</translation>
 <translation id="4536769240747010177">टेदरिंग की सुविधा:</translation>
 <translation id="4538417792467843292">शब्‍द मिटाएं</translation>
@@ -5487,7 +5483,6 @@
 <translation id="6087746524533454243">ब्राउज़र की जानकारी वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="6087960857463881712">बढ़िया चेहरा</translation>
 <translation id="608912389580139775">इस पेज को अपनी रीडिंग लिस्ट में जोड़ने के लिए, बुकमार्क आइकॉन पर क्लिक करें</translation>
-<translation id="6091116443517744502">कृपया अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें</translation>
 <translation id="6091761513005122595">शेयर माउंट करना सफल रहा.</translation>
 <translation id="6093803049406781019">प्रोफ़ाइल हटाएं</translation>
 <translation id="6093888419484831006">अपडेट रद्द किया जा रहा है...</translation>
@@ -6794,7 +6789,6 @@
 <translation id="7352651011704765696">कुछ गलत हुआ</translation>
 <translation id="7353261921908507769">आपके संपर्क आपसे फ़ाइलें तभी शेयर कर सकते हैं, जब वे आस-पास होंं. आपके स्वीकार करने तक ट्रांसफ़र शुरू नहीं होगा.</translation>
 <translation id="735361434055555355">Linux इंस्टॉल किया जा रहा है...</translation>
-<translation id="7354341762311560488">आपके कीबोर्ड पर सबसे नीचे बाईं ओर वाली कुंजी, फ़िंगरप्रिंट सेंसर है. किसी भी उंगली से इसे हल्के से छुएं.</translation>
 <translation id="7356908624372060336">नेटवर्क लॉग</translation>
 <translation id="735745346212279324">VPN डिसकनेक्ट है</translation>
 <translation id="7358324924540718595">आज के लिए यादों को छिपा दिया गया है</translation>
@@ -7959,7 +7953,6 @@
 <translation id="8398877366907290961">फिर भी आगे बढ़ें</translation>
 <translation id="8399282673057829204">पासवर्ड देखें</translation>
 <translation id="8401432541486058167">ऐसा पिन डालें जो आपके स्मार्ट कार्ड से जुड़ा हुआ हो.</translation>
-<translation id="8404893580027489425">फ़िंगरप्रिंट सेंसर, आपके <ph name="DEVICE_TYPE" /> की दाईं ओर है. इसे किसी भी उंगली से हल्के से छुएं.</translation>
 <translation id="8405046151008197676">हाल ही के अपडेट की खास बातें जानें</translation>
 <translation id="8407199357649073301">लॉग लेवल:</translation>
 <translation id="8408270600235826886">Google के साथ शेयर की जाने वाली जानकारी का कंट्रोल आपके पास है. सेटिंग में जाकर, इस विकल्प को कभी भी बदला जा सकता है. डेटा का इस्तेमाल, Google की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> के मुताबिक किया जाएगा.</translation>
@@ -8046,7 +8039,6 @@
 <translation id="8487699605742506766">हॉटस्पॉट</translation>
 <translation id="8489156414266187072">निजी सुझाव सिर्फ़ आपके खाते पर दिखाए जाते हैं</translation>
 <translation id="8490896350101740396">नीचे दिए गए किओस्क ऐप्लिकेशन "<ph name="UPDATED_APPS" />" अपडेट कर दिए गए हैं. कृपया अपडेट प्रक्रिया पूरी करने के लिए डिवाइस को फिर से चालू करें.</translation>
-<translation id="8492685019009920170">उंगली से फ़िंगरप्रिंट सेंसर को छुएं. आपका डेटा सुरक्षित तरीके से सेव किया जाता है और हमेशा आपके <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
 <translation id="8492822722330266509">साइटें पॉप-अप भेज सकती हैं और आपको दूसरे वेबलिंक पर भेज सकती हैं</translation>
 <translation id="8492960370534528742">Google Cast फ़ीडबैक (सुझाव, शिकायत या राय)</translation>
 <translation id="8493236660459102203">माइक्रोफ़ोन:</translation>
@@ -8580,7 +8572,6 @@
 <translation id="899384117894244799">पाबंदी वाले उपयोगकर्ता को हटाएं</translation>
 <translation id="899403249577094719">Netscape प्रमाणपत्र आधार URL</translation>
 <translation id="899657321862108550">आपका Chrome, हर जगह</translation>
-<translation id="899676909165543803">आपके कीबोर्ड पर, सबसे नीचे दाईं ओर वाली कुंजी फ़िंगरप्रिंट का सेंसर है. किसी भी उंगली से इसे हल्के से छुएं.</translation>
 <translation id="8998078711690114234">इस तरह की फ़ाइल खतरनाक हो सकती है. अगर आपको <ph name="ORIGIN" /> पर भरोसा है, तो ही इस फ़ाइल को सेव करें</translation>
 <translation id="8999560016882908256">सेक्शन सिंटैक्स गड़बड़ी: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> पर '<ph name="STATUS_TEXT" />' की वजह से, डिवाइस मैनेजमेंट सर्वर से कनेक्ट नहीं किया जा सका</translation>
@@ -8877,7 +8868,6 @@
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="971510864672937292">क्या आप <ph name="SITE_NAME" /> और इसके तहत आने वाली सभी साइटों के लिए, साइट डेटा और अनुमतियां मिटाना चाहते हैं?</translation>
 <translation id="971774202801778802">यूआरएल बुकमार्क करें</translation>
-<translation id="972996901592717370">उंगली से पावर बटन को छुएं. आपका डेटा सुरक्षित तरीके से सेव किया जाता है और हमेशा आपके <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
 <translation id="973473557718930265">छोड़ें</translation>
 <translation id="973558314812359997">कर्सर को बड़ा करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="975893173032473675">वह भाषा जिसमें अनुवाद करना है</translation>

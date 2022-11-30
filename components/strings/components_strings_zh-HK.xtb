@@ -38,6 +38,7 @@
 <translation id="10614374240317010">永不儲存</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">桌面電腦版書籤</translation>
+<translation id="1067561478268651872">除非已設定 <ph name="SECURE_DNS_SALT" /> 政策，否則系統不會使用 <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> 政策。</translation>
 <translation id="1068672505746868501">永不翻譯來源語言為<ph name="SOURCE_LANGUAGE" />的網頁</translation>
 <translation id="1070853536588271387">複合動力車和替代燃料車</translation>
 <translation id="1070901266639972381">晚上</translation>
@@ -2098,6 +2099,7 @@
 <translation id="6328786501058569169">這是欺詐網站</translation>
 <translation id="6337133576188860026">釋的快取不到 <ph name="SIZE" />。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="6337534724793800597">依名稱篩選政策</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 的值無效，系統將不會使用該值。</translation>
 <translation id="6340739886198108203">當螢幕上出現機密內容時，管理員政策不建議擷取螢幕截圖或錄製內容：</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理員政策不建議上載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議上載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">使用中的變化版本</translation>
@@ -2993,6 +2995,7 @@
 <translation id="8654126188050905496">55 x 91 毫米</translation>
 <translation id="8663226718884576429">訂單摘要、<ph name="TOTAL_LABEL" /> 及更多詳情</translation>
 <translation id="8666678546361132282">英文</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> 的值不符合大小要求。</translation>
 <translation id="867224526087042813">簽名</translation>
 <translation id="8672264262457010862">工商業</translation>
 <translation id="8676424191133491403">不延遲</translation>
@@ -3092,6 +3095,7 @@
 <translation id="8913778647360618320">管理付款方法按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度管理付款同信用卡資料</translation>
 <translation id="8922013791253848639">一律允許在此網站中顯示廣告</translation>
 <translation id="892588693504540538">打孔 (右上方)</translation>
+<translation id="8930098617363288380">除非設定 <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> 政策，否則 <ph name="SECURE_DNS_SALT" /> 的值不相關，系統也不會使用該值。</translation>
 <translation id="8930330541574156305">地產</translation>
 <translation id="8931333241327730545">要將此信用卡儲存至您的 Google 帳戶嗎？</translation>
 <translation id="8932102934695377596">您時鐘的時間過慢</translation>

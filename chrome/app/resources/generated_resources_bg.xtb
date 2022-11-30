@@ -841,7 +841,6 @@
 <translation id="175772926354468439">Активиране на темата</translation>
 <translation id="17584710573359123">Преглед в уеб магазина на Chrome</translation>
 <translation id="1761845175367251960">Профилите на <ph name="NAME" /></translation>
-<translation id="176193854664720708">Сензорът за отпечатъци е в бутона за включване/изключване. Докоснете го леко с който и да е пръст.</translation>
 <translation id="176272781006230109">предложения за пазаруване</translation>
 <translation id="1763046204212875858">Създаване на преки пътища към приложението</translation>
 <translation id="1763808908432309942">Отваря се в нов раздел</translation>
@@ -1085,7 +1084,6 @@
 <translation id="1974821797477522211">Свързване с мрежа</translation>
 <translation id="1975841812214822307">Премахване...</translation>
 <translation id="1976150099241323601">Вход в защитното устройство</translation>
-<translation id="1976928778492259496">Сензорът за отпечатъци се намира в лявата част на вашия <ph name="DEVICE_TYPE" />. Докоснете го леко с който и да е пръст.</translation>
 <translation id="1977965994116744507">За да отключите своя <ph name="DEVICE_TYPE" />, приближете телефона си до него.</translation>
 <translation id="1978057560491495741">Премахване на адреса</translation>
 <translation id="1979095679518582070">Изключването на тази функция няма да засегне възможността на устройството да изпраща информацията, необходима за получаването на основни услуги, като системни актуализации и подобрения в сигурността.</translation>
@@ -2856,7 +2854,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3612673635130633812">Изтеглено от &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Показване на „<ph name="FOLDER_NAME" />“</translation>
 <translation id="3613422051106148727">&amp;Отваряне в нов раздел</translation>
-<translation id="3615073365085224194">Докоснете сензора за отпечатъци с пръста си</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> се сканира.</translation>
 <translation id="3615596877979647433">Липсва клавиш. Натиснете клавиш от клавиатурата, за да персонализирате</translation>
 <translation id="3616113530831147358">Аудио</translation>
@@ -3848,7 +3845,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4533985347672295764">Процесорно време</translation>
 <translation id="4534661889221639075">Опитайте отново.</translation>
 <translation id="4535127706710932914">Потребителски профил по подразбиране</translation>
-<translation id="4535767533210902251">Сензорът за отпечатъци е бутонът най-горе вдясно на клавиатурата. Докоснете го леко с който и да е пръст.</translation>
 <translation id="4536140153723794651">Сайтове, които винаги могат да използват „бисквитки“</translation>
 <translation id="4536769240747010177">Възможности за тетъринг:</translation>
 <translation id="4538417792467843292">Изтриване на дума</translation>
@@ -5494,7 +5490,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6087746524533454243">Търсите страницата с информация за браузъра? Посетете</translation>
 <translation id="6087960857463881712">Страхотно лице</translation>
 <translation id="608912389580139775">За да добавите тази страница към списъка си за четене, кликнете върху иконата на отметка</translation>
-<translation id="6091116443517744502">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="6091761513005122595">Дялът е свързан успешно.</translation>
 <translation id="6093803049406781019">Изтриване на потребителския профил</translation>
 <translation id="6093888419484831006">Актуализирането се анулира...</translation>
@@ -6800,7 +6795,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7352651011704765696">Нещо се обърка</translation>
 <translation id="7353261921908507769">Контактите в близост могат да споделят с вас. Прехвърлянето няма да стартира, докато не се съгласите.</translation>
 <translation id="735361434055555355">Инсталира се Linux...</translation>
-<translation id="7354341762311560488">Сензорът за отпечатъци е клавишът в долния ляв ъгъл на клавиатурата. Докоснете го леко с който и да е пръст.</translation>
 <translation id="7356908624372060336">Регистрационни файлове за мрежова активност</translation>
 <translation id="735745346212279324">Връзката с виртуалната частна мрежа (VPN) е прекъсната</translation>
 <translation id="7358324924540718595">Спомените ще бъдат скрити за днес</translation>
@@ -7968,7 +7962,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8398877366907290961">Продължаване напред въпреки това</translation>
 <translation id="8399282673057829204">Преглед на паролата</translation>
 <translation id="8401432541486058167">Въведете ПИН, свързан със смарткартата ви</translation>
-<translation id="8404893580027489425">Сензорът за отпечатъци се намира в дясната част на вашия <ph name="DEVICE_TYPE" />. Докоснете го леко с който и да е пръст.</translation>
 <translation id="8405046151008197676">Вижте най-важното от най-новата актуализация</translation>
 <translation id="8407199357649073301">Ниво на запис в регистрационния файл:</translation>
 <translation id="8408270600235826886">Имате възможност да контролирате каква информация се споделя с Google. Можете да промените това по всяко време от настройките. Данните ще се използват в съответствие с <ph name="BEGIN_LINK" />Декларацията ни за поверителност<ph name="END_LINK" />.</translation>
@@ -8055,7 +8048,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8487699605742506766">Точка за достъп</translation>
 <translation id="8489156414266187072">Личните предложения се показват само в профила ви</translation>
 <translation id="8490896350101740396">Следните павилионни приложения са актуализирани: <ph name="UPDATED_APPS" />. Моля, рестартирайте устройството, за да завършите процеса.</translation>
-<translation id="8492685019009920170">Докоснете сензора за отпечатъци с пръста си. Данните ви се съхраняват надеждно и остават на устройството ви <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Сайтовете могат да изпращат изскачащи прозорци и да използват пренасочвания</translation>
 <translation id="8492960370534528742">Отзиви за Google Cast</translation>
 <translation id="8493236660459102203">Микрофон:</translation>
@@ -8591,7 +8583,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="899384117894244799">Премахване на потребител с ограничена функционалност</translation>
 <translation id="899403249577094719">Основен URL адрес на сертификат на Netscape</translation>
 <translation id="899657321862108550">Вашият браузър Chrome – навсякъде</translation>
-<translation id="899676909165543803">Сензорът за отпечатъци е клавишът в долния десен ъгъл на клавиатурата. Докоснете го леко с който и да е пръст.</translation>
 <translation id="8998078711690114234">Този тип файл може да е опасен. Запазете го само ако имате доверие на <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Синтактична грешка в секция: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">В(ъв) <ph name="FAILURE_TIME" /> установяването на връзка със сървъра за управление на устройства не бе успешно със състояние „<ph name="STATUS_TEXT" />“</translation>
@@ -8648,6 +8639,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9040661932550800571">Да се актуализира ли паролата за <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Достъпът до локални файлове на компютъра ви е деактивиран от администратора ви</translation>
 <translation id="904224458472510106">Това действие не може да бъде отменено</translation>
+<translation id="9042827002460091668">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="9042893549633094279">Поверителност и сигурност</translation>
 <translation id="9044646465488564462">Свързването с мрежата не бе успешно: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Списъкът ви за четене е преместен в новия страничен панел. Изпробвайте го тук.</translation>
@@ -8888,7 +8880,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="971510864672937292">Да се изчистят ли данните за сайтовете и разрешенията за <ph name="SITE_NAME" /> и всички сайтове под него?</translation>
 <translation id="971774202801778802">URL адрес на отметката</translation>
-<translation id="972996901592717370">Докоснете бутона за захранване с пръста си. Данните ви се съхраняват надеждно и остават на устройството ви <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Изход</translation>
 <translation id="973558314812359997">Размер на курсора на мишката</translation>
 <translation id="975893173032473675">Целеви език</translation>

@@ -834,7 +834,6 @@
 <translation id="175772926354468439">啟用主題</translation>
 <translation id="17584710573359123">前往 Chrome 線上應用程式商店查看</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帳戶</translation>
-<translation id="176193854664720708">指紋感應器位於電源按鈕上，請以任何一隻手指輕觸指紋感應器。</translation>
 <translation id="176272781006230109">購物建議</translation>
 <translation id="1763046204212875858">建立應用程式捷徑</translation>
 <translation id="1763808908432309942">在新分頁中開啟</translation>
@@ -1077,7 +1076,6 @@
 <translation id="1974821797477522211">連線至網路</translation>
 <translation id="1975841812214822307">移除...</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
-<translation id="1976928778492259496">指紋感應器位於「<ph name="DEVICE_TYPE" />」的左側。請單指輕觸這個按鍵。</translation>
 <translation id="1977965994116744507">讓你的手機靠近 <ph name="DEVICE_TYPE" />，即可將其解鎖。</translation>
 <translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。</translation>
@@ -1287,6 +1285,7 @@
 <translation id="2157875535253991059">這個頁面已顯示為全螢幕。</translation>
 <translation id="2158475082070321257">複製醒目顯示文字的連結</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">「<ph name="EXTENSION_NAME" />」的<ph name="SHORTCUT" />範圍</translation>
 <translation id="216169395504480358">新增 Wi-Fi...</translation>
 <translation id="2162155940152307086">同步功能會在你退出同步功能設定後立即啟動</translation>
 <translation id="2162705204091149050">讀取瀏覽器、OS、裝置、已安裝的軟體和檔案的相關資訊</translation>
@@ -2672,6 +2671,7 @@
 <translation id="3445047461171030979">Google 助理快速解答</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="344537926140058498">這個檔案含有敏感或危險內容，因此遭到貴機構封鎖。請要求檔案擁有者修正。</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{已從你最近未曾造訪的 <ph name="BEGIN_BOLD" />1 個網站<ph name="END_BOLD" />移除權限}other{已從你最未曾近造訪的 <ph name="BEGIN_BOLD" />{NUM_SITES} 個網站<ph name="END_BOLD" />移除權限}}</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3446274660183028131">請啟動 Parallels Desktop 以安裝 Windows。</translation>
 <translation id="344630545793878684">讀取你在多個網站上產生的資料</translation>
@@ -2845,7 +2845,6 @@
 <translation id="3612673635130633812">「&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;」下載了這個檔案</translation>
 <translation id="3613134908380545408">顯示「<ph name="FOLDER_NAME" />」</translation>
 <translation id="3613422051106148727">在新分頁中開啟(&amp;O)</translation>
-<translation id="3615073365085224194">請以手指輕觸指紋感應器</translation>
 <translation id="3615579745882581859">正在掃描「<ph name="FILE_NAME" />」。</translation>
 <translation id="3615596877979647433">缺少按鍵。按下鍵盤按鍵即可自訂</translation>
 <translation id="3616113530831147358">音訊</translation>
@@ -2883,6 +2882,7 @@
 <translation id="3642699533549879077">有人窺探你的螢幕時，系統會發出警示並隱藏通知內容。</translation>
 <translation id="3643962751030964445">這是由 <ph name="DEVICE_MANAGER" /> 管理的裝置。<ph name="DEVICE_MANAGER" /> 要求必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶設定新的設定檔</translation>
 <translation id="3645372836428131288">請稍微移動手指，讓系統擷取完整指紋</translation>
+<translation id="3647051300407077858">檢查通知權限</translation>
 <translation id="3647654707956482440">無法使用這個連結，請檢查是否輸入錯誤或使用其他連結，然後再試一次。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}other{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">偵測到 <ph name="USB_DEVICE_NAME" /></translation>
@@ -3062,6 +3062,7 @@
 <translation id="380408572480438692">啟用成效資料收集功能可協助 Google 持續改善系統。除非你提交意見回饋報告 (Alt-Shift-I) 並在其中包含成效資料，否則 Google 不會收到任何相關資料。你可以隨時回到這個畫面停用收集功能。</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (擴充功能 ID：「<ph name="EXTENSION_ID" />」) 無法在登入畫面使用。</translation>
 <translation id="3807747707162121253">取消(&amp;C)</translation>
+<translation id="3808202562160426447">調暗背景內容</translation>
 <translation id="3808443763115411087">Crostini Android 應用程式開發</translation>
 <translation id="38089336910894858">使用 ⌘Q 關閉前顯示警告訊息</translation>
 <translation id="3809272675881623365">兔子</translation>
@@ -3652,6 +3653,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4366138410738374926">已開始列印</translation>
+<translation id="4367513928820380646">查看已移除的權限</translation>
 <translation id="4369121877634339065">在任一圖片上拖曳游標即可搜尋</translation>
 <translation id="4369215744064167350">已核准網站要求</translation>
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
@@ -3834,7 +3836,6 @@
 <translation id="4533985347672295764">CPU 時間</translation>
 <translation id="4534661889221639075">請再試一次。</translation>
 <translation id="4535127706710932914">預設設定檔</translation>
-<translation id="4535767533210902251">指紋感應器位於鍵盤右上方，請用任何一隻手指輕觸指紋感應器。</translation>
 <translation id="4536140153723794651">一律可以使用 Cookie 的網站</translation>
 <translation id="4536769240747010177">網路共用功能：</translation>
 <translation id="4538417792467843292">刪除文字</translation>
@@ -4371,6 +4372,7 @@
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="504561833207953641">正於現有瀏覽器工作階段中開啟。</translation>
 <translation id="5049614114599109018">使用輸入歷史記錄</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{這個網站最近傳送了大量通知。你可以禁止這個網站再傳送通知。}other{這些網站最近傳送了大量通知，你可以禁止這些網站再傳送通知。}}</translation>
 <translation id="5051836348807686060">你選取的語言不支援拼字檢查功能</translation>
 <translation id="5052499409147950210">編輯網站</translation>
 <translation id="505347685865235222">未命名的群組 - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5476,7 +5478,6 @@
 <translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
 <translation id="6087960857463881712">好看的臉蛋</translation>
 <translation id="608912389580139775">如要將這個網頁加入閱讀清單，請按一下「書籤」圖示</translation>
-<translation id="6091116443517744502">請檢查網際網路連線，然後再試一次</translation>
 <translation id="6091761513005122595">已成功共用掛接的裝置。</translation>
 <translation id="6093803049406781019">刪除設定檔</translation>
 <translation id="6093888419484831006">正在取消更新...</translation>
@@ -6782,7 +6783,6 @@
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7353261921908507769">聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>
 <translation id="735361434055555355">正在安裝 Linux...</translation>
-<translation id="7354341762311560488">指紋感應器位於鍵盤左下方，請單指輕觸這個按鍵。</translation>
 <translation id="7356908624372060336">網路記錄</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7358324924540718595">今天隱藏回憶集錦</translation>
@@ -7264,6 +7264,7 @@
 <translation id="7775694664330414886">分頁已移至包含「<ph name="GROUP_CONTENTS" />」的未命名群組</translation>
 <translation id="7776156998370251340">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以讀取「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="7776701556330691704">找不到語音</translation>
+<translation id="7777624210360383048">「<ph name="EXTENSION_NAME" />」的快速鍵 <ph name="SHORTCUT" /></translation>
 <translation id="7781335840981796660">系統將移除所有使用者帳戶和本機資料。</translation>
 <translation id="7782102568078991263">沒有更多來自 Google 的建議</translation>
 <translation id="7782717250816686129">儲存登入畫面中的永久資料，並在工作階段中置入憑證。</translation>
@@ -7296,6 +7297,7 @@
 <translation id="7807711621188256451">一律允許 <ph name="HOST" /> 存取你的攝影機</translation>
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>
+<translation id="7815583197273433531">編輯「<ph name="EXTENSION_NAME" />」的快速鍵 <ph name="SHORTCUT" /></translation>
 <translation id="7815680994978050279">已封鎖危險下載內容</translation>
 <translation id="7817361223956157679">Linux 應用程式目前不支援螢幕小鍵盤</translation>
 <translation id="7818135753970109980">已新增以下主題：<ph name="EXTENSION_NAME" /></translation>
@@ -7370,6 +7372,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">查看帳戶</translation>
 <translation id="7883792253546618164">你隨時可以取消訂閱。</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{查看傳送大量通知的網站 (1 個)}other{查看傳送大量通知的網站 ({NUM_SITES} 個)}}</translation>
 <translation id="788453346724465748">正在載入帳戶資訊...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 個項目}other{# 個項目}}</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
@@ -7950,7 +7953,6 @@
 <translation id="8398877366907290961">仍要繼續</translation>
 <translation id="8399282673057829204">查看密碼</translation>
 <translation id="8401432541486058167">請輸入與智慧型卡片相關聯的 PIN 碼。</translation>
-<translation id="8404893580027489425">指紋感應器位於「<ph name="DEVICE_TYPE" />」的右側。請單指輕觸這個按鍵。</translation>
 <translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
 <translation id="8407199357649073301">記錄層級：</translation>
 <translation id="8408270600235826886">您可以控制要分享哪些資料給 Google。您隨時可以在「設定」中進行變更。我們會依據《<ph name="BEGIN_LINK" />Google 隱私權政策<ph name="END_LINK" />》的規範使用相關資料。</translation>
@@ -8037,7 +8039,6 @@
 <translation id="8487699605742506766">無線基地台</translation>
 <translation id="8489156414266187072">個人建議只會在你的帳戶上顯示</translation>
 <translation id="8490896350101740396">下列 Kiosk 應用程式「<ph name="UPDATED_APPS" />」已更新。請重新啟動裝置，以完成更新程序。</translation>
-<translation id="8492685019009920170">請以手指輕觸指紋感應器。你的資料會安全儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="8492822722330266509">網頁可以傳送彈出式視窗和使用重新導向</translation>
 <translation id="8492960370534528742">Google Cast 意見回饋</translation>
 <translation id="8493236660459102203">麥克風：</translation>
@@ -8572,7 +8573,6 @@
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>
 <translation id="899657321862108550">隨時隨地享有個人化的 Chrome 體驗</translation>
-<translation id="899676909165543803">指紋感應器位於鍵盤右下方，請用任何一隻手指輕觸指紋感應器。</translation>
 <translation id="8998078711690114234">這種類型的檔案可能不安全。除非你信任 <ph name="ORIGIN" />，否則請勿儲存這個檔案</translation>
 <translation id="8999560016882908256">區段語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">連線至裝置管理工具伺服器失敗，狀態顯示為「<ph name="STATUS_TEXT" />」在「<ph name="FAILURE_TIME" />」的時候</translation>
@@ -8629,6 +8629,7 @@
 <translation id="9040661932550800571">要更新 <ph name="ORIGIN" /> 的密碼嗎？</translation>
 <translation id="9041692268811217999">管理員停用了電腦本機檔案的存取權</translation>
 <translation id="904224458472510106">這項操作無法復原</translation>
+<translation id="9042827002460091668">請檢查你的網際網路連線，然後再試一次</translation>
 <translation id="9042893549633094279">隱私權和安全性</translation>
 <translation id="9044646465488564462">無法連線至網路：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">你的閱讀清單已移至新的側邊面板。按這裡即可體驗。</translation>
@@ -8869,7 +8870,6 @@
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="971510864672937292">要對 <ph name="SITE_NAME" /> 和其底下的所有網站清除相關網站資料和權限嗎？</translation>
 <translation id="971774202801778802">書籤網址</translation>
-<translation id="972996901592717370">用手指輕觸電源按鈕。你的資料會安全儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="973473557718930265">結束</translation>
 <translation id="973558314812359997">游標大小</translation>
 <translation id="975893173032473675">翻譯目標語言</translation>

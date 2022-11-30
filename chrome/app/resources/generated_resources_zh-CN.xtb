@@ -829,7 +829,6 @@
 <translation id="175772926354468439">启用主题背景</translation>
 <translation id="17584710573359123">在 Chrome 应用商店中查看详情</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帐号</translation>
-<translation id="176193854664720708">指纹传感器位于电源按钮中。请用任一根手指轻轻触摸它。</translation>
 <translation id="176272781006230109">购物建议</translation>
 <translation id="1763046204212875858">创建应用快捷方式</translation>
 <translation id="1763808908432309942">在新标签页中打开</translation>
@@ -1070,7 +1069,6 @@
 <translation id="1974821797477522211">连接到网络</translation>
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登录安全设备</translation>
-<translation id="1976928778492259496">指纹传感器位于您 <ph name="DEVICE_TYPE" />的左侧。请用任一根手指轻触它。</translation>
 <translation id="1977965994116744507">需将您的手机靠近您的 <ph name="DEVICE_TYPE" />，才能为其解锁。</translation>
 <translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">关闭这项功能，设备仍然可以发送基本服务（例如系统更新和安全服务）所需的信息。</translation>
@@ -2837,7 +2835,6 @@
 <translation id="3612673635130633812">由&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;下载</translation>
 <translation id="3613134908380545408">显示“<ph name="FOLDER_NAME" />”</translation>
 <translation id="3613422051106148727">在新标签页中打开(&amp;O)</translation>
-<translation id="3615073365085224194">用手指轻触指纹传感器</translation>
 <translation id="3615579745882581859">正在扫描“<ph name="FILE_NAME" />”。</translation>
 <translation id="3615596877979647433">缺少按键。按一个键盘按键即可自定义</translation>
 <translation id="3616113530831147358">音频</translation>
@@ -3824,7 +3821,6 @@
 <translation id="4533985347672295764">CPU 时间</translation>
 <translation id="4534661889221639075">请重试。</translation>
 <translation id="4535127706710932914">默认个人资料</translation>
-<translation id="4535767533210902251">指纹传感器就是键盘右上方的按键。请用任一手指轻触该按键。</translation>
 <translation id="4536140153723794651">始终能使用 Cookie 的网站</translation>
 <translation id="4536769240747010177">网络共享功能：</translation>
 <translation id="4538417792467843292">删除字词</translation>
@@ -5466,7 +5462,6 @@
 <translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
-<translation id="6091116443517744502">请检查互联网连接，然后重试</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
 <translation id="6093803049406781019">删除个人资料</translation>
 <translation id="6093888419484831006">正在取消更新...</translation>
@@ -6772,7 +6767,6 @@
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353261921908507769">附近的所有联系人都可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="735361434055555355">正在安装 Linux…</translation>
-<translation id="7354341762311560488">指纹传感器就是键盘左下角的那个按键。请用任一手指轻触该按键。</translation>
 <translation id="7356908624372060336">网络日志</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7358324924540718595">今天已隐藏回忆集锦</translation>
@@ -7940,7 +7934,6 @@
 <translation id="8398877366907290961">仍然继续</translation>
 <translation id="8399282673057829204">查看密码</translation>
 <translation id="8401432541486058167">请提供与您的智能卡关联的 PIN 码。</translation>
-<translation id="8404893580027489425">指纹传感器位于您 <ph name="DEVICE_TYPE" />的右侧。请用任一根手指轻触它。</translation>
 <translation id="8405046151008197676">了解最近更新的主要内容</translation>
 <translation id="8407199357649073301">日志级别：</translation>
 <translation id="8408270600235826886">您可以控制与 Google 分享哪些数据。您随时可在“设置”中更改此设置。我们会遵照 Google 的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />使用相关数据。</translation>
@@ -8027,7 +8020,6 @@
 <translation id="8487699605742506766">热点</translation>
 <translation id="8489156414266187072">个性化建议仅会显示在您的帐号中</translation>
 <translation id="8490896350101740396">下列自助服务终端应用“<ph name="UPDATED_APPS" />”已更新完毕。请重启设备，以便完成更新流程。</translation>
-<translation id="8492685019009920170">用手指轻触指纹传感器。您的数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="8492822722330266509">网站可以发送弹出式窗口并使用重定向</translation>
 <translation id="8492960370534528742">Google Cast 反馈</translation>
 <translation id="8493236660459102203">麦克风：</translation>
@@ -8562,7 +8554,6 @@
 <translation id="899384117894244799">移除受限用户</translation>
 <translation id="899403249577094719">Netscape 证书基本网址</translation>
 <translation id="899657321862108550">您的“专属”Chrome 浏览器，走到哪带到哪</translation>
-<translation id="899676909165543803">指纹传感器就是键盘右下角的那个按键。请用任一手指轻触该按键。</translation>
 <translation id="8998078711690114234">这种文件可能有安全隐患。请仅在您信任“<ph name="ORIGIN" />”的情况下保存此文件</translation>
 <translation id="8999560016882908256">区段语法错误：<ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">未能成功连接到设备管理服务器，状态为“<ph name="STATUS_TEXT" />”，失败时间为 <ph name="FAILURE_TIME" /></translation>
@@ -8619,6 +8610,7 @@
 <translation id="9040661932550800571">要更新 <ph name="ORIGIN" /> 的密码吗？</translation>
 <translation id="9041692268811217999">您的管理员已禁止访问您计算机上的本地文件</translation>
 <translation id="904224458472510106">此操作无法撤消</translation>
+<translation id="9042827002460091668">请检查互联网连接，然后重试</translation>
 <translation id="9042893549633094279">隐私设置和安全性</translation>
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">您的阅读清单已移至新增的侧边栏中。点击这里即可试用。</translation>
@@ -8859,7 +8851,6 @@
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="971510864672937292">清除 <ph name="SITE_NAME" /> 及其下属所有网站的网站数据和权限？</translation>
 <translation id="971774202801778802">书签网址</translation>
-<translation id="972996901592717370">用手指轻触电源按钮。您的数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="973473557718930265">退出</translation>
 <translation id="973558314812359997">鼠标光标大小</translation>
 <translation id="975893173032473675">要翻译成的语言</translation>

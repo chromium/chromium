@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{အက်ပ်တစ်ခုပိတ်}other{အက်ပ် # ခုပိတ်}}</translation>
 <translation id="4066027111132117168">ဖွင့်ထားသည်၊ <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">လိုင်းအား အတင့်သင့်သာရှိသည်</translation>
+<translation id="4086921558679520050">သင့်စက်ပေါ်ရှိ ပကတိမိုက်ခလုတ် ဖွင့်ပါ</translation>
 <translation id="4112140312785995938">နောက်သို့ ပြန်ရစ်ရန်</translation>
 <translation id="4114315158543974537">'ဖုန်းပင်မ' ဖွင့်ခြင်း</translation>
 <translation id="4115378294792113321">ပန်းခရမ်းရောင်</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /> ရာခိုင်နှုန်း</translation>
 <translation id="4378551569595875038">ချိတ်ဆက်ရန်...</translation>
 <translation id="4379531060876907730">ဤအရာများသည် သင်၏ စတိုင်လပ်စ်ကိရိယာများ ဖြစ်သည်</translation>
+<translation id="4381031910344220229">၎င်းက မိုက်ခရိုဖုန်း ခွင့်ပြုချက်ပါသည့် <ph name="APP_NAME" /> နှင့် အက်ပ်၊ ဝဘ်ဆိုက်အားလုံးကို မိုက်ခရိုဖုန်းသုံးခွင့်ပြုသည်</translation>
 <translation id="4389184120735010762">တပ်ဆင်ထားသည့် မှန်ဘီလူးအတွက် ကီးဘုတ်ဖြတ်လမ်းလင့်ခ်ကို သင်နှိပ်လိုက်ပါသည်။ ၎င်းကို ဖွင့်လိုပါသလား။</translation>
 <translation id="439598569299422042">ခဏရပ်ထားသည်၊ <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ဖန်သားပြင် ထုတ်လွှင့်ခြင်းကို သိမ်း၍မရပါ</translation>
@@ -728,6 +730,7 @@
 <translation id="4987738733603015246">မျက်နှာပြင် ၁၆</translation>
 <translation id="5003993274120026347">နောက် ဝါကျ</translation>
 <translation id="5016558321564993266">ညွှန်မှတ် ပြောင်းရန်ခလုတ်။ <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">စက်မိုက်ခရိုဖုန်း သုံးခွင့် ဖွင့်ထားသည်</translation>
 <translation id="5030687792513154421">အချိန်စေ့ပါပြီ</translation>
 <translation id="5033299697334913360">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> က ဖုန်းအသစ်သို့ ချိတ်ဆက်ထားသည်</translation>
@@ -959,9 +962,11 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> သည် <ph name="MANAGER" /> က စီမံခန့်ခွဲထားသည့် စက်ရှင်ဖြစ်သည်</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ချိတ်ဆက်ပြီးပြီ</translation>
 <translation id="6351032674660237738">အက်ပ်အကြံပြုချက်များ</translation>
+<translation id="6352082849089527770">အမျိုးအမည်မသိ ကွန်ရက်များ</translation>
 <translation id="6359587239691116345">နောက်ဆုံးထုတ်ဝန်ဆောင်မှုနှင့် လုံခြုံရေးတိုးမြှင့်မှုများ ရယူနိုင်သည်။ ဤအပ်ဒိတ်ကို ငြင်းပယ်ပါက သင့်စက် မှန်ကန်စွာ အလုပ်မလုပ်တော့ဘဲ လုံခြုံရေးနှင့် စွမ်းဆောင်မှုပြဿနာများ ကြုံတွေ့ရနိုင်သည်။</translation>
 <translation id="6376931439017688372">ဘလူးတုသ်ကို ဖွင့်ထားသည်</translation>
 <translation id="6381109794406942707">ဤစက်ကိုဖွင့်ရန် သင့်ပင်နံပါတ် ထည့်ပါ။</translation>
+<translation id="638716340450135524">ကင်မရာသုံးခွင့် ဖွင့်ရန်</translation>
 <translation id="639644700271529076">စာလုံးကြီးများကို နှိပ်မထား</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -969,6 +974,7 @@
 <translation id="642644398083277086">အကြောင်းကြားချက်အားလုံးကို ထုတ်ပစ်ရန်</translation>
 <translation id="643147933154517414">အားလုံးပြီးပါပြီ</translation>
 <translation id="6431865393913628856">ဖန်သားပြင် ရိုက်ကူးရန်</translation>
+<translation id="6442259747294754014">စက်မိုက်ခရိုဖုန်း သုံးခွင့် ပိတ်ထားသည်</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />၊ အစီအစဉ် <ph name="NUMBER" /> ခု</translation>
 <translation id="6449483711453944360">Linux အက်ပ်နှင့် ‘ရုပ်ဖျက်’ ဝင်ဒိုးများကို လောလောဆယ် ပံ့ပိုးမထားပါ</translation>
@@ -1133,6 +1139,7 @@
 <translation id="7360036564632145207">ချိတ်ဆက်ပစ္စည်းများ ဆက်တင်အတွက် ဒေတာသုံးခွင့်အကာအကွယ်ကို ပြောင်းခြင်းက စွမ်းဆောင်ရည် ပိုမိုကောင်းမွန်အောင်ပြုလုပ်နိုင်သည်</translation>
 <translation id="736045644501761622">နောက်ခံနှင့် စတိုင် သတ်မှတ်ရန်</translation>
 <translation id="7371404428569700291">ဝင်းဒိုးကို ရိုက်ကူးရန်</translation>
+<translation id="737315737514430195">၎င်းက မိုက်ခရိုဖုန်း ခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို မိုက်ခရိုဖုန်းသုံးခွင့်ပြုသည်</translation>
 <translation id="7377169924702866686">စာလုံးကြီး ဖိနှိပ်ထား။</translation>
 <translation id="7377481913241237033">ကုဒ်ဖြင့် ချိတ်ဆက်ရန်</translation>
 <translation id="7378203170292176219">ရိုက်ကူးမည့်နေရာ ရွေးရန် ဖိဆွဲပါ</translation>
@@ -1201,6 +1208,7 @@
 <translation id="7671610481353807627">အက်ပ်များကို အရောင်ဖြင့်စီထားသည်</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> နှင့် ချိတ်ဆက်ထားသည်၊ <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">ကင်မရာသုံးခြင်းကို <ph name="CAMERA_NAME" /> သို့ သတ်မှတ်လိုက်သည်။</translation>
+<translation id="7689817529363080918">၎င်းက မိုက်ခရိုဖုန်း ခွင့်ပြုချက်ပါသည့် <ph name="APP1_NAME" />၊ <ph name="APP2_NAME" /> နှင့် အက်ပ်၊ ဝဘ်ဆိုက်အားလုံးကို မိုက်ခရိုဖုန်းသုံးခွင့်ပြုသည်</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ဆယ်လူလာကွန်ရက်အသစ် ထည့်ရန်</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> အထိ ဖွင့်ထားသည်</translation>
@@ -1364,6 +1372,7 @@
 <translation id="8598235756057743477">အက်ပ်များကို အမည် (သို့) အရောင်ဖြင့်စီရန်</translation>
 <translation id="8614517853887502247">ကြည့်ရှုမှုဆိုင်ရာ အကာအကွယ်ကို ဖွင့်ထားသောကြောင့် <ph name="APP_1_TITLE" /> နှင့် <ph name="APP_2_TITLE" /> အကြောင်းကြားချက်များကို ဖျောက်ထားသည်</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> သို့ ချိတ်ဆက်ထားသည်</translation>
+<translation id="8630991711272431708">ကင်မရာသုံးခွင့် ပိတ်ရန်</translation>
 <translation id="8631727435199967028">အများသုံးစွဲနိုင်မှု ဆက်တင်များ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ကျန်ပါသည်</translation>

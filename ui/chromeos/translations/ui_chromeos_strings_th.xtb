@@ -45,6 +45,7 @@
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1395262318152388157">แถบเลื่อนสำหรับกรอวิดีโอ</translation>
 <translation id="1399511500114202393">ไม่มีใบรับรองของผู้ใช้</translation>
+<translation id="1403008701842173542">ทุกที่</translation>
 <translation id="1404323374378969387">นอร์เวย์</translation>
 <translation id="1433628812591023318">ต้องย้ายไฟล์ดังกล่าวไปยังไฟล์ Windows เพื่อวางใน Parallels Desktop</translation>
 <translation id="1435838927755162558">แชร์โฟลเดอร์กับ Parallels Desktop</translation>
@@ -133,6 +134,7 @@
 <translation id="2143778271340628265">กำหนดค่าพร็อกซีด้วยตนเอง</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2163152940313951844">อักขระไม่ถูกต้อง: <ph name="CHARACTER_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2184934335987813305">โปรตุเกสด้วยแป้นพิมพ์พีซีสหรัฐฯ แบบสากล</translation>
 <translation id="2193661397560634290">ใช้ไป <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">จีนตัวย่อ</translation>
@@ -447,6 +449,7 @@
 <translation id="4850886885716139402">มุมมอง</translation>
 <translation id="485316830061041779">เยอรมัน</translation>
 <translation id="4867079195717347957">คลิกเพื่อจัดเรียงคอลัมน์จากมากไปหาน้อย</translation>
+<translation id="4867297348137739678">สัปดาห์ที่แล้ว</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ไบต์</translation>
 <translation id="4874569719830985133">ลบทิ้งถาวร</translation>
 <translation id="4880214202172289027">แถบเลื่อนระดับเสียง</translation>
@@ -710,6 +713,7 @@
 <translation id="6973630695168034713">โฟลเดอร์</translation>
 <translation id="6976795442547527108">สิงโต</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
+<translation id="6979737339423435258">ตั้งแต่ต้น</translation>
 <translation id="6989942356279143254">สวีเดน</translation>
 <translation id="6990081529015358884">คุณไม่มีพื้นที่เหลือแล้ว</translation>
 <translation id="6993826899923627728">รายการเหล่านี้อยู่ในถังขยะ</translation>

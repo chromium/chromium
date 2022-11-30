@@ -594,6 +594,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1546280085599573572">Ovo proširenje promijenilo je stranicu koja se prikazuje kada se klikne gumb Početna.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> želi instalirati proširenje <ph name="EXTENSION_TYPE" /> koje može:</translation>
 <translation id="1547808936554660006">Razumijem da se instalirani eSIM profili neće ukloniti izvršavanjem powerwasha</translation>
+<translation id="1547936895218027488">Kliknite ikonu bočne ploče da biste je otvorili</translation>
 <translation id="1549275686094429035">ARC je omogućen</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> želi pristupiti jedinici <ph name="VOLUME_NAME" />. Ta aplikacija može izmijeniti ili izbrisati vaše datoteke.</translation>
 <translation id="1552301827267621511">Proširenje "<ph name="EXTENSION_NAME" />" prebacilo je pretraživanje na domenu <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -836,7 +837,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="175772926354468439">Omogućiti temu</translation>
 <translation id="17584710573359123">Prikaz u Chrome web-trgovini</translation>
 <translation id="1761845175367251960">Računi korisnika <ph name="NAME" /></translation>
-<translation id="176193854664720708">Senzor otiska prsta nalazi se u tipki za uključivanje/isključivanje. Dodirnite ga lagano bilo kojim prstom.</translation>
 <translation id="176272781006230109">prijedlozi za kupnju</translation>
 <translation id="1763046204212875858">Stvaranje prečaca aplikacije</translation>
 <translation id="1763808908432309942">Otvara se u novoj kartici</translation>
@@ -1079,7 +1079,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1974821797477522211">Povezivanje s mrežom</translation>
 <translation id="1975841812214822307">Ukloni...</translation>
 <translation id="1976150099241323601">Prijavi se na sigurnosni uređaj</translation>
-<translation id="1976928778492259496">Senzor otiska prsta nalazi se s lijeve strane uređaja <ph name="DEVICE_TYPE" />. Dodirnite ga lagano bilo kojim prstom.</translation>
 <translation id="1977965994116744507">Približite telefon da biste otključali <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Ukloni adresu</translation>
 <translation id="1979095679518582070">Isključivanje te značajke ne utječe na mogućnost uređaja da šalje informacije koje su potrebne za ključne usluge kao što su ažuriranja sustava i sigurnost.</translation>
@@ -1421,6 +1420,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2287944065963043964">Zaslon za prijavu</translation>
 <translation id="2289270750774289114">Prikaži upit kad web-lokacija želi tražiti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2290615375132886363">Gumbi za kretanje na tabletu</translation>
+<translation id="2291452790265535215">Isprobajte bočnu ploču za oznake, putovanja i ostalo</translation>
 <translation id="229182044471402145">Nije pronađen podudaran font.</translation>
 <translation id="2292848386125228270">Pokrenite <ph name="PRODUCT_NAME" /> kao običan korisnik. Ako ga trebate pokrenuti kao korijenski direktorij radi razvoja, pokrenite ga ponovo s oznakom --no-sandbox.</translation>
 <translation id="2294081976975808113">Privatnost zaslona</translation>
@@ -2850,7 +2850,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3612673635130633812">Datoteku je preuzelo proširenje &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Prikaži <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Otvori u novoj kartici</translation>
-<translation id="3615073365085224194">Prislonite prst na senzor otiska prsta</translation>
 <translation id="3615579745882581859">U tijeku je pregled datoteke <ph name="FILE_NAME" />.</translation>
 <translation id="3615596877979647433">Nedostaje tipka. Pritisnite tipku na tipkovnici da biste je prilagodili</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3843,7 +3842,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4533985347672295764">Vrijeme CPU-a</translation>
 <translation id="4534661889221639075">Pokušajte ponovo.</translation>
 <translation id="4535127706710932914">Zadani profil</translation>
-<translation id="4535767533210902251">Senzor otiska prsta nalazi se u najvišoj tipki s desne strane tipkovnice. Dodirnite ga lagano bilo kojim prstom.</translation>
 <translation id="4536140153723794651">Web-lokacije koje uvijek mogu upotrebljavati kolačiće</translation>
 <translation id="4536769240747010177">Mogućnosti modemskog povezivanja:</translation>
 <translation id="4538417792467843292">Izbriši riječ</translation>
@@ -3910,6 +3908,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="459204634473266369">Nijedan uređaj nije spremljen na <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplikacija za crtanje pisaljkom</translation>
 <translation id="4593021220803146968">&amp;Idi na <ph name="URL" /></translation>
+<translation id="4594218792629569101">Odaberite Označi kao pročitano da biste premjestili stranicu na dno popisa</translation>
 <translation id="4594577641390224176">Tražite li stranicu s informacijama o sustavu? Otvorite</translation>
 <translation id="4595560905247879544">Aplikacije i proširenja može mijenjati samo voditelj (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">U arhivi imate certifikate koji identificiraju ove poslužitelje</translation>
@@ -4417,6 +4416,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5084328598860513926">Prekinuo se tijek davanja pristupa. Pokušajte ponovo ili se obratite vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Provjera ažuriranja</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">Napomena ima više od 1000 znakova</translation>
 <translation id="5086874064903147617">Želite li vratiti zadanu početnu stranicu?</translation>
 <translation id="5087249366037322692">Dodala treća strana</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
@@ -5486,7 +5486,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6087746524533454243">Tražite li stranicu s informacijama o pregledniku? Otvorite</translation>
 <translation id="6087960857463881712">Oduševljeno lice</translation>
 <translation id="608912389580139775">Da biste dodali ovu stranicu na popis za čitanje, kliknite ikonu Oznaka</translation>
-<translation id="6091116443517744502">provjerite internetsku vezu i pokušajte ponovno</translation>
 <translation id="6091761513005122595">Dijeljenje je učitano.</translation>
 <translation id="6093803049406781019">Izbriši profil</translation>
 <translation id="6093888419484831006">Otkazivanje ažuriranja...</translation>
@@ -6581,6 +6580,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7111822978084196600">Dodijelite ovom prozoru naziv</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> stavka</translation>
 <translation id="7113502843173351041">znati vašu e-adrese</translation>
+<translation id="7113974454301513811">Sada dodajte trenutačnu karticu na popis</translation>
 <translation id="7114054701490058191">Zaporke se ne podudaraju</translation>
 <translation id="7114648273807173152">Da biste upotrebljavali Smart Lock za prijavu na Google račun, idite na Postavke &gt; Povezani uređaji &gt; Vaš telefon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nema dostupnih kontakata</translation>
@@ -6796,7 +6796,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7353261921908507769">Vaši kontakti mogu dijeliti s vama kad su u blizini. Prijenosi neće početi prije nego što ih prihvatite.</translation>
 <translation id="735361434055555355">Instaliranje Linuxa...</translation>
-<translation id="7354341762311560488">Senzor otiska prsta nalazi se na zadnjoj donjoj tipki s lijeve strane tipkovnice. Dodirnite ga lagano bilo kojim prstom.</translation>
 <translation id="7356908624372060336">Mrežni zapisnici</translation>
 <translation id="735745346212279324">Veza s VPN-om prekinuta</translation>
 <translation id="7358324924540718595">Uspomene su skrivene za danas</translation>
@@ -7967,7 +7966,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8398877366907290961">Svejedno nastavi</translation>
 <translation id="8399282673057829204">Prikaži zaporku</translation>
 <translation id="8401432541486058167">Unesite PIN za pametnu karticu.</translation>
-<translation id="8404893580027489425">Senzor otiska prsta nalazi se s desne strane uređaja <ph name="DEVICE_TYPE" />. Dodirnite ga lagano bilo kojim prstom.</translation>
 <translation id="8405046151008197676">Primite najzanimljivije dijelove najnovijeg ažuriranja</translation>
 <translation id="8407199357649073301">Razina zapisnika:</translation>
 <translation id="8408270600235826886">Možete odrediti koji će se podaci dijeliti s Googleom. To uvijek možete promijeniti u postavkama. Podaci će se koristiti u skladu s Googleovim <ph name="BEGIN_LINK" />pravilima o privatnosti<ph name="END_LINK" />.</translation>
@@ -8054,7 +8052,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8487699605742506766">Žarišna točka</translation>
 <translation id="8489156414266187072">Osobni prijedlozi prikazuju se samo na vašem računu</translation>
 <translation id="8490896350101740396">Ažurirane su sljedeće aplikacije kioska: "<ph name="UPDATED_APPS" />". Ponovo pokrenite uređaj da biste dovršili postupak ažuriranja.</translation>
-<translation id="8492685019009920170">Prislonite prst na senzor otiska prsta. Podaci se sigurno pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Web-lokacije mogu slati skočne prozore i upotrebljavati preusmjeravanja</translation>
 <translation id="8492960370534528742">Povratne informacije o Google Castu</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
@@ -8444,6 +8441,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8859174528519900719">Podokvir: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Učitavanje Uvjeta pružanja usluge nije uspjelo</translation>
 <translation id="8859662783913000679">Račun roditelja</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} račun}one{{COUNT} račun}few{{COUNT} računa}other{{COUNT} računa}}</translation>
 <translation id="8861568709166518036">Pomoću gumba na zaslonu krećite se aplikacijama, vratite se na njih i prebacujte se između aplikacija. Uključuje se automatski ako su uključeni ChromeVox ili automatski klikovi.</translation>
 <translation id="8862003515646449717">Prijeđite na brz preglednik</translation>
 <translation id="8863753581171631212">Otvori vezu u novom prozoru aplikacije <ph name="APP" /></translation>
@@ -8591,7 +8589,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="899384117894244799">Uklanjanje ograničenog korisnika</translation>
 <translation id="899403249577094719">Osnovni URL Netscape certifikata</translation>
 <translation id="899657321862108550">Vaš Chrome, posvuda</translation>
-<translation id="899676909165543803">Senzor otiska prsta nalazi se u najdonjoj tipki s desne strane tipkovnice. Dodirnite ga lagano bilo kojim prstom.</translation>
 <translation id="8998078711690114234">Ta vrsta datoteke može biti opasna. Spremite datoteku samo ako izvor <ph name="ORIGIN" /> smatrate pouzdanim</translation>
 <translation id="8999560016882908256">Sintaktička pogreška odjeljka: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Povezivanje s poslužiteljem upravljanja uređajima nije uspjelo uz status "<ph name="STATUS_TEXT" />" u <ph name="FAILURE_TIME" /></translation>
@@ -8648,6 +8645,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="9040661932550800571">Želite li ažurirati zaporku za <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Pristup lokalnim datotekama na vašem računalu onemogućio je administrator</translation>
 <translation id="904224458472510106">Ta se radnja ne može poništiti</translation>
+<translation id="9042827002460091668">Provjerite internetsku vezu i pokušajte ponovo</translation>
 <translation id="9042893549633094279">Privatnost i sigurnost</translation>
 <translation id="9044646465488564462">Povezivanje s mrežom nije uspjelo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Vaš popis za čitanje premješten je na novu bočnu ploču. Isprobajte ga ovdje.</translation>
@@ -8817,6 +8815,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="9201842707396338580">Nešto nije u redu. Obratite se vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profiliranje omogućeno</translation>
 <translation id="9203904171912129171">Odaberite uređaj</translation>
+<translation id="920410963177453528">Kliknite padajući izbornik da biste odabrali drugu ploču</translation>
 <translation id="9206889157914079472">Pisanje bilješki pisaljkom na zaključanom zaslonu</translation>
 <translation id="9208192193641542858">Lokalni podaci zaštićeni su vašom starom zaporkom. Ako ste nedavno promijenili zaporku, pokušajte ponovo sa starom zaporkom.</translation>
 <translation id="9209563766569767417">Provjera postavljanja Linuxovog spremnika</translation>
@@ -8888,7 +8887,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="971510864672937292">Želite li izbrisati podatke web-lokacije i dopuštenja za web-lokaciju <ph name="SITE_NAME" /> i sve njoj podređene web-lokacije?</translation>
 <translation id="971774202801778802">URL oznake</translation>
-<translation id="972996901592717370">Prstom dodirnite tipku za uključivanje/isključivanje. Podaci se sigurno pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Odustani</translation>
 <translation id="973558314812359997">Veličina miša</translation>
 <translation id="975893173032473675">Jezik na koji se prevodi</translation>

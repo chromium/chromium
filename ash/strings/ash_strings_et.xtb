@@ -555,6 +555,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Rak. puhul väljas}other{# rak. puhul väljas}}</translation>
 <translation id="4066027111132117168">Sees, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Keskmine signaal</translation>
+<translation id="4086921558679520050">Lülitage oma seadme füüsiline mikrofonilüliti sisse</translation>
 <translation id="4112140312785995938">Keri tagasi</translation>
 <translation id="4114315158543974537">Lülita Phone Hub sisse</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -607,6 +608,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /> protsenti</translation>
 <translation id="4378551569595875038">Ühendamine ...</translation>
 <translation id="4379531060876907730">Need on teie elektronpliiatsi tööriistad</translation>
+<translation id="4381031910344220229">See lubab rakendusel <ph name="APP_NAME" /> ning kõikidel mikrofonile juurdepääsemise loaga rakendustel ja veebisaitidel mikrofonile juurde pääseda</translation>
 <translation id="4389184120735010762">Vajutasite dokitud luubi otseteed. Kas soovite luubi sisse lülitada?</translation>
 <translation id="439598569299422042">Pausil, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ei saa ekraaniülekannet salvestada</translation>
@@ -960,6 +962,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on hallatud seanss, mida haldab <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> on ühendatud</translation>
 <translation id="6351032674660237738">RAKENDUSTE SOOVITUSED</translation>
+<translation id="6352082849089527770">Tundmatud võrgud</translation>
 <translation id="6359587239691116345">Hankige uusimad funktsioonid ja turvatäiustused. Kui sellest värskendusest keeldute, ei pruugi teie seade enam korralikult töötada ning võite kogeda turva- ja toimivusprobleeme.</translation>
 <translation id="6376931439017688372">Bluetooth on sisse lülitatud</translation>
 <translation id="6381109794406942707">Seadme avamiseks sisestage oma PIN-kood.</translation>
@@ -1134,6 +1137,7 @@ Uus installimine</translation>
 <translation id="7360036564632145207">Välisseadmete jaoks andmetele juurdepääsu kaitse seade muutmine võib jõudlust optimeerida</translation>
 <translation id="736045644501761622">Taustapildi ja stiili seadistamine</translation>
 <translation id="7371404428569700291">Akna salvestamine</translation>
+<translation id="737315737514430195">See lubab kõikidel mikrofonile juurdepääsemise loaga rakendustel ja veebisaitidel mikrofonile juurde pääseda</translation>
 <translation id="7377169924702866686">Suurtähelukk on sisse lülitatud.</translation>
 <translation id="7377481913241237033">Ühendamine koodiga</translation>
 <translation id="7378203170292176219">Lohistage salvestatava piirkonna valimiseks</translation>
@@ -1202,6 +1206,7 @@ Uus installimine</translation>
 <translation id="7671610481353807627">Rakendused on sorditud värvi järgi</translation>
 <translation id="7672095158465655885">Ühendatud võrguga <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kaamerasisendiks on määratud <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">See lubab rakendustel <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ning kõikidel mikrofonile juurdepääsemise loaga rakendustel ja veebisaitidel mikrofonile juurde pääseda</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Lisa uus mobiilsidevõrk</translation>
 <translation id="7720400844887872976">Sisse lülitatud kuni <ph name="TIME" /></translation>

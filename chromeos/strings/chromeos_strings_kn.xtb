@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">ಸಮಸ್ಯೆ ನಿವಾರಣೆ ಮಾಡುವ ಹಂತಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಹಾಗೂ ಸ್ಕ್ರೀನ್ ಸೇವರ್ ವೀಕ್ಷಿಸಲು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2085089206770112532">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರಖರತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="2105810540595158374">ಸಾಧನವು ಗೇಮ್ ಕಂಟ್ರೋಲ್ ಆಗಿದೆ.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">ಕುಗ್ಗಿಸುವಿಕೆ ಅಲ್ಗಾರಿದಮ್</translation>
 <translation id="4794140124556169553">CPU ಪರೀಕ್ಷೆಯನ್ನು ರನ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಸಿಸ್ಟಂ ಕಾರ್ಯಕ್ಷಮತೆಯ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರಬಹುದು</translation>
 <translation id="4800589996161293643">Chromebook ಸಮುದಾಯ</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4809927044794281115">ಲೈಟ್ ಥೀಮ್‌</translation>
 <translation id="4813136279048157860">ನನ್ನ ಚಿತ್ರಗಳು</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">ಒತ್ತಡ</translation>
 <translation id="4897058166682006107">ಸಾಧನದ ಎಡ ಇಯರ್‌ಬಡ್ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="4905998861748258752">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಲು ವೈಶಿಷ್ಟ್ಯವನ್ನು ಆನ್ ಮಾಡಿ</translation>
+<translation id="4910858703033903787">APN ಪ್ರಕಾರಗಳು</translation>
 <translation id="4917385247580444890">ಪ್ರಬಲ</translation>
 <translation id="4917889632206600977">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಪೇಪರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="491791267030419270">ಪ್ರತಿಕ್ರಿಯೆ ಬರೆಯುವ ಕುರಿತು ಸಲಹೆಗಳು</translation>
@@ -459,6 +462,7 @@
 <translation id="5358174242040570474">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ವಾಲ್‌ಪೇಪರ್ ಆಯ್ಕೆ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಪುನಃ ಆ್ಯಪ್ ತೆರೆಯಿರಿ.</translation>
 <translation id="5372659122375744710">ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="5376354385557966694">ಸ್ವಯಂಚಾಲಿತ ಬೆಳಕಿನ ಮೋಡ್</translation>
+<translation id="5378184552853359930">IP ಪ್ರಕಾರ</translation>
 <translation id="5389159777326897627">ವಾಲ್‌ಪೇಪರ್ &amp; ಸ್ಟೈಲ್</translation>
 <translation id="5389224261615877010">ಕಾಮನಬಿಲ್ಲಿನ ಬಣ್ಣ</translation>
 <translation id="5400907029458559844">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗುತ್ತಿದೆ.</translation>
@@ -742,6 +746,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">ಲಗತ್ತಿಸಿ</translation>
 <translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8208861521865154048">ಪರ್ಕ್‌ಗಳು</translation>
 <translation id="8226628635270268143">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಆಲ್ಬಮ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -830,6 +835,7 @@
 <translation id="9025198690966128418">ವೈಯಕ್ತಿಕ ಸಾಧನವಾಗಿ ಬಳಸಿ</translation>
 <translation id="9028832514430399253">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಲು ಟಾಗಲ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS ರೆಸಲ್ಯೂಷನ್ ಹೆಚ್ಚಿನ ಲೇಟೆನ್ಸಿಯನ್ನು ಹೊಂದಿದೆ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>

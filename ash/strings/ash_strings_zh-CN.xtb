@@ -728,6 +728,7 @@
 <translation id="4987738733603015246">桌面 16</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5016558321564993266">开启/关闭标记工具。<ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">设备麦克风使用权限已开启</translation>
 <translation id="5030687792513154421">时间到</translation>
 <translation id="5033299697334913360">点击任意位置即可截取整个屏幕</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />已连接到新手机</translation>
@@ -962,6 +963,7 @@
 <translation id="6359587239691116345">获取最新的功能和安全性方面的改进。如果您拒绝此更新，您的设备可能会无法继续正常运行，您则可能会遇到安全问题和性能问题。</translation>
 <translation id="6376931439017688372">蓝牙已开启</translation>
 <translation id="6381109794406942707">要解锁此设备，请输入您的 PIN 码。</translation>
+<translation id="638716340450135524">开启摄像头使用权限</translation>
 <translation id="639644700271529076">CAPS LOCK 已关闭</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google 助理</translation>
@@ -969,6 +971,7 @@
 <translation id="642644398083277086">清除所有通知</translation>
 <translation id="643147933154517414">大功告成</translation>
 <translation id="6431865393913628856">屏幕录制</translation>
+<translation id="6442259747294754014">设备麦克风使用权限已关闭</translation>
 <translation id="6445835306623867477">正在将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
 <translation id="6449483711453944360">尚不支持 Linux 应用和无痕式窗口</translation>
@@ -1361,6 +1364,7 @@
 <translation id="8598235756057743477">按名称或颜色将您的应用排序</translation>
 <translation id="8614517853887502247">由于窥探保护功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />和<ph name="APP_2_TITLE" />通知</translation>
 <translation id="8627191004499078455">已连接到<ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">关闭摄像头使用权限</translation>
 <translation id="8631727435199967028">无障碍设置</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="8639760480004882931">剩余电量：<ph name="PERCENTAGE" /></translation>

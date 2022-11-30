@@ -836,7 +836,6 @@
 <translation id="175772926354468439">Միացնել ոճը</translation>
 <translation id="17584710573359123">Դիտել Chrome Web Store-ում</translation>
 <translation id="1761845175367251960"><ph name="NAME" />-ի հաշիվը</translation>
-<translation id="176193854664720708">Մատնահետքի սենսորը սնուցման կոճակի վրա է։ Ցանկացած մատով թեթևակի հպեք դրան։</translation>
 <translation id="176272781006230109">գնումների առաջարկներ</translation>
 <translation id="1763046204212875858">Հավելվածների դյուրանցումների ստեղծում</translation>
 <translation id="1763808908432309942">Բացում է նոր ներդիրում</translation>
@@ -1079,7 +1078,6 @@
 <translation id="1974821797477522211">Միացում ցանցին</translation>
 <translation id="1975841812214822307">Հեռացնել…</translation>
 <translation id="1976150099241323601">Մուտք անվտանգության սարք</translation>
-<translation id="1976928778492259496">Մատնահետքի սկաները գտնվում է ձեր <ph name="DEVICE_TYPE" /> սարքի ձախ մասում։ Մատով թեթևակի հպեք դրան։</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> սարքն ապակողպելու համար մոտեցրեք հեռախոսը։</translation>
 <translation id="1978057560491495741">Հասցեի հեռացում</translation>
 <translation id="1979095679518582070">Այս գործառույթն անջատելու դեպքում ձեր սարքը նախկինի պես կուղարկի տվյալներ, որոնք անհրաժեշտ են հիմնական ծառայություններին (օրինակ՝ համակարգային թարմացումներին ու անվտանգությանը)։</translation>
@@ -2849,7 +2847,6 @@
 <translation id="3612673635130633812">Ներբեռնվել է &lt;a href=«<ph name="URL" />»&gt;<ph name="EXTENSION" />&lt;/a&gt; ընդլայնման կողմից</translation>
 <translation id="3613134908380545408">Ցուցադրել <ph name="FOLDER_NAME" /> պանակը</translation>
 <translation id="3613422051106148727">&amp;Բացել նոր ներդիրում</translation>
-<translation id="3615073365085224194">Մատով հպեք մատնահետքերի սկաներին</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> ֆայլը սկանավորվում է։</translation>
 <translation id="3615596877979647433">Ստեղնը նշված չէ։ Սեղմեք այն՝ կարգավորելու համար։</translation>
 <translation id="3616113530831147358">Աուդիո</translation>
@@ -3842,7 +3839,6 @@
 <translation id="4533985347672295764">CPU-ի ժամանակը</translation>
 <translation id="4534661889221639075">Նորից փորձեք:</translation>
 <translation id="4535127706710932914">Կանխադրված պրոֆիլ</translation>
-<translation id="4535767533210902251">Մատնահետքերի սկաները ստեղնաշարի աջ կողմի ստեղնն է: Որևէ մատով թեթևակի հպեք դրան։</translation>
 <translation id="4536140153723794651">Կայքեր, որոնք միշտ կարող են օգտագործել քուքիներ</translation>
 <translation id="4536769240747010177">Մոդեմի ռեժիմի հնարավորություններ</translation>
 <translation id="4538417792467843292">Ջնջել բառը</translation>
@@ -5488,7 +5484,6 @@
 <translation id="6087746524533454243">Դիտարկիչի մասին է՞ջն եք փնտրում։ Անցեք</translation>
 <translation id="6087960857463881712">Հիացած դեմք</translation>
 <translation id="608912389580139775">Այս էջը ձեր ընթերցանության ցանկում ավելացնելու համար սեղմեք «Էջանիշ» պատկերակը</translation>
-<translation id="6091116443517744502">ստուգեք ձեր ինտերնետ կապը և նորից փորձեք</translation>
 <translation id="6091761513005122595">Թույլտվությունը տրամադրվեց։</translation>
 <translation id="6093803049406781019">Ջնջել պրոֆիլը</translation>
 <translation id="6093888419484831006">Թարմացումը չեղարկվում է…</translation>
@@ -6796,7 +6791,6 @@
 <translation id="7352651011704765696">Ինչ-որ սխալ տեղի ունեցավ</translation>
 <translation id="7353261921908507769">Ձեր կոնտակտները կարող են տվյալներով կիսվել ձեզ հետ, երբ մոտակայքում են։ Տվյալների փոխանցումը չի սկսվի, մինչև դուք չհաստատեք։</translation>
 <translation id="735361434055555355">Linux-ը տեղադրվում է...</translation>
-<translation id="7354341762311560488">Մատնահետքերի սկաները ստեղնաշարի ձախ կողմի ստեղնն է (ներքևում)։ Ցանկացած մատով թեթևակի հպեք այդ ստեղնին։</translation>
 <translation id="7356908624372060336">Ցանցային մատյաններ</translation>
 <translation id="735745346212279324">VPN-ն ապակապակցված է</translation>
 <translation id="7358324924540718595">Հիշողություններն այսօր թաքցված են</translation>
@@ -7965,7 +7959,6 @@
 <translation id="8398877366907290961">Շարունակել</translation>
 <translation id="8399282673057829204">Ցույց տալ գաղտնաբառը</translation>
 <translation id="8401432541486058167">Մուտքագրեք PIN կոդը, որը կապված է ձեր խելացի քարտի հետ։</translation>
-<translation id="8404893580027489425">Մատնահետքի սկաները գտնվում է ձեր <ph name="DEVICE_TYPE" /> սարքի աջ մասում։ Մատով թեթևակի հպեք դրան։</translation>
 <translation id="8405046151008197676">Ծանոթացեք վերջին թարմացման մասին հիմնական տեղեկություններին</translation>
 <translation id="8407199357649073301">Գրառման մակարդակը՝</translation>
 <translation id="8408270600235826886">Դուք եք որոշում, թե ինչ տեղեկատվություններ ուղարկել Google-ին։ Այս գործառույթը ցանկացած ժամանակ կարող եք փոփոխել կարգավորումներում։ Տվյալները կօգտագործվեն Google-ի <ph name="BEGIN_LINK" />գաղտնիության քաղաքականության<ph name="END_LINK" /> համաձայն։</translation>
@@ -8052,7 +8045,6 @@
 <translation id="8487699605742506766">Թեժ կետ</translation>
 <translation id="8489156414266187072">Անհատական առաջարկները ցուցադրվում են միայն ձեր հաշվում</translation>
 <translation id="8490896350101740396">Թարմացվել են հետևյալ kiosk հավելվածները՝ «<ph name="UPDATED_APPS" />»: Թարմացումն ավարտելու համար վերագործարկեք սարքը:</translation>
-<translation id="8492685019009920170">Մատով հպեք մատնահետքերի սկաներին։ Մատնահետքի տվյալները պահվում են և միայն ձեր <ph name="DEVICE_TYPE" /> սարքում։</translation>
 <translation id="8492822722330266509">Կայքերը կարող են ելնող պատուհաններ ցուցադրել և վերահասցեավորումներ օգտագործել</translation>
 <translation id="8492960370534528742">Google Cast-ի հետադարձ կապ</translation>
 <translation id="8493236660459102203">Խոսափող`</translation>
@@ -8588,7 +8580,6 @@
 <translation id="899384117894244799">Հեռացնել սահմանափակ հասանելիությամբ օգտատիրոջը</translation>
 <translation id="899403249577094719">Netscape-ի վկայագրերի բազայի URL</translation>
 <translation id="899657321862108550">Ձեր Chrome-ը՝ ամենուր ձեզ հետ</translation>
-<translation id="899676909165543803">Մատնահետքերի սկաները ստեղնաշարի աջ կողմի ստեղնն է (ներքևում): Որևէ մատով թեթևակի հպեք դրան։</translation>
 <translation id="8998078711690114234">Այս տեսակի ֆայլը կարող է վտանգավոր լինել։ Պահեք այն, միայն եթե վստահում եք <ph name="ORIGIN" /> կայքին</translation>
 <translation id="8999560016882908256">Բաժնի շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Սարքերի կառավարիչի սերվերի միացումը ձախողվեց <ph name="FAILURE_TIME" /> «<ph name="STATUS_TEXT" />» կարգավիճակով</translation>
@@ -8645,6 +8636,7 @@
 <translation id="9040661932550800571">Թարմացնե՞լ <ph name="ORIGIN" /> կայքի գաղտնաբառը</translation>
 <translation id="9041692268811217999">Ադմինիստրատորն արգելափակել է ձեր համակարգչի տեղային ֆայլերի օգտագործումը</translation>
 <translation id="904224458472510106">Այս գործողությունը հնարավոր չէ հետարկել</translation>
+<translation id="9042827002460091668">Ստուգեք ձեր ինտերնետ կապը և նորից փորձեք</translation>
 <translation id="9042893549633094279">Գաղտնիություն և անվտանգություն</translation>
 <translation id="9044646465488564462">Չհաջողվեց կապակցվել ցանցին` <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Ձեր ընթերցանության ցուցակը տեղափոխվել է նոր կողային վահանակ։ Փորձեք այն այստեղ։</translation>
@@ -8885,7 +8877,6 @@
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 ներդիր}one{# ներդիր}other{# ներդիր}}</translation>
 <translation id="971510864672937292">Մաքրե՞լ <ph name="SITE_NAME" /> կայքի և դրա ենթադաս բոլոր կայքերի տվյալներն ու թույլտվությունները</translation>
 <translation id="971774202801778802">Էջանիշի URL-ն</translation>
-<translation id="972996901592717370">Մատով հպեք սնուցման կոճակին։ Մատնահետքի տվյալները պահվում են և միայն ձեր <ph name="DEVICE_TYPE" /> սարքում։</translation>
 <translation id="973473557718930265">Դուրս գալ</translation>
 <translation id="973558314812359997">Մկնիկի չափսը</translation>
 <translation id="975893173032473675">Թարգմանության լեզուն</translation>

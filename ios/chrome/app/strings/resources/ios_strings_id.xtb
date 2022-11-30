@@ -133,6 +133,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1981118202195772574">Seluler</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
+<translation id="1990820278544963435">Temukan</translation>
 <translation id="199425419756152024">Lihat Sandi</translation>
 <translation id="2010008505735295285">Muat ulang</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
@@ -875,6 +876,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7531345132340165516">Situs Ini</translation>
 <translation id="7537586195939242955">Maaf, Pass Anda tidak dapat dipasang ke Passbook saat ini.</translation>
 <translation id="7553234618121028547">Untuk menonaktifkan, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /> lalu buka Opsi Sandi.</translation>
+<translation id="7554645225856321710">Tutup Semua</translation>
 <translation id="7554791636758816595">Tab Baru</translation>
 <translation id="7561196759112975576">Selalu</translation>
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Samaran.</translation>
@@ -1088,6 +1090,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9188680907066685419">Keluar dari akun terkelola</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> h lalu</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Telusuri Tab…</translation>
 <translation id="9223358826628549784">Laporan kerusakan terkirim.</translation>
 <translation id="941747855997058526">Pilih Sandi ...</translation>
 <translation id="952704832371081537">Batal</translation>

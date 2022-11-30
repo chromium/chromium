@@ -730,6 +730,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4987738733603015246">Desk 16</translation>
 <translation id="5003993274120026347">Susunod na pangungusap</translation>
 <translation id="5016558321564993266">I-toggle ang marker. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Naka-on ang access sa mikropono ng device</translation>
 <translation id="5030687792513154421">Tapos na ang oras</translation>
 <translation id="5033299697334913360">Mag-click kahit saan para i-capture ang full screen</translation>
 <translation id="5035236842988137213">Kumonekta ang <ph name="DEVICE_NAME" /> sa isang bagong telepono</translation>
@@ -965,6 +966,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6359587239691116345">Makuha ang mga pinakabagong feature at pagpapahusay sa seguridad. Kung tatanggihan mo ang update na ito, posibleng hindi na gumana nang maayos ang iyong device, at posible kang makaranas ng mga isyu sa seguridad at performance.</translation>
 <translation id="6376931439017688372">Naka-on ang Bluetooth</translation>
 <translation id="6381109794406942707">Para i-unlock ang device, ilagay ang iyong PIN.</translation>
+<translation id="638716340450135524">I-on ang access sa camera</translation>
 <translation id="639644700271529076">Naka-off ang CAPS LOCK</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -972,6 +974,7 @@ Isaksak ang iyong device.</translation>
 <translation id="642644398083277086">I-clear ang lahat ng notification</translation>
 <translation id="643147933154517414">Tapos na ang lahat</translation>
 <translation id="6431865393913628856">Pag-record ng screen</translation>
+<translation id="6442259747294754014">Naka-off ang access sa mikropono ng device</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> event</translation>
 <translation id="6449483711453944360">Kasalukuyang hindi sinusuportahan ang mga Linux app at Incognito window</translation>
@@ -1369,6 +1372,7 @@ Kaka-install lang</translation>
 <translation id="8598235756057743477">Pagbukud-bukurin ang iyong mga app ayon sa pangalan o kulay</translation>
 <translation id="8614517853887502247">Nakatago ang mga notification sa <ph name="APP_1_TITLE" /> at <ph name="APP_2_TITLE" /> dahil naka-on ang proteksyon sa pagtingin</translation>
 <translation id="8627191004499078455">Nakakonekta sa <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">I-off ang access sa camera</translation>
 <translation id="8631727435199967028">Mga Setting ng Pagiging Accessible</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> na lang ang natitira</translation>

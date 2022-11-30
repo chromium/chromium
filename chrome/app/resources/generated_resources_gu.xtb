@@ -831,7 +831,6 @@
 <translation id="175772926354468439">થીમ ચાલુ કરો</translation>
 <translation id="17584710573359123">Chrome વેબ સ્ટોરમાં જુઓ</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ના એકાઉન્ટ</translation>
-<translation id="176193854664720708">ફિંગરપ્રિન્ટ સેન્સર એ પાવર બટનમાં ઉપલબ્ધ છે. તેને કોઈપણ આંગળીથી હળવેથી સ્પર્શ કરો.</translation>
 <translation id="176272781006230109">શૉપિંગ માટેના સૂચનો</translation>
 <translation id="1763046204212875858">ઍપ્લિકેશન શૉર્ટકટ્સ બનાવો</translation>
 <translation id="1763808908432309942">નવા ટૅબમાં ખૂલે છે</translation>
@@ -1074,7 +1073,6 @@
 <translation id="1974821797477522211">નેટવર્ક સાથે કનેક્ટ કરો</translation>
 <translation id="1975841812214822307">દૂર કરો ...</translation>
 <translation id="1976150099241323601">સુરક્ષા ઉપકરણ પર સાઇન ઇન કરો </translation>
-<translation id="1976928778492259496">ફિંગરપ્રિન્ટ સેન્સર તમારા <ph name="DEVICE_TYPE" />ની ડાબી બાજુએ છે. તેને કોઈપણ આંગળી વડે હળવેથી સ્પર્શ કરો.</translation>
 <translation id="1977965994116744507">તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરવા તમારા ફોનને વધુ નજીક લાવો.</translation>
 <translation id="1978057560491495741">સરનામું દૂર કરો</translation>
 <translation id="1979095679518582070">આ સુવિધાને બંધ કરવાથી સિસ્ટમ અપડેટ અને સુરક્ષા જેવી આવશ્યક સેવાઓ માટે આવશ્યક માહિતી મોકલવાની આ ડિવાઇસની ક્ષમતાને અસર થતી નથી.</translation>
@@ -1284,6 +1282,7 @@
 <translation id="2157875535253991059">આ પેજ હવે પૂર્ણ સ્ક્રીન છે.</translation>
 <translation id="2158475082070321257">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક કૉપિ કરો</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> માટે <ph name="SHORTCUT" />નું કાર્યક્ષેત્ર</translation>
 <translation id="216169395504480358">વાઇ-ફાઇ ઉમેરો...</translation>
 <translation id="2162155940152307086">એકવાર તમે સિંકના સેટિંગમાંથી બહાર નીકળશો એટલે સિંક શરૂ થઈ જશે</translation>
 <translation id="2162705204091149050">તમારા બ્રાઉઝર, OS, ડિવાઇસ, ઇન્સ્ટૉલ કરેલા સૉફ્ટવેર અને ફાઇલો વિશેની માહિતી વાંચો</translation>
@@ -2670,6 +2669,7 @@
 <translation id="3445047461171030979">Google Assistantનાં ઝડપી જવાબના સેટિંગ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
 <translation id="344537926140058498">આ ફાઇલમાં સંવેદનશીલ અથવા જોખમકારક કન્ટેન્ટ હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે. તેના માલિકને તેને સુધારવાનું કહો.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{તમે તાજેતરમાં મુલાકાત લીધી ન હોય તેવી <ph name="BEGIN_BOLD" />1 સાઇટ<ph name="END_BOLD" /> પરથી પરવાનગીઓ કાઢી નાખવામાં આવી છે}one{તમે તાજેતરમાં મુલાકાત લીધી ન હોય તેવી <ph name="BEGIN_BOLD" />{NUM_SITES} સાઇટ<ph name="END_BOLD" /> પરથી પરવાનગીઓ કાઢી નાખવામાં આવી છે}other{તમે તાજેતરમાં મુલાકાત લીધી ન હોય તેવી <ph name="BEGIN_BOLD" />{NUM_SITES} સાઇટ<ph name="END_BOLD" /> પરથી પરવાનગીઓ કાઢી નાખવામાં આવી છે}}</translation>
 <translation id="3445925074670675829">USB-C ઉપકરણ</translation>
 <translation id="3446274660183028131">Windows ઇન્સ્ટૉલ કરવા માટે કૃપા કરીને Parallels ડેસ્કટૉપ લૉન્ચ કરો.</translation>
 <translation id="344630545793878684">ઘણી વેબસાઇટ્સ પર તમારો ડેટા વાંચી શકે છે</translation>
@@ -2843,7 +2843,6 @@
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; એ ડાઉનલોડ કરી</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> ને દર્શાવો</translation>
 <translation id="3613422051106148727">નવા ટૅબમાં &amp;ખોલો</translation>
-<translation id="3615073365085224194">તમારી આંગળી વડે ફિંગરપ્રિન્ટ સેન્સરને સ્પર્શ કરો</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" />ને સ્કૅન કરવામાં આવી રહી છે.</translation>
 <translation id="3615596877979647433">કી ખૂટે છે. કસ્ટમાઇઝ કરવા માટે કીબોર્ડની કી દબાવો</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
@@ -2881,6 +2880,7 @@
 <translation id="3642699533549879077">જ્યારે કોઈ અન્ય વ્યક્તિ તમારી સ્ક્રીનની તરફ જુએ, ત્યારે તમને અલર્ટ મળશે અને નોટિફિકેશનનું કન્ટેન્ટ છુપું રહેશે.</translation>
 <translation id="3643962751030964445">આ ડિવાઇસ <ph name="DEVICE_MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે. <ph name="DEVICE_MANAGER" />ને <ph name="USER_EMAIL_ADDRESS" /> એકાઉન્ટ માટે કોઈ નવી પ્રોફાઇલની જરૂર છે</translation>
 <translation id="3645372836428131288">ફિંગરપ્રિન્ટનો કોઈ બીજો ભાગ કૅપ્ચર કરવા માટે તેને સહેજ ખસેડો.</translation>
+<translation id="3647051300407077858">નોટિફિકેશનની પરવાનગીઓનો રિવ્યૂ કરો</translation>
 <translation id="3647654707956482440">આ લિંકનો ઉપયોગ કરી શકાતો નથી. ફરી પ્રયાસ કરવા માટે જોડણીની ભૂલ ચેક કરો અથવા બીજી કોઈ લિંકનો ઉપયોગ કરો.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> પાસેથી <ph name="ATTACHMENTS" /> મેળવ્યું}one{<ph name="DEVICE_NAME" /> પાસેથી <ph name="ATTACHMENTS" /> મેળવ્યું}other{<ph name="DEVICE_NAME" /> પાસેથી <ph name="ATTACHMENTS" /> મેળવ્યાં}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> મળ્યું</translation>
@@ -3060,6 +3060,7 @@
 <translation id="380408572480438692">પ્રદર્શન ડેટાના સંગ્રહને ચાલુ કરવું Googleને સમય જતા સિસ્ટમને બહેતર બનાવવામાં મદદ કરશે. જ્યાં સુધી તમે પ્રતિસાદ રિપોર્ટ (Alt-Shift-I) ફાઇલ નહીંં કરો અને પ્રદર્શન ડેટાને સામેલ નહીંં કરો ત્યાં સુધી કોઈ ડેટા મોકલવામાં આવશે નહીંં. તમે કોઈપણ સમયે સંગ્રહને બંધ કરવા માટે આ સ્ક્રીન પર પાછા આવી શકો છો.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (એક્સ્ટેન્શન ID "<ph name="EXTENSION_ID" />") ને લોગિન સ્ક્રીન પર મંજૂરી નથી.</translation>
 <translation id="3807747707162121253">&amp;કેન્સલ કરો</translation>
+<translation id="3808202562160426447">ડિમ બૅકગ્રાઉન્ડવાળું કન્ટેન્ટ</translation>
 <translation id="3808443763115411087">Crostini Android ઍપ વિકસાવવાના સેટિંગ</translation>
 <translation id="38089336910894858">⌘Q વડે બહાર નીકળતા પહેલાં ચેતવણી બતાવો</translation>
 <translation id="3809272675881623365">સસલું</translation>
@@ -3651,6 +3652,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" />, એક વિંડો શેર કરી રહી છે.</translation>
 <translation id="4364830672918311045">નોટિફિકેશન બતાવો</translation>
 <translation id="4366138410738374926">પ્રિન્ટ કરવાનું શરૂ થયું</translation>
+<translation id="4367513928820380646">કાઢી નાખવામાં આવેલી પરવાનગીઓનો રિવ્યૂ કરો</translation>
 <translation id="4369121877634339065">શોધવા માટે કોઈપણ છબી અહીં ખેંચી લાવો</translation>
 <translation id="4369215744064167350">વેબસાઇટ ઍક્સેસ કરવાની વિનંતી મંજૂર કરી</translation>
 <translation id="4370975561335139969">તમે દાખલ કરેલ ઇમેઇલ અને પાસવર્ડ મેળ ખાતા નથી</translation>
@@ -3833,7 +3835,6 @@
 <translation id="4533985347672295764">CPU સમય</translation>
 <translation id="4534661889221639075">ફરી પ્રયાસ કરો.</translation>
 <translation id="4535127706710932914">ડિફૉલ્ટ પ્રોફાઇલ</translation>
-<translation id="4535767533210902251">ફિંગરપ્રિન્ટ સેન્સર એ તમારા કીબોર્ડ પર સૌથી ઉપર જમણી બાજુ સ્થિત કી છે. તેને કોઈપણ આંગળી વડે હળવેથી સ્પર્શ કરો.</translation>
 <translation id="4536140153723794651">હંમેશાં કુકીનો ઉપયોગ કરી શકતી સાઇટ</translation>
 <translation id="4536769240747010177">ઇન્ટરનેટ શેર કરવાની સુવિધાની ક્ષમતાઓ:</translation>
 <translation id="4538417792467843292">શબ્દ ડિલીટ કરો</translation>
@@ -4370,6 +4371,7 @@
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
 <translation id="504561833207953641">હાલના બ્રાઉઝર સત્રમાં ખોલી રહ્યા છીએ.</translation>
 <translation id="5049614114599109018">ઇનપુટ ઇતિહાસનો ઉપયોગ કરો</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{આ સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા. તમે તેને ભવિષ્યમાં નોટિફિકેશન મોકલવાથી રોકી શકો છો.}one{આ સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા. તમે તેને ભવિષ્યમાં નોટિફિકેશન મોકલવાથી રોકી શકો છો.}other{આ બધી સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા. તમે તેમને ભવિષ્યમાં નોટિફિકેશન મોકલવાથી રોકી શકો છો.}}</translation>
 <translation id="5051836348807686060">તમે પસંદ કરેલી ભાષાઓ માટે જોડણીતપાસ સમર્થિત નથી</translation>
 <translation id="5052499409147950210">સાઇટમાં ફેરફાર કરો</translation>
 <translation id="505347685865235222">નામ વિનાનું ગ્રૂપ - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5480,7 +5482,6 @@ USB ડિવાઇસ</translation>
 <translation id="6087746524533454243">શું બ્રાઉઝરની માહિતી ધરાવતું પેજ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="6087960857463881712">અદ્ભુત ચહેરો</translation>
 <translation id="608912389580139775">આ પેજને તમારી વાંચન સૂચિમાં ઉમેરવા માટે, બુકમાર્ક આઇકન પર ક્લિક કરો</translation>
-<translation id="6091116443517744502">કૃપા કરીને તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="6091761513005122595">શેર સફળતાપૂર્વક માઉન્ટ થયું.</translation>
 <translation id="6093803049406781019">પ્રોફાઇલ કાઢી નાખો</translation>
 <translation id="6093888419484831006">અપડેટને રદ કરી રહ્યું છે...</translation>
@@ -6788,7 +6789,6 @@ USB ડિવાઇસ</translation>
 <translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
 <translation id="7353261921908507769">તમારા સંપર્કો જ્યારે નજીકમાં હોય, ત્યારે તેઓ તમારી સાથે શેર કરી શકે છે. તમે સ્વીકારશો નહીં ત્યાં સુધી ટ્રાન્સફર શરૂ થઈ શકશે નહીં.</translation>
 <translation id="735361434055555355">Linux ઇન્સ્ટૉલ કરી રહ્યાં છીએ…</translation>
-<translation id="7354341762311560488">ફિંગરપ્રિન્ટ સેન્સર એ તમારા કીબોર્ડ પર સૌથી નીચે ડાબી બાજુ સ્થિત કી છે. તેને કોઈપણ આંગળી વડે હળવેથી સ્પર્શ કરો.</translation>
 <translation id="7356908624372060336">નેટવર્ક લૉગ</translation>
 <translation id="735745346212279324">VPN ડિસ્કનેક્ટ કર્યું છે</translation>
 <translation id="7358324924540718595">આજના માટે યાદગીરીઓ છુપાવેલી છે</translation>
@@ -7270,6 +7270,7 @@ USB ડિવાઇસ</translation>
 <translation id="7775694664330414886">નામ વિનાના ગ્રૂપ - <ph name="GROUP_CONTENTS" />માં ટૅબને ખસેડવામાં આવી</translation>
 <translation id="7776156998370251340">આ સાઇટ માટે, જ્યાં સુધી તમે બધી ટૅબ બંધ નહીં કરો ત્યાં સુધી <ph name="ORIGIN" />, <ph name="FOLDERNAME" />માંની બધી ફાઇલો જોઈ શકશે</translation>
 <translation id="7776701556330691704">કોઈ વૉઇસ મળ્યાં નથી</translation>
+<translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> માટે <ph name="SHORTCUT" /> શૉર્ટકટ</translation>
 <translation id="7781335840981796660">બધા વપરાશકર્તા એકાઉન્ટ્સ અને સ્થાનિક ડેટા દૂર કરવામાં આવશે.</translation>
 <translation id="7782102568078991263">Google દ્વારા કોઈ વધુ સૂચનો</translation>
 <translation id="7782717250816686129">નિરંતર ડેટાને લૉગ ઇન સ્ક્રીન પર સ્ટોર કરો અને સત્રમાં લૉગ ઇન વિગતો ભરો.</translation>
@@ -7301,6 +7302,7 @@ USB ડિવાઇસ</translation>
 <translation id="7807711621188256451"><ph name="HOST" />ને હંમેશા તમારા કૅમેરાને ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="7810202088502699111">આ પેજ પરનાં પૉપ-અપ બ્લૉક હતા.</translation>
 <translation id="7814458197256864873">&amp;કૉપિ કરો</translation>
+<translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> માટે <ph name="SHORTCUT" /> શૉર્ટકટમાં ફેરફાર કરો</translation>
 <translation id="7815680994978050279">જોખમી ડાઉનલોડને અવરોધ્યું</translation>
 <translation id="7817361223956157679">ઑન-સ્ક્રીન કીબોર્ડ હજુ પણ Linux ઍપમાં કામ કરતું નથી</translation>
 <translation id="7818135753970109980">નવી થીમ ઉમેરાઈ (<ph name="EXTENSION_NAME" />)</translation>
@@ -7375,6 +7377,7 @@ USB ડિવાઇસ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">એકાઉન્ટ જુઓ</translation>
 <translation id="7883792253546618164">કોઈપણ સમયે અનસબ્સ્ક્રાઇબ કરો.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{જે 1 સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}one{જે {NUM_SITES} સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}other{જે {NUM_SITES} સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}}</translation>
 <translation id="788453346724465748">એકાઉન્ટ વિશેની માહિતી લોડ કરી રહ્યાં છીએ...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{એક આઇટમ}one{# આઇટમ}other{# આઇટમ}}</translation>
 <translation id="7886605625338676841">ઇ-સિમ</translation>
@@ -7950,7 +7953,6 @@ USB ડિવાઇસ</translation>
 <translation id="8398877366907290961">કોઈપણ રીતે આગળ વધારો</translation>
 <translation id="8399282673057829204">પાસવર્ડ જુઓ</translation>
 <translation id="8401432541486058167">તમારા સ્માર્ટ કાર્ડ સાથે સંકળાયેલો હોય તે પિન પ્રદાન કરો.</translation>
-<translation id="8404893580027489425">ફિંગરપ્રિન્ટ સેન્સર તમારા <ph name="DEVICE_TYPE" />ની જમણી બાજુએ છે. તેને કોઈપણ આંગળી વડે હળવેથી સ્પર્શ કરો.</translation>
 <translation id="8405046151008197676">એકદમ નવી અપડેટની હાઇલાઇટ મેળવો</translation>
 <translation id="8407199357649073301">લૉગ લેવલ:</translation>
 <translation id="8408270600235826886">Google સાથે કયો ડેટા શેર કરવામાં આવે, તે તમે નિયંત્રિત કરી શકો છો. સેટિંગમાં તમે આને કોઈપણ સમયે બદલી શકો છો. ડેટાનો ઉપયોગ Googleની <ph name="BEGIN_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_LINK" /> અનુસાર કરવામાં આવશે.</translation>
@@ -8037,7 +8039,6 @@ USB ડિવાઇસ</translation>
 <translation id="8487699605742506766">હૉટસ્પૉટ</translation>
 <translation id="8489156414266187072">માત્ર તમારા એકાઉન્ટ પર વ્યક્તિગત સૂચનો બતાવવામાં આવે છે</translation>
 <translation id="8490896350101740396">નીચેની કિઓસ્ક ઍપ્લિકેશનો "<ph name="UPDATED_APPS" />" અપડેટ કરવામાં આવી છે. અપડેટ પ્રક્રિયા પૂર્ણ કરવા માટે કૃપા કરીને ઉપકરણ રીબૂટ કરો.</translation>
-<translation id="8492685019009920170">તમારી આંગળી વડે ફિંગરપ્રિન્ટ સેન્સરને સ્પર્શ કરો. તમારો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="8492822722330266509">સાઇટ પૉપ-અપ મોકલી શકે છે અને રીડાયરેક્ટનો ઉપયોગ કરી શકે છે</translation>
 <translation id="8492960370534528742">Google Cast પ્રતિસાદ</translation>
 <translation id="8493236660459102203">માઇક્રોફોન:</translation>
@@ -8573,7 +8574,6 @@ USB ડિવાઇસ</translation>
 <translation id="899384117894244799">પ્રતિબંધિત વપરાશકર્તાને કાઢી નાખો</translation>
 <translation id="899403249577094719">નેટસ્કેપ પ્રમાણપત્ર બેઝ URL</translation>
 <translation id="899657321862108550">સર્વત્ર તમારા Chromeમાં સાઇન ઇન કરો</translation>
-<translation id="899676909165543803">ફિંગરપ્રિન્ટ સેન્સર એ તમારા કીબોર્ડ પર સૌથી નીચે જમણી બાજુ સ્થિત કી છે. તેને કોઈપણ આંગળી વડે હળવેથી સ્પર્શ કરો.</translation>
 <translation id="8998078711690114234">આ પ્રકારની ફાઇલ જોખમી હોઈ શકે છે. જો તમને <ph name="ORIGIN" /> પર વિશ્વાસ હોય, તો જ આ ફાઇલ સાચવો</translation>
 <translation id="8999560016882908256">વિભાગ સિન્ટેક્સ ભૂલ: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> વાગ્યે '<ph name="STATUS_TEXT" />'ના સ્ટેટસને લીધે ડિવાઇસ મેનેજમેન્ટ સર્વર સાથે કનેક્ટ કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -8630,6 +8630,7 @@ USB ડિવાઇસ</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> માટેનો પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="9041692268811217999">તમારા ઍડમિનિસ્ટ્રેટરે તમારા મશીન પરની સ્થાનિક ફાઇલોનો ઍક્સેસ બંધ કરેલો છે</translation>
 <translation id="904224458472510106">આ ઑપરેશનનો છેલ્લો ફેરફાર રદ કરી શકાતો નથી</translation>
+<translation id="9042827002460091668">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="9042893549633094279">પ્રાઇવસી અને સુરક્ષા</translation>
 <translation id="9044646465488564462">નેટવર્કથી કનેક્ટ કરવામાં નિષ્ફળ: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">તમારી વાંચન સૂચિ બાજુની નવી પૅનલ પર ખસેડવામાં આવી છે. તેને અહીં અજમાવી જુઓ.</translation>
@@ -8870,7 +8871,6 @@ USB ડિવાઇસ</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 ટેબ}one{# ટેબ્સ}other{# ટેબ્સ}}</translation>
 <translation id="971510864672937292"><ph name="SITE_NAME" /> અને તેની હેઠળ આવતી બધી સાઇટ માટે સાઇટનો ડેટા તેમજ પરવાનગીઓ સાફ કરીએ?</translation>
 <translation id="971774202801778802">URL ને બુકમાર્ક કરો</translation>
-<translation id="972996901592717370">તમારી આંગળી વડે પાવર બટનને સ્પર્શ કરો. તમારો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="973473557718930265">છોડી દો</translation>
 <translation id="973558314812359997">માઉસનું કદ</translation>
 <translation id="975893173032473675">જેમાં અનુવાદ કરવો છે તે ભાષા</translation>

@@ -554,7 +554,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Isklj. za apl.}one{Isklj. za # apl.}few{Isklj. za # apl.}other{Isklj. za # apl.}}</translation>
 <translation id="4066027111132117168">Uključeno, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Signal srednje jačine</translation>
-<translation id="4086921558679520050">Uključite fizički prekidač za mikrofone na uređaju</translation>
+<translation id="4086921558679520050">Uključite fizički prekidač za mikrofon na uređaju</translation>
 <translation id="4112140312785995938">Pomakni unazad</translation>
 <translation id="4114315158543974537">Uključite hub telefona</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -607,7 +607,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, jačina signala je <ph name="SIGNAL_STRENGTH" /> posto</translation>
 <translation id="4378551569595875038">Povezivanje…</translation>
 <translation id="4379531060876907730">Ovo su vaši alati za korištenje olovke</translation>
-<translation id="4381031910344220229">Omogućuje pristup mikrofonu za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
+<translation id="4381031910344220229">Ovo omogućava pristup mikrofonu za aplikaciju <ph name="APP_NAME" /> te sve druge aplikacije i web lokacije koje imaju odobrenje za njega</translation>
 <translation id="4389184120735010762">Pritisnuli ste prečicu na tastaturi za lupu priključne stanice. Želite li je uključiti?</translation>
 <translation id="439598569299422042">Pauzirano, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nije moguće sačuvati snimanje ekrana</translation>
@@ -1139,7 +1139,7 @@ Nova instalacija</translation>
 <translation id="7360036564632145207">Promjenom postavke zaštite pristupa podacima za periferne uređaje možete optimizirati performanse</translation>
 <translation id="736045644501761622">Postavi pozadinsku sliku i stil</translation>
 <translation id="7371404428569700291">Snimite prozor</translation>
-<translation id="737315737514430195">Omogućuje pristup mikrofonu za sve aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
+<translation id="737315737514430195">Ovo omogućava pristup mikrofonu za sve aplikacije i web lokacije koje imaju odobrenje za njega</translation>
 <translation id="7377169924702866686">Uključena su velika slova.</translation>
 <translation id="7377481913241237033">Povežite se pomoću koda</translation>
 <translation id="7378203170292176219">Prevucite da odaberete oblast za snimanje</translation>
@@ -1208,7 +1208,7 @@ Nova instalacija</translation>
 <translation id="7671610481353807627">Aplikacije su poredane po boji</translation>
 <translation id="7672095158465655885">Povezano s mrežom <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Ulaz kamere je postavljen na <ph name="CAMERA_NAME" />.</translation>
-<translation id="7689817529363080918">Omogućuje pristup mikrofonu za aplikacije <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
+<translation id="7689817529363080918">Ovo omogućava pristup mikrofonu za aplikacije <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> te sve druge aplikacije i web lokacije koje imaju odobrenje za njega</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Dodajte novu mobilnu mrežu</translation>
 <translation id="7720400844887872976">Uključeno do <ph name="TIME" /></translation>

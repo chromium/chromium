@@ -554,6 +554,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Pois, 1 sovellus}other{Pois, # sovellusta}}</translation>
 <translation id="4066027111132117168">Päällä, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Keskitasoinen signaali</translation>
+<translation id="4086921558679520050">Laitteen fyysisen mikrofonikytkimen laittaminen päälle</translation>
 <translation id="4112140312785995938">Kelaa taaksepäin</translation>
 <translation id="4114315158543974537">Laita Phone Hub päälle</translation>
 <translation id="4115378294792113321">Purppura</translation>
@@ -606,6 +607,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> prosenttia</translation>
 <translation id="4378551569595875038">Yhdistetään…</translation>
 <translation id="4379531060876907730">Tässä ovat näyttökynätyökalusi</translation>
+<translation id="4381031910344220229"><ph name="APP_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on mikrofonilupa, saavat käyttää mikrofonia</translation>
 <translation id="4389184120735010762">Painoit kiinnitetyn suurennuksen pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
 <translation id="439598569299422042">Keskeytetty, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ruutukaappausvideota ei voi tallentaa</translation>
@@ -728,6 +730,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4987738733603015246">Työpöytä 16</translation>
 <translation id="5003993274120026347">Seuraava lause</translation>
 <translation id="5016558321564993266">Piirtotyökalu päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Pääsy laitteen mikrofoniin on päällä</translation>
 <translation id="5030687792513154421">Aika on lopussa</translation>
 <translation id="5033299697334913360">Ota koko ruudun kuvakaappaus klikkaamalla minne tahansa</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yhdistetty uuteen puhelimeen</translation>
@@ -959,9 +962,11 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on ylläpidetty käyttökerta, jota ylläpitää <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> yhdistetty</translation>
 <translation id="6351032674660237738">SOVELLUSEHDOTUKSET</translation>
+<translation id="6352082849089527770">Tuntemattomat verkot</translation>
 <translation id="6359587239691116345">Lataa uusimmat ominaisuudet ja tietoturvaparannukset. Jos hylkäät päivityksen, laite ei välttämättä toimi kunnolla, ja saatat kokea turvallisuuteen ja suorituskykyyn liittyviä ongelmia.</translation>
 <translation id="6376931439017688372">Bluetooth on päällä</translation>
 <translation id="6381109794406942707">Avaa laitteen lukitus lisäämällä PIN-koodisi.</translation>
+<translation id="638716340450135524">Salli kameran käyttö</translation>
 <translation id="639644700271529076">CAPS LOCK on pois päältä</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -969,6 +974,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="642644398083277086">Tyhjennä kaikki ilmoitukset</translation>
 <translation id="643147933154517414">Valmis</translation>
 <translation id="6431865393913628856">Näytön tallennus</translation>
+<translation id="6442259747294754014">Pääsy laitteen mikrofoniin on pois päältä</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> tapahtuma</translation>
 <translation id="6449483711453944360">Linux-sovelluksia ja incognito-ikkunoita ei tällä hetkellä tueta</translation>
@@ -1133,6 +1139,7 @@ Uusi asennus</translation>
 <translation id="7360036564632145207">Datan käyttösuoja-asetuksen muuttaminen voi optimoida lisälaitteiden toimintaa</translation>
 <translation id="736045644501761622">Aseta taustakuva ja tyyli</translation>
 <translation id="7371404428569700291">Tallenna ikkuna</translation>
+<translation id="737315737514430195">Sallii mikrofonin käytön kaikille sovelluksille ja verkkosivustoille, joilla on mikrofonilupa</translation>
 <translation id="7377169924702866686">Caps Lock on päällä.</translation>
 <translation id="7377481913241237033">Muodosta yhteys koodilla</translation>
 <translation id="7378203170292176219">Valitse tallennettava alue vetämällä</translation>
@@ -1201,6 +1208,7 @@ Uusi asennus</translation>
 <translation id="7671610481353807627">Sovellukset on lajiteltu värin perusteella</translation>
 <translation id="7672095158465655885">Yhdistetty: <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067"><ph name="CAMERA_NAME" /> on asetettu kamerasyötteeksi.</translation>
+<translation id="7689817529363080918"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on mikrofonilupa, saavat käyttää mikrofonia</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Lisää uusi mobiiliverkko</translation>
 <translation id="7720400844887872976">Päällä <ph name="TIME" /> asti</translation>
@@ -1364,6 +1372,7 @@ Uusi asennus</translation>
 <translation id="8598235756057743477">Sovellusten lajitteleminen nimen tai värin perusteella</translation>
 <translation id="8614517853887502247">Ilmoitukset (<ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" />) on piilotettu, koska urkinnan esto on päällä</translation>
 <translation id="8627191004499078455">Yhdistetty: <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Kiellä kameran käyttö</translation>
 <translation id="8631727435199967028">Esteettömyysasetukset</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> jäljellä</translation>

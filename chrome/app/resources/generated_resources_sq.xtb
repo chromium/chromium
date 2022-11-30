@@ -831,7 +831,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="175772926354468439">Aktivizo temën</translation>
 <translation id="17584710573359123">Shikoje në "Dyqanin e uebit" të Chrome</translation>
 <translation id="1761845175367251960">Llogaritë e <ph name="NAME" /></translation>
-<translation id="176193854664720708">Sensori i gjurmës së gishtit është te butoni i energjisë. Preke lehtë me një gisht.</translation>
 <translation id="176272781006230109">sugjerimet për blerje</translation>
 <translation id="1763046204212875858">Krijo shkurtoret e aplikacionit</translation>
 <translation id="1763808908432309942">Hapet në një skedë të re</translation>
@@ -1074,7 +1073,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1974821797477522211">Lidhu me rrjetin</translation>
 <translation id="1975841812214822307">Hiq...</translation>
 <translation id="1976150099241323601">Identifikohu në pajisjen e sigurisë</translation>
-<translation id="1976928778492259496">Sensori i gjurmës së gishtit është në anën e majtë të pajisjes sate <ph name="DEVICE_TYPE" />. Preke lehtë me një gisht.</translation>
 <translation id="1977965994116744507">Afroje telefonin më shumë për të shkyçur pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Hiq adresën</translation>
 <translation id="1979095679518582070">Çaktivizimi i kësaj veçorie nuk ndikon në aftësinë e kësaj pajisjeje për të dërguar informacionin e nevojshëm për shërbimet bazë, siç janë përditësimet dhe siguria e sistemit.</translation>
@@ -2843,7 +2841,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3612673635130633812">Shkarkoje nga &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Shfaq <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Hape në një skedë të re</translation>
-<translation id="3615073365085224194">Prek me gisht sensorin e gjurmës së gishtit</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> po skanohet.</translation>
 <translation id="3615596877979647433">Tasti mungon. Shtyp një tast të tastierës për ta personalizuar</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3833,7 +3830,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4533985347672295764">Koha e njësisë CPU</translation>
 <translation id="4534661889221639075">Provo përsëri.</translation>
 <translation id="4535127706710932914">Profili i parazgjedhur</translation>
-<translation id="4535767533210902251">Sensori i gjurmës së gishtit është tasti lart djathtas në tastierë. Preke lehtë me një gisht.</translation>
 <translation id="4536140153723794651">Sajtet mund t'i përdorin gjithmonë kukit</translation>
 <translation id="4536769240747010177">Aftësitë e ndarjes së internetit:</translation>
 <translation id="4538417792467843292">Fshi fjalën</translation>
@@ -5478,7 +5474,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6087746524533454243">Po kërkon për faqen e informacioneve të sistemit? Vizito</translation>
 <translation id="6087960857463881712">Fytyrë e mrekullueshme</translation>
 <translation id="608912389580139775">Për ta shtuar këtë faqe te lista jote e leximit, kliko ikonën "Faqeshënuesi"</translation>
-<translation id="6091116443517744502">Kontrollo lidhjen e internetit dhe provo përsëri</translation>
 <translation id="6091761513005122595">Ndarja u montua me sukses.</translation>
 <translation id="6093803049406781019">Fshi profilin</translation>
 <translation id="6093888419484831006">Po anulon përditësimin...</translation>
@@ -6784,7 +6779,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7353261921908507769">Kontaktet e tua mund të ndajnë me ty kur të jenë në afërsi. Transferimet nuk do të fillojnë derisa të pranosh.</translation>
 <translation id="735361434055555355">Po instalohet Linux...</translation>
-<translation id="7354341762311560488">Sensori i gjurmës së gishtit është tasti poshtë majtas në tastierë. Preke lehtë me një gisht.</translation>
 <translation id="7356908624372060336">Evidencat e rrjetit</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>
 <translation id="7358324924540718595">Kujtimet të fshehura për sot</translation>
@@ -7950,7 +7944,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8398877366907290961">Vazhdo gjithsesi</translation>
 <translation id="8399282673057829204">Shiko fjalëkalimin</translation>
 <translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
-<translation id="8404893580027489425">Sensori i gjurmës së gishtit është në anën e djathtë të pajisjes sate <ph name="DEVICE_TYPE" />. Preke lehtë me një gisht.</translation>
 <translation id="8405046151008197676">Merr pikat kryesore nga përditësimi i fundit</translation>
 <translation id="8407199357649073301">Niveli i identifikimit:</translation>
 <translation id="8408270600235826886">Mund të kontrollosh se çfarë të dhënash ndahen me Google. Këtë mund ta ndryshosh në çdo kohë te "Cilësimet". Të dhënat do të përdoren sipas <ph name="BEGIN_LINK" />Politikës së privatësisë<ph name="END_LINK" /> të Google.</translation>
@@ -8037,7 +8030,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8487699605742506766">Zona e qasjes për internet</translation>
 <translation id="8489156414266187072">Sugjerimet personale tregohen vetëm në llogarinë tënde</translation>
 <translation id="8490896350101740396">Aplikacionet e mëposhtme të kioskës "<ph name="UPDATED_APPS" />" janë përditësuar. Rindize pajisjen për të përfunduar procesin e përditësimit.</translation>
-<translation id="8492685019009920170">Prek me gisht sensorin e gjurmës së gishtit. Të dhënat e tua ruhen në mënyrë të sigurt dhe asnjëherë nuk largohen nga pajisja jote <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Sajtet mund të dërgojnë dritare kërcyese dhe të përdorin ridrejtimet</translation>
 <translation id="8492960370534528742">Komentet për Google Cast</translation>
 <translation id="8493236660459102203">Mikrofoni:</translation>
@@ -8572,7 +8564,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="899384117894244799">Hiq përdoruesin e kufizuar</translation>
 <translation id="899403249577094719">URL-ja e bazës së certifikatës së Netscape</translation>
 <translation id="899657321862108550">Chrome, i yti kudo</translation>
-<translation id="899676909165543803">Sensori i gjurmës së gishtit është tasti poshtë djathtas në tastierë. Preke lehtë me një gisht.</translation>
 <translation id="8998078711690114234">Ky lloj skedari mund të jetë i rrezikshëm. Ruaje këtë skedar vetëm nëse i beson <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Gabim i sintaksës së seksionit: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Lidhja me serverin e menaxhimit të pajisjes dështoi me statusin "<ph name="STATUS_TEXT" />" në <ph name="FAILURE_TIME" /></translation>
@@ -8629,6 +8620,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="9040661932550800571">Të përditësohet fjalëkalimi për <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Qasja në skedarët lokalë në kompjuterin tënd është çaktivizuar nga administratori yt</translation>
 <translation id="904224458472510106">Ky operacion nuk mund të zhbëhet</translation>
+<translation id="9042827002460091668">Kontrollo lidhjen e internetit dhe provo përsëri</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
 <translation id="9044646465488564462">Dështoi lidhja me rrjetin: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lista jote e leximit është zhvendosur në panelin e ri anësor. Provoje këtu.</translation>
@@ -8869,7 +8861,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 skedë}other{# skeda}}</translation>
 <translation id="971510864672937292">Të pastrohen të gjitha të dhënat e sajtit dhe lejet për <ph name="SITE_NAME" /> dhe çdo sajt në të?</translation>
 <translation id="971774202801778802">Shëno URL-në</translation>
-<translation id="972996901592717370">Prek butonin e energjisë me gisht. Të dhënat e tua ruhen në mënyrë të sigurt dhe asnjëherë nuk largohen nga pajisja jote <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Dil</translation>
 <translation id="973558314812359997">Madhësia e kursorit të miut</translation>
 <translation id="975893173032473675">Gjuha në të cilën do të përkthehet</translation>

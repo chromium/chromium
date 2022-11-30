@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{એક ઍપ માટે બંધ}one{# ઍપ માટે બંધ}other{# ઍપ માટે બંધ}}</translation>
 <translation id="4066027111132117168">ચાલુ છે, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">મધ્યમ સિગ્નલ</translation>
+<translation id="4086921558679520050">તમારા ડિવાઇસ પર વાસ્તવિક માઇકની સ્વિચ ચાલુ કરો</translation>
 <translation id="4112140312785995938">પાછળ કરો</translation>
 <translation id="4114315158543974537">ફોન હબ ચાલુ કરો</translation>
 <translation id="4115378294792113321">કિરમજી</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" /> ટકા</translation>
 <translation id="4378551569595875038">કનેક્ટિંગ...</translation>
 <translation id="4379531060876907730">આ છે તમારા સ્ટાઇલસનાં સાધનો</translation>
+<translation id="4381031910344220229">આ માઇક્રોફોનની પરવાનગી ધરાવતી <ph name="APP_NAME" /> અને બધી ઍપ તથા વેબસાઇટ માટે, માઇક્રોફોનના ઍક્સેસની મંજૂરી આપે છે</translation>
 <translation id="4389184120735010762">તમે ડૉક કરેલ મૅગ્નિફાયર માટે કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
 <translation id="439598569299422042">ડાઉનલોડ થોભાવ્યું, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">સ્ક્રીનકાસ્ટ સાચવી શકાયું નથી</translation>
@@ -960,6 +962,7 @@
 <translation id="6338485349199627913">મેનેજ કરાયેલું સત્ર <ph name="DISPLAY_NAME" />ને <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> કનેક્ટ થયું</translation>
 <translation id="6351032674660237738">ઍપ સૂચનો</translation>
+<translation id="6352082849089527770">અજાણ્યા નેટવર્ક</translation>
 <translation id="6359587239691116345">નવીનતમ સુવિધાઓ અને સુરક્ષા સંબંધિત સુધારણાઓ મેળવો. જો તમે આ અપડેટ નકારશો, તો તમારું ડિવાઇસ હવે કદાચ યોગ્ય રીતે કામ કરશે નહીં અને તમે સુરક્ષા તથા પર્ફોર્મન્સ સંબંધિત સમસ્યાઓ અનુભવી શકો છો.</translation>
 <translation id="6376931439017688372">બ્લૂટૂથ ચાલુ છે</translation>
 <translation id="6381109794406942707">ડિવાઇસને અનલૉક કરવા માટે. તમારો પિન દાખલ કરો.</translation>
@@ -1136,6 +1139,7 @@
 <translation id="7360036564632145207">પેરિફેરલ સેટિંગ માટે તમારી ડેટા ઍક્સેસની સુરક્ષામાં ફેરફાર કરવાથી કાર્યપ્રદર્શન ઑપ્ટિમાઇઝ થઈ શકે છે</translation>
 <translation id="736045644501761622">વૉલપેપર અને સ્ટાઇલ સેટ કરો</translation>
 <translation id="7371404428569700291">વિન્ડો રેકોર્ડ કરો</translation>
+<translation id="737315737514430195">આ માઇક્રોફોનની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, માઇક્રોફોનના ઍક્સેસની મંજૂરી આપે છે</translation>
 <translation id="7377169924702866686">Caps Lock ચાલુ છે.</translation>
 <translation id="7377481913241237033">કોડ વડે કનેક્ટ કરો</translation>
 <translation id="7378203170292176219">રેકોર્ડ કરવાના વિસ્તારને પસંદ કરવા માટે ખેંચો</translation>
@@ -1204,6 +1208,7 @@
 <translation id="7671610481353807627">ઍપને રંગ અનુસાર સૉર્ટ કરવામાં આવી છે</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> સાથે કનેક્ટેડ, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">કૅમેરા ઇનપુટને <ph name="CAMERA_NAME" /> પર સેટ કર્યું.</translation>
+<translation id="7689817529363080918">આ માઇક્રોફોનની પરવાનગી ધરાવતી <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> અને બધી ઍપ તથા વેબસાઇટ માટે, માઇક્રોફોનના ઍક્સેસની મંજૂરી આપે છે</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">નવું સેલ્યુલર નેટવર્ક ઉમેરો</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> સુધી ચાલુ રાખો</translation>

@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Skatīt problēmu novēršanas darbības</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Lai skatītu ekrānsaudzētāju, izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2085089206770112532">Samazināt displeja spilgtumu</translation>
 <translation id="2105810540595158374">Ierīce ir spēļu vadāmierīce.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Saspiešanas algoritms</translation>
 <translation id="4794140124556169553">Centrālā procesora pārbaudes veikšana var ietekmēt jūsu sistēmas veiktspēju</translation>
 <translation id="4800589996161293643">Chromebook datoru kopiena</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Drukas uzdevums “<ph name="DOCUMENT_TITLE" />” tika atcelts</translation>
 <translation id="4809927044794281115">Gaišais motīvs</translation>
 <translation id="4813136279048157860">Mani attēli</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Izturība</translation>
 <translation id="4897058166682006107">Kreisās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Ieslēdziet funkciju, lai atlasītu ekrānsaudzētāja opcijas.</translation>
+<translation id="4910858703033903787">APN veidi</translation>
 <translation id="4917385247580444890">Spēcīgs</translation>
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
 <translation id="491791267030419270">Padomi par atsauksmju rakstīšanu</translation>
@@ -460,6 +463,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5358174242040570474">Radās kļūda. Mēģiniet vēlreiz izvēlēties fona tapeti vai atkārtoti atveriet lietotni.</translation>
 <translation id="5372659122375744710">Wi-Fi tīkls nav drošs</translation>
 <translation id="5376354385557966694">Automātisks gaišais režīms</translation>
+<translation id="5378184552853359930">IP veids</translation>
 <translation id="5389159777326897627">Fona tapete un stils</translation>
 <translation id="5389224261615877010">Varavīksne</translation>
 <translation id="5400907029458559844">Notiek ierīces pievienošana.</translation>
@@ -743,6 +747,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Atlasīt <ph name="TOPIC_SOURCE" /> vienumu <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Ievadīt</translation>
+<translation id="8183974620058026102">Pievienot</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
 <translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>
@@ -831,6 +836,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="9025198690966128418">Izmantot kā personīgo ierīci</translation>
 <translation id="9028832514430399253">Ieslēdziet slēdzi, lai atlasītu ekrānsaudzētāja opcijas.</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS atrisei ir augsts latentums</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

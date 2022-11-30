@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Netiek saglabātas</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Datora grāmatzīmes</translation>
+<translation id="1067561478268651872">Politika <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> tiks izmantota tikai tad, ja būs iestatīta politika <ph name="SECURE_DNS_SALT" />.</translation>
 <translation id="1068672505746868501">Nekad netulkot lapas šādā valodā: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Hibrīdtransportlīdzekļi un ar alternatīvo degvielu darbināmi transportlīdzekļi</translation>
 <translation id="1070901266639972381">nakts</translation>
@@ -2098,6 +2099,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6328786501058569169">Šī vietne ir krāpnieciska</translation>
 <translation id="6337133576188860026">Tiks atbrīvots mazāk nekā <ph name="SIZE" />. Dažas vietnes nākamajā apmeklējumā var ielādēt lēnāk.</translation>
 <translation id="6337534724793800597">Filtrēt politikas pēc nosaukuma</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> vērtība nav derīga un netiks izmantota.</translation>
 <translation id="6340739886198108203">Administratora politika nosaka, ka nav ieteicams izveidot ekrānuzņēmumus vai videoierakstus, ja ir redzams konfidenciāls saturs.</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administratora politika nosaka, ka nav ieteicams augšupielādēt šo failu šeit: <ph name="DESTINATION_NAME" />}zero{Administratora politika nosaka, ka nav ieteicams augšupielādēt šos failus šeit: <ph name="DESTINATION_NAME" />}one{Administratora politika nosaka, ka nav ieteicams augšupielādēt šos failus šeit: <ph name="DESTINATION_NAME" />}other{Administratora politika nosaka, ka nav ieteicams augšupielādēt šos failus šeit: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aktīvie varianti</translation>
@@ -2994,6 +2996,7 @@ Papildu informācija:
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Pasūtījuma kopsavilkums, <ph name="TOTAL_LABEL" />, citi dati</translation>
 <translation id="8666678546361132282">Angļu valoda</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> vērtība neatbilst lieluma prasībām.</translation>
 <translation id="867224526087042813">Iespiedloksne</translation>
 <translation id="8672264262457010862">Uzņēmējdarbība un rūpniecība</translation>
 <translation id="8676424191133491403">Bez aizkaves</translation>
@@ -3093,6 +3096,7 @@ Papildu informācija:
 <translation id="8913778647360618320">Poga “Pārvaldīt maksājumu veidus”. Lai pārvaldītu savus maksājumus un kredītkaršu informāciju Chrome iestatījumos, nospiediet ievadīšanas taustiņu.</translation>
 <translation id="8922013791253848639">Vienmēr atļaut reklāmu rādīšanu šajā vietnē</translation>
 <translation id="892588693504540538">Caurums augšējā labajā malā</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> vērtība nav atbilstoša un tiks izmantota tikai tad, ja būs iestatīta politika <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />.</translation>
 <translation id="8930330541574156305">Nekustamais īpašums</translation>
 <translation id="8931333241327730545">Vai vēlaties saglabāt šo karti savā Google kontā?</translation>
 <translation id="8932102934695377596">Norādītais laiks ir pārāk tālu pagātnē</translation>

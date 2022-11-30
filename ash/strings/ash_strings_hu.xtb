@@ -555,6 +555,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Ki, 1 appnál}other{Ki, # appnál}}</translation>
 <translation id="4066027111132117168">Bekapcsolva, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Közepes jel</translation>
+<translation id="4086921558679520050">A fizikai mikrofon kapcsolójának bekapcsolása az eszközön</translation>
 <translation id="4112140312785995938">Ugrás visszafelé</translation>
 <translation id="4114315158543974537">Phone Hub bekapcsolása</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -607,6 +608,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, jelerősség: <ph name="SIGNAL_STRENGTH" /> százalék</translation>
 <translation id="4378551569595875038">Kapcsolódás…</translation>
 <translation id="4379531060876907730">Ezek az érintőceruza-eszközök</translation>
+<translation id="4381031910344220229">Ezzel engedélyezi a mikrofonhoz való hozzáférést a(z) <ph name="APP_NAME" />, illetve a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="4389184120735010762">Lenyomta a dokkolt nagyító billentyűparancsát. Bekapcsolja a funkciót?</translation>
 <translation id="439598569299422042">Szünetel, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nem sikerült a képernyőfelvétel mentése</translation>
@@ -729,6 +731,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4987738733603015246">16. asztal</translation>
 <translation id="5003993274120026347">Következő mondat</translation>
 <translation id="5016558321564993266">Jelölő be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Az eszköz mikrofon-hozzáférése be van kapcsolva</translation>
 <translation id="5030687792513154421">Lejárt az idő</translation>
 <translation id="5033299697334913360">Kattintson bárhová a teljes képernyő rögzítéséhez</translation>
 <translation id="5035236842988137213">A(z) <ph name="DEVICE_NAME" /> új telefonhoz csatlakozott</translation>
@@ -960,9 +963,11 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> által kezelt munkamenet</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> csatlakoztatva</translation>
 <translation id="6351032674660237738">ALKALMAZÁSJAVASLATOK</translation>
+<translation id="6352082849089527770">Ismeretlen hálózatok</translation>
 <translation id="6359587239691116345">Szeretném megkapni a legújabb funkciókat és biztonsági fejlesztéseket. Ha elutasítja ezt a frissítést, akkor előfordulhat, hogy az eszköz a továbbiakban nem fog megfelelően működni, és biztonsággal, illetve teljesítménnyel kapcsolatos problémákat tapasztalhat.</translation>
 <translation id="6376931439017688372">A Bluetooth be van kapcsolva</translation>
 <translation id="6381109794406942707">Az eszköz feloldásához adja meg a PIN-kódot.</translation>
+<translation id="638716340450135524">Kamera-hozzáférés bekapcsolása</translation>
 <translation id="639644700271529076">A CAPS LOCK ki van kapcsolva</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Segéd</translation>
@@ -970,6 +975,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="642644398083277086">Az összes értesítés törlése</translation>
 <translation id="643147933154517414">Elkészült</translation>
 <translation id="6431865393913628856">Képernyőrögzítés</translation>
+<translation id="6442259747294754014">Az eszköz mikrofon-hozzáférése ki van kapcsolva</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> itt: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
 <translation id="6449483711453944360">A Linux-alkalmazások és az inkognitó ablakok jelenleg nem támogatottak.</translation>
@@ -1134,6 +1140,7 @@ Frissen telepítve</translation>
 <translation id="7360036564632145207">A perifériás adathozzáférési védelemre vonatkozó beállítás módosítása optimalizálhatja a teljesítményt.</translation>
 <translation id="736045644501761622">Háttérkép és stílus beállítása</translation>
 <translation id="7371404428569700291">Felvétel készítése az ablakról</translation>
+<translation id="737315737514430195">Ezzel engedélyezi a mikrofonhoz való hozzáférést a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="7377169924702866686">A Caps Lock be van kapcsolva.</translation>
 <translation id="7377481913241237033">Összekapcsolás kód használatával</translation>
 <translation id="7378203170292176219">Húzással jelöljön ki egy területet a videó készítéséhez</translation>
@@ -1202,6 +1209,7 @@ Frissen telepítve</translation>
 <translation id="7671610481353807627">Az alkalmazások szín szerint rendezettek</translation>
 <translation id="7672095158465655885">Csatlakozva <ph name="NAME" /> hálózathoz, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kamerás bevitel a következőre állítva: <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Ezzel engedélyezi a mikrofonhoz való hozzáférést a(z) <ph name="APP1_NAME" />, a(z) <ph name="APP2_NAME" />, illetve a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Új mobilhálózat hozzáadása</translation>
 <translation id="7720400844887872976">Bekapcsolva eddig: <ph name="TIME" /></translation>
@@ -1365,6 +1373,7 @@ Frissen telepítve</translation>
 <translation id="8598235756057743477">Alkalmazások rendezése név vagy szín szerint</translation>
 <translation id="8614517853887502247">A(z) <ph name="APP_1_TITLE" /> és a(z) <ph name="APP_2_TITLE" /> alkalmazás értesítései rejtve vannak, mert be van kapcsolva a megtekintési védelem</translation>
 <translation id="8627191004499078455">Csatlakozva a(z) <ph name="DEVICE_NAME" /> eszközhöz</translation>
+<translation id="8630991711272431708">Kamera-hozzáférés kikapcsolása</translation>
 <translation id="8631727435199967028">Kisegítő lehetőségek beállításai</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> maradt</translation>

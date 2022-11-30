@@ -835,7 +835,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="175772926354468439">Activer le thème</translation>
 <translation id="17584710573359123">Afficher dans la boutique en ligne Chrome Web Store</translation>
 <translation id="1761845175367251960">Comptes de <ph name="NAME" /></translation>
-<translation id="176193854664720708">Le capteur d'empreintes digitales est situé au niveau de l'interrupteur. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="176272781006230109">suggestions de magasinage</translation>
 <translation id="1763046204212875858">Créer des raccourcis vers des applications</translation>
 <translation id="1763808908432309942">S'ouvre dans un nouvel onglet</translation>
@@ -1078,7 +1077,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1974821797477522211">Se connecter au réseau</translation>
 <translation id="1975841812214822307">Supprimer...</translation>
 <translation id="1976150099241323601">Connexion au dispositif de sécurité</translation>
-<translation id="1976928778492259496">Le capteur d'empreintes digitales se trouve sur le côté gauche de votre <ph name="DEVICE_TYPE" />. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="1977965994116744507">Rapprochez votre téléphone de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
 <translation id="1978057560491495741">Retirer l'adresse</translation>
 <translation id="1979095679518582070">La désactivation de cette fonctionnalité n'empêche pas cet appareil d'envoyer les données nécessaires aux services essentiels, comme les mises à jour du système et la sécurité.</translation>
@@ -2849,7 +2847,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3612673635130633812">Téléchargé par &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Afficher « <ph name="FOLDER_NAME" /> »</translation>
 <translation id="3613422051106148727">&amp;Ouvrir dans un nouvel onglet</translation>
-<translation id="3615073365085224194">Touchez le capteur d'empreintes digitales avec votre doigt</translation>
 <translation id="3615579745882581859">Le fichier <ph name="FILE_NAME" /> est en train d'être analysé.</translation>
 <translation id="3615596877979647433">La clé est manquante. Appuyez sur une touche du clavier pour la personnaliser</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3842,7 +3839,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4533985347672295764">Temps CPU</translation>
 <translation id="4534661889221639075">Réessayez.</translation>
 <translation id="4535127706710932914">Profil par défaut</translation>
-<translation id="4535767533210902251">Le capteur d'empreintes digitales se trouve sur la touche dans le coin supérieur droit de votre clavier. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="4536140153723794651">Sites qui peuvent toujours utiliser les témoins</translation>
 <translation id="4536769240747010177">Fonctionnalités de partage de connexion :</translation>
 <translation id="4538417792467843292">Supprimer un mot</translation>
@@ -5488,7 +5484,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6087746524533454243">Vous recherchez la page à propos du navigateur? Consultez</translation>
 <translation id="6087960857463881712">Superbe visage</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône de favori</translation>
-<translation id="6091116443517744502">veuillez vérifier votre connexion Internet et réessayer</translation>
 <translation id="6091761513005122595">Partage correctement configuré.</translation>
 <translation id="6093803049406781019">Supprimer le profil</translation>
 <translation id="6093888419484831006">Annulation de la mise à jour...</translation>
@@ -6796,7 +6791,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="7353261921908507769">Vos contacts peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Les transferts ne démarreront pas tant que vous ne les autoriserez pas.</translation>
 <translation id="735361434055555355">Installation de Linux en cours…</translation>
-<translation id="7354341762311560488">Le capteur d'empreintes digitales se trouve sur la touche dans le coin inférieur gauche de votre clavier. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="7356908624372060336">Journaux réseau</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>
 <translation id="7358324924540718595">Souvenirs masqués pour aujourd'hui</translation>
@@ -7966,7 +7960,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8398877366907290961">Continuer</translation>
 <translation id="8399282673057829204">Afficher le mot de passe</translation>
 <translation id="8401432541486058167">Entrez le NIP associé à votre carte à puce.</translation>
-<translation id="8404893580027489425">Le capteur d'empreintes digitales se trouve sur le côté droit de votre <ph name="DEVICE_TYPE" />. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="8405046151008197676">Consultez les faits saillants de la dernière mise à jour</translation>
 <translation id="8407199357649073301">Niveau de journalisation :</translation>
 <translation id="8408270600235826886">Vous pouvez contrôler les données qui sont partagées avec Google. Vous pouvez changer cette option en tout temps dans Paramètres. Les données seront utilisées conformément à la <ph name="BEGIN_LINK" />politique de confidentialité<ph name="END_LINK" /> de Google.</translation>
@@ -8053,7 +8046,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8487699605742506766">Point d'accès sans fil</translation>
 <translation id="8489156414266187072">Les suggestions personnelles s'affichent seulement sur votre compte</translation>
 <translation id="8490896350101740396">Les applications de kiosque suivantes « <ph name="UPDATED_APPS" /> » ont été mises à jour. Veuillez redémarrer l'appareil pour terminer le processus de mise à jour.</translation>
-<translation id="8492685019009920170">Touchez le capteur d'empreintes digitales avec votre doigt. Les données sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Les sites peuvent afficher des fenêtres contextuelles et utiliser des redirections</translation>
 <translation id="8492960370534528742">Commentaires à propos de la technologie Google Cast</translation>
 <translation id="8493236660459102203">Microphone :</translation>
@@ -8589,7 +8581,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="899384117894244799">Supprimer le profil d'utilisateur restreint</translation>
 <translation id="899403249577094719">URL de base du certificat Netscape</translation>
 <translation id="899657321862108550">Votre Chrome, partout</translation>
-<translation id="899676909165543803">Le capteur d'empreintes digitales se trouve sur la touche dans le coin inférieur droit de votre clavier. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="8998078711690114234">Ce type de fichier peut être dangereux. N'enregistrez ce fichier que si vous faites confiance à <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Erreur de syntaxe de section : <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">La connexion au serveur de gestion des appareils a échoué avec l'état « <ph name="STATUS_TEXT" /> » à <ph name="FAILURE_TIME" /></translation>
@@ -8646,6 +8637,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9040661932550800571">Mettre à jour le mot de passe pour <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre ordinateur</translation>
 <translation id="904224458472510106">Cette opération est irréversible</translation>
+<translation id="9042827002460091668">Vérifiez votre connexion Internet et réessayez</translation>
 <translation id="9042893549633094279">Sécurité et confidentialité</translation>
 <translation id="9044646465488564462">Échec de connexion au réseau : <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Votre liste de lecture a été déplacée dans le nouveau panneau latéral. Essayez-la ici.</translation>
@@ -8886,7 +8878,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="971510864672937292">Effacer les données et les autorisations relatives aux sites pour le site <ph name="SITE_NAME" /> et tous les sites qui y sont subordonnés?</translation>
 <translation id="971774202801778802">URL du favori</translation>
-<translation id="972996901592717370">Touchez l'interrupteur avec votre doigt. Les données sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Quitter</translation>
 <translation id="973558314812359997">Taille du curseur de souris</translation>
 <translation id="975893173032473675">Langue cible</translation>

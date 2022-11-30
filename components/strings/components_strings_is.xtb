@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Aldrei vistað</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Skjáborðsbókamerki</translation>
+<translation id="1067561478268651872">Reglan <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> er ekki notuð nema reglan <ph name="SECURE_DNS_SALT" /> sé stillt.</translation>
 <translation id="1068672505746868501">Þýða aldrei síður á þessu tungumáli: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Tvinnbílar og bílar með óhefðbundna aflgjafa</translation>
 <translation id="1070901266639972381">Nótt</translation>
@@ -2099,6 +2100,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6328786501058569169">Þetta vefsvæði villir á sér heimildir</translation>
 <translation id="6337133576188860026">Losar minna en <ph name="SIZE" />. Lengri tíma gæti tekið að sækja sum vefsvæði þegar þú heimsækir þau næst.</translation>
 <translation id="6337534724793800597">Sía reglur eftir heiti</translation>
+<translation id="633770708279464947">Gildið <ph name="SECURE_DNS_SALT" /> á ekki við og verður ekki notað.</translation>
 <translation id="6340739886198108203">Regla kerfisstjóra ræður gegn því að taka skjámyndir eða taka upp þegar trúnaðarupplýsingar eru sýnilegar:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Regla kerfisstjóra mælir ekki með að hlaða þessari skrá upp á <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með að hlaða þessum skrám upp á <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með að hlaða þessum skrám upp á <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Virk afbrigði</translation>
@@ -2994,6 +2996,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Yfirlit pöntunar, <ph name="TOTAL_LABEL" />, frekari upplýsingar</translation>
 <translation id="8666678546361132282">Enska</translation>
+<translation id="8671519637524426245">Gildið <ph name="SECURE_DNS_SALT" /> stenst ekki stærðarkröfur.</translation>
 <translation id="867224526087042813">Undirskrift</translation>
 <translation id="8672264262457010862">Viðskipti og iðnaður</translation>
 <translation id="8676424191133491403">Engin töf</translation>
@@ -3093,6 +3096,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8913778647360618320">Hnappurinn Stjórna greiðslumátum, ýttu á Enter til að stjórna greiðslu- og kreditkortaupplýsingum í stillingum Chrome</translation>
 <translation id="8922013791253848639">Leyfa alltaf auglýsingar á þessu vefsvæði</translation>
 <translation id="892588693504540538">Gatað efst til hægri</translation>
+<translation id="8930098617363288380">Gildið <ph name="SECURE_DNS_SALT" /> á ekki við og verður ekki notað nema reglan<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> sé stillt.</translation>
 <translation id="8930330541574156305">Fasteignir</translation>
 <translation id="8931333241327730545">Viltu vista þetta kort á Google reikningnum þínum?</translation>
 <translation id="8932102934695377596">Klukkan er á eftir</translation>

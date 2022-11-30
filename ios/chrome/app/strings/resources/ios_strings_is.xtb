@@ -133,6 +133,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1981118202195772574">Snjalltækjaútgáfa</translation>
 <translation id="1989112275319619282">Skoða</translation>
+<translation id="1990820278544963435">Finna</translation>
 <translation id="199425419756152024">Sýna aðgangsorð</translation>
 <translation id="2010008505735295285">Endurhlaða</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
@@ -1088,6 +1089,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9188680907066685419">Skrá út af stýrðum reikningi</translation>
 <translation id="9200875785104711666">fyrir <ph name="TIME" /> dögum</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Leita í flipum…</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>
 <translation id="941747855997058526">Veldu aðgangsorð…</translation>
 <translation id="952704832371081537">Hætta við</translation>

@@ -38,6 +38,7 @@
 <translation id="10614374240317010">저장하지 않음</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">데스크톱 북마크</translation>
+<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> 정책이 설정되어 있지 않으면 <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> 정책이 사용되지 않습니다.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" />로 된 페이지는 번역하지 않음</translation>
 <translation id="1070853536588271387">하이브리드 및 대체 연료 자동차</translation>
 <translation id="1070901266639972381">밤</translation>
@@ -2099,6 +2100,7 @@
 <translation id="6328786501058569169">사기성 사이트</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> 미만의 저장용량을 확보합니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="6337534724793800597">이름별로 정책 필터링</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 값이 잘못되었으므로 사용되지 않습니다.</translation>
 <translation id="6340739886198108203">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 스크린샷을 찍거나 녹화하지 않는 것이 좋습니다.</translation>
 <translation id="6341434961864773665">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}}</translation>
 <translation id="6348220984832452017">활성 버전</translation>
@@ -2993,6 +2995,7 @@
 <translation id="8654126188050905496">55x91mm</translation>
 <translation id="8663226718884576429">주문 요약, <ph name="TOTAL_LABEL" />, 세부정보 더보기</translation>
 <translation id="8666678546361132282">영어</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> 값이 크기 요구사항을 충족하지 않습니다.</translation>
 <translation id="867224526087042813">서명</translation>
 <translation id="8672264262457010862">비즈니스 및 산업</translation>
 <translation id="8676424191133491403">지연 없음</translation>
@@ -3092,6 +3095,7 @@
 <translation id="8913778647360618320">결제 수단 관리 버튼, Chrome 설정에서 결제 및 신용카드 정보를 관리하려면 Enter 누르기</translation>
 <translation id="8922013791253848639">이 사이트의 광고 항상 허용</translation>
 <translation id="892588693504540538">오른쪽 상단 펀칭</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> 정책이 설정되어 있지 않으면 <ph name="SECURE_DNS_SALT" /> 값은 관련성이 없어 사용되지 않습니다.</translation>
 <translation id="8930330541574156305">부동산</translation>
 <translation id="8931333241327730545">이 카드를 Google 계정에 저장하시겠습니까?</translation>
 <translation id="8932102934695377596">시간이 너무 먼 과거로 설정되어 있습니다.</translation>

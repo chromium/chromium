@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Вимк. для додатка}one{Вимк. для # додатка}few{Вимк. для # додатків}many{Вимк. для # додатків}other{Вимк. для # додатка}}</translation>
 <translation id="4066027111132117168">Увімкнено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">середній сигнал</translation>
+<translation id="4086921558679520050">Увімкніть фізичний перемикач мікрофона на пристрої</translation>
 <translation id="4112140312785995938">Перейти назад</translation>
 <translation id="4114315158543974537">Увімкнути Phone Hub</translation>
 <translation id="4115378294792113321">Пурпурний</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4379531060876907730">Це ваші інструменти стилуса</translation>
+<translation id="4381031910344220229">Буде надано доступ до мікрофона для додатка <ph name="APP_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="4389184120735010762">Ви натиснули комбінацію клавіш для закріпленої лупи. Увімкнути?</translation>
 <translation id="439598569299422042">Призупинено, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Не вдалося зберегти скрінкаст</translation>
@@ -728,6 +730,7 @@
 <translation id="4987738733603015246">Робочий стіл 16</translation>
 <translation id="5003993274120026347">Наступне речення</translation>
 <translation id="5016558321564993266">Перемкнути маркер. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Доступ до мікрофона пристрою ввімкнено</translation>
 <translation id="5030687792513154421">Час закінчився</translation>
 <translation id="5033299697334913360">Натисніть будь-де, щоб зробити знімок усього екрана</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> під’єднано до нового телефона</translation>
@@ -959,9 +962,11 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, яким керує <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Пристрій <ph name="DEVICE_NAME" /> під’єднано</translation>
 <translation id="6351032674660237738">ПРОПОЗИЦІЇ ДОДАТКІВ</translation>
+<translation id="6352082849089527770">Невідомі мережі</translation>
 <translation id="6359587239691116345">Отримуйте доступ до найновіших функцій і покращеної безпеки. Якщо відхилити це оновлення, ваш пристрій може працювати неналежним чином і у вас можуть виникати проблеми з безпекою та продуктивністю.</translation>
 <translation id="6376931439017688372">Bluetooth увімкнено</translation>
 <translation id="6381109794406942707">Щоб розблокувати пристрій, введіть PIN-код.</translation>
+<translation id="638716340450135524">Увімкнути доступ до камери</translation>
 <translation id="639644700271529076">Режим CAPS LOCK вимкнено</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
@@ -969,6 +974,7 @@
 <translation id="642644398083277086">Видаліть усі сповіщення</translation>
 <translation id="643147933154517414">Готово</translation>
 <translation id="6431865393913628856">Запис відео з екрана</translation>
+<translation id="6442259747294754014">Доступ до мікрофона пристрою вимкнено</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> транслюється на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, подій: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Додатки Linux і вікна в режимі анонімного перегляду наразі не підтримуються</translation>
@@ -1133,6 +1139,7 @@
 <translation id="7360036564632145207">Щоб оптимізувати ефективність, змініть налаштування обмеження доступу до даних для периферійних пристроїв</translation>
 <translation id="736045644501761622">Налаштувати фоновий малюнок і стиль</translation>
 <translation id="7371404428569700291">Записувати вікно</translation>
+<translation id="737315737514430195">Буде надано доступ до мікрофона для всіх додатків і веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="7377169924702866686">Клавішу Caps Lock увімкнено.</translation>
 <translation id="7377481913241237033">Підключити за допомогою коду</translation>
 <translation id="7378203170292176219">Потягніть, щоб вибрати область для запису</translation>
@@ -1201,6 +1208,7 @@
 <translation id="7671610481353807627">Додатки відсортовано за кольором</translation>
 <translation id="7672095158465655885">Підключено до мережі "<ph name="NAME" />", <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Використовується камера "<ph name="CAMERA_NAME" />".</translation>
+<translation id="7689817529363080918">Буде надано доступ до мікрофона для додатків <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Додати мобільну мережу</translation>
 <translation id="7720400844887872976">Увімкнено до <ph name="TIME" /></translation>
@@ -1364,6 +1372,7 @@
 <translation id="8598235756057743477">Сортуйте додатки за назвою чи кольором</translation>
 <translation id="8614517853887502247">Сповіщення з додатків <ph name="APP_1_TITLE" /> і <ph name="APP_2_TITLE" /> приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="8627191004499078455">Під’єднано до пристрою: <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Вимкнути доступ до камери</translation>
 <translation id="8631727435199967028">Налаштування спеціальних можливостей</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="8639760480004882931">Залишилося <ph name="PERCENTAGE" /></translation>

@@ -845,7 +845,6 @@
 <translation id="175772926354468439">테마 사용</translation>
 <translation id="17584710573359123">Chrome 웹 스토어에서 보기</translation>
 <translation id="1761845175367251960"><ph name="NAME" />님의 계정</translation>
-<translation id="176193854664720708">지문 센서는 전원 버튼에 있습니다. 손가락으로 가볍게 터치하세요.</translation>
 <translation id="176272781006230109">쇼핑 추천</translation>
 <translation id="1763046204212875858">애플리케이션 바로가기 만들기</translation>
 <translation id="1763808908432309942">새 탭에서 열기</translation>
@@ -1089,7 +1088,6 @@
 <translation id="1974821797477522211">네트워크에 연결</translation>
 <translation id="1975841812214822307">삭제...</translation>
 <translation id="1976150099241323601">보안 장치 로그인</translation>
-<translation id="1976928778492259496">지문 센서는 <ph name="DEVICE_TYPE" /> 왼쪽에 있습니다. 손가락으로 가볍게 터치하세요.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 더 가까이 가져오세요.</translation>
 <translation id="1978057560491495741">주소 삭제</translation>
 <translation id="1979095679518582070">기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 데는 영향을 미치지 않습니다.</translation>
@@ -1299,6 +1297,7 @@
 <translation id="2157875535253991059">페이지가 현재 전체화면으로 전환되었습니다.</translation>
 <translation id="2158475082070321257">하이라이트 링크 복사</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758"><ph name="EXTENSION_NAME" />의 <ph name="SHORTCUT" /> 범위</translation>
 <translation id="216169395504480358">Wi-Fi 추가</translation>
 <translation id="2162155940152307086">동기화 설정을 종료하면 동기화가 시작됩니다.</translation>
 <translation id="2162705204091149050">브라우저, OS, 기기, 설치된 소프트웨어, 파일에 관한 정보 읽기</translation>
@@ -2688,6 +2687,7 @@
 <translation id="3445047461171030979">Google 어시스턴트 빠른 답변</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="344537926140058498">파일에 민감하거나 위험한 콘텐츠가 포함되어 있기 때문에 조직에서 파일을 차단했습니다. 소유자에게 수정을 요청하세요.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{최근에 방문하지 않은 <ph name="BEGIN_BOLD" />사이트 1개<ph name="END_BOLD" />의 권한이 삭제됨}other{최근에 방문하지 않은 <ph name="BEGIN_BOLD" />사이트 {NUM_SITES}개<ph name="END_BOLD" />의 권한이 삭제됨}}</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
 <translation id="344630545793878684">다수의 웹사이트에서 데이터 읽기</translation>
@@ -2861,7 +2861,6 @@
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;에서 다운로드함</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> 표시</translation>
 <translation id="3613422051106148727">새 탭에서 열기(&amp;O)</translation>
-<translation id="3615073365085224194">손가락으로 지문 센서를 터치하세요.</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" />을(를) 스캔하는 중입니다.</translation>
 <translation id="3615596877979647433">키가 누락되었습니다. 키보드 키를 눌러 맞춤설정하세요.</translation>
 <translation id="3616113530831147358">오디오</translation>
@@ -2899,6 +2898,7 @@
 <translation id="3642699533549879077">다른 사람이 내 화면을 보면 알려 주고 알림 콘텐츠는 숨깁니다.</translation>
 <translation id="3643962751030964445"><ph name="DEVICE_MANAGER" />에서 관리하는 기기입니다. <ph name="DEVICE_MANAGER" />에게 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 새 프로필이 필요합니다</translation>
 <translation id="3645372836428131288">지문의 다른 부분이 인식되도록 손가락을 살짝 움직이세요.</translation>
+<translation id="3647051300407077858">알림 권한 검토</translation>
 <translation id="3647654707956482440">이 링크를 사용할 수 없습니다. 오타가 있는지 확인하거나 다른 링크를 사용하여 다시 시도해 보세요.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> 발견됨</translation>
@@ -3078,6 +3078,7 @@
 <translation id="380408572480438692">성능 데이터를 수집하도록 설정하면 시간이 지남에 따라 Google에서 시스템을 개선하는 데 도움이 됩니다. 데이터는 사용자가 피드백 보고서를 제출하고(Alt-Shift-I) 성능 데이터를 포함할 때까지 전송되지 않습니다. 언제든지 이 화면으로 돌아와 데이터 수집을 중지할 수 있습니다.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" />(확장 프로그램 ID: '<ph name="EXTENSION_ID" />')은(는) 로그인 화면에서 허용되지 않습니다.</translation>
 <translation id="3807747707162121253">취소(&amp;C)</translation>
+<translation id="3808202562160426447">배경 콘텐츠 어둡게 하기</translation>
 <translation id="3808443763115411087">Crostini Android 앱 개발</translation>
 <translation id="38089336910894858">⌘Q로 종료하기 전 경고 표시</translation>
 <translation id="3809272675881623365">토끼</translation>
@@ -3667,6 +3668,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" />이(가) 창을 공유합니다.</translation>
 <translation id="4364830672918311045">알림 표시</translation>
 <translation id="4366138410738374926">인쇄 시작됨</translation>
+<translation id="4367513928820380646">권한이 삭제된 웹사이트 검토</translation>
 <translation id="4369121877634339065">검색할 이미지를 드래그하세요.</translation>
 <translation id="4369215744064167350">웹사이트 요청 승인됨</translation>
 <translation id="4370975561335139969">입력한 이메일과 비밀번호가 일치하지 않습니다.</translation>
@@ -3850,7 +3852,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4533985347672295764">CPU 시간</translation>
 <translation id="4534661889221639075">다시 시도하세요.</translation>
 <translation id="4535127706710932914">기본 프로필</translation>
-<translation id="4535767533210902251">지문 센서는 키보드 오른쪽 상단의 키에 있습니다. 손가락으로 가볍게 터치하세요.</translation>
 <translation id="4536140153723794651">쿠키를 언제든지 사용할 수 있는 사이트</translation>
 <translation id="4536769240747010177">테더링 기능:</translation>
 <translation id="4538417792467843292">단어 삭제</translation>
@@ -4387,6 +4388,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
 <translation id="5049614114599109018">입력 기록 사용</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{최근 많은 알림을 보낸 사이트 1개입니다. 이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}other{최근 많은 알림을 보낸 사이트입니다. 이러한 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}}</translation>
 <translation id="5051836348807686060">선택한 언어의 맞춤법 검사가 지원되지 않습니다.</translation>
 <translation id="5052499409147950210">사이트 수정</translation>
 <translation id="505347685865235222">이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5495,7 +5497,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6087746524533454243">브라우저의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>
 <translation id="608912389580139775">읽기 목록에 이 페이지를 추가하려면 북마크 아이콘을 클릭하세요.</translation>
-<translation id="6091116443517744502">인터넷 연결을 확인하고 다시 시도하세요.</translation>
 <translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
 <translation id="6093803049406781019">프로필 삭제</translation>
 <translation id="6093888419484831006">업데이트를 취소하는 중...</translation>
@@ -6801,7 +6802,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7352651011704765696">문제가 발생한 경우</translation>
 <translation id="7353261921908507769">연락처에 있는 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>
 <translation id="735361434055555355">Linux 설치 중...</translation>
-<translation id="7354341762311560488">지문 센서는 키보드 왼쪽 하단의 키에 있습니다. 아무 손가락으로 가볍게 터치하세요.</translation>
 <translation id="7356908624372060336">네트워크 로그</translation>
 <translation id="735745346212279324">VPN 연결 끊김</translation>
 <translation id="7358324924540718595">오늘 추억 숨김</translation>
@@ -7283,6 +7283,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7775694664330414886">이름이 지정되지 않은 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 볼 수 있게 됩니다.</translation>
 <translation id="7776701556330691704">음성을 찾을 수 없음</translation>
+<translation id="7777624210360383048"><ph name="EXTENSION_NAME" />의 <ph name="SHORTCUT" /> 단축키</translation>
 <translation id="7781335840981796660">모든 사용자 계정과 로컬 데이터가 삭제됩니다.</translation>
 <translation id="7782102568078991263">Google의 추천 단어 없음</translation>
 <translation id="7782717250816686129">로그인 화면의 지속 데이터를 저장하고 세션에 사용자 인증 정보를 삽입합니다.</translation>
@@ -7315,6 +7316,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7807711621188256451"><ph name="HOST" />에서 카메라에 액세스하도록 항상 허용</translation>
 <translation id="7810202088502699111">이 페이지에서 팝업이 차단되었습니다.</translation>
 <translation id="7814458197256864873">복사(&amp;C)</translation>
+<translation id="7815583197273433531"><ph name="EXTENSION_NAME" />의 <ph name="SHORTCUT" /> 단축키 수정</translation>
 <translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7817361223956157679">Linux 앱에서는 아직 터치 키보드가 지원되지 않습니다.</translation>
 <translation id="7818135753970109980">새 테마가 추가됨(<ph name="EXTENSION_NAME" />)</translation>
@@ -7390,6 +7392,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">계정 보기</translation>
 <translation id="7883792253546618164">언제든지 수신 거부할 수 있습니다.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{알림을 많이 보낸 사이트 1개 검토}other{알림을 많이 보낸 사이트 {NUM_SITES}개 검토}}</translation>
 <translation id="788453346724465748">계정 정보 로드 중…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{항목 1개}other{항목 #개}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -7970,7 +7973,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8399282673057829204">비밀번호 보기</translation>
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
-<translation id="8404893580027489425">지문 센서는 <ph name="DEVICE_TYPE" /> 오른쪽에 있습니다. 손가락으로 가볍게 터치하세요.</translation>
 <translation id="8405046151008197676">최신 업데이트에서 중요한 사항을 확인하세요.</translation>
 <translation id="8407199357649073301">로그 수준:</translation>
 <translation id="8408270600235826886">사용자는 Google과 어떤 데이터를 공유할지 관리할 수 있으며 언제든지 설정에서 변경할 수 있습니다. 데이터는 Google의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />에 따라 사용됩니다.</translation>
@@ -8057,7 +8059,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8487699605742506766">핫스팟</translation>
 <translation id="8489156414266187072">개인 추천 항목은 내 계정에만 표시됩니다.</translation>
 <translation id="8490896350101740396">다음 Kiosk 앱 '<ph name="UPDATED_APPS" />'이(가) 업데이트되었습니다. 기기를 재부팅하여 업데이트 절차를 완료하세요.</translation>
-<translation id="8492685019009920170">손가락으로 지문 센서를 터치하세요. 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="8492822722330266509">사이트에서 팝업을 전송하고 리디렉션을 사용할 수 있음</translation>
 <translation id="8492960370534528742">Google Cast에 관한 의견</translation>
 <translation id="8493236660459102203">마이크:</translation>
@@ -8592,7 +8593,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="899384117894244799">제한된 사용자 삭제</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
 <translation id="899657321862108550">어디에서나 나만의 Chrome을 사용하세요</translation>
-<translation id="899676909165543803">지문 센서는 키보드 오른쪽 하단의 키에 있습니다. 아무 손가락으로나 가볍게 터치하세요.</translation>
 <translation id="8998078711690114234">이러한 형식의 파일은 위험할 수 있습니다. <ph name="ORIGIN" />을(를) 신뢰하는 경우에만 파일을 저장하세요.</translation>
 <translation id="8999560016882908256">섹션 구문 오류: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">기기 관리 서버 연결 실패. 상태: '<ph name="STATUS_TEXT" />' 시간: <ph name="FAILURE_TIME" /></translation>
@@ -8649,6 +8649,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> 비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="9041692268811217999">관리자가 시스템의 로컬 파일 액세스를 차단했습니다</translation>
 <translation id="904224458472510106">이 작업은 되돌릴 수 없습니다.</translation>
+<translation id="9042827002460091668">인터넷 연결 상태를 확인하고 다시 시도해 주세요.</translation>
 <translation id="9042893549633094279">개인 정보 보호 및 보안</translation>
 <translation id="9044646465488564462">네트워크 연결 실패: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">읽기 목록을 새 측면 패널로 이동했습니다. 여기에서 사용해 보세요.</translation>
@@ -8889,7 +8890,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{탭 1개}other{탭 #개}}</translation>
 <translation id="971510864672937292"><ph name="SITE_NAME" /> 및 모든 하위 사이트의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
 <translation id="971774202801778802">북마크 URL</translation>
-<translation id="972996901592717370">전원 버튼을 손가락으로 터치하세요. 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="973473557718930265">종료</translation>
 <translation id="973558314812359997">마우스 커서 크기</translation>
 <translation id="975893173032473675">번역 도착어</translation>

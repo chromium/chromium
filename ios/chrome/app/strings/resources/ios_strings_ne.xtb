@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">उन्नत</translation>
 <translation id="1981118202195772574">मोबाइल</translation>
 <translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
+<translation id="1990820278544963435">खोज्नुहोस्</translation>
 <translation id="199425419756152024">पासवर्ड हेर्नुहोस्</translation>
 <translation id="2010008505735295285">रिलोड गर्नुहोस्</translation>
 <translation id="2015722694326466240">पासवर्डहरू हेर्नका लागि सर्वप्रथम तपाईंले अनिवार्य रूपमा आफ्नो यन्त्रमा कुनै पासकोड सेट गर्नुपर्छ।</translation>
@@ -875,6 +876,7 @@
 <translation id="7531345132340165516">हालको साइट</translation>
 <translation id="7537586195939242955">माफ गर्नुहोस्, यस समयमा तपाईंको पासलाई पासबुकमा स्थापना गर्न सकिदैन।</translation>
 <translation id="7553234618121028547">स्वतः भर्ने सुविधा अफ गर्न <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" /> खोल्नुहोस् अनि पासवर्डसम्बन्धी विकल्पहरूमा जानुहोस्।</translation>
+<translation id="7554645225856321710">सबै ट्याब बन्द गर्नुहोस्</translation>
 <translation id="7554791636758816595">नयाँ ट्याब</translation>
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="7583004045319035904">आफ्ना इन्कोग्निटो ट्याबहरू अनलक गर्न <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गर्नुहोस्।</translation>
@@ -1088,6 +1090,7 @@
 <translation id="9188680907066685419">व्यवस्थापन गरिएको खाताबाट साइन आउट गर्ने</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> दिनअघि</translation>
 <translation id="9203116392574189331">ह्यान्डअफ</translation>
+<translation id="9219154867334666734">ट्याबहरू खोज्नुहोस्…</translation>
 <translation id="9223358826628549784">क्र्याश रिपोर्ट पठाइयो।</translation>
 <translation id="941747855997058526">पासवर्ड चयन गर्नुहोस्...</translation>
 <translation id="952704832371081537">रद्द गर्नुहोस्</translation>

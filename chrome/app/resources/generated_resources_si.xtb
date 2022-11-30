@@ -834,7 +834,6 @@
 <translation id="175772926354468439">තේමාව සබල කරන්න</translation>
 <translation id="17584710573359123">Chrome Web Store තුළ බලන්න</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ගේ ගිණුම්</translation>
-<translation id="176193854664720708">ඇඟිලි සලකුණු සංවේදකය බල බොත්තමේ ඇත. ඕනෑම ඇඟිල්ලකින් එය මඳක් ස්පර්ශ කරන්න.</translation>
 <translation id="176272781006230109">සාප්පු සවාරි යෝජනා</translation>
 <translation id="1763046204212875858">යෙදුම් කෙටි මාර්ගය සාදන්න</translation>
 <translation id="1763808908432309942">නව පටිත්තක විවෘත වේ</translation>
@@ -1078,7 +1077,6 @@
 <translation id="1974821797477522211">ජාලයට සබැඳීම</translation>
 <translation id="1975841812214822307">ඉවත් කරන්න...</translation>
 <translation id="1976150099241323601">ආරක්ෂක උපාංගයට පිවිසෙන්න</translation>
-<translation id="1976928778492259496">ඇඟිලි සලකුණු සංවේදකය ඔබගේ <ph name="DEVICE_TYPE" /> හි වම් අත පැත්තේ ඇත. ඕනෑම ඇඟිල්ලකින් එය සුළුවෙන් ස්පර්ශ කරන්න.</translation>
 <translation id="1977965994116744507">ඔබගේ දුරකථනය ඔබගේ <ph name="DEVICE_TYPE" /> අගුලු හැරීමට සමීපයට ගෙන එන්න.</translation>
 <translation id="1978057560491495741">ලිපිනය ඉවත් කරන්න</translation>
 <translation id="1979095679518582070">මෙම විශේෂාංගය අක්‍රිය කිරීම මෙම උපාංගයේ පද්ධති යාවත්කාලීන කිරීම සහ ආරක්‍ෂාව වැනි අත්‍යවශ්‍ය සේවාවලට තොරතුරු යැවීමේ හැකියාවට බලපෑමක් නොකරයි.</translation>
@@ -2849,7 +2847,6 @@
 <translation id="3612673635130633812">බාගන්නා ලද්දේ &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> පෙන්වන්න</translation>
 <translation id="3613422051106148727">නව ටැබයක &amp;විවෘත කරන්න</translation>
-<translation id="3615073365085224194">ඔබේ ඇඟිල්ලෙන් ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කරන්න</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> ස්කෑන් කරමින් පවතී.</translation>
 <translation id="3615596877979647433">යතුර අස්ථානගතයි. අභිරුචිකරණය කිරීමට යතුරු පුවරු යතුරක් ඔබන්න</translation>
 <translation id="3616113530831147358">ශබ්ද</translation>
@@ -3840,7 +3837,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4533985347672295764">CPU කාලය</translation>
 <translation id="4534661889221639075">නැවත උත්සාහ කරන්න.</translation>
 <translation id="4535127706710932914">පෙරනිමි පැතිකඩ</translation>
-<translation id="4535767533210902251">ඇඟිලි සලකුණු සංවේදකවය ඔබේ යතුරු පුවරුවේ ඉහළ දකුණු පැත්තේ යතුර වෙයි. ඕනෑම ඇඟිල්ලකින් එය සුළුවෙන් ස්පර්ශ කරන්න.</translation>
 <translation id="4536140153723794651">සැම විටම කුකී භාවිත කළ හැකි වෙබ් අඩවි</translation>
 <translation id="4536769240747010177">ටෙදරින් හැකියාවන්:</translation>
 <translation id="4538417792467843292">වචනය මකන්න</translation>
@@ -5486,7 +5482,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6087746524533454243">පිටුව ගැන බ්‍රවුසරය සඳහා සොයන්නේද? පිවිසෙන්න</translation>
 <translation id="6087960857463881712">නියම මුහුණ</translation>
 <translation id="608912389580139775">මෙම පිටුව ඔබගේ කියවීම් ලැයිස්තුවට එක් කිරීමට, පිටුසන් නිරූපකය ක්ලික් කරන්න</translation>
-<translation id="6091116443517744502">ඔබේ අන්තර්ජාල සබැඳුම පරීක්‍ෂා කර නැවත උත්සාහ කරන්න</translation>
 <translation id="6091761513005122595">කොටස සාර්ථකව නැංවිණි.</translation>
 <translation id="6093803049406781019">පැතිකඩ මකන්න</translation>
 <translation id="6093888419484831006">යාවත්කාලීන අවලංගු කරමින්...</translation>
@@ -6792,7 +6787,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7352651011704765696">යමක් වැරදිනි</translation>
 <translation id="7353261921908507769">ඔබගේ සම්බන්ධතා අවට සිටින විට ඔබ සමඟ බෙදා ගත හැකිය. ඔබ පිළිගන්නා තුරු මාරුවීම් ආරම්භ නොවනු ඇත.</translation>
 <translation id="735361434055555355">Linux ස්ථාපනය කරමින්...</translation>
-<translation id="7354341762311560488">ඇඟිලි සලකුණු සංවේදකවය ඔබේ යතුරු පුවරුවේ පහළ වම් පැත්තේ යතුර වෙයි. ඕනෑම ඇඟිල්ලකින් එය සුළුවෙන් ස්පර්ශ කරන්න.</translation>
 <translation id="7356908624372060336">ජාල ලොග</translation>
 <translation id="735745346212279324">VPN විසන්ධි විය</translation>
 <translation id="7358324924540718595">අද දිනය සඳහා මතක සඟවා ඇත</translation>
@@ -7958,7 +7952,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8398877366907290961">කෙසේ හෝ කරගෙන යන්න</translation>
 <translation id="8399282673057829204">මුරපදය බලන්න</translation>
 <translation id="8401432541486058167">ඔබේ ස්මාර්ට් කාඩ්පත හා සම්බන්ධ රහස් අංකය ලබා දෙන්න.</translation>
-<translation id="8404893580027489425">ඇඟිලි සලකුණු සංවේදකය ඔබගේ <ph name="DEVICE_TYPE" /> හි දකුණු අත පැත්තේ ඇත. ඕනෑම ඇඟිල්ලකින් එය සුළුවෙන් ස්පර්ශ කරන්න.</translation>
 <translation id="8405046151008197676">නවතම යාවත්කාලීනයෙන් උද්දීපන ලබා ගන්න</translation>
 <translation id="8407199357649073301">ලොග මට්ටම:</translation>
 <translation id="8408270600235826886">ඔබට Google සමඟ බෙදා ගන්නා දත්ත පාලනය කළ හැකිය. ඔබට සැකසීම් තුළ මෙය ඕනෑම වේලාවක වෙනස් කළ හැකිය. දත්ත Google හි <ph name="BEGIN_LINK" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_LINK" /> සමඟ අනුකූලව භාවිත කරනු ඇත.</translation>
@@ -8045,7 +8038,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8487699605742506766">හොට්ස්පොට්</translation>
 <translation id="8489156414266187072">පුද්ගලික යෝජනා ඔබගේ ගිණුමේ පමණක් පෙන්වයි</translation>
 <translation id="8490896350101740396">යාවත්කාලීන කළ kiosk යෙදුම් "<ph name="UPDATED_APPS" />" අනුගමනය කරන්න. කරුණාකර යාවත්කාලීන ක්‍රියාවලිය සම්පුර්ණ කිරීමට උපාංගය නැවත පනගන්වන්න.</translation>
-<translation id="8492685019009920170">ඔබගේ ඇඟිල්ලෙන් ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කරන්න. ඔබගේ දත්ත ආරක්ෂිතව ගබඩා කරන අතර කිසි විට ඔබගේ <ph name="DEVICE_TYPE" /> හැර නොයයි.</translation>
 <translation id="8492822722330266509">අඩවිවිලට උත්පතන එවීමට සහ ප්‍රතියොමු කිරීම් භාවිත කිරීමට හැකිය</translation>
 <translation id="8492960370534528742">Google Cast ප්‍රතිපෝෂණය</translation>
 <translation id="8493236660459102203">මයික්‍රෆෝනය:</translation>
@@ -8581,7 +8573,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="899384117894244799">සීමා කළ පරිශීලකයා ඉවත් කරන්න</translation>
 <translation id="899403249577094719">Netscape සහතික මත පදනම් වූ URL</translation>
 <translation id="899657321862108550">ඔබේ Chrome, සැම තැනම</translation>
-<translation id="899676909165543803">ඇඟිලි සලකුණු සංවේදකවය ඔබේ යතුරු පුවරුවේ පහළ දකුණු පැත්තේ යතුර වෙයි. ඕනෑම ඇඟිල්ලකින් එය සුළුවෙන් ස්පර්ශ කරන්න.</translation>
 <translation id="8998078711690114234">මෙම වර්ගයේ ගොනුවක් භයානක විය හැක. ඔබ <ph name="ORIGIN" /> විශ්වාස කරන්නේ නම් පමණක් මෙම ගොනුව සුරකින්න</translation>
 <translation id="8999560016882908256">කොටස් කාරක රීති දෝෂය: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">උපාංග කළමනාකරණ සේවාදායකය වෙත සම්බන්ධතාව '<ph name="STATUS_TEXT" />' තත්ත්වය සහිතව <ph name="FAILURE_TIME" />ට අසාර්ථක විය</translation>
@@ -8638,6 +8629,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9040661932550800571"><ph name="ORIGIN" /> සඳහා මුරපදය යාවත්කාලීන කරන්න ද?</translation>
 <translation id="9041692268811217999">ඔබේ යන්ත්‍රයෙන් ස්ථානීය ගොනුවලට ප්‍රවේශය ඔබේ පරිපාලක අබල කර ඇත</translation>
 <translation id="904224458472510106">මෙම මෙහෙයුම අස් කළ නොහැක</translation>
+<translation id="9042827002460091668">ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්ෂා කර නැවත උත්සහ කරන්න</translation>
 <translation id="9042893549633094279">රහස්‍යතාව සහ ආරක්ෂාව</translation>
 <translation id="9044646465488564462">ජාලයට සබඳ විය නොහැකි විය: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">ඔබගේ කියවීම් ලැයිස්තුව නව පැති පැනලය වෙත ගෙන ගොස් ඇත. එය මෙහි උත්සාහ කරන්න.</translation>
@@ -8878,7 +8870,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="970047733946999531">{NUM_TABS,plural, =1{පටිති 1}one{පටිති #}other{පටිති #}}</translation>
 <translation id="971510864672937292"><ph name="SITE_NAME" /> සහ එය යටතේ ඇති සියලු අඩවි සඳහා අඩවි දත්ත සහ අවසර හිස් කරන්නද?</translation>
 <translation id="971774202801778802">URL පිටු සලකුණු කරන්න</translation>
-<translation id="972996901592717370">ඔබගේ ඇඟිල්ලෙන් බල බොත්තම ස්පර්ශ කරන්න ඔබගේ දත්ත ආරක්ෂිතව ගබඩා කරන අතර කිසි විට ඔබගේ <ph name="DEVICE_TYPE" /> හැර නොයයි.</translation>
 <translation id="973473557718930265">ඉවත් වන්න</translation>
 <translation id="973558314812359997">මූසික තරම</translation>
 <translation id="975893173032473675">පරිවර්තන කළ යුතු භාෂාව</translation>

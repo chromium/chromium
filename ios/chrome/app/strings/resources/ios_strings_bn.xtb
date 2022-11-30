@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1981118202195772574">মোবাইল</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
+<translation id="1990820278544963435">খুঁজুন</translation>
 <translation id="199425419756152024">পাসওয়ার্ড দেখুন</translation>
 <translation id="2010008505735295285">আবার লোড করুন</translation>
 <translation id="2015722694326466240">পাসওয়ার্ড দেখার জন্য আপনার ডিভাইসে আপনাকে অবশ্যই একটি পাসকোড সেট করতে হবে।</translation>
@@ -876,6 +877,7 @@
 <translation id="7531345132340165516">বর্তমান সাইট</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ে পাসবুকে আপনার পাস ইনস্টল করা যাবে না৷</translation>
 <translation id="7553234618121028547">বন্ধ করতে, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্প খুলে পাসওয়ার্ড বিকল্পে যান।</translation>
+<translation id="7554645225856321710">সব বন্ধ করুন</translation>
 <translation id="7554791636758816595">নতুন ট্যাব</translation>
 <translation id="7561196759112975576">সবসময়</translation>
 <translation id="7583004045319035904">আপনার ছদ্মবেশী ট্যাব আনলক করতে, <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যবহার করুন।</translation>
@@ -1089,6 +1091,7 @@
 <translation id="9188680907066685419">ম্যানেজ করা অ্যাকাউন্ট থেকে সাইন-আউট করুন</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> দিন আগে</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">ট্যাব সার্চ করুন…</translation>
 <translation id="9223358826628549784">ক্র্যাশ রিপোর্ট পাঠানো হয়েছে৷</translation>
 <translation id="941747855997058526">পাসওয়ার্ড বেছে নিন...</translation>
 <translation id="952704832371081537">বাতিল করুন</translation>

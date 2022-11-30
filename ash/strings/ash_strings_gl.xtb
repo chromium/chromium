@@ -729,6 +729,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4987738733603015246">Escritorio 16</translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
 <translation id="5016558321564993266">Activar/Desactivar marcador. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">O acceso do micrófono ao dispositivo está activado</translation>
 <translation id="5030687792513154421">Rematou o tempo</translation>
 <translation id="5033299697334913360">Fai clic en calquera parte para facer unha captura a pantalla completa</translation>
 <translation id="5035236842988137213">O <ph name="DEVICE_NAME" /> está conectado a un novo teléfono</translation>
@@ -963,6 +964,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6359587239691116345">Goza das últimas funcións e melloras de seguranza. Se rexeitas esta actualización, é posible que o dispositivo deixe de funcionar adecuadamente e que teñas problemas de seguranza e de rendemento.</translation>
 <translation id="6376931439017688372">O Bluetooth está activado</translation>
 <translation id="6381109794406942707">Para desbloquear o dispositivo escribe o PIN.</translation>
+<translation id="638716340450135524">Activar acceso á cámara</translation>
 <translation id="639644700271529076">O bloqueo de maiúsculas está desactivado</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
@@ -970,6 +972,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="642644398083277086">Eliminar todas as notificacións</translation>
 <translation id="643147933154517414">Listo</translation>
 <translation id="6431865393913628856">Gravación da pantalla</translation>
+<translation id="6442259747294754014">O acceso do micrófono ao dispositivo está desactivado</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6449483711453944360">As aplicacións de Linux e as ventás do modo de incógnito agora mesmo non son compatibles</translation>
@@ -1365,6 +1368,7 @@ Nova instalación</translation>
 <translation id="8598235756057743477">Ordena as túas aplicacións por nome ou cor</translation>
 <translation id="8614517853887502247">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> porque está activada a protección fronte a usuarios non desexados</translation>
 <translation id="8627191004499078455">Dispositivo conectado a: <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Desactivar acceso á cámara</translation>
 <translation id="8631727435199967028">Configuración de accesibilidade</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante</translation>

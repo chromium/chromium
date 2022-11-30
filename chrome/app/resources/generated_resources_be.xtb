@@ -837,7 +837,6 @@
 <translation id="175772926354468439">Уключыць тэму</translation>
 <translation id="17584710573359123">Прагледзець у Вэб-краме Chrome</translation>
 <translation id="1761845175367251960">Уліковыя запісы карыстальніка <ph name="NAME" /></translation>
-<translation id="176193854664720708">Сканер адбіткаў пальцаў – гэта кнопка сілкавання. Злёгку дакраніцеся да яе любым пальцам.</translation>
 <translation id="176272781006230109">прапановы тавараў</translation>
 <translation id="1763046204212875858">Стварэнне ярлыкоў праграм</translation>
 <translation id="1763808908432309942">Адкрываецца ў новай укладцы</translation>
@@ -1080,7 +1079,6 @@
 <translation id="1974821797477522211">Падключыцца да сеткі</translation>
 <translation id="1975841812214822307">Выдаліць...</translation>
 <translation id="1976150099241323601">Уваход на прыладу бяспекі</translation>
-<translation id="1976928778492259496">Сканер адбіткаў пальцаў знаходзіцца на левым баку прылады <ph name="DEVICE_TYPE" />. Злёгку дакраніцеся да яго любым пальцам.</translation>
 <translation id="1977965994116744507">Паднясіце свой тэлефон бліжэй, каб разблакіраваць <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Выдаленне адраса</translation>
 <translation id="1979095679518582070">Калі вы выключыце гэту функцыю, прылада ўсё роўна будзе адпраўляць даныя, неабходныя для працы асноўных сэрвісаў, такіх як абнаўленне сістэмы і бяспека прылады.</translation>
@@ -1290,6 +1288,7 @@
 <translation id="2157875535253991059">Старонка ў поўнаэкранным рэжыме.</translation>
 <translation id="2158475082070321257">Скапіраваць спасылку на вылучаны тэкст</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">Вобласць дзеяння спалучэння клавіш <ph name="SHORTCUT" /> для пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="216169395504480358">Дадаць сетку Wi-Fi...</translation>
 <translation id="2162155940152307086">Сінхранізацыя пачнецца, як толькі вы закрыеце старонку налад сінхранізацыі</translation>
 <translation id="2162705204091149050">Доступ да інфармацыі пра браўзер, АС, прыладу, усталяванае праграмнае забеспячэнне і файлы</translation>
@@ -2675,6 +2674,7 @@
 <translation id="3445047461171030979">Хуткія адказы Памочніка Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="344537926140058498">Ваша арганізацыя заблакіравала гэты файл, бо ў ім ёсць канфідэнцыяльнае або небяспечнае змесціва Папрасіце ўладальніка файла вырашыць гэту праблему.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{Дазволы выдалены для <ph name="BEGIN_BOLD" />1 сайта<ph name="END_BOLD" />, які вы даўно не наведвалі}one{Дазволы выдалены для <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, якія вы даўно не наведвалі}few{Дазволы выдалены для <ph name="BEGIN_BOLD" />{NUM_SITES} сайтаў<ph name="END_BOLD" />, якія вы даўно не наведвалі}many{Дазволы выдалены для <ph name="BEGIN_BOLD" />{NUM_SITES} сайтаў<ph name="END_BOLD" />, якія вы даўно не наведвалі}other{Дазволы выдалены для <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, якія вы даўно не наведвалі}}</translation>
 <translation id="3445925074670675829">Прылада USB-C</translation>
 <translation id="3446274660183028131">Каб усталяваць Windows, запусціце Parallels Desktop.</translation>
 <translation id="344630545793878684">Прагляд вашых даных на шэрагу вэб-сайтаў</translation>
@@ -2848,7 +2848,6 @@
 <translation id="3612673635130633812">Спампавана пашырэннем &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Паказаць папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="3613422051106148727">&amp;Адкрыць у новай укладцы</translation>
-<translation id="3615073365085224194">Дакраніцеся пальцам да сканера адбіткаў пальцаў</translation>
 <translation id="3615579745882581859">Выконваецца праверка файла "<ph name="FILE_NAME" />".</translation>
 <translation id="3615596877979647433">Клавіша не ўказана. Націсніце клавішу на клавіятуры, каб выканаць наладжванне.</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
@@ -2886,6 +2885,7 @@
 <translation id="3642699533549879077">Калі нехта іншы будзе глядзець на экран вашай прылады, вы атрымаеце абвестку, а змесціва апавяшчэння будзе схавана.</translation>
 <translation id="3643962751030964445">Гэтай прыладай кіруе <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> патрабуе стварыць новы профіль для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3645372836428131288">Крыху перамясціце палец, каб была захоплена іншая частка адбітка.</translation>
+<translation id="3647051300407077858">Праглядзець дазволы апавяшчэнняў</translation>
 <translation id="3647654707956482440">Не ўдалося выкарыстаць спасылку. Праверце яе на наяўнасць памылак або паўтарыце спробу, выкарыстаўшы іншую спасылку.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}one{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}few{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}many{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}other{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}}</translation>
 <translation id="3648348069317717750">Выяўлена прылада: <ph name="USB_DEVICE_NAME" /></translation>
@@ -3065,6 +3065,7 @@
 <translation id="380408572480438692">Збор даных аб прадукцыйнасці дапаможа Google з цягам часу палепшыць сістэму. Даныя адпраўляюцца толькі пры адпраўцы справаздачы з водгукам (Alt-Shift-I), калі вы ўключаеце ў яе даныя аб прадукцыйнасці. У любы момант можна вярнуцца да гэтага экрана і выключыць збор даных.</translation>
 <translation id="3807249107536149332">Пашырэнне <ph name="EXTENSION_NAME" /> (ідэнтыфікатар "<ph name="EXTENSION_ID" />") не дазволена размяшчаць на экране ўваходу ў сістэму.</translation>
 <translation id="3807747707162121253">&amp;Скасаваць</translation>
+<translation id="3808202562160426447">Зацямняць змесціва фону</translation>
 <translation id="3808443763115411087">Распрацоўка праграм для Android у Crostini</translation>
 <translation id="38089336910894858">Перад выхадам з дапамогай ⌘Q паказваць папярэджанне</translation>
 <translation id="3809272675881623365">Трус</translation>
@@ -3656,6 +3657,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> абагульвае акно.</translation>
 <translation id="4364830672918311045">Паказ апавяшчэнняў</translation>
 <translation id="4366138410738374926">Пачатак друку</translation>
+<translation id="4367513928820380646">Праглядзець выдаленыя дазволы</translation>
 <translation id="4369121877634339065">Каб выканаць пошук, вылучыце частку якога-небудзь відарыса з дапамогай указальніка</translation>
 <translation id="4369215744064167350">Запыт на доступ да вэб-сайта ўхвалены</translation>
 <translation id="4370975561335139969">Вы ўвялі няправільны адрас электроннай пошты або пароль</translation>
@@ -3838,7 +3840,6 @@
 <translation id="4533985347672295764">Час ЦП</translation>
 <translation id="4534661889221639075">Паўтарыце спробу.</translation>
 <translation id="4535127706710932914">Стандартны профіль</translation>
-<translation id="4535767533210902251">Сканер адбіткаў пальцаў – гэта верхняя кнопка справа на клавіятуры. Злёгку дакраніцеся да яе любым пальцам.</translation>
 <translation id="4536140153723794651">Сайты, якім заўсёды дазволена выкарыстоўваць файлы cookie</translation>
 <translation id="4536769240747010177">Магчымасці рэжыму мадэма:</translation>
 <translation id="4538417792467843292">Выдаліць слова</translation>
@@ -4375,6 +4376,7 @@
 <translation id="5045550434625856497">Няправільны пароль</translation>
 <translation id="504561833207953641">Ідзе адкрыццё ў бягучым сеансе браўзера.</translation>
 <translation id="5049614114599109018">Выкарыстоўваць гісторыю ўводу</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{За апошні час гэты сайт адправіў шмат апавяшчэнняў. Можна забараніць яму адпраўляць апавяшчэнні.}one{За апошні час гэтыя сайты адправілі шмат апавяшчэнняў. Можна забараніць ім адпраўляць апавяшчэнні.}few{За апошні час гэтыя сайты адправілі шмат апавяшчэнняў. Можна забараніць ім адпраўляць апавяшчэнні.}many{За апошні час гэтыя сайты адправілі шмат апавяшчэнняў. Можна забараніць ім адпраўляць апавяшчэнні.}other{За апошні час гэтыя сайты адправілі шмат апавяшчэнняў. Можна забараніць ім адпраўляць апавяшчэнні.}}</translation>
 <translation id="5051836348807686060">Праверка правапісу для выбраных моў не падтрымліваецца</translation>
 <translation id="5052499409147950210">Рэдагаванне сайта</translation>
 <translation id="505347685865235222">Група без назвы – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5483,7 +5485,6 @@
 <translation id="6087746524533454243">Шукаеце інфармацыю пра браўзер? Наведайце старонку</translation>
 <translation id="6087960857463881712">Захапленне</translation>
 <translation id="608912389580139775">Каб дадаць гэту старонку ў спіс на прагляд, націсніце на значок закладкі</translation>
-<translation id="6091116443517744502">праверце падключэнне да інтэрнэту і паўтарыце спробу</translation>
 <translation id="6091761513005122595">Абагулены рэсурс падключаны.</translation>
 <translation id="6093803049406781019">Выдаліць профіль</translation>
 <translation id="6093888419484831006">Ідзе скасаванне абнаўлення...</translation>
@@ -6795,7 +6796,6 @@
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7353261921908507769">Вашы кантакты могуць абагульваць з вамі даныя, калі знаходзяцца паблізу. Перадача даных не пачнецца, пакуль вы яе не ўхваліце.</translation>
 <translation id="735361434055555355">Ідзе ўсталяванне Linux...</translation>
-<translation id="7354341762311560488">Сканер адбіткаў пальцаў – гэта ніжняя кнопка злева на клавіятуры. Злёгку дакраніцеся да яе любым пальцам.</translation>
 <translation id="7356908624372060336">Сеткавыя журналы</translation>
 <translation id="735745346212279324">Сетка VPN адключана</translation>
 <translation id="7358324924540718595">Успаміны схаваны на сёння</translation>
@@ -7277,6 +7277,7 @@
 <translation id="7775694664330414886">Укладка перамешчана ў групу без назвы – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Сайт <ph name="ORIGIN" /> зможа праглядаць файлы ў папцы "<ph name="FOLDERNAME" />", пакуль вы не закрыеце ўсе яго ўкладкі</translation>
 <translation id="7776701556330691704">Галасы не знойдзены</translation>
+<translation id="7777624210360383048">Спалучэнне клавіш <ph name="SHORTCUT" /> для пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7781335840981796660">Усе ўліковыя запісы карыстальнікаў і лакальныя даныя будуць выдалены.</translation>
 <translation id="7782102568078991263">Больш прапаноў ад Google няма</translation>
 <translation id="7782717250816686129">Захоўваць пастаянныя даныя на экране ўваходу і ўводзіць уліковыя даныя для сеанса.</translation>
@@ -7309,6 +7310,7 @@
 <translation id="7807711621188256451">Заўсёды даваць хосту <ph name="HOST" /> доступ да камеры</translation>
 <translation id="7810202088502699111">Усплывальныя вокны на гэтай старонцы заблакіраваны.</translation>
 <translation id="7814458197256864873">&amp;Капіраваць</translation>
+<translation id="7815583197273433531">Змяніць спалучэнне клавіш <ph name="SHORTCUT" /> для пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7815680994978050279">Небяспечная спампоўка заблакіравана</translation>
 <translation id="7817361223956157679">Экранная клавіятура ў праграмах Linux пакуль што не працуе</translation>
 <translation id="7818135753970109980">Дададзена новая тэма (<ph name="EXTENSION_NAME" />)</translation>
@@ -7383,6 +7385,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Праглядзець уліковы запіс</translation>
 <translation id="7883792253546618164">Адпісацца можна ў любы час.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{Праглядзіце 1 сайт, які адпраўляў шмат апавяшчэнняў}one{Праглядзіце {NUM_SITES} сайт, якія адпраўлялі шмат апавяшчэнняў}few{Праглядзіце {NUM_SITES} сайты, якія адпраўлялі шмат апавяшчэнняў}many{Праглядзіце {NUM_SITES} сайтаў, якія адпраўлялі шмат апавяшчэнняў}other{Праглядзіце {NUM_SITES} сайта, якія адпраўлялі шмат апавяшчэнняў}}</translation>
 <translation id="788453346724465748">Ідзе загрузка інфармацыі пра ўліковы запіс...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{элемент}one{# элемент}few{# элементы}many{# элементаў}other{# элемента}}</translation>
 <translation id="7886605625338676841">eSIM-карта</translation>
@@ -7962,7 +7965,6 @@
 <translation id="8398877366907290961">Усё роўна працягнуць</translation>
 <translation id="8399282673057829204">Паглядзець пароль</translation>
 <translation id="8401432541486058167">Укажыце PIN-код, звязаны з разумнай карткай.</translation>
-<translation id="8404893580027489425">Сканер адбіткаў пальцаў знаходзіцца на правым баку прылады <ph name="DEVICE_TYPE" />. Злёгку дакраніцеся да яго любым пальцам.</translation>
 <translation id="8405046151008197676">Атрымайце асноўную інфармацыю пра апошняе абнаўленне</translation>
 <translation id="8407199357649073301">Узровень гісторыі:</translation>
 <translation id="8408270600235826886">Вы самі выбіраеце, якія даныя можна абагульваць з Google. Свой выбар вы можаце змяніць у любы час у Наладах. Даныя будуць выкарыстоўвацца ў адпаведнасці з <ph name="BEGIN_LINK" />Палітыкай прыватнасці<ph name="END_LINK" /> Google.</translation>
@@ -8049,7 +8051,6 @@
 <translation id="8487699605742506766">Хот-спот</translation>
 <translation id="8489156414266187072">Персанальныя прапановы паказваюцца толькі ў вашым уліковым запісе</translation>
 <translation id="8490896350101740396">Наступныя праграмы-кіёскі былі абноўлены: <ph name="UPDATED_APPS" />. Каб завяршыць працэс абнаўлення, перазагрузіце прыладу.</translation>
-<translation id="8492685019009920170">Дакраніцеся пальцам да сканера адбіткаў пальцаў. Вашы даныя надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
 <translation id="8492822722330266509">Сайты могуць паказваць усплывальныя вокны і ажыццяўляць перанакіраванне</translation>
 <translation id="8492960370534528742">Водгук пра Google Cast</translation>
 <translation id="8493236660459102203">Мікрафон:</translation>
@@ -8587,7 +8588,6 @@
 <translation id="899384117894244799">Выдаліць карыстальніка з абмежаваннямі</translation>
 <translation id="899403249577094719">Базавы URL-адрас сертыфіката Netscape</translation>
 <translation id="899657321862108550">Ваш Chrome – усюды</translation>
-<translation id="899676909165543803">Сканер адбіткаў пальцаў – гэта ніжняя кнопка справа на клавіятуры. Злёгку дакраніцеся да яе любым пальцам.</translation>
 <translation id="8998078711690114234">Файл гэтага тыпу можа быць небяспечным. Захоўвайце яго, толькі калі вы давяраеце крыніцы <ph name="ORIGIN" />.</translation>
 <translation id="8999560016882908256">Памылка сінтаксісу раздзела: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Не ўдалося падключыцца да сервера кіравання прыладамі (стан: "<ph name="STATUS_TEXT" />", <ph name="FAILURE_TIME" />)</translation>
@@ -8644,6 +8644,7 @@
 <translation id="9040661932550800571">Абнавіць пароль для сайта <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Доступ да лакальных файлаў на прыладзе выключаны адміністратарам</translation>
 <translation id="904224458472510106">Гэту аперацыю нельга адрабіць</translation>
+<translation id="9042827002460091668">Праверце падключэнне да інтэрнэту і паўтарыце спробу</translation>
 <translation id="9042893549633094279">Прыватнасць і бяспека</translation>
 <translation id="9044646465488564462">Не ўдалося падключыцца да сеткі: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Спіс на прагляд быў перамешчаны на новую бакавую панэль. Праглядзіце яго.</translation>
@@ -8881,7 +8882,6 @@
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
 <translation id="971510864672937292">Выдаліць дазволы і даныя сайта <ph name="SITE_NAME" /> і ўсіх сайтаў ніжэйшых узроўняў?</translation>
 <translation id="971774202801778802">URL-адрас закладкі</translation>
-<translation id="972996901592717370">Дакраніцеся пальцам да кнопкі сілкавання. Вашы даныя надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
 <translation id="973473557718930265">Выйсці</translation>
 <translation id="973558314812359997">Памер курсора мышы</translation>
 <translation id="975893173032473675">На якую мову перакласці</translation>

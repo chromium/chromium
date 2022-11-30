@@ -38,6 +38,7 @@
 <translation id="10614374240317010">ಉಳಿಸಿಯೇ ಇಲ್ಲ</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ಡೆಸ್ಕ್‌ಟಾಪ್ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
+<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> ನೀತಿಯನ್ನು ಸೆಟ್ ಮಾಡದ ಹೊರತು <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ನೀತಿಯನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು ಎಂದಿಗೂ ಅನುವಾದ ಮಾಡಬೇಡಿ</translation>
 <translation id="1070853536588271387">ಹೈಬ್ರಿಡ್ ಮತ್ತು ಪರ್ಯಾಯ ವಾಹನಗಳು</translation>
 <translation id="1070901266639972381">ರಾತ್ರಿ</translation>
@@ -2094,6 +2095,7 @@
 <translation id="6328786501058569169">ಈ ಸೈಟ್ ಮೋಸಗೊಳಿಸುವುದಾಗಿದೆ</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> ಕ್ಕಿಂತ ಕಡಿಮೆ ಇರುವುದನ್ನು ತೆಗೆದುಹಾಕಿ. ನಿಮ್ಮ ನಂತರದ ಭೇಟಿಯ ಸಮಯದಲ್ಲಿ ಕೆಲವು ಸೈಟ್‌ಗಳು ನಿಧಾನವಾಗಿ ಲೋಡ್ ಆಗಬಹುದು.</translation>
 <translation id="6337534724793800597">ಹೆಸರಿನ ಪ್ರಕಾರವಾಗಿ ನೀತಿಗಳನ್ನು ಫಿಲ್ಟರ್ ಮಾಡಿ</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> ಮೌಲ್ಯವು ಅಮಾನ್ಯವಾಗಿದೆ ಹಾಗೂ ಅದನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="6340739886198108203">ನಿರ್ವಾಹಕರ ನೀತಿಯು ಗೌಪ್ಯ ವಿಷಯ ಕಾಣಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳುವುದನ್ನು ಮತ್ತು ರೆಕಾರ್ಡ್ ಮಾಡುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ:</translation>
 <translation id="6341434961864773665">{0,plural, =1{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್ ಅನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}one{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ವರ್ಗಾಯಿಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}other{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ವರ್ಗಾಯಿಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}}</translation>
 <translation id="6348220984832452017">ಸಕ್ರಿಯ ವ್ಯತ್ಯಾಸಗಳು</translation>
@@ -2989,6 +2991,7 @@
 <translation id="8654126188050905496">55 x 91 ಮಿಮೀ</translation>
 <translation id="8663226718884576429">ಆರ್ಡರ್ ಸಾರಾಂಶ, <ph name="TOTAL_LABEL" />, ಹೆಚ್ಚಿನ ವಿವರಗಳು</translation>
 <translation id="8666678546361132282">ಇಂಗ್ಲಿಷ್</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> ಮೌಲ್ಯವು ಗಾತ್ರದ ಅಗತ್ಯತೆಗಳನ್ನು ಪೂರೈಸುವುದಿಲ್ಲ.</translation>
 <translation id="867224526087042813">ಸಹಿ</translation>
 <translation id="8672264262457010862">ವ್ಯಾಪಾರ ಮತ್ತು ಕೈಗಾರಿಕೆ</translation>
 <translation id="8676424191133491403">ಯಾವುದೇ ವಿಳಂಬವಿಲ್ಲ</translation>
@@ -3088,6 +3091,7 @@
 <translation id="8913778647360618320">'ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಹಿಸಿ' ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾವತಿಗಳು ಮತ್ತು ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಲು ಎಂಟರ್ ಒತ್ತಿ</translation>
 <translation id="8922013791253848639">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಯಾವಾಗಲೂ ಜಾಹೀರಾತುಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="892588693504540538">ಮೇಲಿನ ಬಲಭಾಗದಲ್ಲಿ ತೂತು ಮಾಡಿ</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> ಮೌಲ್ಯವು ಪ್ರಸ್ತುತವಾಗಿಲ್ಲ ಮತ್ತು <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ನೀತಿಯನ್ನು ಸೆಟ್ ಮಾಡದ ಹೊರತು ಅದನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="8930330541574156305">ರಿಯಲ್ ಎಸ್ಟೇಟ್</translation>
 <translation id="8931333241327730545">ಈ ಕಾರ್ಡನ್ನು ನಿಮ್ಮ Google ಖಾತೆನಲ್ಲಿ ಉಳಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="8932102934695377596">ನಿಮ್ಮ ಗಡಿಯಾರ ಹಿಂದೆ ಇದೆ</translation>

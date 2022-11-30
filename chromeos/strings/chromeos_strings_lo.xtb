@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">ກະລຸນາລອງເຮັດຂັ້ນຕອນການແກ້ໄຂບັນຫາ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">ກະລຸນາເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ ແລະ ໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເບິ່ງຕົວພັກໜ້າຈໍ.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="2085089206770112532">ຫຼຸດຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
 <translation id="2105810540595158374">ອຸປະກອນແມ່ນມືເກມ.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">ອະກໍຣິທຶມ​ການ​ບີບ​ອັດ​ຂໍ້​ມູນ</translation>
 <translation id="4794140124556169553">ການທົດສອບ CPU ອາດກະທົບກັບປະສິດທິພາບລະບົບຂອງທ່ານໄດ້</translation>
 <translation id="4800589996161293643">ຊຸມຊົນ Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">ຍົກເລີກວຽກພິມ <ph name="DOCUMENT_TITLE" /> ແລ້ວ</translation>
 <translation id="4809927044794281115">ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="4813136279048157860">ຮູບພາບຂອງຂ້ອຍ</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">ປະສິດທິພາບເມື່ອເພີ່ມແຮງກົດດັນ</translation>
 <translation id="4897058166682006107">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຊ້າຍເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">ເປີດໃຊ້ຄຸນສົມບັດເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
+<translation id="4910858703033903787">ປະເພດ APN</translation>
 <translation id="4917385247580444890">ແຮງ</translation>
 <translation id="4917889632206600977">ຢຸດພິມ, ເຈ້ຍໝົດ</translation>
 <translation id="491791267030419270">ເຄັດລັບໃນການຂຽນຄຳຕິຊົມ</translation>
@@ -460,6 +463,7 @@
 <translation id="5358174242040570474">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ໃຫ້ລອງເລືອກຮູບພື້ນຫຼັງອີກເທື່ອໜຶ່ງ ຫຼື ເປີດແອັບຄືນໃໝ່.</translation>
 <translation id="5372659122375744710">ເຄືອຂ່າຍ WiFi ບໍ່ປອດໄພ</translation>
 <translation id="5376354385557966694">ໂໝດແຈ້ງອັດຕະໂນມັດ</translation>
+<translation id="5378184552853359930">ປະເພດ IP</translation>
 <translation id="5389159777326897627">ຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
 <translation id="5389224261615877010">ຮຸ້ງ</translation>
 <translation id="5400907029458559844">ອຸປະກອນກຳລັງເຊື່ອມຕໍ່ຢູ່.</translation>
@@ -744,6 +748,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
+<translation id="8183974620058026102">ແນບໄຟລ໌</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8226628635270268143">ເລືອກຮູບພາບ ແລະ ອະລະບໍ້າທີ່ທ່ານມັກ</translation>
@@ -832,6 +837,7 @@
 <translation id="9025198690966128418">ໃຊ້ເປັນອຸປະກອນສ່ວນຕົວ</translation>
 <translation id="9028832514430399253">ເປີດໃຊ້ຕົວສະຫຼັບເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS resolution ມີເວລາຕອບສະໜອງສູງ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

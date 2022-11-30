@@ -1836,6 +1836,15 @@
       如果此政策已停用，“用电高峰期切换电源”功能会保持关闭状态。
 
       如果此政策未设置，“用电高峰期切换电源”功能最初会处于关闭状态。用户无法更改相关设置。</translation>
+<translation id="2773036462435523078">在计算机处于闲置状态时触发操作。
+
+      如果您设置了此政策，那么只要设备处于闲置状态（未发生用户输入）的时长达到此处指定的时长（以分钟为单位），<ph name="PRODUCT_NAME" /> 就会运行 <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" /> 政策中配置的操作。
+
+      如果此政策未设置，系统将不会运行任何操作。
+
+      最低阈值为 5 分钟。
+
+      “用户输入”由操作系统 API 定义，包括移动鼠标或使用键盘输入内容等操作。</translation>
 <translation id="2773288106548584039">旧版浏览器支持</translation>
 <translation id="2780840673734667062">禁止使用其他 Google 帐号登录</translation>
 <translation id="2784880732336446591">退出时清除浏览数据</translation>
@@ -2265,6 +2274,7 @@
 <translation id="3171369832001535378">设备网络主机名模板</translation>
 <translation id="3173844121395372156">此政策已被弃用且不再受支持，请改用“<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />”政策。</translation>
 <translation id="3177802893484440532">要求为本地信任锚执行在线 OCSP/CRL 检查</translation>
+<translation id="3179533009079100620">显示个人资料选择器</translation>
 <translation id="3180671894201217988">如果此政策已启用或未设置，系统会禁止第三方软件将可执行代码注入到 <ph name="PRODUCT_NAME" /> 进程中。
 
       如果此政策已停用，系统会允许第三方软件将此类代码注入到 <ph name="PRODUCT_NAME" /> 进程中。</translation>
@@ -2678,6 +2688,7 @@
 <translation id="3540846231645422635">停用设备网络接口报告功能</translation>
 <translation id="3540935459049973317">应用级时间限制</translation>
 <translation id="3547954654003013442">代理设置</translation>
+<translation id="3548064438634502368">关闭浏览器</translation>
 <translation id="3548642468619496972">拦截恶意下载内容、不常见或不需要的下载内容以及危险文件类型。</translation>
 <translation id="3550122827225052130">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />。
 
@@ -2734,6 +2745,19 @@
 <translation id="3591584750136265240">配置登录身份验证行为</translation>
 <translation id="3593905652755912452">系统将使用针对已停用的表单控件分派事件的旧行为。</translation>
 <translation id="3596112486106491038">启用虚拟机命令行访问权限</translation>
+<translation id="3596335476793146071">以列表形式指定在达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时后要运行的一系列操作。
+
+      如果 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策未设置，此政策将不会产生任何效力。
+
+      达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时后，<ph name="PRODUCT_NAME" /> 会运行此政策中配置的操作。
+
+      如果此政策为空或未设置，<ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策将不会产生任何效力。
+
+      支持的操作包括：
+
+      “<ph name="CLOSE_BROWSERS_ACTION" />”：关闭此个人资料的所有浏览器窗口和 PWA。
+
+      “<ph name="SHOW_PROFILE_PICKER_ACTION" />”：显示“个人资料选择器”窗口。</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能，从而允许扩展程序保持兼容的行为，并允许 <ph name="PRODUCT_NAME" /> 无需进行 <ph name="CORS" /> 检查便可发送指定标头。
 
       如果此列表设为空，<ph name="PRODUCT_NAME" /> 会尝试以兼容的方式运行扩展程序，而不会激活 <ph name="PRODUCT_NAME" /> 79 版中引入的 <ph name="API" /> 更改（如 <ph name="WEB_REQUEST_API_MANUAL" /> 所述）。
@@ -3843,6 +3867,7 @@
 
       如果未设置此政策，则默认情况下，受企业管理的用户无法选择启用 Phone Hub 功能，但不受管理的用户可以选择启用该功能。</translation>
 <translation id="4783415902268741066">允许在浏览器侧边栏中显示默认搜索引擎的最新搜索结果页面</translation>
+<translation id="4786784434769279324">在计算机处于闲置状态时要运行的操作</translation>
 <translation id="4787763197941188108">替换默认打印页面大小。
 
       <ph name="PAGE_SIZE_NAME" /> 应包含所列格式之一，如果所需页面大小不在列表中，则应包含“custom”值。如果提供了“custom”值，则应指定 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 属性，用于指定所需的高度和宽度（以微米为单位）。如果未提供“custom”值，便不应指定 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 属性。系统会忽略违反这些规则的政策。
@@ -5190,6 +5215,7 @@
 <translation id="6242147107333796512">报告与崩溃报告相关的信息，例如远程 ID、捕获时间戳和原因。
 
       如果此政策设为 false 或未设置，系统将不会报告崩溃报告信息。如果此政策设为 true，系统将会报告崩溃报告信息。</translation>
+<translation id="624219423122512710">浏览器闲置时运行的操作</translation>
 <translation id="6244061205361004687">允许用户手动断开或修改 VPN</translation>
 <translation id="6244210204546589761">启动时打开的网址</translation>
 <translation id="624595269193747921">是否要将相符打印机的搜索范围限定为一组特定的打印机。</translation>
@@ -5540,6 +5566,7 @@
 
       请注意：目前，系统仅会在显示登录屏幕或使用自助服务终端应用期间启用自动重新启动。</translation>
 <translation id="6556586932263358975">允许锁定屏幕</translation>
+<translation id="6558013557780651644">运行闲置操作前的延迟时间</translation>
 <translation id="6559057113164934677">不允许任何网站使用摄像头和麦克风</translation>
 <translation id="65591220958874949">在 Windows、macOS、Android 和 ChromeOS 中使用内置 DNS 客户端</translation>
 <translation id="6559221564468029245">如果此政策已启用或未设置，播放音频时设备不会被视为闲置。这样就不会导致闲置超时，系统也不会执行闲置操作。不过，在达到配置的超时值后，尽管存在音频活动，屏幕仍会变暗、关闭和锁定。
@@ -7517,6 +7544,8 @@
       警告：建议您不要配置版本限制，因为这可能会阻止用户接收软件更新和关键的安全修补程序。限制更新到特定版本前缀可能会将用户置于风险之中。</translation>
 <translation id="8508489378025029342">启用设备活动时长报告功能</translation>
 <translation id="8511192250554640451">允许 Chrome 逻辑控制后台 JavaScript 计时器节流，并且允许用户配置相应设置</translation>
+<translation id="8511708772548158302">如果当前的 OS 版本高于目标，则将设备回滚到目标版本。设备会执行 Powerwash 操作，但系统会保留不带证书的设备级网络配置，并自动重新注册设备。
+不支持回滚到 <ph name="PRODUCT_OS_NAME" /> 106 或更低版本。</translation>
 <translation id="8519264904050090490">受管理用户手动添加的例外网址</translation>
 <translation id="8519516251436131647">启用无障碍功能快捷方式。
 
@@ -7956,6 +7985,7 @@
       如果此政策设为 False 或未设置，系统会在 M81、M82 和 M83 版本推出时启用其中的表单控件元素。
 
       在 Chrome 84 之后，此政策将被移除。</translation>
+<translation id="8940173892071872775">控制在浏览器闲置时运行的操作。</translation>
 <translation id="8942616385591203339">此政策控制是否可在用户首次登录时向其显示同步同意声明。如果用户从不需要查看同步同意声明，则应将此政策设为 false。
       如果此政策设为 false，系统将不会显示同步同意声明。
       如果此政策设为 true 或未设置，则可以显示同步同意声明。</translation>

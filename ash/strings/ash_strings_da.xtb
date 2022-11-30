@@ -728,6 +728,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4987738733603015246">Skrivebord 16</translation>
 <translation id="5003993274120026347">Næste sætning</translation>
 <translation id="5016558321564993266">Slå tusch til/fra. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Adgang til enhedens mikrofon er aktiveret</translation>
 <translation id="5030687792513154421">Tiden er gået</translation>
 <translation id="5033299697334913360">Klik et vilkårligt sted for at tage et billede af hele skærmen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> har oprettet forbindelse til en ny telefon</translation>
@@ -962,6 +963,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6359587239691116345">Få de nyeste funktioner og sikkerhedsforbedringer. Hvis du afviser denne opdatering, fungerer din enhed muligvis ikke længere korrekt, og du kan opleve problemer med sikkerheden og ydeevnen.</translation>
 <translation id="6376931439017688372">Bluetooth er slået til</translation>
 <translation id="6381109794406942707">Angiv din pinkode for at låse enheden op.</translation>
+<translation id="638716340450135524">Aktivér kameraadgang</translation>
 <translation id="639644700271529076">CAPS LOCK er deaktiveret</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -969,6 +971,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="642644398083277086">Ryd alle notifikationer</translation>
 <translation id="643147933154517414">Færdig</translation>
 <translation id="6431865393913628856">Skærmoptagelse</translation>
+<translation id="6442259747294754014">Adgang til enhedens mikrofon er deaktiveret</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" /> – <ph name="NUMBER" /> begivenhed</translation>
 <translation id="6449483711453944360">Linux-apps og inkognitovinduer understøttes ikke i øjeblikket</translation>
@@ -1364,6 +1367,7 @@ Installeret for nylig</translation>
 <translation id="8598235756057743477">Sortér dine apps efter navn eller farve</translation>
 <translation id="8614517853887502247">Notifikationer fra <ph name="APP_1_TITLE" /> og <ph name="APP_2_TITLE" /> er skjult, fordi visningsbeskyttelse er aktiveret</translation>
 <translation id="8627191004499078455">Forbundet til <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Deaktiver kameraadgang</translation>
 <translation id="8631727435199967028">Indstillinger for hjælpefunktioner</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> tilbage</translation>

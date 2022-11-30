@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ປິດສຳລັບໜຶ່ງແອັບ}other{ປິດສຳລັບ # ແອັບ}}</translation>
 <translation id="4066027111132117168">ເປີດ, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">ສັນຍານປານກາງ</translation>
+<translation id="4086921558679520050">ເປີດປຸ່ມໄມຢູ່ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="4112140312785995938">ເລື່ອນກັບຫຼັງ</translation>
 <translation id="4114315158543974537">ເປີດ Phone Hub</translation>
 <translation id="4115378294792113321">ສີແດງມ່ວງ</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /> ເປີເຊັນ</translation>
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
 <translation id="4379531060876907730">ສິ່ງເຫຼົ່ານີ້ແມ່ນເຄື່ອງມືປາກກາຂອງທ່ານ</translation>
+<translation id="4381031910344220229">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນໃຫ້ <ph name="APP_NAME" /> ແລະ ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດອະນຸຍາດໄມໂຄຣໂຟນ</translation>
 <translation id="4389184120735010762">ທ່ານໄດ້ກົດປຸ່ມລັດແປ້ນພິມສຳລັບແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ. ທ່ານຕ້ອງການເປີດມັນບໍ?</translation>
 <translation id="439598569299422042">ຢຸດຊົ່ວຄາວແລ້ວ, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ບໍ່ສາມາດບັນທຶກ screencast ໄດ້</translation>
@@ -728,6 +730,7 @@
 <translation id="4987738733603015246">ໂຕະ 16</translation>
 <translation id="5003993274120026347">ປະໂຫຍດຕໍ່ໄປ</translation>
 <translation id="5016558321564993266">ສະຫຼັບຕົວໝາຍ. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">ເປີດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນອຸປະກອນແລ້ວ</translation>
 <translation id="5030687792513154421">ໝົດເວລາແລ້ວ</translation>
 <translation id="5033299697334913360">ຄລິກບ່ອນໃດກໍໄດ້ເພື່ອຖ່າຍຮູບແບບເຕັມຈໍ</translation>
 <translation id="5035236842988137213">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" />ກັບໂທລະສັບໃໝ່ແລ້ວ</translation>
@@ -959,9 +962,11 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ແມ່ນເຊດຊັນແບບມີການຈັດການທີ່ຖືກຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="6351032674660237738">ການແນະນຳແອັບ</translation>
+<translation id="6352082849089527770">ເຄືອຂ່າຍທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="6359587239691116345">ໃຊ້ຄຸນສົມບັດຫຼ້າສຸດ ແລະ ການປັບປຸງຄວາມປອດໄພ. ຖ້າທ່ານປະຕິເສດການອັບເດດນີ້, ອຸປະກອນຂອງທ່ານອາດຈະເຮັດວຽກບໍ່ໄດ້ຕາມປົກກະຕິອີກຕໍ່ໄປ ແລະ ທ່ານອາດພົບບັນຫາຄວາມປອດໄພ ແລະ ປະສິດທິພາບ.</translation>
 <translation id="6376931439017688372">Bluetooth ເປີດຢູ່</translation>
 <translation id="6381109794406942707">ເພື່ອປົດລັອກອຸປະກອນ, ກະລຸນາປ້ອນ PIN ຂອງທ່ານ.</translation>
+<translation id="638716340450135524">ເປີດໃຊ້ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="639644700271529076">CAPS LOCK ປິດ</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">ຜູ້ຊ່ວຍ Google</translation>
@@ -969,6 +974,7 @@
 <translation id="642644398083277086">ລຶບລ້າງການແຈ້ງເຕືອນທັງໝົດ</translation>
 <translation id="643147933154517414">ສໍາເລັດແລ້ວ</translation>
 <translation id="6431865393913628856">ບັນທຶກໜ້າຈໍ</translation>
+<translation id="6442259747294754014">ປິດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນອຸປະກອນແລ້ວ</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ໃນ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ນັດໝາຍ</translation>
 <translation id="6449483711453944360">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ແລະ ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເທື່ອ</translation>
@@ -1133,6 +1139,7 @@
 <translation id="7360036564632145207">ການປ່ຽນການປົກປ້ອງການເຂົ້າເຖິງຂໍ້ມູນຂອງທ່ານສຳລັບການຕັ້ງຄ່າອຸປະກອນຕໍ່ພ່ວງສາມາດປັບປຸງປະສິດທິພາບໃຫ້ເໝາະສົມໄດ້</translation>
 <translation id="736045644501761622">ຕັ້ງຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
 <translation id="7371404428569700291">ບັນທຶກໜ້າຈໍ</translation>
+<translation id="737315737514430195">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນໃຫ້ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດອະນຸຍາດໄມໂຄຣໂຟນ</translation>
 <translation id="7377169924702866686">Caps Lock ເປີດຢູ່.</translation>
 <translation id="7377481913241237033">ເຊື່ອມຕໍ່ດ້ວຍລະຫັດ</translation>
 <translation id="7378203170292176219">ລາກເພື່ອເລືອກພື້ນທີ່ເພື່ອບັນທຶກ</translation>
@@ -1201,6 +1208,7 @@
 <translation id="7671610481353807627">ແອັບແມ່ນຈັດຮຽງຕາມສີ</translation>
 <translation id="7672095158465655885">ເຊື່ອມຕໍ່ຫາ <ph name="NAME" /> ແລ້ວ, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">ຕັ້ງການປ້ອນຂໍ້ມູນຈາກກ້ອງຖ່າຍຮູບເປັນ <ph name="CAMERA_NAME" /> ແລ້ວ.</translation>
+<translation id="7689817529363080918">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນໃຫ້ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ແລະ ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດອະນຸຍາດໄມໂຄຣໂຟນ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ເພີ່ມເຄືອຂ່າຍມືຖືໃໝ່</translation>
 <translation id="7720400844887872976">ເປີດຈົນຮອດ <ph name="TIME" /></translation>
@@ -1364,6 +1372,7 @@
 <translation id="8598235756057743477">ຈັດຮຽງແອັບຂອງທ່ານຕາມຊື່ ຫຼື ສີ</translation>
 <translation id="8614517853887502247">ການແຈ້ງເຕືອນ <ph name="APP_1_TITLE" /> ແລະ <ph name="APP_2_TITLE" /> ຖືກເຊື່ອງໄວ້ເນື່ອງຈາກເປີດໃຊ້ການປົກປ້ອງການເບິ່ງຢູ່</translation>
 <translation id="8627191004499078455">ເຊື່ອມຕໍ່ກັບ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
+<translation id="8630991711272431708">ປິດສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="8631727435199967028">ການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="8639760480004882931">ຍັງ​ເຫຼືອ <ph name="PERCENTAGE" /></translation>

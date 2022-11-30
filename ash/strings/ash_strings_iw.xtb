@@ -728,6 +728,7 @@
 <translation id="4987738733603015246">שולחן עבודה וירטואלי מספר 16</translation>
 <translation id="5003993274120026347">המשפט הבא</translation>
 <translation id="5016558321564993266">החלפת המצב של כלי הסימון. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">הגישה למיקרופון המכשיר מופעלת</translation>
 <translation id="5030687792513154421">נגמר הזמן</translation>
 <translation id="5033299697334913360">כדי לצלם את המסך המלא, יש ללחוץ במקום כלשהו</translation>
 <translation id="5035236842988137213">מכשיר <ph name="DEVICE_NAME" /> התחבר לטלפון חדש</translation>
@@ -962,6 +963,7 @@
 <translation id="6359587239691116345">קבלה של התכונות ושיפורי האבטחה האחרונים. ללא הסכמתך לעדכון הזה, המכשיר שלך עשוי להפסיק לפעול כמו שצריך ויכול להיות שיהיו בעיות באבטחה ובביצועים.</translation>
 <translation id="6376931439017688372">‏Bluetooth פועל</translation>
 <translation id="6381109794406942707">כדי לבטל את הנעילה של המכשיר, יש להזין את קוד האימות.</translation>
+<translation id="638716340450135524">הפעלת הגישה למצלמה</translation>
 <translation id="639644700271529076">‏CAPS LOCK כבוי</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -969,6 +971,7 @@
 <translation id="642644398083277086">ניקוי כל ההודעות</translation>
 <translation id="643147933154517414">הפעולה הושלמה</translation>
 <translation id="6431865393913628856">הקלטת המסך</translation>
+<translation id="6442259747294754014">הגישה למיקרופון המכשיר מושבתת</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, אירוע (<ph name="NUMBER" />)</translation>
 <translation id="6449483711453944360">‏בשלב הזה, אין תמיכה באפליקציות Linux ובחלונות פרטיים</translation>
@@ -1365,6 +1368,7 @@
 <translation id="8598235756057743477">מיון אפליקציות לפי שם או לפי צבע</translation>
 <translation id="8614517853887502247">ההתראות מהאפליקציות <ph name="APP_1_TITLE" /> וכן <ph name="APP_2_TITLE" /> מוסתרות כי מופעלת הגנה על תצוגה</translation>
 <translation id="8627191004499078455">יש חיבור אל <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">השבתת הגישה למצלמה</translation>
 <translation id="8631727435199967028">הגדרות נגישות</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת</translation>
 <translation id="8639760480004882931">שיעור טעינה נותר - <ph name="PERCENTAGE" /></translation>

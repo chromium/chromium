@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Ayikaze yalondolozwa</translation>
 <translation id="1064054731605354900">I-A3x5</translation>
 <translation id="106701514854093668">Amabhukhimakhi wedeskithophu</translation>
+<translation id="1067561478268651872">Inqubomgomo ye-<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ayisetshenziswa ngaphandle kokuthi inqubomgomo ye-<ph name="SECURE_DNS_SALT" /> isethiwe.</translation>
 <translation id="1068672505746868501">Ungahumushi amakhasi ngesi-<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">I-hybrid nezinye izimoto</translation>
 <translation id="1070901266639972381">Ebusuku</translation>
@@ -2096,6 +2097,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6328786501058569169">Leli sayithi liyalahlekisa</translation>
 <translation id="6337133576188860026">Khulula kufika ngaphansi kuka-<ph name="SIZE" />. Amanye amasayithi angalayisha kancane kakhulu ekuvakasheni kwakho okulandelayo.</translation>
 <translation id="6337534724793800597">Hlunga izinqubomgomo ngegama</translation>
+<translation id="633770708279464947">Inani le-<ph name="SECURE_DNS_SALT" /> alivumelekile futhi ngeke lisetshenziswe.</translation>
 <translation id="6340739886198108203">Inqubomgomo yomlawuli ayincomi ukuthatha izithombe-skrini noma ukurekhoda lapho okuqukethwe okuyimfihlo kubonakala:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Inqubomgomo yomlawuli ayikukhuthazi ukulayisha leli fayela ku-<ph name="DESTINATION_NAME" />}one{Inqubomgomo yomlawuli ayikukhuthazi ukulayisha lawa mafayela ku-<ph name="DESTINATION_NAME" />}other{Inqubomgomo yomlawuli ayikukhuthazi ukulayisha lawa mafayela ku-<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Ukwahlukahluka Okusebenzayo</translation>
@@ -2991,6 +2993,7 @@ Imininingwane engeziwe:
 <translation id="8654126188050905496">U-55 x 91 mm</translation>
 <translation id="8663226718884576429">Isifinyezo se-oda, <ph name="TOTAL_LABEL" />, Imininingwane eminingi</translation>
 <translation id="8666678546361132282">English</translation>
+<translation id="8671519637524426245">Inani le-<ph name="SECURE_DNS_SALT" /> alihlangabezani nezimfuneko zesayizi.</translation>
 <translation id="867224526087042813">Isiginesha</translation>
 <translation id="8672264262457010862">Amabhizinisi nomkhakha</translation>
 <translation id="8676424191133491403">Akukho ukulibazisa</translation>
@@ -3090,6 +3093,7 @@ Imininingwane engeziwe:
 <translation id="8913778647360618320">Inkinobho yokulawula indlela yokukhokha, cindezela u-Enter ukuze uphathe izinkokhelo zakho nolwazi lwekhadi lesikweletu kumasethingi e-Chrome</translation>
 <translation id="8922013791253848639">Njalo vumela izikhangiso kuleli sayithi</translation>
 <translation id="892588693504540538">Ukushaya phezulu kwesokudla</translation>
+<translation id="8930098617363288380">Inani le-<ph name="SECURE_DNS_SALT" /> alibalulekile, futhi ngeke lisetshenziswe, ngaphandle uma inqubomgomo ye-<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> isethiwe.</translation>
 <translation id="8930330541574156305">Izindlu ezidayiswayo</translation>
 <translation id="8931333241327730545">Ingabe ufuna ukulondoloza leli khadi ku-Akhawunti yakho ye-Google?</translation>
 <translation id="8932102934695377596">Iwashi lakho lisemuva</translation>

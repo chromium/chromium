@@ -45,6 +45,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1395262318152388157">进度滑块</translation>
 <translation id="1399511500114202393">不使用任何用户证书</translation>
+<translation id="1403008701842173542">所有位置</translation>
 <translation id="1404323374378969387">挪威语</translation>
 <translation id="1433628812591023318">若要将某个文件拖放到 Parallels Desktop，必须先将此文件移至“Windows 文件”文件夹。</translation>
 <translation id="1435838927755162558">与 Parallels Desktop 共享文件夹</translation>
@@ -447,6 +448,7 @@
 <translation id="4850886885716139402">视图</translation>
 <translation id="485316830061041779">德语</translation>
 <translation id="4867079195717347957">点击即可按降序对此列排序。</translation>
+<translation id="4867297348137739678">上一周</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> 字节</translation>
 <translation id="4874569719830985133">永久删除</translation>
 <translation id="4880214202172289027">音量滑块</translation>
@@ -705,6 +707,7 @@
 <translation id="6973630695168034713">文件夹</translation>
 <translation id="6976795442547527108">狮子</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
+<translation id="6979737339423435258">时间不限</translation>
 <translation id="6989942356279143254">瑞典语</translation>
 <translation id="6990081529015358884">空间不足</translation>
 <translation id="6993826899923627728">这些内容位于您的回收站中</translation>

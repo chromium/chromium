@@ -595,6 +595,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1546280085599573572">This extension has changed the page that is shown when you click the Home button.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> wants to install an <ph name="EXTENSION_TYPE" /> that can:</translation>
 <translation id="1547808936554660006">I understand that installed eSIM profiles will not be removed by Powerwash</translation>
+<translation id="1547936895218027488">Click the side panel icon to open it</translation>
 <translation id="1549275686094429035">ARC enabled</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> wants to access <ph name="VOLUME_NAME" />. It may modify or delete your files.</translation>
 <translation id="1552301827267621511">The '<ph name="EXTENSION_NAME" />' extension changed search to use <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -845,7 +846,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="175772926354468439">Enable theme</translation>
 <translation id="17584710573359123">View in Chrome Web Store</translation>
 <translation id="1761845175367251960"><ph name="NAME" />'s accounts</translation>
-<translation id="176193854664720708">The fingerprint sensor is in the power button. Touch it lightly with any finger.</translation>
 <translation id="176272781006230109">shopping suggestions</translation>
 <translation id="1763046204212875858">Create application shortcuts</translation>
 <translation id="1763808908432309942">Opens in a new tab</translation>
@@ -1089,7 +1089,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1974821797477522211">Connect to network</translation>
 <translation id="1975841812214822307">Remove...</translation>
 <translation id="1976150099241323601">Sign in to Security Device</translation>
-<translation id="1976928778492259496">The fingerprint sensor is on the left-hand side of your <ph name="DEVICE_TYPE" />. Touch it lightly with any finger.</translation>
 <translation id="1977965994116744507">Bring your phone closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Remove address</translation>
 <translation id="1979095679518582070">Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.</translation>
@@ -1433,6 +1432,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2287944065963043964">Login screen</translation>
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2290615375132886363">Tablet navigation buttons</translation>
+<translation id="2291452790265535215">Try using the side panel for bookmarks, journeys and more</translation>
 <translation id="229182044471402145">No matching font found.</translation>
 <translation id="2292848386125228270">Please start <ph name="PRODUCT_NAME" /> as a normal user. If you need to run as root for development, re-run with the – no-sandbox flag.</translation>
 <translation id="2294081976975808113">Screen privacy</translation>
@@ -2862,7 +2862,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3612673635130633812">Downloaded by &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Show <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Open in new tab</translation>
-<translation id="3615073365085224194">Touch the fingerprint sensor with your finger</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> is being scanned.</translation>
 <translation id="3615596877979647433">Key is missing. Press a keyboard key to customise</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -3856,7 +3855,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4533985347672295764">CPU time</translation>
 <translation id="4534661889221639075">Try again.</translation>
 <translation id="4535127706710932914">Default Profile</translation>
-<translation id="4535767533210902251">The fingerprint sensor is the top-right key on your keyboard. Touch it lightly with any finger.</translation>
 <translation id="4536140153723794651">Sites that can always use cookies</translation>
 <translation id="4536769240747010177">Tethering capabilities:</translation>
 <translation id="4538417792467843292">Delete word</translation>
@@ -3923,6 +3921,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="459204634473266369">No devices saved to <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Stylus drawing app</translation>
 <translation id="4593021220803146968">&amp;Go to <ph name="URL" /></translation>
+<translation id="4594218792629569101">Select ‘Mark as read’ to move the page to the bottom of your list</translation>
 <translation id="4594577641390224176">Looking for the system about page? Visit</translation>
 <translation id="4595560905247879544">Apps and extensions can only be modified by the manager (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">You have certificates on file that identify these servers</translation>
@@ -4430,6 +4429,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5084328598860513926">Provisioning flow was interrupted. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Checking for updates</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">Note is more than 1,000 characters</translation>
 <translation id="5086874064903147617">Restore default homepage?</translation>
 <translation id="5087249366037322692">Added by a third party</translation>
 <translation id="5087580092889165836">Add card</translation>
@@ -5502,7 +5502,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6087746524533454243">Looking for the browser about page? Visit</translation>
 <translation id="6087960857463881712">Awesome face</translation>
 <translation id="608912389580139775">To add this page to your reading list, click the Bookmark icon</translation>
-<translation id="6091116443517744502">please check your Internet connection and try again</translation>
 <translation id="6091761513005122595">Share mounted successfully.</translation>
 <translation id="6093803049406781019">Delete profile</translation>
 <translation id="6093888419484831006">Cancelling update...</translation>
@@ -6593,6 +6592,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7111822978084196600">Name this window</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> item</translation>
 <translation id="7113502843173351041">Know your email address</translation>
+<translation id="7113974454301513811">Now add the current tab to your list</translation>
 <translation id="7114054701490058191">Passwords don't match</translation>
 <translation id="7114648273807173152">To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">No reachable contacts</translation>
@@ -6808,7 +6808,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7353261921908507769">Your contacts can share with you when they are nearby. Transfers won't start until you accept.</translation>
 <translation id="735361434055555355">Installing Linux...</translation>
-<translation id="7354341762311560488">The fingerprint sensor is the bottom-left key on your keyboard. Touch it lightly with any finger.</translation>
 <translation id="7356908624372060336">Network logs</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
 <translation id="7358324924540718595">Memories hidden for today</translation>
@@ -7979,7 +7978,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8398877366907290961">Proceed anyway</translation>
 <translation id="8399282673057829204">View password</translation>
 <translation id="8401432541486058167">Provide the PIN that’s associated with your smart card.</translation>
-<translation id="8404893580027489425">The fingerprint sensor is on the right-hand side of your <ph name="DEVICE_TYPE" />. Touch it lightly with any finger.</translation>
 <translation id="8405046151008197676">Get highlights from the latest update</translation>
 <translation id="8407199357649073301">Log level:</translation>
 <translation id="8408270600235826886">You can control what data is shared with Google. You can change this at any time in Settings. Data will be used according to Google's <ph name="BEGIN_LINK" />Privacy Policy<ph name="END_LINK" />.</translation>
@@ -8066,7 +8064,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Personal suggestions are only shown on your account</translation>
 <translation id="8490896350101740396">The following kiosk apps "<ph name="UPDATED_APPS" />" have been updated. Please reboot the device to complete the update process.</translation>
-<translation id="8492685019009920170">Touch the fingerprint sensor with your finger. Your data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Sites can send pop-ups and use redirects</translation>
 <translation id="8492960370534528742">Google Cast feedback</translation>
 <translation id="8493236660459102203">Microphone:</translation>
@@ -8602,7 +8599,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="899384117894244799">Remove restricted user</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
 <translation id="899657321862108550">Your Chrome, Everywhere</translation>
-<translation id="899676909165543803">The fingerprint sensor is the bottom-right key on your keyboard. Touch it lightly with any finger.</translation>
 <translation id="8998078711690114234">This type of file can be dangerous. Only save this file if you trust <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Section syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Connection to Device Management Server failed with status ‘<ph name="STATUS_TEXT" />’ at <ph name="FAILURE_TIME" /></translation>
@@ -8659,6 +8655,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9040661932550800571">Update password for <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Access to local files on your machine is disabled by your administrator</translation>
 <translation id="904224458472510106">This operation cannot be undone</translation>
+<translation id="9042827002460091668">Please check your Internet connection and try again</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9044646465488564462">Failed to connect to network: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Your reading list has moved to the new side panel. Try it here.</translation>
@@ -8828,6 +8825,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9201842707396338580">Something went wrong. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profiling enabled</translation>
 <translation id="9203904171912129171">Select a device</translation>
+<translation id="920410963177453528">Click the drop-down to choose another panel</translation>
 <translation id="9206889157914079472">Stylus note-taking from lock screen</translation>
 <translation id="9208192193641542858">Local data is protected by your old password. If you recently changed your password, try your old password again.</translation>
 <translation id="9209563766569767417">Checking the Linux container setup</translation>
@@ -8899,7 +8897,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 Tab}other{# Tabs}}</translation>
 <translation id="971510864672937292">Clear site data and permissions for <ph name="SITE_NAME" /> and all sites under it?</translation>
 <translation id="971774202801778802">Bookmark URL</translation>
-<translation id="972996901592717370">Touch the power button with your finger. Your data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Quit</translation>
 <translation id="973558314812359997">Mouse size</translation>
 <translation id="975893173032473675">Language to Translate into</translation>

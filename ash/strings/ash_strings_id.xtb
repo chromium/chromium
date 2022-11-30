@@ -554,6 +554,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{1 apl nonaktif}other{# apl nonaktif}}</translation>
 <translation id="4066027111132117168">Aktif, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinyal sedang</translation>
+<translation id="4086921558679520050">Aktifkan tombol mikrofon fisik di perangkat</translation>
 <translation id="4112140312785995938">Cari Mundur</translation>
 <translation id="4114315158543974537">Aktifkan Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -606,6 +607,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, kekuatan sinyal <ph name="SIGNAL_STRENGTH" /> persen</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
 <translation id="4379531060876907730">Ini adalah fitur stilus</translation>
+<translation id="4381031910344220229">Tindakan ini akan mengizinkan akses mikrofon untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin mikrofon</translation>
 <translation id="4389184120735010762">Anda menekan pintasan keyboard untuk kaca pembesar tersemat. Ingin mengaktifkannya?</translation>
 <translation id="439598569299422042">Dijeda, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Tidak dapat menyimpan screencast</translation>
@@ -728,6 +730,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4987738733603015246">Desktop 16</translation>
 <translation id="5003993274120026347">Kalimat berikutnya</translation>
 <translation id="5016558321564993266">Aktifkan/nonaktifkan penanda. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Akses mikrofon perangkat aktif</translation>
 <translation id="5030687792513154421">Waktu habis</translation>
 <translation id="5033299697334913360">Klik di mana saja untuk menangkap gambar dalam layar penuh</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> terhubung ke ponsel baru</translation>
@@ -959,9 +962,11 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> adalah sesi terkelola yang dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> terhubung</translation>
 <translation id="6351032674660237738">SARAN APLIKASI</translation>
+<translation id="6352082849089527770">Jaringan tidak dikenal</translation>
 <translation id="6359587239691116345">Dapatkan fitur dan peningkatan keamanan terbaru. Jika Anda menolak update ini, perangkat mungkin tidak lagi berfungsi dengan baik dan Anda mungkin mengalami masalah keamanan dan performa.</translation>
 <translation id="6376931439017688372">Bluetooth aktif</translation>
 <translation id="6381109794406942707">Untuk membuka kunci perangkat, masukkan PIN Anda.</translation>
+<translation id="638716340450135524">Aktifkan akses kamera</translation>
 <translation id="639644700271529076">CAPS LOCK tidak aktif</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asisten Google</translation>
@@ -969,6 +974,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="642644398083277086">Hapus semua notifikasi</translation>
 <translation id="643147933154517414">Selesai</translation>
 <translation id="6431865393913628856">Perekaman layar</translation>
+<translation id="6442259747294754014">Akses mikrofon perangkat nonaktif</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> di <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> acara</translation>
 <translation id="6449483711453944360">Aplikasi Linux dan jendela Samaran saat ini tidak didukung</translation>
@@ -1133,6 +1139,7 @@ Baru diinstal</translation>
 <translation id="7360036564632145207">Mengubah setelan perlindungan akses data untuk periferal dapat mengoptimalkan performa</translation>
 <translation id="736045644501761622">Setel wallpaper &amp; gaya</translation>
 <translation id="7371404428569700291">Rekam jendela</translation>
+<translation id="737315737514430195">Tindakan ini akan mengizinkan akses mikrofon untuk semua aplikasi dan situs yang memiliki izin mikrofon</translation>
 <translation id="7377169924702866686">Caps Lock aktif.</translation>
 <translation id="7377481913241237033">Hubungkan dengan kode</translation>
 <translation id="7378203170292176219">Tarik untuk memilih area yang akan direkam</translation>
@@ -1201,6 +1208,7 @@ Baru diinstal</translation>
 <translation id="7671610481353807627">Aplikasi diurutkan menurut warna</translation>
 <translation id="7672095158465655885">Terhubung ke <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Input kamera disetel ke <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Tindakan ini akan mengizinkan akses mikrofon untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, dan semua aplikasi serta situs yang memiliki izin mikrofon</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Tambahkan jaringan seluler baru</translation>
 <translation id="7720400844887872976">Aktif sampai <ph name="TIME" /></translation>
@@ -1364,6 +1372,7 @@ Baru diinstal</translation>
 <translation id="8598235756057743477">Urutkan aplikasi menurut nama atau warna</translation>
 <translation id="8614517853887502247">Notifikasi <ph name="APP_1_TITLE" /> dan <ph name="APP_2_TITLE" /> disembunyikan karena perlindungan tampilan aktif</translation>
 <translation id="8627191004499078455">Terhubung ke <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Nonaktifkan akses kamera</translation>
 <translation id="8631727435199967028">Setelan Aksesibilitas</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
 <translation id="8639760480004882931">Sisa <ph name="PERCENTAGE" /></translation>

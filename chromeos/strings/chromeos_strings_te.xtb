@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">పరిష్కార ప్రక్రియకు సంబంధించిన దశలను ట్రై చేయండి</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">స్క్రీన్ సేవర్‌ను చూడటానికి, దయచేసి నెట్‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2085089206770112532">డిస్‌ప్లే బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
 <translation id="2105810540595158374">పరికర రకం గేమ్ కంట్రోలర్.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">కుదింపు అల్గారిథమ్</translation>
 <translation id="4794140124556169553">CPU టెస్ట్‌ను రన్ చేయడం మీ సిస్టమ్ పనితీరుని ప్రభావితం చేయవచ్చు</translation>
 <translation id="4800589996161293643">Chromebook కమ్యూనిటీ</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ప్రింట్ టాస్క్ రద్దు చేయబడింది</translation>
 <translation id="4809927044794281115">లేత రంగు రూపం</translation>
 <translation id="4813136279048157860">నా చిత్రాలు</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">ఒత్తిడి</translation>
 <translation id="4897058166682006107">పరికరంలో ఎడమ వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
 <translation id="4905998861748258752">స్క్రీన్ సేవర్ ఆప్షన్‌లను ఎంచుకోవడానికి ఈ ఫీచర్‌ను ఆన్ చేయండి</translation>
+<translation id="4910858703033903787">APN రకాలు</translation>
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
 <translation id="491791267030419270">ఫీడ్‌బ్యాక్‌ను రాయడానికి చిట్కాలు</translation>
@@ -459,6 +462,7 @@
 <translation id="5358174242040570474">ఏదో తప్పు జరిగింది. వాల్‌పేపర్‌ను ఎంచుకోవడానికి మళ్లీ ట్రై చేయండి లేదా యాప్‌ను మళ్లీ తెరవండి.</translation>
 <translation id="5372659122375744710">WiFi నెట్‌వర్క్ సురక్షితంగా లేదు</translation>
 <translation id="5376354385557966694">ఆటోమేటిక్ లైట్ మోడ్</translation>
+<translation id="5378184552853359930">IP రకం</translation>
 <translation id="5389159777326897627">వాల్‌పేపర్ &amp; స్టయిల్</translation>
 <translation id="5389224261615877010">ఇంద్రధనస్సు</translation>
 <translation id="5400907029458559844">పరికరం కనెక్ట్ అవుతోంది.</translation>
@@ -742,6 +746,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ని ఎంచుకోండి</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">అటాచ్ చేయండి</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
 <translation id="8226628635270268143">మీకు ఇష్టమైన ఫోటోలు, ఆల్బమ్‌లను ఎంచుకోండి</translation>
@@ -830,6 +835,7 @@
 <translation id="9025198690966128418">వ్యక్తిగత పరికరంగా ఉపయోగించండి</translation>
 <translation id="9028832514430399253">స్క్రీన్ సేవర్ ఆప్షన్‌లను ఎంచుకోవడానికి టోగుల్‌ను ఆన్ చేయండి</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS రిజల్యూషన్ అధిక ప్రతిస్పందన సమయాన్ని కలిగి ఉంది</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">బ్లూటూత్</translation>

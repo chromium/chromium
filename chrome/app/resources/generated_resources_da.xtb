@@ -846,7 +846,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="175772926354468439">Aktivér tema</translation>
 <translation id="17584710573359123">Se i Chrome Webshop</translation>
 <translation id="1761845175367251960">Konti tilhørende <ph name="NAME" /></translation>
-<translation id="176193854664720708">Fingeraftrykslæseren sidder i afbryderknappen. Tryk let på den med en finger.</translation>
 <translation id="176272781006230109">forslag til shopping</translation>
 <translation id="1763046204212875858">Opret programgenveje</translation>
 <translation id="1763808908432309942">Åbnes på en ny fane</translation>
@@ -1090,7 +1089,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1974821797477522211">Opret forbindelse til netværk</translation>
 <translation id="1975841812214822307">Fjern...</translation>
 <translation id="1976150099241323601">Log ind på sikkerhedsenhed</translation>
-<translation id="1976928778492259496">Fingeraftrykslæseren sidder til venstre på din <ph name="DEVICE_TYPE" />. Tryk let på den med en finger.</translation>
 <translation id="1977965994116744507">Flyt din telefon tættere på din <ph name="DEVICE_TYPE" /> for at låse den op.</translation>
 <translation id="1978057560491495741">Fjern adresse</translation>
 <translation id="1979095679518582070">Deaktivering af denne funktion påvirker ikke denne enheds evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.</translation>
@@ -2861,7 +2859,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3612673635130633812">Downloadet af &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Vis <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Åbn på ny fane</translation>
-<translation id="3615073365085224194">Tryk på fingeraftrykslæseren med din finger</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> scannes.</translation>
 <translation id="3615596877979647433">Du mangler at angive en tast. Tryk på en tastaturtast for at tilpasse den</translation>
 <translation id="3616113530831147358">Lyd</translation>
@@ -3852,7 +3849,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4533985347672295764">CPU-tid</translation>
 <translation id="4534661889221639075">Prøv igen.</translation>
 <translation id="4535127706710932914">Standardprofil</translation>
-<translation id="4535767533210902251">Fingeraftrykslæseren er tasten øverst til højre på dit tastatur. Tryk let på den med en finger.</translation>
 <translation id="4536140153723794651">Websites, der altid kan anvende cookies</translation>
 <translation id="4536769240747010177">Muligheder for netdeling:</translation>
 <translation id="4538417792467843292">Slet ord</translation>
@@ -5497,7 +5493,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6087746524533454243">Leder du efter siden Om for browseren? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-smiley</translation>
 <translation id="608912389580139775">Klik på bogmærkeikonet for at føje denne side til din læseliste</translation>
-<translation id="6091116443517744502">tjek din internetforbindelse, og prøv igen</translation>
 <translation id="6091761513005122595">Delingen blev anvendt.</translation>
 <translation id="6093803049406781019">Slet profil</translation>
 <translation id="6093888419484831006">Annullerer opdatering...</translation>
@@ -6805,7 +6800,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="7353261921908507769">Dine kontakter kan dele med dig, når de er i nærheden. Overførsler starter først, når du har accepteret dem.</translation>
 <translation id="735361434055555355">Installerer Linux...</translation>
-<translation id="7354341762311560488">Fingeraftrykslæseren er tasten nederst til venstre på dit tastatur. Tryk let på den med en finger.</translation>
 <translation id="7356908624372060336">Netværkslogs</translation>
 <translation id="735745346212279324">VPN afbrudt</translation>
 <translation id="7358324924540718595">Minder skjules i dag</translation>
@@ -7972,7 +7966,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8398877366907290961">Fortsæt alligevel</translation>
 <translation id="8399282673057829204">Se adgangskode</translation>
 <translation id="8401432541486058167">Brug den pinkode, der hører til dit chipkort.</translation>
-<translation id="8404893580027489425">Fingeraftrykslæseren sidder til højre på din <ph name="DEVICE_TYPE" />. Tryk let på den med en finger.</translation>
 <translation id="8405046151008197676">Få højdepunkter fra den seneste opdatering</translation>
 <translation id="8407199357649073301">Logfilsniveau:</translation>
 <translation id="8408270600235826886">Du kan administrere, hvilke data der skal deles med Google. Du kan altid ændre dette under Indstillinger. Data anvendes i overensstemmelse med Googles <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" />.</translation>
@@ -8059,7 +8052,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Personlige forslag vises kun på din konto</translation>
 <translation id="8490896350101740396">Følgende terminalapps "<ph name="UPDATED_APPS" />" er opdateret. Genstart din enhed for at fuldføre opdateringsprocessen.</translation>
-<translation id="8492685019009920170">Tryk på fingeraftrykslæseren med din finger. Dine data gemmes sikkert og forlader aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Websites kan sende pop op-vinduer og bruge omdirigeringer</translation>
 <translation id="8492960370534528742">Feedback til Google Cast</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
@@ -8596,7 +8588,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="899384117894244799">Fjern begrænset bruger</translation>
 <translation id="899403249577094719">Webadresse for Netscape-certifikatbase</translation>
 <translation id="899657321862108550">Dit Chrome – overalt</translation>
-<translation id="899676909165543803">Fingeraftrykslæseren sidder nederst til højre på dit tastatur. Tryk let på den med en finger.</translation>
 <translation id="8998078711690114234">Denne type fil kan være skadelig. Gem kun denne fil, hvis du har tillid til <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Fejl i sektionens syntaks: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Forbindelsen til Device Management Server mislykkedes <ph name="FAILURE_TIME" /> med statussen "<ph name="STATUS_TEXT" />"</translation>
@@ -8653,6 +8644,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9040661932550800571">Vil du opdatere adgangskoden til <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Din administrator har deaktiveret adgangen til lokale filer på din maskine</translation>
 <translation id="904224458472510106">Denne handling kan ikke fortrydes</translation>
+<translation id="9042827002460091668">Tjek din internetforbindelse, og prøv igen</translation>
 <translation id="9042893549633094279">Sikkerhed og privatliv</translation>
 <translation id="9044646465488564462">Det var ikke muligt at oprette forbindelse til netværket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Din læseliste er blevet flyttet til det nye sidepanel. Prøv det her.</translation>
@@ -8893,7 +8885,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 fane}one{# faner}other{# faner}}</translation>
 <translation id="971510864672937292">Vil du rydde websitedata og tilladelser for <ph name="SITE_NAME" /> samt alle websites under det?</translation>
 <translation id="971774202801778802">Bogmærkets webadresse</translation>
-<translation id="972996901592717370">Sæt fingeren på afbryderknappen. Dine data gemmes sikkert og forlader aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Afslut</translation>
 <translation id="973558314812359997">Musemarkørens størrelse</translation>
 <translation id="975893173032473675">Sprog, der skal oversættes til</translation>

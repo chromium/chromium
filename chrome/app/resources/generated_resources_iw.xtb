@@ -843,7 +843,6 @@
 <translation id="175772926354468439">הפעלת עיצוב</translation>
 <translation id="17584710573359123">‏הצגה בחנות האינטרנט של Chrome</translation>
 <translation id="1761845175367251960">החשבונות של <ph name="NAME" /></translation>
-<translation id="176193854664720708">חיישן טביעות האצבע נמצא בלחצן ההפעלה. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="176272781006230109">הצעות לקניות</translation>
 <translation id="1763046204212875858">יצירת קיצורי דרך ליישום</translation>
 <translation id="1763808908432309942">פתיחה בכרטיסייה חדשה</translation>
@@ -1086,7 +1085,6 @@
 <translation id="1974821797477522211">התחברות לרשת</translation>
 <translation id="1975841812214822307">הסרה...</translation>
 <translation id="1976150099241323601">צריך להיכנס אל התקן אבטחה</translation>
-<translation id="1976928778492259496">חיישן טביעות האצבע מופיע בצד שמאל של מכשיר <ph name="DEVICE_TYPE" /> שלך. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="1977965994116744507">יש לקרב את הטלפון כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">הסרת הכתובת</translation>
 <translation id="1979095679518582070">השבתת התכונה הזו לא משפיעה על היכולת של המכשיר הזה לשלוח את המידע הדרוש עבור שירותים חיוניים, כמו אבטחה ועדכוני מערכת.</translation>
@@ -2858,7 +2856,6 @@
 <translation id="3612673635130633812">‏ההורדה בוצעה באמצעות &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">הצגת <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;פתיחה בכרטיסייה חדשה</translation>
-<translation id="3615073365085224194">יש לגעת עם האצבע בחיישן טביעת האצבע</translation>
 <translation id="3615579745882581859">מתבצעת סריקה בקובץ <ph name="FILE_NAME" />.</translation>
 <translation id="3615596877979647433">המפתח חסר. יש להקיש על מקש מקלדת כלשהו כדי להתאים אישית</translation>
 <translation id="3616113530831147358">אודיו</translation>
@@ -3844,7 +3841,6 @@
 <translation id="4533985347672295764">‏זמן CPU (יחידת עיבוד מרכזית)</translation>
 <translation id="4534661889221639075">יש לנסות שוב.</translation>
 <translation id="4535127706710932914">פרופיל ברירת מחדל</translation>
-<translation id="4535767533210902251">חיישן טביעת האצבע מותקן במקש הימני העליון במקלדת. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="4536140153723794651">‏אתרים שתמיד יכולים להשתמש בקובצי cookie</translation>
 <translation id="4536769240747010177">‏יכולות לשיתוף אינטרנט בין מכשירים (tethering):</translation>
 <translation id="4538417792467843292">מחיקת מילה</translation>
@@ -5487,7 +5483,6 @@
 <translation id="6087746524533454243">רוצה לאתר את דף המידע על הדפדפן? יש לעבור לכתובת</translation>
 <translation id="6087960857463881712">פרצוף "אדיר!"</translation>
 <translation id="608912389580139775">כדי להוסיף את הדף הזה לרשימת הקריאה, יש ללחוץ על סמל הסימנייה</translation>
-<translation id="6091116443517744502">יש לבדוק את החיבור לאינטרנט ולנסות שוב</translation>
 <translation id="6091761513005122595">התקן הרשת לשיתוף קבצים נטען בהצלחה.</translation>
 <translation id="6093803049406781019">מחק את הפרופיל</translation>
 <translation id="6093888419484831006">המערכת מבטלת את העדכון...</translation>
@@ -6796,7 +6791,6 @@
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7353261921908507769">אנשי הקשר יוכלו לשתף איתך כשהם בקרבת מקום. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>
 <translation id="735361434055555355">‏מתבצעת התקנה של Linux...</translation>
-<translation id="7354341762311560488">חיישן טביעות האצבע הוא המקש בפינה השמאלית התחתונה במקלדת. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="7356908624372060336">יומני רשת</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
 <translation id="7358324924540718595">הזיכרונות שהוסתרו להיום</translation>
@@ -7963,7 +7957,6 @@
 <translation id="8398877366907290961">להמשיך בכל זאת</translation>
 <translation id="8399282673057829204">הצגת הסיסמה</translation>
 <translation id="8401432541486058167">עליך לציין את קוד האימות המשויך לכרטיס החכם שלך.</translation>
-<translation id="8404893580027489425">חיישן טביעות האצבע מופיע בצד ימין של מכשיר <ph name="DEVICE_TYPE" /> שלך. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="8405046151008197676">ריכזנו עבורך את הפרטים החשובים לגבי העדכון האחרון</translation>
 <translation id="8407199357649073301">רמת הרישום ביומן:</translation>
 <translation id="8408270600235826886">‏יש לך אפשרות להחליט איזה מידע ישותף עם Google. תמיד אפשר לשנות זאת ב'הגדרות'. הנתונים ישמשו בהתאם ל<ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של Google.</translation>
@@ -8050,7 +8043,6 @@
 <translation id="8487699605742506766">נקודה לשיתוף אינטרנט</translation>
 <translation id="8489156414266187072">הצעות מותאמות אישית מוצגות בחשבון שלך בלבד</translation>
 <translation id="8490896350101740396">אפליקצית הקיוסק הבאות "<ph name="UPDATED_APPS" />" עודכנו. יש להפעיל מחדש את המכשיר כדי להשלים את תהליך העדכון.</translation>
-<translation id="8492685019009920170">יש לגעת עם האצבע בחיישן טביעות האצבע. הנתונים שלך מאוחסנים באופן מאובטח ואף פעם לא נשלחים ממכשיר ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">אתרים יכולים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות</translation>
 <translation id="8492960370534528742">‏משוב על Google Cast</translation>
 <translation id="8493236660459102203">מיקרופון:</translation>
@@ -8585,7 +8577,6 @@
 <translation id="899384117894244799">הסרה של משתמש מוגבל</translation>
 <translation id="899403249577094719">‏כתובת אתר בסיסית של אישור Netscape</translation>
 <translation id="899657321862108550">‏ה-Chrome שלך, בכל מקום</translation>
-<translation id="899676909165543803">חיישן טביעות האצבע הוא המקש הימני בשורה התחתונה במקלדת. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="8998078711690114234">סוג הקובץ הזה עלול להיות מסוכן. יש לשמור את הקובץ רק אם האתר <ph name="ORIGIN" /> מהימן</translation>
 <translation id="8999560016882908256">שגיאה בתחביר של קטע: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">החיבור לשרת ניהול המכשירים נכשל עם הסטטוס '<ph name="STATUS_TEXT" />', בשעה <ph name="FAILURE_TIME" /></translation>
@@ -8882,7 +8873,6 @@
 <translation id="970047733946999531">{NUM_TABS,plural, =1{כרטיסייה אחת}two{# כרטיסיות}many{# כרטיסיות}other{# כרטיסיות}}</translation>
 <translation id="971510864672937292">לנקות את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" /> ולכל האתרים שתחתיו?</translation>
 <translation id="971774202801778802">כתובת אתר של סימנייה</translation>
-<translation id="972996901592717370">יש לגעת בלחצן ההפעלה עם האצבע. הנתונים שלך מאוחסנים באופן מאובטח ואף פעם לא נשלחים ממכשיר ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">יציאה</translation>
 <translation id="973558314812359997">גודל סמן העכבר</translation>
 <translation id="975893173032473675">שפת היעד של התרגום</translation>

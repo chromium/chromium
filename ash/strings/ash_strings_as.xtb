@@ -730,6 +730,7 @@
 <translation id="4987738733603015246">ডেস্ক ১৬</translation>
 <translation id="5003993274120026347">পৰৱৰ্তী বাক্য</translation>
 <translation id="5016558321564993266">চিহ্নকৰ সুবিধাটো ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">ডিভাইচৰ মাইক্ৰ’ফ’নৰ এক্সেছ অন কৰা হৈছে</translation>
 <translation id="5030687792513154421">সময় সীমা উকলিল</translation>
 <translation id="5033299697334913360">পূৰ্ণ স্ক্ৰীন কেপচাৰ কৰিবলৈ যিকোনো ঠাইতে ক্লিক কৰক</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />ক এটা নতুন ডিভাইচত সংযোগ কৰা হ'ল</translation>
@@ -965,6 +966,7 @@
 <translation id="6359587239691116345">শেহতীয়া সুবিধা আৰু সুৰক্ষা সম্পৰ্কীয় উন্নীতকৰণসমূহ লাভ কৰক। যদি আপুনি এই আপডে’টটো প্ৰত্যাখ্যান কৰে, তেন্তে আপোনাৰ ডিভাইচটোৱে আৰু সঠিককৈ কাম নকৰিব পাৰে আৰু আপুনি সুৰক্ষা আৰু কাৰ্যক্ষমতা সম্পৰ্কীয় সমস্যাৰ সন্মুখীন হ’ব পাৰে।</translation>
 <translation id="6376931439017688372">ব্লুটুথ অন কৰা আছে</translation>
 <translation id="6381109794406942707">ডিভাইচটো আনলক কৰিবলৈ, আপোনাৰ পিনটো দিয়ক।</translation>
+<translation id="638716340450135524">কেমেৰাৰ এক্সেছ অন কৰক</translation>
 <translation id="639644700271529076">CAPS LOCK অফ হৈ আছে</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -972,6 +974,7 @@
 <translation id="642644398083277086">সকলো জাননী মচক</translation>
 <translation id="643147933154517414">সকলো কৰা হৈছে</translation>
 <translation id="6431865393913628856">স্ক্ৰীন ৰেকর্ড</translation>
+<translation id="6442259747294754014">ডিভাইচৰ মাইক্ৰ’ফ’নৰ এক্সেছ অফ কৰা হৈছে</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />ত <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> টা অনুষ্ঠান</translation>
 <translation id="6449483711453944360">বর্তমান Linux এপ্ আৰু ইনক'গনিট' ৱিণ্ড'সমূহ সমর্থন নকৰে</translation>
@@ -1369,6 +1372,7 @@
 <translation id="8598235756057743477">নাম অথবা ৰং অনুসৰি আপোনাৰ এপ্ সজাওক</translation>
 <translation id="8614517853887502247">চোৱাৰ সুৰক্ষাটো অন হৈ থকাৰ বাবে <ph name="APP_1_TITLE" /> আৰু <ph name="APP_2_TITLE" />ৰ জাননীসমূহ লুকুওৱা হৈছে</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />ৰ সৈতে সংযোজিত</translation>
+<translation id="8630991711272431708">কেমেৰাৰ এক্সেছ অফ কৰক</translation>
 <translation id="8631727435199967028">সাধ্য সুবিধাৰ ছেটিংসমূহ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> বাকী আছে</translation>

@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Probeer de stappen voor probleemoplossing</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Maak verbinding met een netwerk en laad de pagina opnieuw om de screensaver te bekijken.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2085089206770112532">Helderheid van scherm verlagen</translation>
 <translation id="2105810540595158374">Apparaat is een gamecontroller.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Compressiealgoritme</translation>
 <translation id="4794140124556169553">Als je een CPU-test uitvoert, kan dit je systeemprestaties beïnvloeden</translation>
 <translation id="4800589996161293643">Chromebook-community</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Afdruktaak <ph name="DOCUMENT_TITLE" /> geannuleerd</translation>
 <translation id="4809927044794281115">Licht thema</translation>
 <translation id="4813136279048157860">Mijn afbeeldingen</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het linkeroordopje.</translation>
 <translation id="4905998861748258752">Zet de functie aan om screensaveropties te selecteren</translation>
+<translation id="4910858703033903787">APN-typen</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
 <translation id="491791267030419270">Tips voor het schrijven van feedback</translation>
@@ -460,6 +463,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5358174242040570474">Er is iets misgegaan. Probeer nog een keer een achtergrond te kiezen of open de app opnieuw.</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
 <translation id="5376354385557966694">Automatisch lichte modus</translation>
+<translation id="5378184552853359930">IP-type</translation>
 <translation id="5389159777326897627">Achtergrond en stijl</translation>
 <translation id="5389224261615877010">Regenboog</translation>
 <translation id="5400907029458559844">Apparaat maakt verbinding.</translation>
@@ -743,6 +747,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecteren</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Bijvoegen</translation>
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8208861521865154048">Speciale voordelen</translation>
 <translation id="8226628635270268143">Kies je favoriete foto's en albums</translation>
@@ -831,6 +836,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="9025198690966128418">Gebruiken als persoonlijk apparaat</translation>
 <translation id="9028832514430399253">Gebruik de schakelaar om de screensaveropties te selecteren</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-omzetting heeft een lange vertraging</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -133,6 +133,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1974060860693918893">Avanserte</translation>
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
+<translation id="1990820278544963435">Finn</translation>
 <translation id="199425419756152024">Vis passordet</translation>
 <translation id="2010008505735295285">Last inn på nytt</translation>
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
@@ -874,6 +875,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7531345132340165516">Gjeldende nettsted</translation>
 <translation id="7537586195939242955">Tillatelsen din kan for øyeblikket ikke installeres i Passbook.</translation>
 <translation id="7553234618121028547">For å slå av funksjonen, åpne <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /> og gå til Passordvalg.</translation>
+<translation id="7554645225856321710">Lukk alle</translation>
 <translation id="7554791636758816595">Ny fane</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7583004045319035904">Bruk <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> for å låse opp inkognitofanene dine.</translation>
@@ -1087,6 +1089,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9188680907066685419">Logg av administrert konto</translation>
 <translation id="9200875785104711666">for <ph name="TIME" /> d siden</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Søk etter faner…</translation>
 <translation id="9223358826628549784">Programstopprapporten er sendt.</translation>
 <translation id="941747855997058526">Velg passord…</translation>
 <translation id="952704832371081537">Avbryt</translation>

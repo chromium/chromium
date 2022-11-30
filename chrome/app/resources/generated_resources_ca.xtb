@@ -833,7 +833,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="175772926354468439">Activa el tema</translation>
 <translation id="17584710573359123">Mostra a Chrome Web Store</translation>
 <translation id="1761845175367251960">Comptes de: <ph name="NAME" /></translation>
-<translation id="176193854664720708">El sensor d'empremtes digitals és al botó d'engegada. Toca'l lleugerament amb un dit.</translation>
 <translation id="176272781006230109">suggeriments de compra</translation>
 <translation id="1763046204212875858">Creació de dreceres a aplicacions</translation>
 <translation id="1763808908432309942">S'obre en una pestanya nova</translation>
@@ -1075,7 +1074,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1974821797477522211">Connecta't a la xarxa</translation>
 <translation id="1975841812214822307">Suprimeix...</translation>
 <translation id="1976150099241323601">Inici de sessió al dispositiu de seguretat</translation>
-<translation id="1976928778492259496">El sensor d'empremtes digitals és a la part esquerra del <ph name="DEVICE_TYPE" />. Toca'l lleugerament amb un dit.</translation>
 <translation id="1977965994116744507">Acosta el telèfon per desbloquejar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Suprimeix l'adreça</translation>
 <translation id="1979095679518582070">Si aquesta funció es desactiva, no afectarà la capacitat d'aquest dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.</translation>
@@ -2843,7 +2841,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3612673635130633812">Baixat per &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Mostra <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Obre en una pestanya nova</translation>
-<translation id="3615073365085224194">Toca el sensor d'empremtes digitals amb el dit</translation>
 <translation id="3615579745882581859">S'està analitzant <ph name="FILE_NAME" />.</translation>
 <translation id="3615596877979647433">Falta la tecla. Prem una tecla del teclat per personalitzar-la.</translation>
 <translation id="3616113530831147358">Àudio</translation>
@@ -3827,7 +3824,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4533985347672295764">Temps de la CPU</translation>
 <translation id="4534661889221639075">Torna-ho a provar.</translation>
 <translation id="4535127706710932914">Perfil predeterminat</translation>
-<translation id="4535767533210902251">El sensor d'empremtes digitals és la tecla de la part superior dreta del teclat. Toca-la lleugerament amb un dit.</translation>
 <translation id="4536140153723794651">Llocs web que sempre poden fer servir galetes</translation>
 <translation id="4536769240747010177">Capacitats de la compartició de xarxa:</translation>
 <translation id="4538417792467843292">Suprimeix la paraula</translation>
@@ -5469,7 +5465,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6087746524533454243">Busques la pàgina d'informació del navegador? Ves a</translation>
 <translation id="6087960857463881712">Cara de fascinació</translation>
 <translation id="608912389580139775">Per afegir aquesta pàgina a la llista de lectura, fes clic a la icona d'adreça d'interès</translation>
-<translation id="6091116443517744502">Comprova la connexió a Internet i torna-ho a provar</translation>
 <translation id="6091761513005122595">L'ús compartit s'ha activat correctament.</translation>
 <translation id="6093803049406781019">Suprimeix el perfil</translation>
 <translation id="6093888419484831006">S’està cancel·lant l’actualització...</translation>
@@ -6774,7 +6769,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7353261921908507769">Els teus contactes poden compartir contingut amb tu quan siguin a prop. Les transferències no començaran fins que no les acceptis.</translation>
 <translation id="735361434055555355">S'està instal·lant Linux...</translation>
-<translation id="7354341762311560488">El sensor d'empremtes digitals és la tecla de la part inferior esquerra del teclat. Toca'l lleugerament amb un dit.</translation>
 <translation id="7356908624372060336">Registres de la xarxa</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>
 <translation id="7358324924540718595">Els records s'han amagat per avui</translation>
@@ -7941,7 +7935,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8398877366907290961">Continua igualment</translation>
 <translation id="8399282673057829204">Mostra la contrasenya</translation>
 <translation id="8401432541486058167">Proporciona el PIN que està associat a la teva targeta intel·ligent.</translation>
-<translation id="8404893580027489425">El sensor d'empremtes digitals és a la part dreta del <ph name="DEVICE_TYPE" />. Toca'l lleugerament amb un dit.</translation>
 <translation id="8405046151008197676">Descobreix les novetats més destacades de la darrera actualització</translation>
 <translation id="8407199357649073301">Nivell de registre:</translation>
 <translation id="8408270600235826886">Pots controlar les dades que es comparteixen amb Google. Pots canviar aquesta opció en qualsevol moment a Configuració. Les dades s'utilitzaran d'acord amb la <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" /> de Google.</translation>
@@ -8028,7 +8021,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8487699605742506766">Punt d'accés Wi‑Fi</translation>
 <translation id="8489156414266187072">Els suggeriments personals només es mostren al teu compte</translation>
 <translation id="8490896350101740396">S'han actualitzat les aplicacions de Quiosc següents: <ph name="UPDATED_APPS" />. Reinicieu el dispositiu per completar el procés d'actualització.</translation>
-<translation id="8492685019009920170">Toca el sensor d'empremtes digitals amb el dit. Les teves dades s'emmagatzemen de manera segura i no surten mai del teu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Els llocs web poden enviar finestres emergents i utilitzar redireccions</translation>
 <translation id="8492960370534528742">Comentaris sobre Google Cast</translation>
 <translation id="8493236660459102203">Micròfon:</translation>
@@ -8415,6 +8407,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8859174528519900719">Submarc: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">No s'han pogut carregar les condicions del servei</translation>
 <translation id="8859662783913000679">Compte parental</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} compte}other{{COUNT} comptes}}</translation>
 <translation id="8861568709166518036">Utilitza els botons en pantalla per navegar fins a l'inici, anar enrere i canviar d'aplicació. Aquesta opció s'activa automàticament si ChromeVox o els clics automàtics estan activats.</translation>
 <translation id="8862003515646449717">Canvia a un navegador ràpid</translation>
 <translation id="8863753581171631212">Obre l'enllaç en una finestra nova de l'aplicació <ph name="APP" /></translation>
@@ -8561,7 +8554,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="899384117894244799">Suprimeix un usuari restringit</translation>
 <translation id="899403249577094719">URL base de certificat de Netscape</translation>
 <translation id="899657321862108550">El teu Chrome, siguis on siguis</translation>
-<translation id="899676909165543803">El sensor d'empremtes digitals és la tecla de la part inferior dreta del teclat. Toca-la lleugerament amb un dit.</translation>
 <translation id="8998078711690114234">Aquest tipus de fitxer pot ser perillós. Desa'l només si confies en <ph name="ORIGIN" />.</translation>
 <translation id="8999560016882908256">Error de sintaxi de la secció: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">La connexió al servidor de gestió de dispositius ha fallat amb l'estat "<ph name="STATUS_TEXT" />" a les <ph name="FAILURE_TIME" /></translation>
@@ -8858,7 +8850,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 pestanya}other{# pestanyes}}</translation>
 <translation id="971510864672937292">Vols esborrar les dades i els permisos del lloc web <ph name="SITE_NAME" /> i tots els llocs web que conté?</translation>
 <translation id="971774202801778802">URL de l'adreça d'interès</translation>
-<translation id="972996901592717370">Toca el botó d'engegada amb el dit. Les teves dades s'emmagatzemen de manera segura i no surten mai del teu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Surt</translation>
 <translation id="973558314812359997">Mida del ratolí</translation>
 <translation id="975893173032473675">Idioma d'arribada de la traducció</translation>
