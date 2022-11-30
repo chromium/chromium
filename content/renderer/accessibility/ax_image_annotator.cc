@@ -501,6 +501,10 @@ void AXImageAnnotator::OnImageAnnotated(
       case image_annotation::mojom::AnnotationType::kIcon: {
         int icon_message_id = GetMessageIdForIconEnum(annotation->text);
 
+        // Skip unrecognized icon annotation enum.
+        if (icon_message_id == 0)
+          continue;
+
         DCHECK(GetContentClient());
         contextualized_strings.push_back(base::UTF16ToUTF8(
             GetContentClient()->GetLocalizedString(icon_message_id)));
