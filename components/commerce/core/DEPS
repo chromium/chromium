@@ -1,7 +1,7 @@
 include_rules = [
   "+components/bookmarks/browser",
-  "+components/power_bookmarks/core",
   "+components/bookmarks/test",
+  "+components/country_codes",
   "+components/endpoint_fetcher",
   "+components/flags_ui",
   "+components/grit/components_resources.h",
@@ -16,6 +16,7 @@ include_rules = [
   "+components/signin/public/identity_manager",
   "+components/unified_consent",
   "+components/url_formatter",
+  "+components/variations",
   "+mojo/public/cpp/bindings",
   "+net/base/registry_controlled_domains/registry_controlled_domain.h",
   "+net/http",

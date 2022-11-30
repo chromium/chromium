@@ -14,3 +14,15 @@ static_library("country_codes") {
     "//components/prefs",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "country_codes_unittest.cc" ]
+
+  deps = [
+    ":country_codes",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

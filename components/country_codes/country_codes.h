@@ -24,7 +24,8 @@ namespace country_codes {
 // prepopulation has been run at least once.
 extern const char kCountryIDAtInstall[];
 
-const int kCountryIDUnknown = -1;
+constexpr int kCountryIDUnknown = -1;
+constexpr char kCountryCodeUnknown[] = "";
 
 // Takes in each of the two characters of a ISO 3166-1 country code, and
 // converts it into an int value to be used as a reference to that country.
@@ -36,6 +37,13 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the identifier for the user current country.
 int GetCurrentCountryID();
+
+// Converts a country's ID to its corresponding two-letter code. If unknown or
+// invalid, |kCountryCodeUnknown| is returned.
+std::string CountryIDToCountryString(int country_id);
+
+// Gets the two-letter code for the user's current country.
+std::string GetCurrentCountryCode();
 
 // Converts a two-letter country code to an integer-based country identifier.
 int CountryStringToCountryID(const std::string& country);

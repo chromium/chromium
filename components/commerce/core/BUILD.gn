@@ -27,9 +27,11 @@ source_set("feature_list") {
     ":commerce_heuristics_data",
     ":pref_names",
     "//base",
+    "//components/country_codes",
     "//components/flags_ui",
     "//components/prefs",
     "//components/search",
+    "//components/variations/service",
     "//third_party/re2:re2",
     "//url:url",
   ]

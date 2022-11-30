@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 
+#import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -63,6 +65,8 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(state);
   PrefService* pref_service = chrome_state ? chrome_state->GetPrefs() : nullptr;
   return std::make_unique<ShoppingService>(
+      GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
+      GetApplicationContext()->GetApplicationLocale(),
       ios::BookmarkModelFactory::GetInstance()->GetForBrowserState(
           chrome_state),
       OptimizationGuideServiceFactory::GetForBrowserState(chrome_state),

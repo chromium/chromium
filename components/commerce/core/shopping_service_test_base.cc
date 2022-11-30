@@ -240,8 +240,8 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
           std::make_unique<network::TestURLLoaderFactory>()) {
   RegisterPrefs(pref_service_->registry());
   shopping_service_ = std::make_unique<ShoppingService>(
-      bookmark_model_.get(), opt_guide_.get(), pref_service_.get(),
-      identity_test_env_->identity_manager(),
+      "us", "en-us", bookmark_model_.get(), opt_guide_.get(),
+      pref_service_.get(), identity_test_env_->identity_manager(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
       nullptr, nullptr);

@@ -4,9 +4,13 @@
 
 #include "components/commerce/core/commerce_feature_list.h"
 
+#include <unordered_map>
+#include <unordered_set>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/buildflag.h"
 #if !BUILDFLAG(IS_ANDROID)
@@ -14,11 +18,28 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/country_codes/country_codes.h"
+#include "components/variations/service/variations_service.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace commerce {
 
 namespace {
+
+typedef std::unordered_map<std::string, std::unordered_set<std::string>>
+    CountryLocaleMap;
+
+// Get a map of enabled countries to the set of allowed locales for that
+// country. Just because a locale is enabled for one country doesn't mean it can
+// or should be enabled in others. The checks using this map should convert all
+// countries and locales to lower case as they may differ depending on the API
+// used to access them.
+const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
+  // Declaring the variable "static" means it isn't recreated each time this
+  // function is called. This gets around the "static initializers" problem.
+  static const base::NoDestructor<CountryLocaleMap> map({{"us", {"en-us"}}});
+  return *map;
+}
 
 constexpr base::FeatureParam<std::string> kRulePartnerMerchantPattern{
     &ntp_features::kNtpChromeCartModule, "partner-merchant-pattern",
@@ -306,6 +327,35 @@ bool IsShoppingListAllowedForEnterprise(PrefService* prefs) {
 
   // Default to true if there is no value set.
   return !pref || pref->GetBool();
+}
+
+std::string GetCurrentCountryCode(variations::VariationsService* variations) {
+  std::string country;
+
+  if (variations)
+    country = variations->GetStoredPermanentCountry();
+
+  // Since variations doesn't provide a permanent country by default on things
+  // like local builds, we try to fall back to the country_codes component which
+  // should always have one.
+  if (country.empty())
+    country = country_codes::GetCurrentCountryCode();
+
+  return country;
+}
+
+bool IsEnabledForCountryAndLocale(std::string country, std::string locale) {
+  const CountryLocaleMap& allowedCountryLocales =
+      GetAllowedCountryToLocaleMap();
+  auto it = allowedCountryLocales.find(base::ToLowerASCII(country));
+
+  // If the country isn't in the map, it's not valid.
+  if (it == allowedCountryLocales.end())
+    return false;
+
+  // If the set of allowed locales contains our locale, we're considered to be
+  // enabled.
+  return it->second.find(base::ToLowerASCII(locale)) != it->second.end();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

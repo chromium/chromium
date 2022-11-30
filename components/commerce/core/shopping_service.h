@@ -158,6 +158,8 @@ using BookmarkProductInfoUpdatedCallback = base::RepeatingCallback<
 class ShoppingService : public KeyedService, public base::SupportsUserData {
  public:
   ShoppingService(
+      const std::string& country_on_startup,
+      const std::string& locale_on_startup,
       bookmarks::BookmarkModel* bookmark_model,
       optimization_guide::NewOptimizationGuideDecider* opt_guide,
       PrefService* pref_service,
@@ -353,6 +355,12 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // Update the cache storing product info for a navigation away from the
   // provided URL or closing of a tab.
   void UpdateProductInfoCacheForRemoval(const GURL& url);
+
+  // The two-letter country code as detected on startup.
+  std::string country_on_startup_;
+
+  // The locale as detected on startup.
+  std::string locale_on_startup_;
 
   // A handle to optimization guide for information about URLs that have
   // recently been navigated to.

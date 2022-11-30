@@ -64,6 +64,8 @@ MerchantInfo::MerchantInfo(MerchantInfo&&) = default;
 MerchantInfo::~MerchantInfo() = default;
 
 ShoppingService::ShoppingService(
+    const std::string& country_on_startup,
+    const std::string& locale_on_startup,
     bookmarks::BookmarkModel* bookmark_model,
     optimization_guide::NewOptimizationGuideDecider* opt_guide,
     PrefService* pref_service,
@@ -73,7 +75,9 @@ ShoppingService::ShoppingService(
         commerce_subscription_db::CommerceSubscriptionContentProto>*
         subscription_proto_db,
     power_bookmarks::PowerBookmarkService* power_bookmark_service)
-    : opt_guide_(opt_guide),
+    : country_on_startup_(country_on_startup),
+      locale_on_startup_(locale_on_startup),
+      opt_guide_(opt_guide),
       pref_service_(pref_service),
       bookmark_model_(bookmark_model),
       power_bookmark_service_(power_bookmark_service),

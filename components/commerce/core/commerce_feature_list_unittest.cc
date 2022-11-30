@@ -150,3 +150,20 @@ TEST_F(CommerceFeatureListTest, TestNoDiscountMerchant) {
       commerce::IsNoDiscountMerchant(GURL("https://www.qux.com/corge")));
 }
 #endif  //! BUILDFLAG(IS_ANDROID)
+
+// This test assumes that, at bare minimum, "US" is an allowed country and
+// "en-us" is an allowed locale for the US.
+TEST_F(CommerceFeatureListTest, TestEnabledForCountryAndLocale) {
+  // Check the known success cases with different character cases.
+  ASSERT_TRUE(commerce::IsEnabledForCountryAndLocale("US", "en-us"));
+  ASSERT_TRUE(commerce::IsEnabledForCountryAndLocale("us", "en-US"));
+
+  // Test allowed country with disallowed (fake) locale.
+  ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale("us", "zz-zz"));
+
+  // Test allowed locale in a disallowed (fake) country.
+  ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale("zz", "en-us"));
+
+  // Ensure empty values don't crash.
+  ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale("", ""));
+}

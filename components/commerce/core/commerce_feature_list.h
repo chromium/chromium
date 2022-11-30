@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_
 #define COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -14,6 +16,10 @@
 #include "url/gurl.h"
 
 class PrefService;
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
 
 namespace commerce {
 
@@ -345,6 +351,14 @@ bool IsFakeDataEnabled();
 bool isContextualConsentEnabled();
 // Check if the shopping list feature is allowed for enterprise.
 bool IsShoppingListAllowedForEnterprise(PrefService* prefs);
+
+// Get the user's current country code. If access through variations fails,
+// the country_codes component is used.
+std::string GetCurrentCountryCode(variations::VariationsService* variations);
+
+// Check if commerce features are allowed to run for the specified country
+// and locale.
+bool IsEnabledForCountryAndLocale(std::string country, std::string locale);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Get the time delay between discount fetches.

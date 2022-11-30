@@ -15,7 +15,9 @@ std::unique_ptr<KeyedService> MockShoppingService::Build() {
 }
 
 MockShoppingService::MockShoppingService()
-    : commerce::ShoppingService(nullptr,
+    : commerce::ShoppingService("us",
+                                "en-us",
+                                nullptr,
                                 nullptr,
                                 nullptr,
                                 nullptr,
