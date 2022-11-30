@@ -265,8 +265,13 @@ void WaylandDataDragController::DrawIconInternal() {
   DVLOG(3) << "Drawing drag icon. size=" << size.ToString();
   wl::DrawBitmap(*icon_bitmap_, icon_buffer_.get());
   auto* const surface = icon_surface_->surface();
-  wl_surface_attach(surface, icon_buffer_->get(), icon_offset_.x(),
-                    icon_offset_.y());
+  if (connection_->compositor_version() < WL_SURFACE_OFFSET_SINCE_VERSION) {
+    wl_surface_attach(surface, icon_buffer_->get(), icon_offset_.x(),
+                      icon_offset_.y());
+  } else {
+    wl_surface_attach(surface, icon_buffer_->get(), 0, 0);
+    wl_surface_offset(surface, icon_offset_.x(), icon_offset_.y());
+  }
   wl_surface_damage(surface, 0, 0, size.width(), size.height());
   wl_surface_commit(surface);
 }

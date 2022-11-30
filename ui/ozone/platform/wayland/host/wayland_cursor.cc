@@ -157,6 +157,7 @@ void WaylandCursor::AttachAndCommit(wl_buffer* buffer,
                         pointer_surface_.get(), hotspot_x_dip, hotspot_y_dip);
 
   wl_surface_damage(pointer_surface_.get(), 0, 0, buffer_width, buffer_height);
+  // Note: should the offset be non-zero, use wl_surface_offset() to set it.
   wl_surface_attach(pointer_surface_.get(), buffer, 0, 0);
   wl_surface_commit(pointer_surface_.get());
 

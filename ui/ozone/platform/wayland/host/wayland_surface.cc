@@ -387,6 +387,7 @@ void WaylandSurface::ApplyPendingState() {
     // The logic in DamageBuffer currently relies on attachment coordinates of
     // (0, 0). If this changes, then the calculation in DamageBuffer will also
     // need to be updated.
+    // Note: should the offset be non-zero, use wl_surface_offset() to set it.
     wl_surface_attach(surface_.get(), pending_state_.buffer, 0, 0);
 
     // Do not call GetOrCreateSurfaceSync() if the buffer management doesn't
