@@ -15,8 +15,10 @@ import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
+import org.chromium.chrome.browser.privacy_sandbox.PromptAction;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.widget.ButtonCompat;
@@ -59,7 +61,7 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
 
     @Override
     public void show() {
-        // TODO(b/254408752): Report show action.
+        PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_SHOWN);
         super.show();
     }
 
@@ -68,10 +70,10 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            // TODO(b/254408752): Report notice acknowledge action.
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
             dismiss();
         } else if (id == R.id.settings_button) {
-            // TODO(b/254408752): Report open settings action.
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
             dismiss();
             // TODO(b/254408752): Update the referrer.
             PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
@@ -82,7 +84,7 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
                     mContentView.findViewById(R.id.privacy_sandbox_notice_eea_scroll_view);
 
             if (isDropdownExpanded()) {
-                // TODO(b/254408752): Report notice eea more info section closed action.
+                PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_CLOSED);
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
 
@@ -90,7 +92,7 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
                         Gravity.CENTER_VERTICAL;
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
-                // TODO(b/254408752): Report notice eea more info section opened action.
+                PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_OPENED);
                 LayoutInflater.from(getContext())
                         .inflate(R.layout.privacy_sandbox_notice_eea_dropdown_v4,
                                 mDropdownContainer);

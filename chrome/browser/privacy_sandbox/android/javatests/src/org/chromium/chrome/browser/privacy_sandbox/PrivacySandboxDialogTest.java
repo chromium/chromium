@@ -368,27 +368,36 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     public void testControllerShowsEEAConsent() throws IOException {
-        // TODO(b/254408752): Verify actions are correctly recorded.
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
         launchDialog();
         // Verify that the EEA consent is shown
         onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title));
+        assertEquals("Last dialog action", PromptAction.CONSENT_SHOWN,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Accept the consent and verify it worked correctly.
         onView(withId(R.id.ack_button)).perform(click());
+        assertEquals("Last dialog action", PromptAction.CONSENT_ACCEPTED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(doesNotExist());
 
         launchDialog();
         // Click on the expanding section and verify it worked correctly.
         onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        assertEquals("Last dialog action", PromptAction.CONSENT_MORE_INFO_OPENED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).perform(scrollTo());
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(matches(isDisplayed()));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        assertEquals("Last dialog action", PromptAction.CONSENT_MORE_INFO_CLOSED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(doesNotExist());
 
         // Decline the consent and verify it worked correctly.
         onView(withId(R.id.no_button)).perform(click());
+        assertEquals("Last dialog action", PromptAction.CONSENT_DECLINED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(doesNotExist());
     }
 
@@ -396,28 +405,37 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testControllerShowsEEANotice() throws IOException {
-        // TODO(b/254408752): Verify actions are correctly recorded.
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
         launchDialog();
         // Verify that the EEA notice is shown
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
         onView(withId(R.id.ack_button)).perform(click());
+        assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
 
         launchDialog();
         // Click on the expanding section and verify it worked correctly.
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_OPENED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).perform(scrollTo());
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(matches(isDisplayed()));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_CLOSED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
         onView(withId(R.id.settings_button)).perform(click());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
+        assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         Mockito.verify(mSettingsLauncher)
                 .launchSettingsActivity(any(Context.class),
                         eq(PrivacySandboxSettingsFragmentV4.class), any(Bundle.class));
@@ -427,27 +445,36 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testControllerShowsROWNotice() throws IOException {
-        // TODO(b/254408752): Verify actions are correctly recorded.
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
         launchDialog();
         // Verify that the ROW notice is shown
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
         onView(withId(R.id.ack_button)).perform(click());
+        assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
 
         launchDialog();
         // Click on the expanding section and verify it worked correctly.
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_OPENED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
         scrollToPosition(0);
         onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(matches(isDisplayed()));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_CLOSED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
         onView(withId(R.id.settings_button)).perform(click());
+        assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         Mockito.verify(mSettingsLauncher)
                 .launchSettingsActivity(any(Context.class),

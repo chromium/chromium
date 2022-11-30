@@ -13,6 +13,8 @@ import android.widget.ScrollView;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
+import org.chromium.chrome.browser.privacy_sandbox.PromptAction;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
@@ -58,7 +60,7 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
 
     @Override
     public void show() {
-        // TODO(b/254408752): Report show action.
+        PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
         super.show();
     }
 
@@ -67,23 +69,23 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            // TODO(b/254408752): Report consent acknowledge action.
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED);
             showSavingConfirmationAndDismiss();
         } else if (id == R.id.no_button) {
-            // TODO(b/254408752): Report consent declined action.
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED);
             showSavingConfirmationAndDismiss();
         } else if (id == R.id.dropdown_element) {
             ScrollView scrollView =
                     mContentView.findViewById(R.id.privacy_sandbox_consent_eea_scroll_view);
 
             if (isDropdownExpanded()) {
-                // TODO(b/254408752): Report consent eea more info section closed action.
+                PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_CLOSED);
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
                 scrollView.post(() -> { scrollView.fullScroll(ScrollView.FOCUS_UP); });
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
-                // TODO(b/254408752): Report consent eea more info section opened action.
+                PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_OPENED);
                 LayoutInflater.from(getContext())
                         .inflate(R.layout.privacy_sandbox_consent_eea_dropdown_v4,
                                 mDropdownContainer);
