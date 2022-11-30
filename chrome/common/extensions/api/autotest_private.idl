@@ -742,7 +742,7 @@ namespace autotestPrivate {
 
   callback CouldAllowCrostiniCallback = void (boolean canBeAllowed);
 
-  // Collected chromeos::LoginEventRecorder data.
+  // Collected ash::LoginEventRecorder data.
   dictionary LoginEventRecorderData {
     // Event name
     DOMString name;

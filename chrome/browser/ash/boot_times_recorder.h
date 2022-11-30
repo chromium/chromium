@@ -10,7 +10,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/callback_forward.h"
 #include "base/scoped_multi_source_observation.h"
-#include "chromeos/metrics/login_event_recorder.h"
+#include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_widget_host.h"

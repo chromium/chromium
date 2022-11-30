@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "chromeos/metrics/login_event_recorder.h"
+#include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "components/account_id/account_id.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -163,8 +163,8 @@ void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
     base::OnceClosure success_callback,
     bool unlock_webauthn_secret,
     const UserContext& user_context) {
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
-      "Cryptohome-CheckKeyEx-Start", false);
+  LoginEventRecorder::Get()->AddLoginTimeMarker("Cryptohome-CheckKeyEx-Start",
+                                                false);
   ::user_data_auth::CheckKeyRequest request;
   *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
       cryptohome::Identification(user_context.GetAccountId()));
@@ -186,7 +186,7 @@ void ExtendedAuthenticatorImpl::OnOperationComplete(
     const UserContext& user_context,
     base::OnceClosure success_callback,
     absl::optional<ReplyType> reply) {
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(time_marker, false);
+  LoginEventRecorder::Get()->AddLoginTimeMarker(time_marker, false);
   cryptohome::MountError return_code = cryptohome::MOUNT_ERROR_FATAL;
   if (reply.has_value()) {
     return_code = user_data_auth::CryptohomeErrorToMountError(reply->error());

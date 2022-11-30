@@ -152,12 +152,12 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
-#include "chromeos/metrics/login_event_recorder.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -6028,7 +6028,7 @@ AutotestPrivateStartLoginEventRecorderDataCollectionFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateStartLoginEventRecorderDataCollectionFunction::Run() {
-  chromeos::LoginEventRecorder::Get()
+  ash::LoginEventRecorder::Get()
       ->PrepareEventCollectionForTesting();  // IN-TEST
   return RespondNow(NoArguments());
 }
@@ -6046,7 +6046,7 @@ AutotestPrivateGetLoginEventRecorderLoginEventsFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateGetLoginEventRecorderLoginEventsFunction::Run() {
   const auto& collected_data =
-      chromeos::LoginEventRecorder::Get()
+      ash::LoginEventRecorder::Get()
           ->GetCollectedLoginEventsForTesting();  // IN-TEST
   std::vector<api::autotest_private::LoginEventRecorderData> result_data;
   for (const auto& data : collected_data) {
@@ -6074,7 +6074,7 @@ AutotestPrivateAddLoginEventForTestingFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateAddLoginEventForTestingFunction::Run() {
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
+  ash::LoginEventRecorder::Get()->AddLoginTimeMarker(
       /*marker_name=*/"AutotestPrivateTestMarker",
       /*send_to_uma=*/false,
       /*write_to_file=*/false);

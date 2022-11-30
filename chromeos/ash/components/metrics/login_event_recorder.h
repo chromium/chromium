@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_METRICS_LOGIN_EVENT_RECORDER_H_
-#define CHROMEOS_METRICS_LOGIN_EVENT_RECORDER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_METRICS_LOGIN_EVENT_RECORDER_H_
+#define CHROMEOS_ASH_COMPONENTS_METRICS_LOGIN_EVENT_RECORDER_H_
 
 #include <vector>
 
@@ -17,10 +17,10 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace chromeos {
+namespace ash {
 
 // LoginEventRecorder is a utility class used to save the bootimes of Chrome OS.
-class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
  public:
   class TimeMarker {
    public:
@@ -166,11 +166,6 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
   base::WeakPtrFactory<LoginEventRecorder> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::LoginEventRecorder;
-}
-
-#endif  // CHROMEOS_METRICS_LOGIN_EVENT_RECORDER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_METRICS_LOGIN_EVENT_RECORDER_H_

@@ -14,7 +14,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/metrics_recorder.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
-#include "chromeos/metrics/login_event_recorder.h"
+#include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -264,7 +264,7 @@ void LoginPerformer::NotifyOldEncryptionDetected(
 void LoginPerformer::StartLoginCompletion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Online login completion started.";
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
+  LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
   EnsureAuthenticator();
   authenticator_->CompleteLogin(std::make_unique<UserContext>(user_context_));
   user_context_.ClearSecrets();
@@ -273,7 +273,7 @@ void LoginPerformer::StartLoginCompletion() {
 void LoginPerformer::StartAuthentication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Offline auth started.";
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
+  LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
   DCHECK(delegate_);
   EnsureAuthenticator();
   authenticator_->AuthenticateToLogin(

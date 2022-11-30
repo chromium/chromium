@@ -139,6 +139,7 @@ class VizCompositorThreadRunnerWebView;
 namespace ash {
 class MojoUtils;
 class BrowserDataBackMigrator;
+class LoginEventRecorder;
 class StartupCustomizationDocument;
 class StartupUtils;
 bool CameraAppUIShouldEnableLocalOverride(const std::string&);
@@ -178,7 +179,6 @@ class CrashUtil;
 }
 namespace chromeos {
 class BlockingMethodCaller;
-class LoginEventRecorder;
 namespace system {
 class StatisticsProviderImpl;
 bool IsCoreSchedulingAvailable();
@@ -546,7 +546,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class base::win::ScopedAllowBlockingForUserAccountControl;
   friend class blink::DiskDataAllocator;
   friend class chromecast::CrashUtil;
-  friend class chromeos::LoginEventRecorder;
+  friend class ash::LoginEventRecorder;
   friend class content::BrowserProcessIOThread;
   friend class content::DWriteFontProxyImpl;
   friend class content::NetworkServiceInstancePrivate;

@@ -17,8 +17,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/metrics/login_event_recorder.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/window.h"
@@ -107,11 +107,10 @@ void ReportLogin(base::TimeTicks start,
     return;
   }
 
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
-      "LoginAnimationEnd",
-      /*send_to_uma=*/false,
-      /*write_to_file=*/false);
-  chromeos::LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
+  LoginEventRecorder::Get()->AddLoginTimeMarker("LoginAnimationEnd",
+                                                /*send_to_uma=*/false,
+                                                /*write_to_file=*/false);
+  LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
   RecordMetrics(start, data, "Ash.LoginAnimation.Smoothness.",
                 "Ash.LoginAnimation.Jank.", "Ash.LoginAnimation.Duration.");
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/metrics/login_event_recorder.h"
+#include "chromeos/ash/components/metrics/login_event_recorder.h"
 
 #include <vector>
 
@@ -27,7 +27,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -430,4 +430,4 @@ void LoginEventRecorder::WriteLoginTimesDelayed() {
       base::BindOnce(std::move(callback_), std::move(login_time_markers_)));
 }
 
-}  // namespace chromeos
+}  // namespace ash
