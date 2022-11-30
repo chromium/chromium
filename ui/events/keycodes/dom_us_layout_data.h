@@ -415,16 +415,12 @@ const struct DomCodeToKeyboardCodeEntry {
     // DomCode::SUSPEND                            0x000014 Suspend
     // DomCode::RESUME                             0x000015 Resume
     // DomCode::TURBO                              0x000016 Turbo
-#if BUILDFLAG(IS_POSIX)
-    {DomCode::PRIVACY_SCREEN_TOGGLE,
-     VKEY_PRIVACY_SCREEN_TOGGLE},  // 0x000017 PrivacyScreenToggle
-    {DomCode::MICROPHONE_MUTE_TOGGLE,
-     VKEY_MICROPHONE_MUTE_TOGGLE},  // 0x000018 MicrophoneMuteToggle
-    {DomCode::KEYBOARD_BACKLIGHT_TOGGLE,
-     VKEY_KBD_BACKLIGHT_TOGGLE},  // 0x000019 KeyboardBacklightToggle
-#endif
     {DomCode::SLEEP, VKEY_SLEEP},  // 0x010082 Sleep
     // DomCode::WAKE_UP                            0x010083 WakeUp
+#if BUILDFLAG(IS_POSIX)
+    {DomCode::MICROPHONE_MUTE_TOGGLE,
+     VKEY_MICROPHONE_MUTE_TOGGLE},  // 0x0100A9 MicrophoneMuteToggle
+#endif
     {DomCode::US_A, VKEY_A},                    // 0x070004 KeyA
     {DomCode::US_B, VKEY_B},                    // 0x070005 KeyB
     {DomCode::US_C, VKEY_C},                    // 0x070006 KeyC
@@ -588,6 +584,8 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::KBD_ILLUM_UP, VKEY_KBD_BRIGHTNESS_UP},  // 0x0C0079 KbdIllumUp
     {DomCode::KBD_ILLUM_DOWN,
      VKEY_KBD_BRIGHTNESS_DOWN},  // 0x0C007a KbdIllumDown
+    {DomCode::KEYBOARD_BACKLIGHT_TOGGLE,
+     VKEY_KBD_BACKLIGHT_TOGGLE},  // 0x0C007C KeyboardBacklightToggle
 #endif
     {DomCode::MEDIA_TRACK_NEXT,
      VKEY_MEDIA_NEXT_TRACK},  // 0x0C00B5 MediaTrackNext
@@ -627,6 +625,8 @@ const struct DomCodeToKeyboardCodeEntry {
 #if BUILDFLAG(IS_POSIX)
     {DomCode::ALL_APPLICATIONS,
      VKEY_ALL_APPLICATIONS},  // 0x0C02A2 All Applications
+    {DomCode::PRIVACY_SCREEN_TOGGLE,
+     VKEY_PRIVACY_SCREEN_TOGGLE},  // 0x0C02D0 PrivacyScreenToggle
 #endif
 };
 

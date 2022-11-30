@@ -100,20 +100,6 @@ DOM_CODE_DECLARATION {
   DOM_CODE(0x000014, 0x0000, 0x0000, 0x0000, 0xffff, "Suspend", SUSPEND),
   DOM_CODE(0x000015, 0x0000, 0x0000, 0x0000, 0xffff, "Resume", RESUME),
   DOM_CODE(0x000016, 0x0000, 0x0000, 0x0000, 0xffff, "Turbo", TURBO),
-  // TODO(b/146683484): HID usage for privacy screen control is not yet
-  // approved. Once it is update the code here.
-  // TODO(https://crbug.com/952051): Privacy screen will not have a DOM |code|
-  // name defined as it is not exposed to web content.
-  DOM_CODE(0x000017, 0x0279, 0x0281, 0x0000, 0xffff, "PrivacyScreenToggle",
-             PRIVACY_SCREEN_TOGGLE),  // Privacy Screen Toggle
-  // As with privacy screen, microphone mute toggle will not be exposed to web
-  // content.
-  DOM_CODE(0x000018, 0x00f8, 0x0100, 0x0000, 0xffff, "MicrophoneMuteToggle",
-             MICROPHONE_MUTE_TOGGLE),  // Microphone Mute Toggle
-  // As with privacy screen, keyboard backlight toggle will not be exposed to web
-  // content.
-  DOM_CODE(0x000019, 0x00e4, 0x00ec, 0x0000, 0xffff, "KeyboardBacklightToggle",
-             KEYBOARD_BACKLIGHT_TOGGLE),  // Keyboard Backlight Toggle
 
   // =========================================
   // USB Usage Page 0x01: Generic Desktop Page
@@ -124,6 +110,8 @@ DOM_CODE_DECLARATION {
   //            USB     evdev    XKB     Win     Mac
   DOM_CODE(0x010082, 0x008e, 0x0096, 0xe05f, 0xffff, "Sleep", SLEEP), // SystemSleep
   DOM_CODE(0x010083, 0x008f, 0x0097, 0xe063, 0xffff, "WakeUp", WAKE_UP),
+  DOM_CODE(0x0100a9, 0x00f8, 0x0100, 0x0000, 0xffff, NULL,
+             MICROPHONE_MUTE_TOGGLE),  // Microphone Mute Toggle
   DOM_CODE(0x0100b5, 0x00e3, 0x00eb, 0x0000, 0xffff, "DisplayToggleIntExt",
              DISPLAY_TOGGLE_INT_EXT),  // System Display Toggle Int/Ext
 
@@ -493,6 +481,8 @@ DOM_CODE_DECLARATION {
   DOM_CODE(0x0c0075, 0x00f4, 0x00fc, 0x0000, 0xffff, NULL, BRIGHTNESS_AUTO),
   DOM_CODE(0x0c0079, 0x00e6, 0x00ee, 0x0000, 0xffff, NULL, KBD_ILLUM_UP),
   DOM_CODE(0x0c007a, 0x00e5, 0x00ed, 0x0000, 0xffff, NULL, KBD_ILLUM_DOWN),
+  DOM_CODE(0x0c007c, 0x00e4, 0x00ec, 0x0000, 0xffff, NULL,
+             KEYBOARD_BACKLIGHT_TOGGLE),  // Keyboard Backlight Toggle
   DOM_CODE(0x0c0083, 0x0195, 0x019d, 0x0000, 0xffff, NULL, MEDIA_LAST),
   DOM_CODE(0x0c008c, 0x00a9, 0x00b1, 0x0000, 0xffff, NULL, LAUNCH_PHONE),
   DOM_CODE(0x0c008d, 0x016a, 0x0172, 0x0000, 0xffff, NULL, PROGRAM_GUIDE),
@@ -612,4 +602,6 @@ DOM_CODE_DECLARATION {
   DOM_CODE(0x0c029f, 0x0078, 0x0080, 0x0000, 0xffff, "ShowAllWindows",
              SHOW_ALL_WINDOWS),  // AC Desktop Show All Windows
   DOM_CODE(0x0c02a2, 0x00cc, 0x00d4, 0x0000, 0xffff, NULL, ALL_APPLICATIONS),
+  DOM_CODE(0x0c02d0, 0x0279, 0x0281, 0x0000, 0xffff, NULL,
+             PRIVACY_SCREEN_TOGGLE),  // Privacy Screen Toggle
 };
