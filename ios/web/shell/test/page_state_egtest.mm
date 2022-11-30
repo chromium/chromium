@@ -101,9 +101,7 @@ void ScrollLongPageToTop(const GURL& url) {
 
 // Tests that the content offset of the webview scroll view is {0, 0} after a
 // load.
-// // TODO(crbug.com/1363701): Investigate flakiness on
-// ios-simulator-full-config bots.
-- (void)DISABLED_testZeroContentOffsetAfterLoad {
+- (void)testZeroContentOffsetAfterLoad {
   // Set up the file-based server to load the tall page.
   const GURL baseURL = self.testServer->GetURL(kLongPage1);
   [ShellEarlGrey loadURL:baseURL];
