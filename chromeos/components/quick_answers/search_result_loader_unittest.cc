@@ -88,7 +88,7 @@ TEST_F(SearchResultLoaderTest, Success) {
   loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      ash::assistant::kKnowledgeApiEndpoint, kValidResponse, net::HTTP_OK,
+      chromeos::assistant::kKnowledgeApiEndpoint, kValidResponse, net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
   base::RunLoop().RunUntilIdle();
 }
@@ -99,7 +99,8 @@ TEST_F(SearchResultLoaderTest, NetworkError) {
   loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      ash::assistant::kKnowledgeApiEndpoint, std::string(), net::HTTP_NOT_FOUND,
+      chromeos::assistant::kKnowledgeApiEndpoint, std::string(),
+      net::HTTP_NOT_FOUND,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
   base::RunLoop().RunUntilIdle();
 }
@@ -110,7 +111,7 @@ TEST_F(SearchResultLoaderTest, EmptyResponse) {
   loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      ash::assistant::kKnowledgeApiEndpoint, std::string(), net::HTTP_OK,
+      chromeos::assistant::kKnowledgeApiEndpoint, std::string(), net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   base::RunLoop().RunUntilIdle();

@@ -92,11 +92,11 @@ SearchResultLoader::~SearchResultLoader() = default;
 void SearchResultLoader::BuildRequest(
     const PreprocessedOutput& preprocessed_output,
     BuildRequestCallback callback) const {
-  GURL url = GURL(ash::assistant::kKnowledgeApiEndpoint);
+  GURL url = GURL(chromeos::assistant::kKnowledgeApiEndpoint);
 
   // Add encoded request payload.
   url = net::AppendOrReplaceQueryParameter(
-      url, ash::assistant::kPayloadParamName,
+      url, chromeos::assistant::kPayloadParamName,
       BuildSearchRequestPayload(
           preprocessed_output.query,
           preprocessed_output.intent_info.device_language));
