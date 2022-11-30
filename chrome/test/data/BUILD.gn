@@ -4,7 +4,6 @@
 
 import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
 grit("chrome_test_resources") {
@@ -53,10 +52,7 @@ copy("web_ui_test_mojom_js_module") {
 }
 
 group("closure_compile") {
-  deps = [
-    "cast:closure_compile",
-    "extensions/api_test/file_system_provider/service_worker:closure_compile",
-  ]
+  deps = [ "cast:closure_compile" ]
 
   if (is_chromeos_ash) {
     deps += [ "webui:closure_compile" ]
