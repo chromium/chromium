@@ -37,6 +37,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.OfflineMeasurements.UserStateList",
                 "Chrome.PriceTracking.PriceDropAlerts",
                 "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabledShowMessage",
+                "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown",
                 "Chrome.SigninPromo.NTPImpressions",
                 "PersistedNotificationId",
                 "PhysicalWeb.ActivityReferral",

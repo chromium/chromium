@@ -310,6 +310,13 @@ public final class EventConstants {
     /** Desktop site default-on message gesture event. */
     public static final String DESKTOP_SITE_DEFAULT_ON_GESTURE = "desktop_site_default_on_gesture";
 
+    /** Desktop site opt-in message primary action event. */
+    public static final String DESKTOP_SITE_OPT_IN_PRIMARY_ACTION =
+            "desktop_site_opt_in_primary_action";
+
+    /** Desktop site opt-in message gesture event. */
+    public static final String DESKTOP_SITE_OPT_IN_GESTURE = "desktop_site_opt_in_gesture";
+
     /**
      * Do not instantiate.
      */
