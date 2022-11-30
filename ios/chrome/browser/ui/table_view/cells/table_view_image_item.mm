@@ -6,7 +6,6 @@
 
 #import "base/i18n/rtl.h"
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/table_view/cells/features.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -87,9 +86,7 @@
     _textLabel = [[UILabel alloc] init];
     _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textLabel.adjustsFontForContentSizeCategory = YES;
-    if (IsTruncateTableViewCellTitleEnabled()) {
-      _textLabel.numberOfLines = 2;
-    }
+    _textLabel.numberOfLines = 2;
     [_textLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
@@ -141,26 +138,8 @@
                                    constant:-kTableViewVerticalSpacing],
       heightConstraint,
     ]];
-
-    if (!IsTruncateTableViewCellTitleEnabled()) {
-      [self configureTextLabelForAccessibility:
-                UIContentSizeCategoryIsAccessibilityCategory(
-                    self.traitCollection.preferredContentSizeCategory)];
-    }
   }
   return self;
-}
-
-#pragma mark - Private
-
-// Configures -TableViewImageCell.textLabel for accessibility or not.
-- (void)configureTextLabelForAccessibility:(BOOL)accessibility {
-  DCHECK(!IsTruncateTableViewCellTitleEnabled());
-  if (accessibility) {
-    self.textLabel.numberOfLines = 2;
-  } else {
-    self.textLabel.numberOfLines = 1;
-  }
 }
 
 #pragma mark - UITableViewCell
@@ -168,23 +147,6 @@
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.userInteractionEnabled = YES;
-}
-
-#pragma mark - UIView
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (IsTruncateTableViewCellTitleEnabled()) {
-    return;
-  }
-  BOOL isCurrentCategoryAccessibility =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (isCurrentCategoryAccessibility !=
-      UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory)) {
-    [self configureTextLabelForAccessibility:isCurrentCategoryAccessibility];
-  }
 }
 
 #pragma mark - UIAccessibility

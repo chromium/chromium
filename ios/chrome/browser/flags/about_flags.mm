@@ -96,7 +96,6 @@
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/features.h"
-#import "ios/chrome/browser/ui/table_view/cells/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
@@ -1310,10 +1309,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCredentialProviderExtensionPromoName,
      flag_descriptions::kCredentialProviderExtensionPromoDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderExtensionPromo)},
-    {"truncate-table-view-cell-title",
-     flag_descriptions::kTruncateTableViewCellTitleName,
-     flag_descriptions::kTruncateTableViewCellTitleDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kTruncateTableViewCellTitle)},
     {"default-browser-blue-dot-promo",
      flag_descriptions::kDefaultBrowserBlueDotPromoName,
      flag_descriptions::kDefaultBrowserBlueDotPromoDescription,

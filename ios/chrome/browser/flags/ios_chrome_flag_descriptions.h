@@ -691,10 +691,6 @@ extern const char kToolbarContainerDescription[];
 extern const char kTrendingQueriesModuleName[];
 extern const char kTrendingQueriesModuleDescription[];
 
-// Title and description for the flag to truncate title of table view cell.
-extern const char kTruncateTableViewCellTitleName[];
-extern const char kTruncateTableViewCellTitleDescription[];
-
 // Title and description for the flag to enable removing any entry points to the
 // history UI from Incognito mode.
 extern const char kUpdateHistoryEntryPointsInIncognitoName[];

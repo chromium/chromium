@@ -6647,11 +6647,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "truncate-table-view-cell-title",
-    "owners": [ "fedegermi", "bling-flags@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "trusted-web-activity-notification-permission-delegation",
     "owners": [ "mvanouwerkerk", "//chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS" ],
     "expiry_milestone": 108
