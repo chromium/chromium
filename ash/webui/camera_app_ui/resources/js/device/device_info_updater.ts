@@ -42,26 +42,21 @@ export class DeviceInfoUpdater {
    */
   private camera3DevicesInfo: Camera3DeviceInfo[]|null = null;
 
-  /**
-   * Pending device Information.
-   */
-  private pendingDevicesInfo: DeviceInfo[] = [];
-
   constructor() {
     StreamManager.getInstance().addRealDeviceChangeListener((devicesInfo) => {
-      this.pendingDevicesInfo = devicesInfo;
-      this.update();
+      this.update(devicesInfo);
     });
   }
 
   /**
    * Updates devices information.
+   *
+   * @param devicesInfo Updated devices info.
    */
-  private update() {
-    this.devicesInfo = this.pendingDevicesInfo.map((d) => d.v1Info);
+  private update(devicesInfo: DeviceInfo[]) {
+    this.devicesInfo = devicesInfo.map((d) => d.v1Info);
     if (DeviceOperator.isSupported()) {
-      this.camera3DevicesInfo =
-          this.pendingDevicesInfo.map((d) => assertExists(d.v3Info));
+      this.camera3DevicesInfo = devicesInfo.map((d) => assertExists(d.v3Info));
     } else {
       this.camera3DevicesInfo = null;
     }
