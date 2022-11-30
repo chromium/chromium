@@ -762,7 +762,9 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, DoomEntryWithoutOpening) {
   ASSERT_TRUE(network_service_test().is_connected());
 }
 
-IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, EnumerateEntries) {
+// TODO(crbug.com/1394543): Re-enable this test
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
+                       DISABLED_EnumerateEntries) {
   const std::string kKey1 = "abc";
   const std::string kKey2 = "def";
   const std::string kKey3 = "ghi";
