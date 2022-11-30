@@ -135,6 +135,8 @@ std::unique_ptr<Commit> Commit::Init(
       active_devices_invalidation_info
           .IsSingleClientWithStandaloneInvalidationsForTypes(
               contributed_data_types),
+      active_devices_invalidation_info
+          .IsSingleClientWithOldInvalidationsForTypes(contributed_data_types),
       active_devices_invalidation_info.all_fcm_registration_tokens(),
       active_devices_invalidation_info
           .GetFcmRegistrationTokensForInterestedClients(contributed_data_types),

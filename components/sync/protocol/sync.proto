@@ -63,6 +63,7 @@ message ClientConfigParams {
   // set depending on interested data types of other devices, e.g. if there are
   // other devices but they are not interested in SESSION data type, and current
   // commit request contains only SESSION, it will be set to true.
+  // Introduced in M88.
   optional bool single_client = 4;
 
   // A list of FCM registration tokens which are obtained from other clients.
@@ -79,6 +80,7 @@ message ClientConfigParams {
   // could be mixed up with older clients). The server doesn't have to use this
   // field and can ignore it. Note that this list does not take into account
   // interested data types from the other clients.
+  // Introduced in M89.
   repeated string devices_fcm_registration_tokens = 5;
 
   // Similar to |single_client| but takes into account only clients with enabled
@@ -108,6 +110,18 @@ message ClientConfigParams {
   // field and can ignore it.
   // Introduced in M105.
   repeated string fcm_registration_tokens_for_interested_clients = 7;
+
+  // Similar to |single_client| but takes into account only clients which are
+  // subscribed to old invalidations (i.e. not subscribed to sync standalone
+  // invalidations). When set to true, there are no other clients subscribed to
+  // old invalidations. Note that opposed to |single_client|, this flag does not
+  // always take into account the list of interested data types (because
+  // interested data types were introduced in M89). When the list is empty, a
+  // client is considered to be subscribed to all data types. Note that "single
+  // client" is a bit misleading since this will also be true if there are no
+  // clients with old invalidations at all.
+  // Introduced in M110.
+  optional bool single_client_with_old_invalidations = 8;
 }
 
 message CommitMessage {

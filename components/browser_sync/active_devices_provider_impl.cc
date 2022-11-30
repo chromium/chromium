@@ -49,6 +49,8 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
   // List of interested data types for all other clients.
   syncer::ModelTypeSet all_interested_data_types;
 
+  syncer::ModelTypeSet old_invalidations_interested_data_types;
+
   // FCM registration tokens with corresponding interested data types for all
   // the clients with enabled sync standalone invalidations.
   std::map<std::string, syncer::ModelTypeSet>
@@ -72,6 +74,19 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
               switches::kSyncUseFCMRegistrationTokensList)) {
         all_fcm_registration_tokens.push_back(device->fcm_registration_token());
       }
+    } else if (!device->interested_data_types().Empty()) {
+      // An empty FCM registration token may be set for old clients, and for
+      // modern clients supporting sync standalone invalidatoins if there was an
+      // error during FCM registration. This does not matter in this case since
+      // the error case should be rare, and in the worst case the
+      // |single_client_old_invalidations| flag will not be provided (and this
+      // is just an optimization flag).
+      old_invalidations_interested_data_types.PutAll(
+          device->interested_data_types());
+    } else {
+      // For old clients which do not support interested data types assume that
+      // they are subscribed to all data types.
+      old_invalidations_interested_data_types.PutAll(syncer::ProtocolTypes());
     }
   }
 
@@ -87,7 +102,8 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
 
   return syncer::ActiveDevicesInvalidationInfo::Create(
       std::move(all_fcm_registration_tokens), all_interested_data_types,
-      std::move(fcm_token_and_interested_data_types));
+      std::move(fcm_token_and_interested_data_types),
+      old_invalidations_interested_data_types);
 }
 
 void ActiveDevicesProviderImpl::SetActiveDevicesChangedCallback(

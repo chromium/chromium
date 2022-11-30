@@ -38,6 +38,7 @@ void AddClientConfigParamsToMessage(
     bool cookie_jar_mismatch,
     bool single_client,
     bool single_client_with_standalone_invalidations,
+    bool single_client_with_old_invalidations,
     const std::vector<std::string>& all_fcm_registration_tokens,
     const std::vector<std::string>&
         fcm_registration_tokens_for_interested_clients,
@@ -53,6 +54,8 @@ void AddClientConfigParamsToMessage(
   config_params->set_single_client(single_client);
   config_params->set_single_client_with_standalone_invalidations(
       single_client_with_standalone_invalidations);
+  config_params->set_single_client_with_old_invalidations(
+      single_client_with_old_invalidations);
   for (const std::string& token : all_fcm_registration_tokens) {
     *config_params->add_devices_fcm_registration_tokens() = token;
   }

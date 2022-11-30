@@ -26,12 +26,15 @@ ActiveDevicesInvalidationInfo::CreateUninitialized() {
 ActiveDevicesInvalidationInfo ActiveDevicesInvalidationInfo::Create(
     std::vector<std::string> all_fcm_registration_tokens,
     ModelTypeSet all_interested_data_types,
-    std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types) {
+    std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types,
+    ModelTypeSet old_invalidations_interested_data_types) {
   ActiveDevicesInvalidationInfo result(/*initialized=*/true);
   result.all_fcm_registration_tokens_ = std::move(all_fcm_registration_tokens);
   result.all_interested_data_types_ = all_interested_data_types;
   result.fcm_token_and_interested_data_types_ =
       std::move(fcm_token_and_interested_data_types);
+  result.old_invalidations_interested_data_types_ =
+      old_invalidations_interested_data_types;
   return result;
 }
 
@@ -68,6 +71,15 @@ bool ActiveDevicesInvalidationInfo::
   return Intersection(types,
                       GetAllInterestedDataTypesForStandaloneInvalidations())
       .Empty();
+}
+
+bool ActiveDevicesInvalidationInfo::IsSingleClientWithOldInvalidationsForTypes(
+    const ModelTypeSet& types) const {
+  if (!initialized_) {
+    return false;
+  }
+
+  return Intersection(types, old_invalidations_interested_data_types_).Empty();
 }
 
 std::vector<std::string>

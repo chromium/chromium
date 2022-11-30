@@ -29,7 +29,8 @@ class ActiveDevicesInvalidationInfo {
   static ActiveDevicesInvalidationInfo Create(
       std::vector<std::string> all_fcm_registration_tokens,
       ModelTypeSet all_interested_data_types,
-      std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types);
+      std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types,
+      ModelTypeSet old_invalidations_interested_data_types);
 
   ~ActiveDevicesInvalidationInfo();
 
@@ -56,6 +57,11 @@ class ActiveDevicesInvalidationInfo {
   bool IsSingleClientWithStandaloneInvalidationsForTypes(
       const ModelTypeSet& types) const;
 
+  // Returns true if there are no other active DeviceInfos with *disabled* synce
+  // standalone invalidations interested in the given |types|.
+  bool IsSingleClientWithOldInvalidationsForTypes(
+      const ModelTypeSet& types) const;
+
   // Returns a list with all remote FCM registration tokens known to the current
   // device. The list may contain the local device's token if a reflection
   // should be sent from the server.
@@ -78,6 +84,7 @@ class ActiveDevicesInvalidationInfo {
   std::vector<std::string> all_fcm_registration_tokens_;
   ModelTypeSet all_interested_data_types_;
   std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types_;
+  ModelTypeSet old_invalidations_interested_data_types_;
 };
 
 }  // namespace syncer
