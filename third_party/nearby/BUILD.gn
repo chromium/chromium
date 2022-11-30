@@ -785,6 +785,7 @@ source_set("presence_internal") {
     "src/presence/implementation/base_broadcast_request.cc",
     "src/presence/implementation/credential_manager_impl.cc",
     "src/presence/implementation/encryption.cc",
+    "src/presence/implementation/ldt.cc",
     "src/presence/implementation/scan_manager.cc",
     "src/presence/implementation/service_controller_impl.cc",
   ]
@@ -797,6 +798,7 @@ source_set("presence_internal") {
     "src/presence/implementation/credential_manager.h",
     "src/presence/implementation/credential_manager_impl.h",
     "src/presence/implementation/encryption.h",
+    "src/presence/implementation/ldt.h",
     "src/presence/implementation/scan_manager.h",
     "src/presence/implementation/service_controller.h",
     "src/presence/implementation/service_controller_impl.h",
@@ -808,10 +810,25 @@ source_set("presence_internal") {
     ":platform_public_comm",
     ":platform_public_logging",
     ":platform_public_types",
+    ":presence_ldt_stub",
     ":presence_types",
     ":presence_mediums",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl:boringssl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+source_set("presence_ldt_stub") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [
+    "src/presence/implementation/np_ldt.c",
+  ]
+  public = [
+    "src/presence/implementation/np_ldt.h",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
