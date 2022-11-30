@@ -277,8 +277,6 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
   if (versioned_folder_path)
     EXPECT_FALSE(base::PathExists(*versioned_folder_path));
 
-  EXPECT_FALSE(Launchd::GetInstance()->PlistExists(launchd_domain, launchd_type,
-                                                   CopyWakeLaunchdName(scope)));
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
       launchd_domain, launchd_type,
       CopyUpdateServiceInternalLaunchdName(scope)));

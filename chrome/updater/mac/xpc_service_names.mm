@@ -48,12 +48,11 @@ base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceLaunchdName(
 }
 
 base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName(UpdaterScope scope) {
-  return scope == UpdaterScope::kSystem
-             ? base::SysUTF8ToCFStringRef(
-                   base::StrCat({MAC_BUNDLE_IDENTIFIER_STRING ".wake.",
-                                 kSystemLevelKeyword}))
-             : base::SysUTF8ToCFStringRef(
-                   base::StrCat({MAC_BUNDLE_IDENTIFIER_STRING ".wake"}));
+  return base::SysUTF8ToCFStringRef(
+      scope == UpdaterScope::kSystem
+          ? base::StrCat(
+                {MAC_BUNDLE_IDENTIFIER_STRING ".wake.", kSystemLevelKeyword})
+          : base::StrCat({MAC_BUNDLE_IDENTIFIER_STRING ".wake"}));
 }
 
 base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceInternalLaunchdName(

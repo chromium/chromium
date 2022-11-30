@@ -324,7 +324,6 @@ bool DeleteDataFolder(UpdaterScope scope) {
 void CleanAfterInstallFailure(UpdaterScope scope) {
   // If install fails at any point, attempt to clean the install.
   DeleteCandidateInstallFolder(scope);
-  RemoveUpdateWakeJobFromLaunchd(scope);
   RemoveUpdateServiceInternalJobFromLaunchd(scope);
 }
 
@@ -431,9 +430,6 @@ int UninstallCandidate(UpdaterScope scope) {
     error = kErrorFailedToDeleteFolder;
   }
 
-  if (!RemoveUpdateWakeJobFromLaunchd(scope))
-    error = kErrorFailedToRemoveWakeJobFromLaunchd;
-
   // Removing the Update Internal job has to be the last step because launchd is
   // likely to terminate the current process. Clients should expect the
   // connection to invalidate (possibly with an interruption beforehand) as a
@@ -451,6 +447,9 @@ int Uninstall(UpdaterScope scope) {
 
   if (!RemoveUpdateServiceJobFromLaunchd(scope))
     exit = kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd;
+
+  if (!RemoveUpdateWakeJobFromLaunchd(scope))
+    exit = kErrorFailedToRemoveWakeJobFromLaunchd;
 
   if (!DeleteInstallFolder(scope))
     exit = kErrorFailedToDeleteFolder;
